@@ -1,0 +1,1 @@
+Open the .sln in Visual Studio and select Build > Build Solution to compile QTTabBar.  If the compilation is successful, the Register project will automatically register the resulting binary with your computer.  Restart Explorer for the changes to take effect.  Beware, compiling this project will overwrite your original installation if you already have QTTabBar installed.
