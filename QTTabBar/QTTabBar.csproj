@@ -277,9 +277,11 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources_Image.resx">
       <DependentUpon>Resources_Image.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources_String.resx">
       <DependentUpon>Resources_String.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

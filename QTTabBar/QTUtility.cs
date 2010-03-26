@@ -71,7 +71,12 @@ namespace QTTabBarLib {
         internal static int MaxTabWidth;
         internal static int MinTabWidth;
         internal static List<string> NoCapturePathsList = new List<string>();
-        internal static bool NowDebugging = false;
+        internal static bool NowDebugging = 
+#if DEBUG
+            true;
+#else
+            false;
+#endif
         internal static int OptionsDialogTabIndex;
         internal static string Path_LanguageFile;
         internal static string PATH_MYNETWORK;
