@@ -45,12 +45,32 @@ namespace QTTabBarLib {
             //<ButtonBarHandles>d__a _a = new <ButtonBarHandles>d__a(-2);
             //_a.<>4__this = this;
             //return _a;
+
+            try {
+                this.rwLockBtnBar.AcquireReaderLock(-1);
+                foreach(IntPtr hwndBB in this.dicBtnBarHandle.Values) {
+                    yield return hwndBB;
+                }
+            }
+            finally {
+                this.rwLockBtnBar.ReleaseReaderLock();
+            }
         }
 
         public IEnumerable<IntPtr> ExplorerHandles() {
             //<ExplorerHandles>d__5 d__ = new <ExplorerHandles>d__5(-2);
             //d__.<>4__this = this;
             //return d__;
+
+            try {
+                this.rwLockTabBar.AcquireReaderLock(-1);
+                foreach(IntPtr hwnd in this.sdInstancePair.Keys) {
+                    yield return hwnd;
+                }
+            }
+            finally {
+                this.rwLockTabBar.ReleaseReaderLock();
+            }
         }
 
         public QTTabBarClass GetTabBar(IntPtr hwndExplr) {
@@ -143,6 +163,16 @@ namespace QTTabBarLib {
             //<TabBarHandles>d__0 d__ = new <TabBarHandles>d__0(-2);
             //d__.<>4__this = this;
             //return d__;
+
+            try {
+                this.rwLockTabBar.AcquireReaderLock(-1);
+                foreach(InstancePair ip in this.sdInstancePair.Values) {
+                    yield return ip.hwnd;
+                }
+            }
+            finally {
+                this.rwLockTabBar.ReleaseReaderLock();
+            }
         }
 
         public bool TryGetButtonBarHandle(IntPtr hwndExplr, out IntPtr hwndButtonBar) {

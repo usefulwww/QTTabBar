@@ -525,6 +525,12 @@ namespace QTTabBarLib {
         public static IEnumerable<PluginInformation> PluginInformations {
             get {
                 //return new <get_PluginInformations>d__0(-2);
+
+                foreach(PluginAssembly pa in PluginManager.dicPluginAssemblies.Values) {
+                    foreach(PluginInformation info in pa.PluginInformations) {
+                        yield return info;
+                    }
+                }
             }
         }
 

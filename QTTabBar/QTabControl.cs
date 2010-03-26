@@ -1570,6 +1570,13 @@ namespace QTTabBarLib {
                 //<GetEnumerator>d__0 d__ = new <GetEnumerator>d__0(0);
                 //d__.<>4__this = this;
                 //return d__;
+
+                QTabItemBase[] tmpArr = this.ToArray();
+                for(int i = 0; i < tmpArr.Length; ++i) {
+                    if(this.Contains(tmpArr[i])) {
+                        yield return tmpArr[i];
+                    }
+                }
             }
 
             public void Insert(int index, QTabItemBase tabPage) {

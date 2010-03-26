@@ -358,6 +358,10 @@ namespace QTTabBarLib {
                 //<get_PluginViewItems>d__0 d__ = new <get_PluginViewItems>d__0(-2);
                 //d__.<>4__this = this;
                 //return d__;
+
+                for(int i = 0; i < this.Controls.Count; i++) {
+                    yield return (PluginViewItem)this.Controls[i];
+                }
             }
         }
 
