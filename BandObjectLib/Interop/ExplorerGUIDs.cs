@@ -18,7 +18,7 @@
 namespace BandObjectLib {
     using System;
 
-    internal abstract class ExplorerGUIDs {
+    public abstract class ExplorerGUIDs {
         public static readonly Guid CGID_DeskBand = new Guid("{EB0FE172-1A3A-11D0-89B3-00A0C90A90AC}");
         public static readonly Guid CLSID_TaskbarList = new Guid("56FDF344-FD6D-11d0-958A-006097C9A090");
         public static readonly Guid IID_IContextMenu = new Guid("{000214e4-0000-0000-c000-000000000046}");

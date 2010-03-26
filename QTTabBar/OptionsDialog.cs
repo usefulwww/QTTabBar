@@ -1299,7 +1299,7 @@ namespace QTTabBarLib {
                 }
                 MenuItemArguments tag = (MenuItemArguments)node.Tag;
                 int num = tag.KeyShortcut & -1048577;
-                if(num == keys) {
+                if(num == (int)keys) {
                     string[] strArray = QTUtility.TextResourcesDic["ShortcutKeys_MsgReassign"];
                     string text = string.Format(strArray[0], QTUtility2.MakeKeyString(keys), node.Text);
                     if(DialogResult.OK == MessageBox.Show(text, strArray[1], MessageBoxButtons.OKCancel, MessageBoxIcon.Question)) {
@@ -1338,7 +1338,7 @@ namespace QTTabBarLib {
                 if(((node != tnCurrent) && (node.Tag != null)) && (node.Tag is MenuItemArguments)) {
                     MenuItemArguments tag = (MenuItemArguments)node.Tag;
                     int num = tag.KeyShortcut & -1048577;
-                    if(num == keys) {
+                    if(num == (int)keys) {
                         string[] strArray = QTUtility.TextResourcesDic["ShortcutKeys_MsgReassign"];
                         string text = string.Format(strArray[0], QTUtility2.MakeKeyString(keys), node.Text);
                         if(DialogResult.OK == MessageBox.Show(text, strArray[1], MessageBoxButtons.OKCancel, MessageBoxIcon.Question)) {
@@ -4313,7 +4313,7 @@ namespace QTTabBarLib {
                 }
                 else if(((e.Modifiers != Keys.None) && this.CheckExistance_Shortcuts(e.KeyData, null)) && (this.CheckExistance_UserAppKey(e.KeyData, this.tnRoot_UserApps, null) && this.CheckExistance_GroupKey(e.KeyData, selectedNode))) {
                     this.tbGroupKey.Text = QTUtility2.MakeKeyString(e.KeyData);
-                    tag.KeyShortcut = num | e.KeyData;
+                    tag.KeyShortcut = num | (int)e.KeyData;
                 }
             }
         }
@@ -4365,7 +4365,7 @@ namespace QTTabBarLib {
                 }
                 else if(((e.Modifiers != Keys.None) && this.CheckExistance_Shortcuts(e.KeyData, null)) && (this.CheckExistance_UserAppKey(e.KeyData, this.tnRoot_UserApps, selectedNode) && this.CheckExistance_GroupKey(e.KeyData, null))) {
                     this.tbUserAppKey.Text = QTUtility2.MakeKeyString(e.KeyData);
-                    tag.KeyShortcut = num | e.KeyData;
+                    tag.KeyShortcut = num | (int)e.KeyData;
                 }
             }
         }

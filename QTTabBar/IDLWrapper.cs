@@ -468,7 +468,7 @@ namespace QTTabBarLib {
 
         public bool IsLinkToDeadFolder {
             get {
-                bool flag;
+                bool flag = false;
                 try {
                     if(!this.IsLink) {
                         return false;

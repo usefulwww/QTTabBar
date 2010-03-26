@@ -288,7 +288,7 @@ namespace QTTabBarLib.Interop {
                 if((PInvoke.SHBindToParent(pIDL, riid, out ppv, out ptr) != 0) || (ppv == null)) {
                     return string.Empty;
                 }
-                uint uFlags = fDisplayName ? 0 : 0x8000;
+                uint uFlags = fDisplayName ? 0 : 0x8000u;
                 StringBuilder pszBuf = new StringBuilder(260);
                 if(ppv.GetDisplayNameOf(ptr, uFlags, out strret) == 0) {
                     PInvoke.StrRetToBuf(ref strret, ptr, pszBuf, pszBuf.Capacity);
@@ -307,7 +307,7 @@ namespace QTTabBarLib.Interop {
 
         public static string GetDisplayName(IShellFolder shellFolder, IntPtr pIDLLast, bool fDisplayName) {
             STRRET strret;
-            uint uFlags = fDisplayName ? 0 : 0x8000;
+            uint uFlags = fDisplayName ? 0 : 0x8000u;
             StringBuilder pszBuf = new StringBuilder(260);
             if(shellFolder.GetDisplayNameOf(pIDLLast, uFlags, out strret) == 0) {
                 PInvoke.StrRetToBuf(ref strret, pIDLLast, pszBuf, pszBuf.Capacity);

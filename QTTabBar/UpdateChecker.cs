@@ -86,7 +86,7 @@ namespace QTTabBarLib {
                         return 2;
                     }
                     if(strArray.Length > 2) {
-                        int num;
+                        int num = 0;
                         try {
                             Version version2 = new Version(strArray[1]);
                             Version version3 = new Version(strArray[2]);

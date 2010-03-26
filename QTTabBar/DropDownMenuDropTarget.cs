@@ -152,7 +152,7 @@ namespace QTTabBarLib {
                         string path = item2.Path;
                         if(!fPath) {
                             try {
-                                path = Path.GetFileName(path);
+                                path = System.IO.Path.GetFileName(path);
                             }
                             catch {
                             }
@@ -175,7 +175,7 @@ namespace QTTabBarLib {
                     }
                     else {
                         try {
-                            str = str + Path.GetFileName(str3) + Environment.NewLine;
+                            str = str + System.IO.Path.GetFileName(str3) + Environment.NewLine;
                             continue;
                         }
                         catch {
@@ -661,7 +661,7 @@ namespace QTTabBarLib {
             if(string.IsNullOrEmpty(path)) {
                 return false;
             }
-            string extension = Path.GetExtension(path);
+            string extension = System.IO.Path.GetExtension(path);
             if(string.IsNullOrEmpty(extension)) {
                 return false;
             }
@@ -676,7 +676,7 @@ namespace QTTabBarLib {
             }
             string linkTargetPath = ShellMethods.GetLinkTargetPath(path);
             if(File.Exists(linkTargetPath)) {
-                string str3 = Path.GetExtension(linkTargetPath);
+                string str3 = System.IO.Path.GetExtension(linkTargetPath);
                 if(strExtExecutable.IndexOf(str3, StringComparison.OrdinalIgnoreCase) != -1) {
                     return true;
                 }

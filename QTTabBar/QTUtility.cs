@@ -821,7 +821,7 @@ namespace QTTabBarLib {
         }
 
         public static ImageReservationKey ReserveImageKey(QMenuItem qmi, string path, string ext) {
-            ImageReservationKey key;
+            ImageReservationKey key = null;
             if(string.IsNullOrEmpty(path)) {
                 return new ImageReservationKey("noimage", 0);
             }

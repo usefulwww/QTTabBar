@@ -852,7 +852,7 @@ namespace QTTabBarLib {
         }
 
         private bool HandleKEYDOWN(IntPtr wParam, bool fRepeat) {
-            int key = ((int)wParam) | Control.ModifierKeys;
+            int key = ((int)wParam) | ((int)Control.ModifierKeys);
             if(((int)wParam) == 0x10) {
                 if(!fRepeat) {
                     if(!QTUtility.CheckConfig(8, 1)) {

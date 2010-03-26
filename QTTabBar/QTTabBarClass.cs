@@ -704,7 +704,7 @@ namespace QTTabBarLib {
                                 }
                                 break;
                         }
-                        if(pViewMode != mode) {
+                        if(pViewMode != (int)mode) {
                             view2.SetCurrentViewMode((int)mode);
                         }
                     }
@@ -2923,7 +2923,7 @@ namespace QTTabBarLib {
         private bool HandleKEYDOWN(IntPtr wParam, bool fRepeat) {
             bool flag;
             int num = (int)wParam;
-            int num2 = ((int)wParam) | Control.ModifierKeys;
+            int num2 = ((int)wParam) | ((int)Control.ModifierKeys);
             switch(num) {
                 case 0x10:
                     if(!QTUtility.CheckConfig(8, 1)) {
@@ -3749,7 +3749,7 @@ namespace QTTabBarLib {
                     if(QTTabBarLib.Interop.PInvoke.PtInRect(ref rect, mousehookstructex.mhs.pt)) {
                         switch(modifierKeys) {
                             case Keys.Shift:
-                                QTTabBarLib.Interop.PInvoke.SendMessage(hWnd, 0x1014, (IntPtr) - y, IntPtr.Zero);
+                                QTTabBarLib.Interop.PInvoke.SendMessage(hWnd, 0x1014, (IntPtr)(-y), IntPtr.Zero);
                                 return true;
 
                             case Keys.Control:
@@ -5058,8 +5058,8 @@ namespace QTTabBarLib {
             catch(COMException exception) {
                 QTUtility2.MakeErrorLog(exception, null);
             }
-            base.Explorer.add_BeforeNavigate2(new DWebBrowserEvents2_BeforeNavigate2EventHandler(this.Explorer_BeforeNavigate2));
-            base.Explorer.add_NavigateComplete2(new DWebBrowserEvents2_NavigateComplete2EventHandler(this.Explorer_NavigateComplete2));
+            base.Explorer.BeforeNavigate2 += new DWebBrowserEvents2_BeforeNavigate2EventHandler(this.Explorer_BeforeNavigate2);
+            base.Explorer.NavigateComplete2 += new DWebBrowserEvents2_NavigateComplete2EventHandler(this.Explorer_NavigateComplete2);
             this.fExplrEventsAttached = true;
         }
 
@@ -6481,7 +6481,7 @@ namespace QTTabBarLib {
         private bool ShowSubDirTip(int iItem, IntPtr hwndListView, bool fSkipForegroundCheck) {
             string str;
             if((fSkipForegroundCheck || (this.ExplorerHandle == QTTabBarLib.Interop.PInvoke.GetForegroundWindow())) && this.TryGetHotTrackPath(iItem, out str)) {
-                bool flag;
+                bool flag = false;
                 try {
                     if(!TryMakeSubDirTipPath(ref str)) {
                         return false;
@@ -7627,7 +7627,7 @@ namespace QTTabBarLib {
                             if((view2.Items(1, ref guid2, out list2) != 0) || (list2 == null)) {
                                 return false;
                             }
-                            uint uFlags = fDisplayName ? 0 : 0x8000;
+                            uint uFlags = fDisplayName ? 0 : 0x8000u;
                             while(list2.Next(1, out ptr4, null) == 0) {
                                 QTTabBarLib.Interop.STRRET strret2;
                                 StringBuilder builder2 = new StringBuilder(260);

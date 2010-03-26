@@ -21,7 +21,7 @@ namespace BandObjectLib {
     using System.Security;
 
     [ComImport, Guid("00000109-0000-0000-C000-000000000046"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown), SuppressUnmanagedCodeSecurity]
-    internal interface IPersistStream {
+    public interface IPersistStream {
         void GetClassID(out Guid pClassID);
         [PreserveSig]
         int IsDirty();
