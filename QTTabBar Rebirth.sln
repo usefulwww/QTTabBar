@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QTTabBar", "QTTabBar\QTTabBar.csproj", "{E36E7A44-8F1D-4CFF-A65A-C3207A17CDED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BandObjectLib", "BandObjectLib\BandObjectLib.csproj", "{BDB3B670-A17B-483E-954C-52FC2B6FF9D3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Register", "Register\Register.vcproj", "{E35915FE-ED91-4AE5-B566-F269CD854498}"
+	ProjectSection(ProjectDependencies) = postProject
+		{749BE612-0CAA-444E-8704-4CF9D9A6F653} = {749BE612-0CAA-444E-8704-4CF9D9A6F653}
+		{E36E7A44-8F1D-4CFF-A65A-C3207A17CDED} = {E36E7A44-8F1D-4CFF-A65A-C3207A17CDED}
+		{BDB3B670-A17B-483E-954C-52FC2B6FF9D3} = {BDB3B670-A17B-483E-954C-52FC2B6FF9D3}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QTPluginLib", "QTPluginLib\QTPluginLib.csproj", "{749BE612-0CAA-444E-8704-4CF9D9A6F653}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E36E7A44-8F1D-4CFF-A65A-C3207A17CDED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E36E7A44-8F1D-4CFF-A65A-C3207A17CDED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E36E7A44-8F1D-4CFF-A65A-C3207A17CDED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E36E7A44-8F1D-4CFF-A65A-C3207A17CDED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDB3B670-A17B-483E-954C-52FC2B6FF9D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDB3B670-A17B-483E-954C-52FC2B6FF9D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDB3B670-A17B-483E-954C-52FC2B6FF9D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDB3B670-A17B-483E-954C-52FC2B6FF9D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E35915FE-ED91-4AE5-B566-F269CD854498}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{E35915FE-ED91-4AE5-B566-F269CD854498}.Debug|Any CPU.Build.0 = Debug|Win32
+		{E35915FE-ED91-4AE5-B566-F269CD854498}.Release|Any CPU.ActiveCfg = Release|Win32
+		{E35915FE-ED91-4AE5-B566-F269CD854498}.Release|Any CPU.Build.0 = Release|Win32
+		{749BE612-0CAA-444E-8704-4CF9D9A6F653}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{749BE612-0CAA-444E-8704-4CF9D9A6F653}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{749BE612-0CAA-444E-8704-4CF9D9A6F653}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{749BE612-0CAA-444E-8704-4CF9D9A6F653}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

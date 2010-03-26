@@ -1,0 +1,287 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E36E7A44-8F1D-4CFF-A65A-C3207A17CDED}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>QTTabBarLib</RootNamespace>
+    <AssemblyName>QTTabBar</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\QTTabBar Rebirth.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System.Design" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AppLauncher.cs" />
+    <Compile Include="ButtonBarOptionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ContextMenuStripEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CreateNewGroupForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DataGridViewEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DataGridViewProgressBarCell.cs" />
+    <Compile Include="DataGridViewProgressBarColumn.cs" />
+    <Compile Include="DefaultMenuRenderer.cs" />
+    <Compile Include="DirectoryMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DisposeInvoker.cs" />
+    <Compile Include="DropDownMenuBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DropDownMenuDropTarget.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DropDownMenuReorderable.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="EventPack.cs" />
+    <Compile Include="FileHashComputerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FindFile.cs" />
+    <Compile Include="FormMethodInvoker.cs" />
+    <Compile Include="HashCalcStatus.cs" />
+    <Compile Include="IDLWrapper.cs" />
+    <Compile Include="ImageReservationKey.cs" />
+    <Compile Include="ImageStrip.cs" />
+    <Compile Include="InstanceManager.cs" />
+    <Compile Include="Interop\BITMAPINFO.cs" />
+    <Compile Include="Interop\BITMAPINFOHEADER.cs" />
+    <Compile Include="Interop\CMINVOKECOMMANDINFO.cs" />
+    <Compile Include="Interop\COPYDATASTRUCT.cs" />
+    <Compile Include="Interop\CWPSTRUCT.cs" />
+    <Compile Include="Interop\DEV_BROADCAST_HDR.cs" />
+    <Compile Include="Interop\DEV_BROADCAST_VOLUME.cs" />
+    <Compile Include="Interop\DROPFILES.cs" />
+    <Compile Include="Interop\DropTargetWrapper.cs" />
+    <Compile Include="Interop\DTTOPTS.cs" />
+    <Compile Include="Interop\EnumWndProc.cs" />
+    <Compile Include="Interop\FOLDERSETTINGS.cs" />
+    <Compile Include="Interop\FolderViewMode.cs" />
+    <Compile Include="Interop\HDITEM.cs" />
+    <Compile Include="Interop\HookProc.cs" />
+    <Compile Include="Interop\ICONINFO.cs" />
+    <Compile Include="Interop\IContextMenu2.cs" />
+    <Compile Include="Interop\IDeskBand2.cs" />
+    <Compile Include="Interop\IEnumIDList.cs" />
+    <Compile Include="Interop\IEnumTravelLogEntry.cs" />
+    <Compile Include="Interop\IExtractImage.cs" />
+    <Compile Include="Interop\IFolderView.cs" />
+    <Compile Include="Interop\IOleCommandTarget.cs" />
+    <Compile Include="Interop\IPersistFolder2.cs" />
+    <Compile Include="Interop\IQueryInfo.cs" />
+    <Compile Include="Interop\ISharedBitmap.cs" />
+    <Compile Include="Interop\IShellBrowser.cs" />
+    <Compile Include="Interop\IShellFolder.cs" />
+    <Compile Include="Interop\IShellFolderView.cs" />
+    <Compile Include="Interop\IShellItem.cs" />
+    <Compile Include="Interop\IShellLinkW.cs" />
+    <Compile Include="Interop\IShellView.cs" />
+    <Compile Include="Interop\ITaskbarList.cs" />
+    <Compile Include="Interop\IThumbnailCache.cs" />
+    <Compile Include="Interop\ITravelLogEntry.cs" />
+    <Compile Include="Interop\ITravelLogStg.cs" />
+    <Compile Include="Interop\LocalThumbnailCache.cs" />
+    <Compile Include="Interop\LOGFONT.cs" />
+    <Compile Include="Interop\LVHITTESTINFO.cs" />
+    <Compile Include="Interop\LVITEM.cs" />
+    <Compile Include="Interop\MARGINS.cs" />
+    <Compile Include="Interop\MOUSEHOOKSTRUCT.cs" />
+    <Compile Include="Interop\MOUSEHOOKSTRUCTEX.cs" />
+    <Compile Include="Interop\NMCUSTOMDRAW.cs" />
+    <Compile Include="Interop\NMHDR.cs" />
+    <Compile Include="Interop\NMITEMACTIVATE.cs" />
+    <Compile Include="Interop\NMLISTVIEW.cs" />
+    <Compile Include="Interop\NMLVCUSTOMDRAW.cs" />
+    <Compile Include="Interop\NMLVDISPINFO.cs" />
+    <Compile Include="Interop\NMLVGETINFOTIP.cs" />
+    <Compile Include="Interop\NMLVKEYDOWN.cs" />
+    <Compile Include="Interop\NMLVODSTATECHANGE.cs" />
+    <Compile Include="Interop\NMTTDISPINFO.cs" />
+    <Compile Include="Interop\NMUPDOWN.cs" />
+    <Compile Include="Interop\PInvoke.cs" />
+    <Compile Include="Interop\REBARBANDINFO.cs" />
+    <Compile Include="Interop\RECT.cs" />
+    <Compile Include="Interop\RGBQUAD.cs" />
+    <Compile Include="Interop\SHELLEXECUTEINFO.cs" />
+    <Compile Include="Interop\ShellMethods.cs" />
+    <Compile Include="Interop\SHFILEINFO.cs" />
+    <Compile Include="Interop\SHFILEOPSTRUCT.cs" />
+    <Compile Include="Interop\SHFILEOPSTRUCT64.cs" />
+    <Compile Include="Interop\STRRET.cs" />
+    <Compile Include="Interop\STRRETinternal.cs" />
+    <Compile Include="Interop\TRACKMOUSEEVENT.cs" />
+    <Compile Include="Interop\TVHITTESTINFO.cs" />
+    <Compile Include="Interop\WTS_THUMBNAILID.cs" />
+    <Compile Include="Interop\_IDropTarget.cs" />
+    <Compile Include="Interop\_ShellLinkObject.cs" />
+    <Compile Include="ItemRightClickedEventArgs.cs" />
+    <Compile Include="ItemRightClickedEventHandler.cs" />
+    <Compile Include="LogData.cs" />
+    <Compile Include="MC.cs" />
+    <Compile Include="MemoForm.cs" />
+    <Compile Include="MenuGenre.cs" />
+    <Compile Include="MenuItemArguments.cs" />
+    <Compile Include="MenuItemEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MenuReorderedEventHandler.cs" />
+    <Compile Include="MenuTarget.cs" />
+    <Compile Include="MenuUtility.cs" />
+    <Compile Include="MessageForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NativeWindowControler.cs" />
+    <Compile Include="NavigationCompleteCallback.cs" />
+    <Compile Include="OptionsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PathData.cs" />
+    <Compile Include="PathList.cs" />
+    <Compile Include="Plugin.cs" />
+    <Compile Include="PluginAssembly.cs" />
+    <Compile Include="PluginInfoHasOption.cs" />
+    <Compile Include="PluginInformation.cs" />
+    <Compile Include="PluginKey.cs" />
+    <Compile Include="PluginManager.cs" />
+    <Compile Include="PluginOptionEventArgs.cs" />
+    <Compile Include="PluginOptionEventHandler.cs" />
+    <Compile Include="PluginView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PluginViewItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QEventArgs.cs" />
+    <Compile Include="QEventHandler.cs" />
+    <Compile Include="QMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="QTabCancelEventArgs.cs" />
+    <Compile Include="QTabCancelEventHandler.cs" />
+    <Compile Include="QTabControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="QTabItem.cs" />
+    <Compile Include="QTabItemBase.cs" />
+    <Compile Include="QTButtonBar.cs" />
+    <Compile Include="QTCoTaskBarClass.cs" />
+    <Compile Include="QTTabBarClass.cs" />
+    <Compile Include="QTUtility.cs" />
+    <Compile Include="QTUtility2.cs" />
+    <Compile Include="Resources_Image.cs" />
+    <Compile Include="Resources_String.cs" />
+    <Compile Include="StackDictionary%272.cs" />
+    <Compile Include="SubDirTipForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TabSwitchForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ThumbnailTooltipForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ToolbarRenderer.cs" />
+    <Compile Include="ToolStripEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ToolStripSearchBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ToolStripTrackBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="TxtEnc.cs" />
+    <Compile Include="UpdateChecker.cs" />
+    <Compile Include="UpDown.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="VistaMenuRenderer.cs" />
+    <Compile Include="WaitTimeoutCallback.cs" />
+    <Compile Include="WindowUtils.cs" />
+    <Compile Include="XPMenuRenderer.cs" />
+    <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BandObjectLib\BandObjectLib.csproj">
+      <Project>{BDB3B670-A17B-483E-954C-52FC2B6FF9D3}</Project>
+      <Name>BandObjectLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QTPluginLib\QTPluginLib.csproj">
+      <Project>{749BE612-0CAA-444E-8704-4CF9D9A6F653}</Project>
+      <Name>QTPluginLib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="SHDocVw">
+      <Guid>{EAB22AC0-30C1-11CF-A7EB-0000C05BAE0B}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>1</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources_Image.resx">
+      <DependentUpon>Resources_Image.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources_String.resx">
+      <DependentUpon>Resources_String.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
