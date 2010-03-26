@@ -51,6 +51,9 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\QTPluginLib.XML</DocumentationFile>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug %28No Reg%29|AnyCPU' ">
+    <OutputPath>bin\Debug %28No Reg%29\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />

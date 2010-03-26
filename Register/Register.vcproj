@@ -62,9 +62,67 @@
 				CommandLine="cd $(ProjectDir)&#x0D;&#x0A;call Register.bat $(ConfigurationName)&#x0D;&#x0A;IF EXIST &quot;$(DevEnvDir)\..\..\VC\bin\vcvars64.bat&quot; (&#x0D;&#x0A;vcvars64.bat&#x0D;&#x0A;cd $(ProjectDir)&#x0D;&#x0A;call Register.bat $(ConfigurationName)&#x0D;&#x0A;)&#x0D;&#x0A;"
 			/>
 		</Configuration>
+		<Configuration
+			Name="Debug (No Reg)|Win32"
+			ConfigurationType="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
 	</Configurations>
 	<References>
 	</References>
+	<Files>
+	</Files>
 	<Globals>
 	</Globals>
 </VisualStudioProject>

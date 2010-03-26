@@ -16,22 +16,30 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QTPluginLib", "QTPluginLib\
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug (No Reg)|Any CPU = Debug (No Reg)|Any CPU
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E36E7A44-8F1D-4CFF-A65A-C3207A17CDED}.Debug (No Reg)|Any CPU.ActiveCfg = Debug (No Reg)|Any CPU
+		{E36E7A44-8F1D-4CFF-A65A-C3207A17CDED}.Debug (No Reg)|Any CPU.Build.0 = Debug (No Reg)|Any CPU
 		{E36E7A44-8F1D-4CFF-A65A-C3207A17CDED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E36E7A44-8F1D-4CFF-A65A-C3207A17CDED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E36E7A44-8F1D-4CFF-A65A-C3207A17CDED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E36E7A44-8F1D-4CFF-A65A-C3207A17CDED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDB3B670-A17B-483E-954C-52FC2B6FF9D3}.Debug (No Reg)|Any CPU.ActiveCfg = Debug (No Reg)|Any CPU
+		{BDB3B670-A17B-483E-954C-52FC2B6FF9D3}.Debug (No Reg)|Any CPU.Build.0 = Debug (No Reg)|Any CPU
 		{BDB3B670-A17B-483E-954C-52FC2B6FF9D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BDB3B670-A17B-483E-954C-52FC2B6FF9D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDB3B670-A17B-483E-954C-52FC2B6FF9D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDB3B670-A17B-483E-954C-52FC2B6FF9D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E35915FE-ED91-4AE5-B566-F269CD854498}.Debug (No Reg)|Any CPU.ActiveCfg = Debug (No Reg)|Win32
 		{E35915FE-ED91-4AE5-B566-F269CD854498}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{E35915FE-ED91-4AE5-B566-F269CD854498}.Debug|Any CPU.Build.0 = Debug|Win32
 		{E35915FE-ED91-4AE5-B566-F269CD854498}.Release|Any CPU.ActiveCfg = Release|Win32
 		{E35915FE-ED91-4AE5-B566-F269CD854498}.Release|Any CPU.Build.0 = Release|Win32
+		{749BE612-0CAA-444E-8704-4CF9D9A6F653}.Debug (No Reg)|Any CPU.ActiveCfg = Debug (No Reg)|Any CPU
+		{749BE612-0CAA-444E-8704-4CF9D9A6F653}.Debug (No Reg)|Any CPU.Build.0 = Debug (No Reg)|Any CPU
 		{749BE612-0CAA-444E-8704-4CF9D9A6F653}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{749BE612-0CAA-444E-8704-4CF9D9A6F653}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{749BE612-0CAA-444E-8704-4CF9D9A6F653}.Release|Any CPU.ActiveCfg = Release|Any CPU
