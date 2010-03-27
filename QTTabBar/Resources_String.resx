@@ -146,7 +146,7 @@ Do you want to reassign?;Confirmation of reassignment</value>
     <value>https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&amp;business=qtquizo%40yahoo%2eco%2ejp&amp;item_name=Donation%20to%20Quizo%20%28%20QTTabBar%20%29&amp;no_shipping=0&amp;no_note=1&amp;tax=0&amp;currency_code=USD&amp;lc=US&amp;bn=PP%2dDonationsBF&amp;charset=UTF%2d8</value>
   </data>
   <data name="ShortcutKeys_ActionNames" xml:space="preserve">
-    <value>Go back ( Alt + Left );Go forward ( Alt + Right );Go back to start;Go forward to end;Select next tab;Select previous tab;Select first tab;Select last tab;Close current tab;Close all but current;Close left;Close right;Close window ( Alt + F4 );Undo close;Clone current tab;Open current folder in new window;Lock / unlock current;Lock / unlock all;Browse folder;Create new group;Open option dialog;Show toolbar menu;Show current tab menu;Show group menu ( button bar );Show recent folder menu ( button bar );Show user application menu ( button bar );Show / hide menu bar;Copy selected files path;Copy selected files name;Copy current folder path;Copy current folder name;Check MD5 of selected files;Bring window to topmost;Transparency +;Transparency -;Focus file list;Focus search bar (Vista);Focus search box ( button bar );Show Subfolder Tip Menu for selected folder;Send window to Task Tray</value>
+    <value>Go back ( Alt + Left );Go forward ( Alt + Right );Go back to start;Go forward to end;Select next tab;Select previous tab;Select first tab;Select last tab;Close current tab;Close all but current;Close left;Close right;Close window ( Alt + F4 );Undo close;Clone current tab;Open current folder in new window;Lock / unlock current;Lock / unlock all;Browse folder;Create new group;Open option dialog;Show toolbar menu;Show current tab menu;Show group menu ( button bar );Show recent folder menu ( button bar );Show user application menu ( button bar );Show / hide menu bar;Copy selected files path;Copy selected files name;Copy current folder path;Copy current folder name;Check MD5 of selected files;Bring window to topmost;Transparency +;Transparency -;Focus file list;Focus search bar (Vista);Focus search box ( button bar );Show Subfolder Tip Menu for selected folder;Send window to Task Tray;Focus the Tab Bar</value>
   </data>
   <data name="TaskBar_Titles" xml:space="preserve">
     <value>Groups;Undo closed;Applications</value>
@@ -217,7 +217,7 @@ Do you want to reassign?;Confirmation of reassignment</value>
     <value>Left;Right;Most right;Most left;Last activated;Up One Level;Close;Lock;Show menu;New window;Clone;Copy path;Properties; - ;Browse folder;Close all but current;Lock all;Restore last closed;Options;Close window;Clone current;multiple;New tab;Auto;Fixed;Limit tab width;Stretch;Tile;Real size;Left;Center;Vista;XP;Stretch on each band</value>
   </data>
   <data name="TabBar_Option_Buttons" xml:space="preserve">
-    <value>Clear;Up;Down;Add separator;Start Up;Plugin Option;Bg color;Txt color;Default;Set;Delete;Check now</value>
+    <value>Clear;Up;Down;Add separator;Start Up;Plugin Option;Bg color;Txt color;Default;Set;Delete;Check now;Copy to clipboard</value>
   </data>
   <data name="TabBar_NewGroup" xml:space="preserve">
     <value>Create New Group;Group name:;Add all tabs</value>
@@ -235,7 +235,11 @@ Do you want to reassign?;Confirmation of reassignment</value>
     <value>Close;Close right;Close left;Close all but this;Add to Group;Create new Group;Lock;Clone this;New window;Copy path;Properties;Tab history;Groups;Undo closed;Last activated;Recently opened files;Browse folder;Close all but current;Close Window;Options;Unlock;Add to Application menu : ;items;Cancel;Branches;Remove this item from menu;O&amp;pen containing folder;Tab label;Tab order;Name;Path;Active;Lock the Toolbars;Merge tabs of other windows</value>
   </data>
   <data name="TabBar_Option2" xml:space="preserve">
-    <value>On Folder Tree, open a new tab by wheel-click or click with shift key down (XP);Show tab switcher by Ctrl+Tab;Text shadow;Check for updates periodically;Remove original tab when creating new window;Indicate drive letter</value>
+    <value>On Folder Tree, open a new tab by wheel-click or click with shift key down (XP);Show tab switcher by Ctrl+Tab;Text shadow;Check for updates periodically;Remove original tab when creating new window;Indicate drive letter;Sound;Install a plugin;Options;Disable;Enable;Uninstall;About {0};If you uninstall this plugin, you must also uninstall 
+
+{0}
+
+Are you sure you want to do this?;Display file information below images</value>
   </data>
   <data name="ShortcutKeys_Groups" xml:space="preserve">
     <value>QTTabBar;Plugin;User commands</value>
