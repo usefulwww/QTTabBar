@@ -521,8 +521,14 @@ namespace QTTabBarLib {
 
         private IntPtr CallbackKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam) {
             if((nCode >= 0) && !this.NowModalDialogShown) {
-                if((((int)lParam) & -2147483648) == 0) {
-                    if(this.HandleKEYDOWN(wParam, (((int)lParam) & 0x40000000) == 0x40000000)) {
+
+                // This seems incredibly janky.  But it's the only way I could 
+                // get it not to overflow...  Casting it right to a uint throws
+                // an exception if the last bit is set.
+                uint flags = (uint)((long)lParam);
+
+                if((flags & 0x80000000) == 0) {
+                    if(this.HandleKEYDOWN(wParam, (flags & 0x40000000) == 0x40000000)) {
                         return new IntPtr(1);
                     }
                 }
