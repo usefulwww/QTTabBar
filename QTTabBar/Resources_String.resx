@@ -121,7 +121,7 @@
     <value>Desktop Search;Image file is invalid.\r\n\r\nPlease specify 432 x 40 px image file.;Search Results in;shortcut</value>
   </data>
   <data name="ButtonBar_Option" xml:space="preserve">
-    <value>&amp;Add;&amp;Remove;&amp;Close;&amp;Reset;&amp;Up;&amp;Down;&amp;Browse image...;Small icon;Large icon;&amp;Customize...;&amp;Lock menus;Re&amp;set image;Show text labels;Selective text;No text labels</value>
+    <value>&amp;Add;&amp;Remove;&amp;Close;&amp;Reset;&amp;Up;&amp;Down;&amp;Browse image...;Small icon;Large icon;&amp;Customize...;&amp;Lock menus;Re&amp;set image;Show text labels;Selective text;No text labels;Lock the size of the search box</value>
   </data>
   <data name="ShortcutKeys_MsgReassign" xml:space="preserve">
     <value>"{0}" is already assigned for "{1}".
