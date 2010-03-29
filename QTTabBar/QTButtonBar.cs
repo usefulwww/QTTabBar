@@ -1780,8 +1780,8 @@ namespace QTTabBarLib {
         }
 
         protected override void WndProc(ref System.Windows.Forms.Message m) {
-            int num3;
-            int num4;
+            int num3 = 0;
+            int num4 = 0;
             switch(m.Msg) {
                 case WM.INITMENUPOPUP:
                 case WM.DRAWITEM:
@@ -1985,7 +1985,7 @@ namespace QTTabBarLib {
                                     return;
                                 }
                         }
-                        return;
+                        break;
                     }
                 case WM.CONTEXTMENU:
                     if((((this.ddmrGroupButton == null) || !this.ddmrGroupButton.Visible) && ((this.ddmrUserAppButton == null) || !this.ddmrUserAppButton.Visible)) && ((this.ddmrRecentlyClosed == null) || !this.ddmrRecentlyClosed.Visible)) {
