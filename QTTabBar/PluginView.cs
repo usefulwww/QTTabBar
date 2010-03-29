@@ -316,7 +316,7 @@ namespace QTTabBarLib {
         }
 
         protected override void WndProc(ref Message m) {
-            if((m.Msg == 0x233) && (this.DragDropEx != null)) {
+            if((m.Msg == WM.DROPFILES) && (this.DragDropEx != null)) {
                 int num = (int)PInvoke.DragQueryFile(m.WParam, uint.MaxValue, null, 0);
                 try {
                     if(num > 0) {

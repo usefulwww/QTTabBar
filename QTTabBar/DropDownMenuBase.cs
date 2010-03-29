@@ -279,7 +279,7 @@ namespace QTTabBarLib {
         }
 
         public override bool PreProcessMessage(ref Message msg) {
-            if(msg.Msg == 0x100) {
+            if(msg.Msg == WM.KEYDOWN) {
                 Keys wParam = (Keys)((int)((long)msg.WParam));
                 if((wParam == Keys.Escape) && ((base.OwnerItem == null) || !(base.OwnerItem is ToolStripMenuItem))) {
                     base.Close(ToolStripDropDownCloseReason.Keyboard);
@@ -366,10 +366,10 @@ namespace QTTabBarLib {
                 }
                 int wParam = (int)((long)m.WParam);
                 switch(m.Msg) {
-                    case 0x100:
+                    case WM.KEYDOWN:
                         break;
 
-                    case 0x101:
+                    case WM.KEYUP:
                         if(this.fOnceKeyDown && ((wParam == 0x10) || (wParam == 0x11))) {
                             bool flag2 = false;
                             foreach(QMenuItem item4 in this.lstQMIResponds) {
@@ -407,13 +407,13 @@ namespace QTTabBarLib {
                         }
                         goto Label_07C2;
 
-                    case 0x200:
+                    case WM.MOUSEMOVE:
                         goto Label_0562;
 
-                    case 0x2a3:
+                    case WM.MOUSELEAVE:
                         goto Label_072E;
 
-                    case 15:
+                    case WM.PAINT:
                         if(this.fSuspendPainting) {
                             PInvoke.ValidateRect(m.HWnd, IntPtr.Zero);
                         }
@@ -422,7 +422,7 @@ namespace QTTabBarLib {
                         }
                         return;
 
-                    case 0x4a: {
+                    case WM.COPYDATA: {
                             QTTabBarLib.Interop.COPYDATASTRUCT copydatastruct = (QTTabBarLib.Interop.COPYDATASTRUCT)Marshal.PtrToStructure(m.LParam, typeof(QTTabBarLib.Interop.COPYDATASTRUCT));
                             ownerItem = base.GetItemAt(base.PointToClient(Control.MousePosition)) as QMenuItem;
                             if(!(copydatastruct.dwData == IntPtr.Zero)) {

@@ -1402,7 +1402,7 @@ namespace QTTabBarLib {
             int num;
             int msg = m.Msg;
             switch(msg) {
-                case 0x20:
+                case WM.SETCURSOR:
                     if(this.fSubDirShown || this.fNowTabContextMenuStripShowing) {
                         uint num4 = ((uint)((long)m.LParam)) & 0xffff;
                         uint num5 = (((uint)((long)m.LParam)) >> 0x10) & 0xffff;
@@ -1415,7 +1415,7 @@ namespace QTTabBarLib {
                     }
                     break;
 
-                case 0x21: {
+                case WM.MOUSEACTIVATE: {
                         if(!this.fSubDirShown || (this.TabIconMouseDown == null)) {
                             break;
                         }
@@ -1446,7 +1446,8 @@ namespace QTTabBarLib {
                         PInvoke.InvalidateRect(base.Handle, IntPtr.Zero, true);
                         return;
                     }
-                case 20:
+
+                case WM.ERASEBKGND:
                     if(!this.fRedrawSuspended) {
                         break;
                     }
@@ -1454,7 +1455,7 @@ namespace QTTabBarLib {
                     return;
 
                 default:
-                    if(msg != 0x7b) {
+                    if(msg != WM.CONTEXTMENU) {
                         break;
                     }
                     if((QTUtility2.GET_X_LPARAM(m.LParam) != -1) || (QTUtility2.GET_Y_LPARAM(m.LParam) != -1)) {

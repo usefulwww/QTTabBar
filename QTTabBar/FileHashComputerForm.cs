@@ -685,7 +685,7 @@ namespace QTTabBarLib {
         }
 
         protected override void WndProc(ref System.Windows.Forms.Message m) {
-            if(m.Msg == 0x233) {
+            if(m.Msg == WM.DROPFILES) {
                 this.AddDropped(m.WParam);
             }
             base.WndProc(ref m);

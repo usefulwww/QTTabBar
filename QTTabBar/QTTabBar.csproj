@@ -164,6 +164,7 @@
     <Compile Include="Interop\STRRETinternal.cs" />
     <Compile Include="Interop\TRACKMOUSEEVENT.cs" />
     <Compile Include="Interop\TVHITTESTINFO.cs" />
+    <Compile Include="Interop\WM.cs" />
     <Compile Include="Interop\WTS_THUMBNAILID.cs" />
     <Compile Include="Interop\_IDropTarget.cs" />
     <Compile Include="Interop\_ShellLinkObject.cs" />

@@ -413,7 +413,7 @@ namespace QTTabBarLib {
             if(nCode >= 0) {
                 BandObjectLib.MSG msg = (BandObjectLib.MSG)Marshal.PtrToStructure(lParam, typeof(BandObjectLib.MSG));
                 if(!QTUtility.IsVista) {
-                    if(msg.message == 0x10) {
+                    if(msg.message == WM.CLOSE) {
                         if(this.iSequential_WM_CLOSE > 0) {
                             Marshal.StructureToPtr(new BandObjectLib.MSG(), lParam, false);
                             return QTTabBarLib.Interop.PInvoke.CallNextHookEx(this.hHook_Msg, nCode, wParam, lParam);
@@ -425,7 +425,7 @@ namespace QTTabBarLib {
                     }
                 }
                 switch(msg.message) {
-                    case 0x200:
+                    case WM.MOUSEMOVE:
                         if(this.fTrackMouseEvent && (msg.hwnd == this.GetSysListView32())) {
                             this.fTrackMouseEvent = false;
                             QTTabBarLib.Interop.TRACKMOUSEEVENT structure = new QTTabBarLib.Interop.TRACKMOUSEEVENT();
@@ -436,20 +436,20 @@ namespace QTTabBarLib {
                         }
                         break;
 
-                    case 0x201:
-                    case 0x202:
+                    case WM.LBUTTONDOWN:
+                    case WM.LBUTTONUP:
                         if((!QTUtility.IsVista && !QTUtility.CheckConfig(13, 8)) && ((((int)((long)msg.wParam)) & 4) != 0)) {
                             this.HandleLBUTTON_Tree(msg, msg.message == 0x201);
                         }
                         break;
 
-                    case 0x203:
+                    case WM.LBUTTONDBLCLK:
                         if(this.HandleLBUTTONDBLCLK(msg)) {
                             Marshal.StructureToPtr(new BandObjectLib.MSG(), lParam, false);
                         }
                         break;
 
-                    case 520:
+                    case WM.MBUTTONUP:
                         if((QTUtility.CheckConfig(5, 1) || base.Explorer.Busy) || !this.HandleMBUTTONUP(msg)) {
                             if(!QTUtility.IsVista && !QTUtility.CheckConfig(13, 8)) {
                                 this.Handle_MButtonUp_Tree(msg);
@@ -459,7 +459,7 @@ namespace QTTabBarLib {
                         Marshal.StructureToPtr(new BandObjectLib.MSG(), lParam, false);
                         break;
 
-                    case 0x2a3:
+                    case WM.MOUSELEAVE:
                         if(msg.hwnd == this.GetSysListView32()) {
                             this.HideThumbnailTooltip(4);
                             if(this.timer_HoverThumbnail != null) {
@@ -472,7 +472,7 @@ namespace QTTabBarLib {
                         }
                         break;
 
-                    case 0x10:
+                    case WM.CLOSE:
                         if(!QTUtility.IsVista) {
                             if((msg.hwnd == this.ExplorerHandle) && this.HandleCLOSE(msg.lParam)) {
                                 Marshal.StructureToPtr(new BandObjectLib.MSG(), lParam, false);
@@ -498,7 +498,7 @@ namespace QTTabBarLib {
                         }
                         break;
 
-                    case 0x111:
+                    case WM.COMMAND:
                         if(!QTUtility.IsVista) {
                             int num = ((int)((long)msg.wParam)) & 0xffff;
                             if(num == 0xa021) {
@@ -2258,7 +2258,7 @@ namespace QTTabBarLib {
         }
 
         private bool explorerControler_MessageCaptured(ref System.Windows.Forms.Message msg) {
-            if(msg.Msg == 0x10) {
+            if(msg.Msg == WM.CLOSE) {
                 if(this.iSequential_WM_CLOSE > 0) {
                     return true;
                 }
@@ -2268,9 +2268,9 @@ namespace QTTabBarLib {
                 this.iSequential_WM_CLOSE = 0;
             }
             int num6 = msg.Msg;
-            if(num6 <= 0xa4) {
+            if(num6 <= WM.NCRBUTTONDOWN) {
                 switch(num6) {
-                    case 0x1a:
+                    case WM.SETTINGCHANGE:
                         if(!QTUtility.IsVista) {
                             QTUtility.GetShellClickMode();
                         }
@@ -2280,20 +2280,20 @@ namespace QTTabBarLib {
                         }
                         goto Label_05CE;
 
-                    case 0xa1:
-                    case 0xa4:
+                    case WM.NCLBUTTONDOWN:
+                    case WM.NCRBUTTONDOWN:
                         goto Label_05B1;
 
-                    case 3:
-                    case 5:
+                    case WM.MOVE:
+                    case WM.SIZE:
                         this.HideThumbnailTooltip(0);
                         this.HideSubDirTip(0);
                         goto Label_05CE;
 
-                    case 4:
+                    case 4: // Uh....  There is no 0x04!
                         goto Label_05CE;
 
-                    case 6: {
+                    case WM.ACTIVATE: {
                             int num3 = ((int)msg.WParam) & 0xffff;
                             if(num3 > 0) {
                                 QTUtility.RegisterPrimaryInstance(this.ExplorerHandle, this);
@@ -2316,17 +2316,17 @@ namespace QTTabBarLib {
                             }
                             goto Label_05CE;
                         }
-                    case 0x10:
+                    case WM.CLOSE:
                         return this.HandleCLOSE(msg.LParam);
                 }
             }
-            else if(num6 <= 0x112) {
+            else if(num6 <= WM.SYSCOMMAND) {
                 switch(num6) {
-                    case 0xa7:
-                    case 0xab:
+                    case WM.NCMBUTTONDOWN:
+                    case WM.NCXBUTTONDOWN:
                         goto Label_05B1;
 
-                    case 0x112:
+                    case WM.SYSCOMMAND:
                         if((((int)msg.WParam) & 0xfff0) == 0xf020) {
                             if(this.pluginManager != null) {
                                 this.pluginManager.OnExplorerStateChanged(ExplorerWindowActions.Minimized);
@@ -2364,13 +2364,13 @@ namespace QTTabBarLib {
             }
             else {
                 switch(num6) {
-                    case 0x218:
+                    case WM.POWERBROADCAST:
                         if(((int)msg.WParam) == 7) {
                             this.OnAwake();
                         }
                         goto Label_05CE;
 
-                    case 0x219:
+                    case WM.DEVICECHANGE:
                         if(((int)msg.WParam) == 0x8004) {
                             DEV_BROADCAST_HDR dev_broadcast_hdr = (DEV_BROADCAST_HDR)Marshal.PtrToStructure(msg.LParam, typeof(DEV_BROADCAST_HDR));
                             if(dev_broadcast_hdr.dbch_devicetype == 2) {
@@ -2405,7 +2405,7 @@ namespace QTTabBarLib {
                         }
                         goto Label_05CE;
 
-                    case 0x210:
+                    case WM.PARENTNOTIFY:
                         switch((((int)msg.WParam) & 0xffff)) {
                             case 0x207:
                             case 0x20b:
@@ -2416,7 +2416,7 @@ namespace QTTabBarLib {
                         }
                         goto Label_05CE;
                 }
-                if(num6 == 0x319) {
+                if(num6 == WM.APPCOMMAND) {
                     int num = ((((int)((long)msg.LParam)) >> 0x10) & 0xffff) & -61441;
                     int num2 = ((((int)((long)msg.LParam)) >> 0x10) & 0xffff) & 0xf000;
                     bool flag = (num2 != 0x8000) || QTUtility.CheckConfig(5, 0x20);
@@ -5564,7 +5564,7 @@ namespace QTTabBarLib {
         }
 
         private bool rebarControler_MessageCaptured(ref System.Windows.Forms.Message m) {
-            if((m.Msg == 20) && (QTUtility.CheckConfig(7, 4) || QTUtility.CheckConfig(11, 0x80))) {
+            if((m.Msg == WM.ERASEBKGND) && (QTUtility.CheckConfig(7, 4) || QTUtility.CheckConfig(11, 0x80))) {
                 bool flag = false;
                 using(Graphics graphics = Graphics.FromHdc(m.WParam)) {
                     QTTabBarLib.Interop.RECT rect;
@@ -6041,12 +6041,12 @@ namespace QTTabBarLib {
 
         private bool shellViewControler_MessageCaptured(ref System.Windows.Forms.Message msg) {
             IntPtr ptr;
-            if(msg.Msg == 2) {
+            if(msg.Msg == WM.DESTROY) { // That doesn't look right...
                 this.HandleF5();
                 return false;
             }
-            if(msg.Msg != 0x4e) {
-                if(msg.Msg == 0x21) {
+            if(msg.Msg != WM.NOTIFY) {
+                if(msg.Msg == WM.MOUSEACTIVATE) {
                     if(((this.subDirTip != null) && this.subDirTip.MenuIsShowing) || ((this.subDirTip_Tab != null) && this.subDirTip_Tab.MenuIsShowing)) {
                         IntPtr optionalHandle = this.shellViewControler.OptionalHandle;
                         if(1 == ((int)QTTabBarLib.Interop.PInvoke.SendMessage(optionalHandle, 0x1032, IntPtr.Zero, IntPtr.Zero))) {
@@ -6068,10 +6068,10 @@ namespace QTTabBarLib {
                         }
                     }
                 }
-                else if(msg.Msg == 0x211) {
+                else if(msg.Msg == WM.ENTERMENULOOP) {
                     this.fEnteredMenuLoop = true;
                 }
-                else if(msg.Msg == 530) {
+                else if(msg.Msg == WM.EXITMENULOOP) {
                     this.fEnteredMenuLoop = false;
                 }
                 goto Label_0D0B;
@@ -7346,7 +7346,7 @@ namespace QTTabBarLib {
         }
 
         public override int TranslateAcceleratorIO(ref BandObjectLib.MSG msg) {
-            if(msg.message == 0x100) {
+            if(msg.message == WM.KEYDOWN) {
                 Keys wParam = (Keys)((int)((long)msg.wParam));
                 bool flag = (((int)((long)msg.lParam)) & 0x40000000) != 0;
                 switch(wParam) {
@@ -7428,8 +7428,8 @@ namespace QTTabBarLib {
                 return false;
             }
             switch(m.Msg) {
-                case 0x201:
-                case 0x202: {
+                case WM.LBUTTONDOWN:
+                case WM.LBUTTONUP: {
                         BandObjectLib.POINT structure = new BandObjectLib.POINT();
                         structure.x = QTUtility2.GET_X_LPARAM(m.LParam);
                         structure.y = QTUtility2.GET_Y_LPARAM(m.LParam);
@@ -7472,18 +7472,18 @@ namespace QTTabBarLib {
                         }
                         break;
                     }
-                case 0x203:
+                case WM.LBUTTONDBLCLK:
                     m.Result = IntPtr.Zero;
                     return true;
 
-                case 0x401:
+                case WM.USER+1:
                     if(((((int)((long)m.LParam)) >> 0x10) & 0xffff) == 1) {
                         goto Label_0427;
                     }
                     m.Result = (IntPtr)1;
                     return true;
 
-                case 0x21:
+                case WM.MOUSEACTIVATE:
                     if(this.buttonNavHistoryMenu.DropDown.Visible) {
                         m.Result = (IntPtr)4;
                         this.buttonNavHistoryMenu.DropDown.Close(ToolStripDropDownCloseReason.AppClicked);
@@ -7491,7 +7491,7 @@ namespace QTTabBarLib {
                     }
                     goto Label_0427;
 
-                case 0x4e: {
+                case WM.NOTIFY: {
                         QTTabBarLib.Interop.NMHDR nmhdr = (QTTabBarLib.Interop.NMHDR)Marshal.PtrToStructure(m.LParam, typeof(QTTabBarLib.Interop.NMHDR));
                         if(nmhdr.code != -530) {
                             goto Label_0427;
@@ -7884,21 +7884,21 @@ namespace QTTabBarLib {
         protected override void WndProc(ref System.Windows.Forms.Message m) {
             bool flag;
             switch(m.Msg) {
-                case 0x8000:
+                case WM.APP:
                     m.Result = this.GetSysListView32();
                     return;
 
-                case 0x8001:
+                case WM.APP + 1:
                     this.NowModalDialogShown = m.WParam != IntPtr.Zero;
                     return;
 
-                case 0x233:
+                case WM.DROPFILES:
                     this.HandleFileDrop(m.WParam);
                     break;
 
-                case 0x2b:
-                case 0x2c:
-                case 0x117:
+                case WM.DRAWITEM:
+                case WM.MEASUREITEM:
+                case WM.INITMENUPOPUP:
                     if((this.iContextMenu2 != null) && (m.HWnd == base.Handle)) {
                         try {
                             this.iContextMenu2.HandleMenuMsg(m.Msg, m.WParam, m.LParam);
@@ -7909,7 +7909,7 @@ namespace QTTabBarLib {
                     }
                     break;
             }
-            if(m.Msg != 0x4a) {
+            if(m.Msg != WM.COPYDATA) {
                 base.WndProc(ref m);
                 return;
             }

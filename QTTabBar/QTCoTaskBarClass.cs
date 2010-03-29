@@ -214,7 +214,7 @@ namespace QTTabBarLib {
                     return PInvoke.CallNextHookEx(this.hHook_MsgDesktop, nCode, wParam, lParam);
                 }
                 switch(msg.message) {
-                    case 520:
+                    case WM.MBUTTONUP:
                         if(!QTUtility.CheckConfig(5, 1)) {
                             int index = PInvoke.ListView_HitTest(this.hwndListView, msg.lParam);
                             if((index != -1) && this.HandleTabFolderActions(index, Control.ModifierKeys, false)) {
@@ -223,7 +223,7 @@ namespace QTTabBarLib {
                         }
                         break;
 
-                    case 0x20a: {
+                    case WM.MOUSEWHEEL: {
                             IntPtr handle = PInvoke.WindowFromPoint(new Point(QTUtility2.GET_X_LPARAM(msg.lParam), QTUtility2.GET_Y_LPARAM(msg.lParam)));
                             if((handle != IntPtr.Zero) && (handle != msg.hwnd)) {
                                 Control control = Control.FromHandle(handle);
@@ -236,11 +236,11 @@ namespace QTTabBarLib {
                             }
                             break;
                         }
-                    case 0x8064:
+                    case WM.APP + 100:
                         this.GetFolderView();
                         break;
 
-                    case 0x203:
+                    case WM.LBUTTONDBLCLK:
                         if(((this.ConfigValues[1] & 4) == 0) && (PInvoke.ListView_HitTest(this.hwndListView, msg.lParam) == -1)) {
                             QTUtility2.SendCOPYDATASTRUCT(this.ThisHandle, (IntPtr)0xff, "fromdesktop", msg.lParam);
                         }
@@ -254,14 +254,14 @@ namespace QTTabBarLib {
             if(nCode >= 0) {
                 BandObjectLib.MSG msg = (BandObjectLib.MSG)Marshal.PtrToStructure(lParam, typeof(BandObjectLib.MSG));
                 switch(msg.message) {
-                    case 0xa3:
+                    case WM.NCLBUTTONDBLCLK:
                         if(((this.ConfigValues[1] & 8) == 0) && (msg.hwnd == this.hwndShellTray)) {
                             this.OnDesktopDblClicked(Control.MousePosition);
                             Marshal.StructureToPtr(new BandObjectLib.MSG(), lParam, false);
                         }
                         break;
 
-                    case 0x20a: {
+                    case WM.MOUSEWHEEL: {
                             IntPtr handle = PInvoke.WindowFromPoint(new Point(QTUtility2.GET_X_LPARAM(msg.lParam), QTUtility2.GET_Y_LPARAM(msg.lParam)));
                             if((handle != IntPtr.Zero) && (handle != msg.hwnd)) {
                                 Control control = Control.FromHandle(handle);
@@ -1262,7 +1262,7 @@ namespace QTTabBarLib {
             this.hHook_MsgDesktop = PInvoke.SetWindowsHookEx(3, this.hookProc_Msg_Desktop, IntPtr.Zero, windowThreadProcessId);
             this.hHook_MsgShell_TrayWnd = PInvoke.SetWindowsHookEx(3, this.hookProc_Msg_ShellTrayWnd, IntPtr.Zero, dwThreadId);
             this.hHook_KeyDesktop = PInvoke.SetWindowsHookEx(2, this.hookProc_Keys_Desktop, IntPtr.Zero, windowThreadProcessId);
-            PInvoke.PostMessage(this.hwndListView, 0x8064, IntPtr.Zero, IntPtr.Zero);
+            PInvoke.PostMessage(this.hwndListView, WM.APP + 100, IntPtr.Zero, IntPtr.Zero);
             IntPtr windowLongPtr = PInvoke.GetWindowLongPtr(this.hwndListView, -8);
             if(windowLongPtr != IntPtr.Zero) {
                 this.shellViewControler = new NativeWindowControler(windowLongPtr);
@@ -1769,7 +1769,7 @@ namespace QTTabBarLib {
 
         private bool shellViewControler_MessageCaptured(ref Message msg) {
             QTTabBarLib.Interop.NMHDR nmhdr;
-            if(msg.Msg == 0x4e) {
+            if(msg.Msg == WM.NOTIFY) {
                 nmhdr = (QTTabBarLib.Interop.NMHDR)Marshal.PtrToStructure(msg.LParam, typeof(QTTabBarLib.Interop.NMHDR));
                 if(nmhdr.hwndFrom != this.shellViewControler.OptionalHandle) {
                     return false;
@@ -2175,8 +2175,8 @@ namespace QTTabBarLib {
         }
 
         protected override void WndProc(ref Message m) {
-            if(m.Msg != 0x4a) {
-                if(((m.Msg == 0x117) || (m.Msg == 0x2b)) || (m.Msg == 0x2c)) {
+            if(m.Msg != WM.COPYDATA) {
+                if(((m.Msg == WM.INITMENUPOPUP) || (m.Msg == WM.DRAWITEM)) || (m.Msg == WM.MEASUREITEM)) {
                     uint num3;
                     uint num4;
                     if(this.fContextmenuedOnMain_Grp) {
@@ -2197,7 +2197,7 @@ namespace QTTabBarLib {
                         return;
                     }
                 }
-                else if(((m.Msg == 0x21) && ((this.ConfigValues[2] & 0x10) != 0)) && ((((((int)((long)m.LParam)) >> 0x10) & 0xffff) == 0x201) && this.contextMenu.Visible)) {
+                else if(((m.Msg == WM.MOUSEACTIVATE) && ((this.ConfigValues[2] & 0x10) != 0)) && ((((((int)((long)m.LParam)) >> 0x10) & 0xffff) == 0x201) && this.contextMenu.Visible)) {
                     this.contextMenu.Close(ToolStripDropDownCloseReason.AppClicked);
                     m.Result = (IntPtr)4;
                     return;

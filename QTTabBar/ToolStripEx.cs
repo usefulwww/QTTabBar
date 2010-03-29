@@ -16,6 +16,7 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace QTTabBarLib {
+    using QTTabBarLib.Interop;
     using System;
     using System.Reflection;
     using System.Runtime.CompilerServices;
@@ -57,7 +58,7 @@ namespace QTTabBarLib {
         }
 
         protected override void WndProc(ref Message m) {
-            if(m.Msg == 0x21) {
+            if(m.Msg == WM.MOUSEACTIVATE) {
                 this.fMA = false;
                 if(0x201 == QTUtility2.GET_Y_LPARAM(m.LParam)) {
                     base.WndProc(ref m);
@@ -67,7 +68,7 @@ namespace QTTabBarLib {
                     return;
                 }
             }
-            else if(m.Msg == 0x202) {
+            else if(m.Msg == WM.LBUTTONUP) {
                 if(this.fMA && (this.MouseActivated != null)) {
                     base.WndProc(ref m);
                     this.MouseActivated(this, EventArgs.Empty);

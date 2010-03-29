@@ -43,7 +43,7 @@ namespace QTTabBarLib {
         }
 
         protected override void WndProc(ref Message m) {
-            if(((this.nativeUpDown != null) && (m.Msg == 0x4e)) && (this.ValueChanged != null)) {
+            if(((this.nativeUpDown != null) && (m.Msg == WM.NOTIFY)) && (this.ValueChanged != null)) {
                 QTTabBarLib.Interop.NMHDR nmhdr = (QTTabBarLib.Interop.NMHDR)Marshal.PtrToStructure(m.LParam, typeof(QTTabBarLib.Interop.NMHDR));
                 if((nmhdr.code == -722) && (nmhdr.hwndFrom == this.nativeUpDown.Handle)) {
                     NMUPDOWN nmupdown = (NMUPDOWN)Marshal.PtrToStructure(m.LParam, typeof(NMUPDOWN));
@@ -95,7 +95,7 @@ namespace QTTabBarLib {
             protected override void WndProc(ref Message m) {
                 if(VisualStyleRenderer.IsSupported) {
                     switch(m.Msg) {
-                        case 0x200: {
+                        case WM.MOUSEMOVE: {
                                 if(this.fTrackMouseEvent) {
                                     this.fTrackMouseEvent = false;
                                     PInvoke.TrackMouseEvent(ref this.TME);
@@ -112,7 +112,7 @@ namespace QTTabBarLib {
                                 PInvoke.InvalidateRect(m.HWnd, IntPtr.Zero, false);
                                 break;
                             }
-                        case 0x201:
+                        case WM.LBUTTONDOWN:
                             if((((int)((long)m.LParam)) & 0xffff) >= 0x13) {
                                 this.stateUP = 2;
                                 break;
@@ -120,7 +120,7 @@ namespace QTTabBarLib {
                             this.stateDown = 2;
                             break;
 
-                        case 0x202:
+                        case WM.LBUTTONUP:
                             if((((int)((long)m.LParam)) & 0xffff) >= 0x13) {
                                 this.stateUP = 1;
                                 break;
@@ -128,13 +128,13 @@ namespace QTTabBarLib {
                             this.stateDown = 1;
                             break;
 
-                        case 0x2a3:
+                        case WM.MOUSELEAVE:
                             this.stateDown = this.stateUP = 0;
                             this.fTrackMouseEvent = true;
                             PInvoke.InvalidateRect(m.HWnd, IntPtr.Zero, false);
                             break;
 
-                        case 15: {
+                        case WM.PAINT: {
                                 if(this.rendererDown_Normal == null) {
                                     this.InitializeRenderer();
                                 }

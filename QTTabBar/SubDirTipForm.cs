@@ -1186,13 +1186,13 @@ namespace QTTabBarLib {
         }
 
         protected override void WndProc(ref Message m) {
-            if(m.Msg == 0x21) {
+            if(m.Msg == WM.MOUSEACTIVATE) {
                 if(((((int)((long)m.LParam)) >> 0x10) & 0xffff) == 0x201) {
                     this.OnClick(EventArgs.Empty);
                 }
                 m.Result = (IntPtr)4;
             }
-            else if(((m.Msg == 0x117) || (m.Msg == 0x2b)) || (m.Msg == 0x2c)) {
+            else if(((m.Msg == WM.INITMENUPOPUP) || (m.Msg == WM.DRAWITEM)) || (m.Msg == WM.MEASUREITEM)) {
                 if(this.hwndMessageReflect != IntPtr.Zero) {
                     PInvoke.SendMessage(this.hwndMessageReflect, (uint)m.Msg, m.WParam, m.LParam);
                 }

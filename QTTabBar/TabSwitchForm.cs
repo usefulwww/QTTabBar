@@ -422,7 +422,7 @@ namespace QTTabBarLib {
 
         protected override void WndProc(ref Message m) {
             switch(m.Msg) {
-                case 0x202:
+                case WM.LBUTTONUP:
                     if(this.iHoveredIndex != -1) {
                         Point pt = new Point(QTUtility2.GET_X_LPARAM(m.LParam), QTUtility2.GET_Y_LPARAM(m.LParam));
                         Dictionary<int, Rectangle> dictionary2 = new Dictionary<int, Rectangle>(this.dicItemRcts);
@@ -438,11 +438,11 @@ namespace QTTabBarLib {
                     }
                     goto Label_01D5;
 
-                case 0x31e:
+                case WM.DWMCOMPOSITIONCHANGED:
                     this.SetCompositionState();
                     goto Label_01D5;
 
-                case 0x21:
+                case WM.MOUSEACTIVATE:
                     if((QTUtility2.GET_Y_LPARAM(m.LParam) == 0x201) && (this.iHoveredIndex != -1)) {
                         Point point = base.PointToClient(Control.MousePosition);
                         Dictionary<int, Rectangle> dictionary = new Dictionary<int, Rectangle>(this.dicItemRcts);
@@ -458,7 +458,7 @@ namespace QTTabBarLib {
                     }
                     break;
 
-                case 0x84:
+                case WM.NCHITTEST:
                     base.WndProc(ref m);
                     switch(((int)m.Result)) {
                         case 10:

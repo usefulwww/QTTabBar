@@ -1556,7 +1556,7 @@ namespace QTTabBarLib {
         }
 
         public override int TranslateAcceleratorIO(ref BandObjectLib.MSG msg) {
-            if(msg.message == 0x100) {
+            if(msg.message == WM.KEYDOWN) {
                 Keys wParam = (Keys)((int)((long)msg.wParam));
                 switch(wParam) {
                     case Keys.Left:
@@ -1783,9 +1783,9 @@ namespace QTTabBarLib {
             int num3;
             int num4;
             switch(m.Msg) {
-                case 0x117:
-                case 0x2b:
-                case 0x2c:
+                case WM.INITMENUPOPUP:
+                case WM.DRAWITEM:
+                case WM.MEASUREITEM:
                     if((this.iContextMenu2 == null) || !(m.HWnd == base.Handle)) {
                         goto Label_08F8;
                     }
@@ -1796,15 +1796,15 @@ namespace QTTabBarLib {
                     }
                     return;
 
-                case 0x233:
+                case WM.DROPFILES:
                     QTTabBarLib.Interop.PInvoke.SendMessage(QTUtility.instanceManager.GetTabBarHandle(this.ExplorerHandle), 0x233, m.WParam, IntPtr.Zero);
                     return;
 
-                case 0x8000:
+                case WM.APP:
                     m.Result = this.toolStrip.IsHandleCreated ? this.toolStrip.Handle : IntPtr.Zero;
                     return;
 
-                case 0x4a: {
+                case WM.COPYDATA: {
                         QTTabBarLib.Interop.COPYDATASTRUCT copydatastruct = (QTTabBarLib.Interop.COPYDATASTRUCT)Marshal.PtrToStructure(m.LParam, typeof(QTTabBarLib.Interop.COPYDATASTRUCT));
                         switch(((int)m.WParam)) {
                             case 1: {
@@ -1970,7 +1970,7 @@ namespace QTTabBarLib {
                                 }
                                 return;
 
-                            case 0x10: {
+                            case 16: {
                                     if(this.searchBox == null) {
                                         m.Result = (IntPtr)1;
                                         return;
@@ -1987,7 +1987,7 @@ namespace QTTabBarLib {
                         }
                         return;
                     }
-                case 0x7b:
+                case WM.CONTEXTMENU:
                     if((((this.ddmrGroupButton == null) || !this.ddmrGroupButton.Visible) && ((this.ddmrUserAppButton == null) || !this.ddmrUserAppButton.Visible)) && ((this.ddmrRecentlyClosed == null) || !this.ddmrRecentlyClosed.Visible)) {
                         Point p = new Point(QTUtility2.GET_X_LPARAM(m.LParam), QTUtility2.GET_Y_LPARAM(m.LParam));
                         if((p.X == -1) && (p.Y == -1)) {

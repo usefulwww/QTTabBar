@@ -664,7 +664,7 @@ namespace QTTabBarLib {
             if(this.fCancelClosingAncestors) {
                 return false;
             }
-            if(msg.Msg == 0x100) {
+            if(msg.Msg == WM.KEYDOWN) {
                 Keys wParam = (Keys)((int)((long)msg.WParam));
                 switch(wParam) {
                     case Keys.Up:
@@ -849,16 +849,16 @@ namespace QTTabBarLib {
         }
 
         protected override void WndProc(ref Message m) {
-            if((this.MessageParent != IntPtr.Zero) && (((m.Msg == 0x117) || (m.Msg == 0x2b)) || (m.Msg == 0x2c))) {
+            if((this.MessageParent != IntPtr.Zero) && (((m.Msg == WM.INITMENUPOPUP) || (m.Msg == WM.DRAWITEM)) || (m.Msg == WM.MEASUREITEM))) {
                 PInvoke.SendMessage(this.MessageParent, (uint)m.Msg, m.WParam, m.LParam);
             }
             else {
-                if(m.Msg == 0x2a3) {
+                if(m.Msg == WM.MOUSELEAVE) {
                     if(this.fCancelClosingAncestors) {
                         return;
                     }
                 }
-                else if(m.Msg == 0x200) {
+                else if(m.Msg == WM.MOUSEFIRST) {
                     if(this.fSuppressMouseMove_Scroll) {
                         m.Result = IntPtr.Zero;
                         return;
