@@ -112,6 +112,7 @@ namespace QTTabBarLib {
         private int navBtnsFlag;
         private bool NavigatedByCode;
         private static NotifyIcon notifyIcon;
+        private bool NowNavigating;
         private bool NowInTravelLog;
         private bool NowModalDialogShown;
         private bool NowOpenedByGroupOpener;
@@ -335,6 +336,48 @@ namespace QTTabBarLib {
                 base.Invoke(new FormMethodInvoker(this.CallbackMultiPath), new object[] { result.AsyncState });
             }
         }
+
+        // This function is a standin for BeforeNavigate2.  On 7, the path is
+        // empty and cancel has no effect.
+        private void BeforeNavigate(string path, ref bool cancel) {
+            if(this.NowNavigating || !this.IsShown) {
+                return;
+            }
+            this.NowNavigating = true;
+            this.HideThumbnailTooltip(7);
+            this.HideSubDirTip(7);
+            this.HideSubDirTip_Tab_Menu();
+            if(this.timer_HoverThumbnail != null) {
+                this.timer_HoverThumbnail.Enabled = false;
+            }
+            this.NowTabDragging = false;
+            if(!this.NavigatedByCode) {
+                // TODO this won't work...
+                this.SaveSelectedItems(this.CurrentTab);
+                if((!string.IsNullOrEmpty(path) &&
+                        this.CurrentTab.TabLocked &&
+                        !QTUtility2.IsShellPathButNotFileSystem(this.CurrentTab.CurrentPath)) &&
+                        !QTUtility2.IsShellPathButNotFileSystem(path)) {
+                    this.CloneTabButton(this.CurrentTab, path, true, this.tabControl1.SelectedIndex + 1);
+                    cancel = true;
+                    return;
+                }
+            }
+            if(this.NowInTravelLog) {
+                if(this.CurrentTravelLogIndex > 0) {
+                    this.CurrentTravelLogIndex--;
+
+                    // TODO ...
+                    if(!IsSpecialFolderNeedsToTravel(path)) {
+                        this.NavigateBackToTheFuture();
+                    }
+                }
+                else {
+                    this.NowInTravelLog = false;
+                }
+            }
+        }
+        
 
         private void CallBackDoOpenGroups(object obj, IntPtr ptr) {
             string[] strArray = (string[])obj;
@@ -1893,6 +1936,121 @@ namespace QTTabBarLib {
             return false;
         }
 
+        // This function is either called by BeforeNavigate2 (on XP and Vista)
+        // or NavigateComplete2 (on 7)
+        private void DoFirstNavigation(bool before, string path) {
+
+            if((QTUtility.TMPPathList.Count > 0) || (QTUtility.TMPIDLList.Count > 0)) {
+                // Loads tmp paths?
+                foreach(string str2 in QTUtility.TMPPathList) {
+                    if(!string.Equals(str2, path, StringComparison.OrdinalIgnoreCase)) {
+                        using(IDLWrapper wrapper = new IDLWrapper(str2)) {
+                            if(wrapper.Available) {
+                                this.CreateNewTab(wrapper);
+                            }
+                            continue;
+                        }
+                    }
+                }
+                foreach(byte[] buffer in QTUtility.TMPIDLList) {
+                    if(QTUtility.TMPTargetIDL != buffer) {
+                        using(IDLWrapper wrapper2 = new IDLWrapper(buffer)) {
+                            this.OpenNewTab(wrapper2, true, false);
+                            continue;
+                        }
+                    }
+                    QTUtility.TMPTargetIDL = null;
+                }
+                QTUtility2.InitializeTemporaryPaths();
+                this.AddStartUpTabs(string.Empty, path);
+                this.InitializeOpenedWindow();
+            }
+            else if(QTUtility.CreateWindowTMPGroup.Length != 0) {
+                // Loads tmp group?
+                string createWindowTMPGroup = QTUtility.CreateWindowTMPGroup;
+                QTUtility.CreateWindowTMPGroup = string.Empty;
+                this.CurrentTab.CurrentPath = path;
+                this.NowOpenedByGroupOpener = true;
+                this.OpenGroup(createWindowTMPGroup, false);
+                this.AddStartUpTabs(createWindowTMPGroup, path);
+                this.InitializeOpenedWindow();
+            }
+            else if(QTUtility.CheckConfig(10, 0x40) || (QTUtility.CreateWindowTMPPath == path)) {
+                // What config is that?
+                QTUtility.CreateWindowTMPPath = string.Empty;
+                this.AddStartUpTabs(string.Empty, path);
+                this.InitializeOpenedWindow();
+            }
+            else if((path.StartsWith(QTUtility.ResMisc[0]) || (path.EndsWith(QTUtility.ResMisc[0]) && QTUtility2.IsShellPathButNotFileSystem(path))) || string.Equals(path, QTUtility.PATH_SEARCHFOLDER, StringComparison.OrdinalIgnoreCase)) {
+                this.InitializeOpenedWindow();
+            }
+            else {
+                for(int i = 0; i < QTUtility.NoCapturePathsList.Count; i++) {
+                    if(string.Equals(QTUtility.NoCapturePathsList[i], path, StringComparison.OrdinalIgnoreCase)) {
+                        this.InitializeOpenedWindow();
+                        return;
+                    }
+                }
+                if(QTUtility.InstancesCount > 1) {
+                    if((Control.ModifierKeys == Keys.Control) || !QTUtility.instanceManager.NextInstanceExists()) {
+                        this.InitializeOpenedWindow();
+                        this.AddStartUpTabs(string.Empty, path);
+                    }
+                    else {
+                        if(QTUtility.IsVista) {
+                            QTTabBarLib.Interop.PInvoke.SetWindowPos(this.ExplorerHandle, IntPtr.Zero, 0, 0, 0, 0, 0x259f);
+                        }
+                        NavigateOnOldWindow(path);
+                        this.fNowQuitting = true;
+                        if(QTUtility.IsVista) {
+                            base.Explorer.Quit();
+                        }
+                        else {
+                            WindowUtils.CloseExplorer(this.ExplorerHandle, 0);
+                        }
+                    }
+                }
+                else {
+                    if(!QTUtility.CheckConfig(6, 0x10)) {
+                        uint num2;
+                        uint num3;
+                        QTTabBarLib.Interop.PInvoke.GetWindowThreadProcessId(base.Handle, out num2);
+                        QTTabBarLib.Interop.PInvoke.GetWindowThreadProcessId(WindowUtils.GetShellTrayWnd(), out num3);
+                        if(((num2 != num3) && (num2 != 0)) && (num3 != 0)) {
+                            string nameToSelectFromCommandLineArg = GetNameToSelectFromCommandLineArg();
+                            if(!WindowUtils.IsExplorerProcessSeparated()) {
+                                bool flag = false;
+                                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+                                    IntPtr hWnd = QTUtility2.ReadRegHandle("Handle", key);
+                                    if(QTTabBarLib.Interop.PInvoke.IsWindow(hWnd)) {
+                                        string strMsg = path + ((nameToSelectFromCommandLineArg.Length > 0) ? (";" + nameToSelectFromCommandLineArg) : string.Empty);
+                                        QTUtility2.SendCOPYDATASTRUCT(hWnd, new IntPtr(15), strMsg, IntPtr.Zero);
+                                        flag = true;
+                                    }
+                                    else {
+                                        IntPtr ptr2 = QTUtility2.ReadRegHandle("TaskBarHandle", key);
+                                        if(QTTabBarLib.Interop.PInvoke.IsWindow(ptr2)) {
+                                            string str6 = path + ((nameToSelectFromCommandLineArg.Length > 0) ? (";" + nameToSelectFromCommandLineArg) : string.Empty);
+                                            QTUtility2.SendCOPYDATASTRUCT(ptr2, IntPtr.Zero, str6, (IntPtr)num2);
+                                            flag = true;
+                                        }
+                                    }
+                                }
+                                if(flag) {
+                                    this.fNowQuitting = true;
+                                    base.Explorer.Quit();
+                                    return;
+                                }
+                            }
+                            QTUtility.PathToSelectInCommandLineArg = nameToSelectFromCommandLineArg;
+                        }
+                    }
+                    this.AddStartUpTabs(string.Empty, path);
+                    this.InitializeOpenedWindow();
+                }
+            }
+        }
+
         private int dropTargetWrapper_DragFileDrop(out IntPtr hwnd, out byte[] idlReal) {
             this.HideToolTipForDD();
             hwnd = this.tabControl1.Handle;
@@ -1986,152 +2144,31 @@ namespace QTTabBarLib {
             this.HideToolTipForDD();
         }
 
+        private void Explorer_DownloadBegin() {
+            bool dummy = false;
+            BeforeNavigate("", ref dummy);
+        }
+
         private void Explorer_BeforeNavigate2(object pDisp, ref object URL, ref object Flags, ref object TargetFrameName, ref object PostData, ref object Headers, ref bool Cancel) {
-            string b = (string)URL;
-            if(!this.IsShown) {
-                if((QTUtility.TMPPathList.Count > 0) || (QTUtility.TMPIDLList.Count > 0)) {
-                    foreach(string str2 in QTUtility.TMPPathList) {
-                        if(!string.Equals(str2, b, StringComparison.OrdinalIgnoreCase)) {
-                            using(IDLWrapper wrapper = new IDLWrapper(str2)) {
-                                if(wrapper.Available) {
-                                    this.CreateNewTab(wrapper);
-                                }
-                                continue;
-                            }
-                        }
-                    }
-                    foreach(byte[] buffer in QTUtility.TMPIDLList) {
-                        if(QTUtility.TMPTargetIDL != buffer) {
-                            using(IDLWrapper wrapper2 = new IDLWrapper(buffer)) {
-                                this.OpenNewTab(wrapper2, true, false);
-                                continue;
-                            }
-                        }
-                        QTUtility.TMPTargetIDL = null;
-                    }
-                    QTUtility2.InitializeTemporaryPaths();
-                    this.AddStartUpTabs(string.Empty, b);
-                    this.InitializeOpenedWindow();
-                }
-                else if(QTUtility.CreateWindowTMPGroup.Length != 0) {
-                    string createWindowTMPGroup = QTUtility.CreateWindowTMPGroup;
-                    QTUtility.CreateWindowTMPGroup = string.Empty;
-                    this.CurrentTab.CurrentPath = b;
-                    this.NowOpenedByGroupOpener = true;
-                    this.OpenGroup(createWindowTMPGroup, false);
-                    this.AddStartUpTabs(createWindowTMPGroup, b);
-                    this.InitializeOpenedWindow();
-                }
-                else if(QTUtility.CheckConfig(10, 0x40) || (QTUtility.CreateWindowTMPPath == b)) {
-                    QTUtility.CreateWindowTMPPath = string.Empty;
-                    this.AddStartUpTabs(string.Empty, b);
-                    this.InitializeOpenedWindow();
-                }
-                else if((b.StartsWith(QTUtility.ResMisc[0]) || (b.EndsWith(QTUtility.ResMisc[0]) && QTUtility2.IsShellPathButNotFileSystem(b))) || string.Equals(b, QTUtility.PATH_SEARCHFOLDER, StringComparison.OrdinalIgnoreCase)) {
-                    this.InitializeOpenedWindow();
-                }
-                else {
-                    for(int i = 0; i < QTUtility.NoCapturePathsList.Count; i++) {
-                        if(string.Equals(QTUtility.NoCapturePathsList[i], b, StringComparison.OrdinalIgnoreCase)) {
-                            this.InitializeOpenedWindow();
-                            return;
-                        }
-                    }
-                    if(QTUtility.InstancesCount > 1) {
-                        if((Control.ModifierKeys == Keys.Control) || !QTUtility.instanceManager.NextInstanceExists()) {
-                            this.InitializeOpenedWindow();
-                            this.AddStartUpTabs(string.Empty, b);
-                        }
-                        else {
-                            if(QTUtility.IsVista) {
-                                QTTabBarLib.Interop.PInvoke.SetWindowPos(this.ExplorerHandle, IntPtr.Zero, 0, 0, 0, 0, 0x259f);
-                            }
-                            NavigateOnOldWindow(b);
-                            this.fNowQuitting = true;
-                            if(QTUtility.IsVista) {
-                                base.Explorer.Quit();
-                            }
-                            else {
-                                WindowUtils.CloseExplorer(this.ExplorerHandle, 0);
-                            }
-                        }
-                    }
-                    else {
-                        if(!QTUtility.CheckConfig(6, 0x10)) {
-                            uint num2;
-                            uint num3;
-                            QTTabBarLib.Interop.PInvoke.GetWindowThreadProcessId(base.Handle, out num2);
-                            QTTabBarLib.Interop.PInvoke.GetWindowThreadProcessId(WindowUtils.GetShellTrayWnd(), out num3);
-                            if(((num2 != num3) && (num2 != 0)) && (num3 != 0)) {
-                                string nameToSelectFromCommandLineArg = GetNameToSelectFromCommandLineArg();
-                                if(!WindowUtils.IsExplorerProcessSeparated()) {
-                                    bool flag = false;
-                                    using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
-                                        IntPtr hWnd = QTUtility2.ReadRegHandle("Handle", key);
-                                        if(QTTabBarLib.Interop.PInvoke.IsWindow(hWnd)) {
-                                            string strMsg = b + ((nameToSelectFromCommandLineArg.Length > 0) ? (";" + nameToSelectFromCommandLineArg) : string.Empty);
-                                            QTUtility2.SendCOPYDATASTRUCT(hWnd, new IntPtr(15), strMsg, IntPtr.Zero);
-                                            flag = true;
-                                        }
-                                        else {
-                                            IntPtr ptr2 = QTUtility2.ReadRegHandle("TaskBarHandle", key);
-                                            if(QTTabBarLib.Interop.PInvoke.IsWindow(ptr2)) {
-                                                string str6 = b + ((nameToSelectFromCommandLineArg.Length > 0) ? (";" + nameToSelectFromCommandLineArg) : string.Empty);
-                                                QTUtility2.SendCOPYDATASTRUCT(ptr2, IntPtr.Zero, str6, (IntPtr)num2);
-                                                flag = true;
-                                            }
-                                        }
-                                    }
-                                    if(flag) {
-                                        this.fNowQuitting = true;
-                                        base.Explorer.Quit();
-                                        return;
-                                    }
-                                }
-                                QTUtility.PathToSelectInCommandLineArg = nameToSelectFromCommandLineArg;
-                            }
-                        }
-                        this.AddStartUpTabs(string.Empty, b);
-                        this.InitializeOpenedWindow();
-                    }
-                }
-            }
+            if(this.IsShown) {
+                BeforeNavigate((string)URL, ref Cancel);
+            } 
             else {
-                this.HideThumbnailTooltip(7);
-                this.HideSubDirTip(7);
-                this.HideSubDirTip_Tab_Menu();
-                if(this.timer_HoverThumbnail != null) {
-                    this.timer_HoverThumbnail.Enabled = false;
-                }
-                this.NowTabDragging = false;
-                if(!this.NavigatedByCode) {
-                    this.SaveSelectedItems(this.CurrentTab);
-                    if((this.CurrentTab.TabLocked && !QTUtility2.IsShellPathButNotFileSystem(this.CurrentTab.CurrentPath)) && !QTUtility2.IsShellPathButNotFileSystem(b)) {
-                        this.CloneTabButton(this.CurrentTab, b, true, this.tabControl1.SelectedIndex + 1);
-                        Cancel = true;
-                        return;
-                    }
-                }
-                if(this.NowInTravelLog) {
-                    if(this.CurrentTravelLogIndex > 0) {
-                        this.CurrentTravelLogIndex--;
-                        if(!IsSpecialFolderNeedsToTravel(b)) {
-                            this.NavigateBackToTheFuture();
-                        }
-                    }
-                    else {
-                        this.NowInTravelLog = false;
-                    }
-                }
+                DoFirstNavigation(true, (string)URL);
             }
         }
 
         private void Explorer_NavigateComplete2(object pDisp, ref object URL) {
+            this.NowNavigating = false;
+            string path = (string)URL;
+            if(!this.IsShown) {
+                DoFirstNavigation(false, path);
+            }
+
             if(this.fNowQuitting) {
                 base.Explorer.Quit();
             }
-            else if(this.IsShown) {
-                string path = (string)URL;
+            else {
                 int hash = -1;
                 bool flag = IsSpecialFolderNeedsToTravel(path);
                 bool flag2 = QTUtility2.IsShellPathButNotFileSystem(path);
@@ -5066,6 +5103,7 @@ namespace QTTabBarLib {
             }
             base.Explorer.BeforeNavigate2 += new DWebBrowserEvents2_BeforeNavigate2EventHandler(this.Explorer_BeforeNavigate2);
             base.Explorer.NavigateComplete2 += new DWebBrowserEvents2_NavigateComplete2EventHandler(this.Explorer_NavigateComplete2);
+            base.Explorer.DownloadBegin += new SHDocVw.DWebBrowserEvents2_DownloadBeginEventHandler(this.Explorer_DownloadBegin);
             this.fExplrEventsAttached = true;
         }
 
