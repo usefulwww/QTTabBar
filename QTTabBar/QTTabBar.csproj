@@ -152,7 +152,6 @@
     <Compile Include="Interop\NMTTDISPINFO.cs" />
     <Compile Include="Interop\NMUPDOWN.cs" />
     <Compile Include="Interop\PInvoke.cs" />
-    <Compile Include="Interop\REBARBANDINFO.cs" />
     <Compile Include="Interop\RECT.cs" />
     <Compile Include="Interop\RGBQUAD.cs" />
     <Compile Include="Interop\SHELLEXECUTEINFO.cs" />

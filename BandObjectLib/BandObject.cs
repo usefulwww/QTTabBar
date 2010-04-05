@@ -29,9 +29,64 @@ namespace BandObjectLib {
         protected bool fClosedDW;
         protected bool fFinalRelease;
         protected IntPtr ReBarHandle;
+        private RebarSubclass RebarSubclassInst = null;
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);        
+
+        internal sealed class RebarSubclass : NativeWindow {
+            BandObject parent;
+            public RebarSubclass(IntPtr hwnd, BandObject parent) {
+                this.parent = parent;
+                base.AssignHandle(hwnd);
+            }
+
+            protected override void WndProc(ref Message m) {
+                if(m.Msg == RB.SETBANDINFO) {
+                    REBARBANDINFO pInfo = (REBARBANDINFO)Marshal.PtrToStructure(m.LParam, typeof(REBARBANDINFO));
+                    if(pInfo.hwndChild == parent.Handle &&
+                            (pInfo.fMask & RBBIM.STYLE) != 0) {
+                        if(parent.ShouldHaveBreak()) {
+                            pInfo.fStyle |= RBBS.BREAK;
+                        }
+                        else {
+                            pInfo.fStyle &= ~RBBS.BREAK;
+                        }
+                        Marshal.StructureToPtr(pInfo, m.LParam, false);
+                        pInfo = (REBARBANDINFO)Marshal.PtrToStructure(m.LParam, typeof(REBARBANDINFO));
+                        base.WndProc(ref m);
+                        base.ReleaseHandle();
+                        return;
+                    }
+                }
+                base.WndProc(ref m);
+            }
+        }
+
+        // Determines if the DeskBand is preceded by a break.
+        protected bool BandHasBreak() {
+            if(ReBarHandle != null) {
+                int n = (int)SendMessage(ReBarHandle, RB.GETBANDCOUNT, IntPtr.Zero, IntPtr.Zero);
+                for(int i = 0; i < n; ++i) {
+                    REBARBANDINFO info = new REBARBANDINFO();
+                    info.cbSize = Marshal.SizeOf(info);
+                    info.fMask = RBBIM.STYLE | RBBIM.CHILD;
+                    IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(info));
+                    Marshal.StructureToPtr(info, ptr, false);
+                    SendMessage(ReBarHandle, RB.GETBANDINFO, (IntPtr)i, ptr);
+                    info = (REBARBANDINFO)Marshal.PtrToStructure(ptr, typeof(REBARBANDINFO));
+                    Marshal.FreeHGlobal(ptr);
+                    if(info.hwndChild == base.Handle) {
+                        return (info.fStyle & RBBS.BREAK) != 0;
+                    }
+                }
+            }
+            return true;
+        }
 
         public virtual void CloseDW(uint dwReserved) {
             this.fClosedDW = true;
+            this.ShowDW(false);
             this.Dispose(true);
             if(this.Explorer != null) {
                 Marshal.ReleaseComObject(this.Explorer);
@@ -40,6 +95,10 @@ namespace BandObjectLib {
             if(this.BandObjectSite != null) {
                 Marshal.ReleaseComObject(this.BandObjectSite);
                 this.BandObjectSite = null;
+            }
+            if(this.RebarSubclassInst != null) {
+                this.RebarSubclassInst.ReleaseHandle();
+                RebarSubclassInst = null;
             }
         }
 
@@ -108,6 +167,12 @@ namespace BandObjectLib {
         public virtual void ResizeBorderDW(IntPtr prcBorder, object punkToolbarSite, bool fReserved) {
         }
 
+        // Override this to set whether the DeskBand has a break when it is 
+        // first displayed
+        protected virtual bool ShouldHaveBreak() {
+            return true;
+        }
+
         public virtual void SetSite(object pUnkSite) {
             if(this.BandObjectSite != null) {
                 Marshal.ReleaseComObject(this.BandObjectSite);
@@ -140,6 +205,13 @@ namespace BandObjectLib {
         }
 
         public virtual void ShowDW(bool fShow) {
+            if(this.ReBarHandle != IntPtr.Zero) {
+                if(RebarSubclassInst != null) {
+                    RebarSubclassInst.ReleaseHandle();
+                    RebarSubclassInst = null;
+                }
+                RebarSubclassInst = new RebarSubclass(ReBarHandle, this);
+            }
             base.Visible = fShow;
         }
 

@@ -6413,6 +6413,16 @@ namespace QTTabBarLib {
             return false;
         }
 
+        protected override bool ShouldHaveBreak() {
+            bool breakBar = true;
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+                if(key != null) {
+                    breakBar = ((int)key.GetValue("BreakTabBar", 1) == 1);
+                }
+            }
+            return breakBar;
+        }
+
         private void ShowAndClickSubDirTip() {
             try {
                 Address[] addressArray;
@@ -6457,9 +6467,14 @@ namespace QTTabBarLib {
         }
 
         public override void ShowDW(bool fShow) {
-            base.Visible = fShow;
+            base.ShowDW(fShow);
             if((fShow && !this.FirstNavigationCompleted) && ((base.Explorer != null) && (base.Explorer.ReadyState == tagREADYSTATE.READYSTATE_COMPLETE))) {
                 this.InitializeInstallation();
+            }
+            if(!fShow) {
+                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+                    key.SetValue("BreakTabBar", base.BandHasBreak() ? 1 : 0);
+                }
             }
         }
 

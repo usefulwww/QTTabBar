@@ -1467,6 +1467,25 @@ namespace QTTabBarLib {
             return flag;
         }
 
+        protected override bool ShouldHaveBreak() {
+            bool breakBar = true;
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+                if(key != null) {
+                    breakBar = ((int)key.GetValue("BreakButtonBar", 1) == 1);
+                }
+            }
+            return breakBar;
+        }
+
+        public override void ShowDW(bool fShow) {
+            base.ShowDW(fShow);
+            if(!fShow) {
+                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+                    key.SetValue("BreakButtonBar", base.BandHasBreak() ? 1 : 0);
+                }
+            }
+        }
+
         private void SyncButtonBarBroadCast_ClearApps() {
             QTUtility.fRequiredRefresh_App = false;
             this.ClearUserAppsMenu();

@@ -92,12 +92,14 @@
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing">
       <Name>System.Drawing</Name>
     </Reference>
     <Reference Include="System.Windows.Forms">
       <Name>System.Windows.Forms</Name>
     </Reference>
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes.cs">
@@ -119,6 +121,10 @@
     <Compile Include="Interop\IPersistStream.cs" />
     <Compile Include="Interop\MSG.cs" />
     <Compile Include="Interop\POINT.cs" />
+    <Compile Include="Interop\RB.cs" />
+    <Compile Include="Interop\RBBIM.cs" />
+    <Compile Include="Interop\RBBS.cs" />
+    <Compile Include="Interop\REBARBANDINFO.cs" />
     <Compile Include="Interop\_IServiceProvider.cs" />
   </ItemGroup>
   <ItemGroup>

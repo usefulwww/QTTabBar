@@ -15,12 +15,12 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib.Interop {
+namespace BandObjectLib {
     using System;
     using System.Runtime.InteropServices;
 
     [StructLayout(LayoutKind.Sequential)]
-    internal struct REBARBANDINFO {
+    public struct REBARBANDINFO {
         public int cbSize;
         public int fMask;
         public int fStyle;
