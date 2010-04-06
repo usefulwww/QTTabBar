@@ -18,6 +18,7 @@
 namespace BandObjectLib {
     using SHDocVw;
     using System;
+    using System.Collections.Generic;
     using System.Drawing;
     using System.Runtime.InteropServices;
     using System.Windows.Forms;
@@ -29,56 +30,100 @@ namespace BandObjectLib {
         protected bool fClosedDW;
         protected bool fFinalRelease;
         protected IntPtr ReBarHandle;
-        private RebarSubclass RebarSubclassInst = null;
+        private RebarBreakFixer RebarSubclass = null;
+        private IAsyncResult result = null;
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);        
 
-        internal sealed class RebarSubclass : NativeWindow {
-            BandObject parent;
-            public RebarSubclass(IntPtr hwnd, BandObject parent) {
+        // We must subclass the rebar in order to fix a certain bug in 
+        // Windows 7.
+        internal sealed class RebarBreakFixer : NativeWindow {
+            private BandObject parent;
+            bool monitorSetInfo = true;
+            public RebarBreakFixer(IntPtr hwnd, BandObject parent) {
                 this.parent = parent;
                 base.AssignHandle(hwnd);
             }
 
+            public void ToggleSetInfoMonitor(bool on) {
+                monitorSetInfo = on;
+            }
+
             protected override void WndProc(ref Message m) {
+
+                // When the bars are first loaded, they will always have 
+                // RBBS_BREAK set.  Catch RB_SETBANDINFO to fix this.
                 if(m.Msg == RB.SETBANDINFO) {
-                    REBARBANDINFO pInfo = (REBARBANDINFO)Marshal.PtrToStructure(m.LParam, typeof(REBARBANDINFO));
-                    if(pInfo.hwndChild == parent.Handle &&
-                            (pInfo.fMask & RBBIM.STYLE) != 0) {
-                        if(parent.ShouldHaveBreak()) {
-                            pInfo.fStyle |= RBBS.BREAK;
+                    if(monitorSetInfo) {
+                        REBARBANDINFO pInfo = (REBARBANDINFO)Marshal.PtrToStructure(m.LParam, typeof(REBARBANDINFO));
+                        if(pInfo.hwndChild == parent.Handle && (pInfo.fMask & RBBIM.STYLE) != 0) {
+
+                            // Ask the bar if we actually want a break.
+                            if(parent.ShouldHaveBreak()) {
+                                pInfo.fStyle |= RBBS.BREAK;
+                            }
+                            else {
+                                pInfo.fStyle &= ~RBBS.BREAK;
+                            }
+                            Marshal.StructureToPtr(pInfo, m.LParam, false);
+                            pInfo = (REBARBANDINFO)Marshal.PtrToStructure(m.LParam, typeof(REBARBANDINFO));
                         }
-                        else {
-                            pInfo.fStyle &= ~RBBS.BREAK;
+                    }
+                }
+                // Whenever a band is deleted, it the RBBS_BREAKs come back!
+                // Catch RB_DELETEBAND to fix it.
+                else if(m.Msg == RB.DELETEBAND) {
+                    int del = (int)m.WParam;
+                    
+                    // Look for our band
+                    int n = parent.ActiveRebarCount();
+                    for(int i = 0; i < n; ++i) {
+                        REBARBANDINFO info = parent.GetRebarBand(i, RBBIM.STYLE | RBBIM.CHILD);
+                        if(info.hwndChild == parent.Handle) {
+                            // Call the WndProc to let the deletion fall 
+                            // through, with the break status safely saved
+                            // in the info variable.
+                            base.WndProc(ref m);
+
+                            // If *we're* the one being deleted, no need to do
+                            // anything else.
+                            if(i == del) {
+                                return;
+                            }
+                                
+                            // Otherwise, our style has been messed with.
+                            // Set it back to what it was.
+                            info.cbSize = Marshal.SizeOf(info);
+                            info.fMask = RBBIM.STYLE;
+                            IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(info));
+                            Marshal.StructureToPtr(info, ptr, false);
+                            bool reset = monitorSetInfo;
+                            monitorSetInfo = false;
+                            SendMessage(parent.ReBarHandle, RB.SETBANDINFO, (IntPtr)i, ptr);
+                            monitorSetInfo = reset;
+                            Marshal.FreeHGlobal(ptr);
+
+                            // Return without calling WndProc twice!
+                            return;
                         }
-                        Marshal.StructureToPtr(pInfo, m.LParam, false);
-                        pInfo = (REBARBANDINFO)Marshal.PtrToStructure(m.LParam, typeof(REBARBANDINFO));
-                        base.WndProc(ref m);
-                        base.ReleaseHandle();
-                        return;
                     }
                 }
                 base.WndProc(ref m);
             }
         }
 
+        private int ActiveRebarCount() {
+            return (int)SendMessage(ReBarHandle, RB.GETBANDCOUNT, IntPtr.Zero, IntPtr.Zero);
+        }
+
         // Determines if the DeskBand is preceded by a break.
         protected bool BandHasBreak() {
-            if(ReBarHandle != null) {
-                int n = (int)SendMessage(ReBarHandle, RB.GETBANDCOUNT, IntPtr.Zero, IntPtr.Zero);
-                for(int i = 0; i < n; ++i) {
-                    REBARBANDINFO info = new REBARBANDINFO();
-                    info.cbSize = Marshal.SizeOf(info);
-                    info.fMask = RBBIM.STYLE | RBBIM.CHILD;
-                    IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(info));
-                    Marshal.StructureToPtr(info, ptr, false);
-                    SendMessage(ReBarHandle, RB.GETBANDINFO, (IntPtr)i, ptr);
-                    info = (REBARBANDINFO)Marshal.PtrToStructure(ptr, typeof(REBARBANDINFO));
-                    Marshal.FreeHGlobal(ptr);
-                    if(info.hwndChild == base.Handle) {
-                        return (info.fStyle & RBBS.BREAK) != 0;
-                    }
+            int n = ActiveRebarCount();
+            for(int i = 0; i < n; ++i) {
+                REBARBANDINFO info = GetRebarBand(i, RBBIM.STYLE | RBBIM.CHILD);
+                if(info.hwndChild == base.Handle) {
+                    return (info.fStyle & RBBS.BREAK) != 0;
                 }
             }
             return true;
@@ -96,9 +141,13 @@ namespace BandObjectLib {
                 Marshal.ReleaseComObject(this.BandObjectSite);
                 this.BandObjectSite = null;
             }
-            if(this.RebarSubclassInst != null) {
-                this.RebarSubclassInst.ReleaseHandle();
-                RebarSubclassInst = null;
+            if(this.RebarSubclass != null) {
+                this.RebarSubclass.ReleaseHandle();
+                RebarSubclass = null;
+            }
+            if(RebarSubclass != null) {
+                RebarSubclass.ReleaseHandle();
+                RebarSubclass = null;
             }
         }
 
@@ -130,6 +179,18 @@ namespace BandObjectLib {
             if((dbi.dwMask & DBIM.TITLE) != ((DBIM)0)) {
                 dbi.wszTitle = null;
             }
+        }
+
+        private REBARBANDINFO GetRebarBand(int idx, int fMask) {
+            REBARBANDINFO info = new REBARBANDINFO();
+            info.cbSize = Marshal.SizeOf(info);
+            info.fMask = fMask;
+            IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(info));
+            Marshal.StructureToPtr(info, ptr, false);
+            SendMessage(ReBarHandle, RB.GETBANDINFO, (IntPtr)idx, ptr);
+            info = (REBARBANDINFO)Marshal.PtrToStructure(ptr, typeof(REBARBANDINFO));
+            Marshal.FreeHGlobal(ptr);
+            return info;
         }
 
         public virtual void GetSite(ref Guid riid, out object ppvSite) {
@@ -206,11 +267,14 @@ namespace BandObjectLib {
 
         public virtual void ShowDW(bool fShow) {
             if(this.ReBarHandle != IntPtr.Zero) {
-                if(RebarSubclassInst != null) {
-                    RebarSubclassInst.ReleaseHandle();
-                    RebarSubclassInst = null;
+                if(RebarSubclass == null) {
+                    RebarSubclass = new RebarBreakFixer(ReBarHandle, this);
                 }
-                RebarSubclassInst = new RebarSubclass(ReBarHandle, this);
+
+                RebarSubclass.ToggleSetInfoMonitor(true);
+                if(result == null || result.IsCompleted) {    
+                    result = BeginInvoke(new UnsetInfoDelegate(UnsetInfo));
+                }
             }
             base.Visible = fShow;
         }
@@ -229,6 +293,14 @@ namespace BandObjectLib {
                     nextControl.Select();
                 }
                 base.Focus();
+            }
+        }
+
+        private delegate void UnsetInfoDelegate();
+
+        private void UnsetInfo() {
+            if(RebarSubclass != null) {
+                RebarSubclass.ToggleSetInfoMonitor(false);
             }
         }
 
