@@ -3679,10 +3679,10 @@ namespace QTTabBarLib {
             QTUtility.ConfigValues[13] = 0;
             QTUtility.ConfigValues[14] = 0;
             if(this.chbActivateNew.Checked) {
-                QTUtility.SetConfigAt(Settings.ActivateNewTab);
+                QTUtility.SetConfigAt(Settings.ActivateNewTab, true);
             }
             if(this.chbDontOpenSame.Checked) {
-                QTUtility.SetConfigAt(Settings.DontOpenSame);
+                QTUtility.SetConfigAt(Settings.DontOpenSame, true);
             }
             if(this.chbCloseWhenGroup.Checked) {
                 QTUtility.SetConfigAt(Settings.CloseWhenGroup, true);
@@ -4134,7 +4134,7 @@ namespace QTTabBarLib {
             this.chbFoldrTree.Checked = (QTUtility.ConfigValues[6] & 4) == 0;
             this.chbWndUnresizable.Checked = (QTUtility.ConfigValues[6] & 2) == 2;
             if(!QTUtility.CheckConfig(Settings.NoRecentFiles)) {
-                if(QTUtility.CheckConfig(14, 4)) {
+                if(QTUtility.CheckConfig(Settings.AllRecentFiles)) {
                     this.chbSaveExecuted.CheckState = CheckState.Checked;
                 }
                 else {

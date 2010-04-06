@@ -264,7 +264,7 @@ namespace QTTabBarLib {
                                     ClosedTabHistoryList = new PathList(collection, MaxCount_History);
                                 }
                             }
-                            if(CheckConfig(14, 4)) {
+                            if(CheckConfig(Settings.AllRecentFiles)) {
                                 MaxCount_Executed = QTUtility2.GetRegistryValueSafe<int>(key, "Max_RecentFile", 0x10);
                                 using(RegistryKey key3 = key.CreateSubKey("RecentFiles")) {
                                     if(key3 != null) {
@@ -333,8 +333,8 @@ namespace QTTabBarLib {
         }
 
         public static bool CheckConfig(Settings setting) {
-            int index = (uint)setting >> 3;
-            byte value = (byte)(1 << ((uint)setting & 7));
+            int index = (int)setting >> 3;
+            byte value = (byte)(1 << ((int)setting & 7));
             return ((ConfigValues[index] & value) == value);
         }
 
@@ -1041,8 +1041,8 @@ namespace QTTabBarLib {
         }
 
         public static void SetConfigAt(Settings setting, bool fOn) {
-            int index = (uint)setting >> 3;
-            byte value = (byte)(1 << ((uint)setting & 7));
+            int index = (int)setting >> 3;
+            byte value = (byte)(1 << ((int)setting & 7));
             if (fOn) {
                 ConfigValues[index] = (byte)(ConfigValues[index] | value);
             }

@@ -980,7 +980,7 @@ namespace QTTabBarLib {
                             }
                             QTUtility.SaveRecentlyClosed(key);
                         }
-                        if(!QTUtility.CheckConfig(Settings.NoRecentFiles) && QTUtility.CheckConfig(14, 4)) {
+                        if(!QTUtility.CheckConfig(Settings.NoRecentFiles) && QTUtility.CheckConfig(Settings.AllRecentFiles)) {
                             QTUtility.SaveRecentFiles(key);
                         }
                         List<string> list = new List<string>();
