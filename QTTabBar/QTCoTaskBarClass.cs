@@ -143,7 +143,7 @@ namespace QTTabBarLib {
         }
 
         private void AddMenuItems_History() {
-            if(((this.ConfigValues[2] & 0x40) == 0) && !QTUtility.CheckConfig(5, 2)) {
+            if(((this.ConfigValues[2] & 0x40) == 0) && !QTUtility.CheckConfig(Settings.NoHistory)) {
                 if(this.ExpandState[1]) {
                     this.contextMenu.AddItem(this.labelHistoryTitle, "labelH");
                     this.contextMenu.AddItemsRange(this.UndoClosedItemsList.ToArray(), "historyItem");
@@ -156,7 +156,7 @@ namespace QTTabBarLib {
         }
 
         private void AddMenuItems_Recent() {
-            if(((this.ConfigValues[2] & 1) == 0) && !QTUtility.CheckConfig(6, 0x20)) {
+            if(((this.ConfigValues[2] & 1) == 0) && !QTUtility.CheckConfig(Settings.NoRecentFiles)) {
                 if(this.ExpandState[3]) {
                     this.contextMenu.AddItem(this.labelRecentFileTitle, "labelR");
                     this.contextMenu.AddItemsRange(this.RecentFileItemsList.ToArray(), "recentItem");
@@ -215,7 +215,7 @@ namespace QTTabBarLib {
                 }
                 switch(msg.message) {
                     case WM.MBUTTONUP:
-                        if(!QTUtility.CheckConfig(5, 1)) {
+                        if(!QTUtility.CheckConfig(Settings.CaptureMiddleClick)) {
                             int index = PInvoke.ListView_HitTest(this.hwndListView, msg.lParam);
                             if((index != -1) && this.HandleTabFolderActions(index, Control.ModifierKeys, false)) {
                                 Marshal.StructureToPtr(new BandObjectLib.MSG(), lParam, false);
@@ -289,7 +289,7 @@ namespace QTTabBarLib {
                 }
                 else {
                     this.HideThumbnailTooltip();
-                    if((!QTUtility.CheckConfig(9, 0x40) && QTUtility.CheckConfig(9, 0x20)) && ((this.subDirTip != null) && !this.subDirTip.MenuIsShowing)) {
+                    if((!QTUtility.CheckConfig(Settings.NoShowSubDirTips) && QTUtility.CheckConfig(Settings.SubDirTipsWithShift)) && ((this.subDirTip != null) && !this.subDirTip.MenuIsShowing)) {
                         this.HideSubDirTip();
                     }
                 }
@@ -855,17 +855,17 @@ namespace QTTabBarLib {
             int key = ((int)wParam) | ((int)Control.ModifierKeys);
             if(((int)wParam) == 0x10) {
                 if(!fRepeat) {
-                    if(!QTUtility.CheckConfig(8, 1)) {
+                    if(!QTUtility.CheckConfig(Settings.PreviewsWithShift)) {
                         this.HideThumbnailTooltip();
                     }
-                    if(((!QTUtility.CheckConfig(9, 0x40) && !QTUtility.CheckConfig(9, 0x20)) && ((this.subDirTip != null) && this.subDirTip.IsShowing)) && !this.subDirTip.MenuIsShowing) {
+                    if(((!QTUtility.CheckConfig(Settings.NoShowSubDirTips) && !QTUtility.CheckConfig(Settings.SubDirTipsWithShift)) && ((this.subDirTip != null) && this.subDirTip.IsShowing)) && !this.subDirTip.MenuIsShowing) {
                         this.HideSubDirTip();
                     }
                 }
                 return false;
             }
             if(key == 0x71) {
-                if(!QTUtility.CheckConfig(10, 1)) {
+                if(!QTUtility.CheckConfig(Settings.F2Selection)) {
                     QTTabBarClass.HandleF2(this.hwndListView);
                 }
                 return false;
@@ -894,7 +894,7 @@ namespace QTTabBarLib {
                 return true;
             }
             if(key == QTUtility.ShortcutKeys[0x26]) {
-                if(!QTUtility.CheckConfig(9, 0x40)) {
+                if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
                     if(!fRepeat) {
                         this.DoFileTools(5);
                     }
@@ -962,7 +962,7 @@ namespace QTTabBarLib {
         }
 
         private bool HandleTabFolderActions(int index, Keys modKey, bool fEnqExec) {
-            if(QTUtility.CheckConfig(6, 0x80)) {
+            if(QTUtility.CheckConfig(Settings.MidClickNewWindow)) {
                 if(modKey == Keys.Control) {
                     modKey = Keys.None;
                 }
@@ -970,7 +970,7 @@ namespace QTTabBarLib {
                     modKey = Keys.Control;
                 }
             }
-            if(!QTUtility.CheckConfig(0, 0x80)) {
+            if(!QTUtility.CheckConfig(Settings.ActivateNewTab)) {
                 if((modKey & Keys.Shift) == Keys.Shift) {
                     modKey &= ~Keys.Shift;
                 }
@@ -1201,7 +1201,7 @@ namespace QTTabBarLib {
         }
 
         private void InsertMenuItems_History() {
-            if(((this.ConfigValues[2] & 0x40) == 0) && !QTUtility.CheckConfig(5, 2)) {
+            if(((this.ConfigValues[2] & 0x40) == 0) && !QTUtility.CheckConfig(Settings.NoHistory)) {
                 if(this.ExpandState[1]) {
                     int index = this.contextMenu.Items.IndexOf(this.labelHistoryTitle);
                     if(index != -1) {
@@ -1217,7 +1217,7 @@ namespace QTTabBarLib {
         }
 
         private void InsertMenuItems_Recent() {
-            if(((this.ConfigValues[2] & 1) == 0) && !QTUtility.CheckConfig(6, 0x20)) {
+            if(((this.ConfigValues[2] & 1) == 0) && !QTUtility.CheckConfig(Settings.NoRecentFiles)) {
                 if(this.ExpandState[3]) {
                     int index = this.contextMenu.Items.IndexOf(this.labelRecentFileTitle);
                     if(index != -1) {
@@ -1686,10 +1686,10 @@ namespace QTTabBarLib {
                     item2.Dispose();
                 }
             }
-            if(((this.ConfigValues[2] & 0x40) == 0) && !QTUtility.CheckConfig(5, 2)) {
+            if(((this.ConfigValues[2] & 0x40) == 0) && !QTUtility.CheckConfig(Settings.NoHistory)) {
                 this.UndoClosedItemsList = MenuUtility.CreateUndoClosedItems(null);
             }
-            if(((this.ConfigValues[2] & 1) == 0) && !QTUtility.CheckConfig(6, 0x20)) {
+            if(((this.ConfigValues[2] & 1) == 0) && !QTUtility.CheckConfig(Settings.NoRecentFiles)) {
                 this.RecentFileItemsList = MenuUtility.CreateRecentFilesItems();
             }
         }
@@ -1779,7 +1779,7 @@ namespace QTTabBarLib {
                 }
                 switch(nmhdr.code) {
                     case -103:
-                        if(!QTUtility.CheckConfig(9, 0x40)) {
+                        if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
                             this.HideSubDirTip();
                         }
                         goto Label_057E;
@@ -1788,7 +1788,7 @@ namespace QTTabBarLib {
                         goto Label_057E;
 
                     case -101:
-                        if(!QTUtility.CheckConfig(9, 0x40)) {
+                        if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
                             QTTabBarLib.Interop.NMLISTVIEW nmlistview = (QTTabBarLib.Interop.NMLISTVIEW)Marshal.PtrToStructure(msg.LParam, typeof(QTTabBarLib.Interop.NMLISTVIEW));
                             if(nmlistview.uChanged == 8) {
                                 uint num = nmlistview.uNewState & 8;
@@ -1812,12 +1812,12 @@ namespace QTTabBarLib {
 
                     case -114: {
                             NMITEMACTIVATE nmitemactivate = (NMITEMACTIVATE)Marshal.PtrToStructure(msg.LParam, typeof(NMITEMACTIVATE));
-                            bool fEnqExec = !QTUtility.CheckConfig(6, 0x20);
+                            bool fEnqExec = !QTUtility.CheckConfig(Settings.NoRecentFiles);
                             Keys modKey = ((((nmitemactivate.uKeyFlags & 1) == 1) ? Keys.Alt : Keys.None) | (((nmitemactivate.uKeyFlags & 2) == 2) ? Keys.Control : Keys.None)) | (((nmitemactivate.uKeyFlags & 4) == 4) ? Keys.Shift : Keys.None);
                             return this.HandleTabFolderActions(-1, modKey, fEnqExec);
                         }
                     case -175:
-                        if(!QTUtility.IsVista && !QTUtility.CheckConfig(8, 0x20)) {
+                        if(!QTUtility.IsVista && !QTUtility.CheckConfig(Settings.NoExtWhileRenaming)) {
                             this.shellViewControler.DefWndProc(ref msg);
                             if(msg.Result == IntPtr.Zero) {
                                 QTTabBarLib.Interop.NMLVDISPINFO nmlvdispinfo = (QTTabBarLib.Interop.NMLVDISPINFO)Marshal.PtrToStructure(msg.LParam, typeof(QTTabBarLib.Interop.NMLVDISPINFO));
@@ -1827,7 +1827,7 @@ namespace QTTabBarLib {
                         goto Label_057E;
 
                     case -158: {
-                            if(!QTUtility.CheckConfig(8, 2) || !(!QTUtility.CheckConfig(8, 1) ^ (Control.ModifierKeys == Keys.Shift))) {
+                            if(!QTUtility.CheckConfig(Settings.ShowTooltipPreviews) || !(!QTUtility.CheckConfig(Settings.PreviewsWithShift) ^ (Control.ModifierKeys == Keys.Shift))) {
                                 goto Label_057E;
                             }
                             QTTabBarLib.Interop.NMLVGETINFOTIP nmlvgetinfotip = (QTTabBarLib.Interop.NMLVGETINFOTIP)Marshal.PtrToStructure(msg.LParam, typeof(QTTabBarLib.Interop.NMLVGETINFOTIP));
@@ -1859,10 +1859,10 @@ namespace QTTabBarLib {
             }
             goto Label_057E;
         Label_0264:
-            if(QTUtility.CheckConfig(8, 2) || !QTUtility.CheckConfig(9, 0x40)) {
+            if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews) || !QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
                 QTTabBarLib.Interop.NMLISTVIEW nmlistview2 = (QTTabBarLib.Interop.NMLISTVIEW)Marshal.PtrToStructure(msg.LParam, typeof(QTTabBarLib.Interop.NMLISTVIEW));
                 Keys modifierKeys = Control.ModifierKeys;
-                if(QTUtility.CheckConfig(8, 2)) {
+                if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews)) {
                     if(this.timer_HoverThumbnail == null) {
                         this.timer_HoverThumbnail = new System.Windows.Forms.Timer(this.components);
                         this.timer_HoverThumbnail.Interval = (int)(SystemInformation.MouseHoverTime * 0.2);
@@ -1871,7 +1871,7 @@ namespace QTTabBarLib {
                     this.timer_HoverThumbnail.Enabled = false;
                     this.timer_HoverThumbnail.Enabled = true;
                     if(((this.thumbnailTooltip != null) && (this.thumbnailTooltip.IsShowing || this.fThumbnailPending)) && (nmlistview2.iItem != this.thumbnailIndex)) {
-                        if(!QTUtility.CheckConfig(8, 1) ^ (modifierKeys == Keys.Shift)) {
+                        if(!QTUtility.CheckConfig(Settings.PreviewsWithShift) ^ (modifierKeys == Keys.Shift)) {
                             if(nmlistview2.iItem > -1) {
                                 IntPtr ppidl = IntPtr.Zero;
                                 try {
@@ -1892,8 +1892,8 @@ namespace QTTabBarLib {
                         }
                     }
                 }
-                if(!QTUtility.CheckConfig(9, 0x40)) {
-                    if((!QTUtility.CheckConfig(9, 0x20) ^ (modifierKeys == Keys.Shift)) && (nmlistview2.iItem > -1)) {
+                if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
+                    if((!QTUtility.CheckConfig(Settings.SubDirTipsWithShift) ^ (modifierKeys == Keys.Shift)) && (nmlistview2.iItem > -1)) {
                         IntPtr ptr3 = IntPtr.Zero;
                         try {
                             if(((this.folderView.Item(nmlistview2.iItem, out ptr3) == 0) && (ptr3 != IntPtr.Zero)) && this.ShowSubDirTip(ptr3, nmlistview2.iItem, nmhdr.hwndFrom, false)) {
@@ -2011,7 +2011,7 @@ namespace QTTabBarLib {
                 startInfo.WorkingDirectory = Path.GetDirectoryName(path);
                 startInfo.ErrorDialog = true;
                 Process.Start(startInfo);
-                if(!QTUtility.CheckConfig(6, 0x20)) {
+                if(!QTUtility.CheckConfig(Settings.NoRecentFiles)) {
                     QTUtility.ExecutedPathsList.Add(path);
                 }
             }
@@ -2045,7 +2045,7 @@ namespace QTTabBarLib {
                     }
                 }
                 Keys modifierKeys = Control.ModifierKeys;
-                if(!QTUtility.CheckConfig(0, 0x80)) {
+                if(!QTUtility.CheckConfig(Settings.ActivateNewTab)) {
                     switch(modifierKeys) {
                         case Keys.Shift:
                             modifierKeys = Keys.None;

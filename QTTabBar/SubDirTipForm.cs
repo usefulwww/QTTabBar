@@ -223,8 +223,8 @@ namespace QTTabBarLib {
             catch {
             }
             try {
-                bool flag2 = QTUtility.CheckConfig(10, 4);
-                bool flag3 = QTUtility.CheckConfig(9, 0x10);
+                bool flag2 = QTUtility.CheckConfig(Settings.SubDirTipsSystem);
+                bool flag3 = QTUtility.CheckConfig(Settings.SubDirTipsHidden);
                 FileAttributes attributes = FileAttributes.ReparsePoint | FileAttributes.System | FileAttributes.Hidden;
                 int num = 0;
                 foreach(DirectoryInfo info in di.GetDirectories()) {
@@ -283,7 +283,7 @@ namespace QTTabBarLib {
                     }
                     list.Sort(this.tsmiComparer);
                 }
-                if(!QTUtility.CheckConfig(9, 8)) {
+                if(!QTUtility.CheckConfig(Settings.SubDirTipsFiles)) {
                     return list;
                 }
                 int num2 = 0;
@@ -372,7 +372,7 @@ namespace QTTabBarLib {
                     zero = ShellMethods.CreateIDL(idlChild);
                     ptr2 = PInvoke.ILFindLastID(zero);
                 }
-                bool flag = QTUtility.CheckConfig(9, 0x10);
+                bool flag = QTUtility.CheckConfig(Settings.SubDirTipsHidden);
                 int grfFlags = 0x60;
                 if(flag) {
                     grfFlags |= 0x80;
@@ -691,9 +691,9 @@ namespace QTTabBarLib {
             item.MouseMove += new MouseEventHandler(this.tsmi_Folder_MouseMove);
             item.MouseDown += new MouseEventHandler(this.tsmi_MouseDown);
             item.MouseUp += new MouseEventHandler(this.tsmi_MouseUp);
-            bool fSearchHidden = QTUtility.CheckConfig(9, 0x10);
-            bool fSearchSystem = QTUtility.CheckConfig(10, 4);
-            bool flag3 = QTUtility.CheckConfig(9, 8);
+            bool fSearchHidden = QTUtility.CheckConfig(Settings.SubDirTipsHidden);
+            bool fSearchSystem = QTUtility.CheckConfig(Settings.SubDirTipsSystem);
+            bool flag3 = QTUtility.CheckConfig(Settings.SubDirTipsFiles);
             bool flag4 = false;
             using(FindFile file = new FindFile(item.TargetPath, fSearchHidden, fSearchSystem)) {
                 flag4 = file.SubDirectoryExists() || (flag3 && file.SubFileExists());
@@ -1039,7 +1039,7 @@ namespace QTTabBarLib {
 
         private bool ShowThumbnailTooltip(ToolStripMenuItemEx tsmi, bool fKey) {
             if((this.menuIsShowing && (this.draggingPath == null)) && !this.fSuppressThumbnail) {
-                if((!QTUtility.CheckConfig(9, 4) ^ (Control.ModifierKeys == Keys.Shift)) && ThumbnailTooltipForm.ExtIsSupported(Path.GetExtension(tsmi.ThumbnailPath).ToLower())) {
+                if((!QTUtility.CheckConfig(Settings.SubDirTipsPreview) ^ (Control.ModifierKeys == Keys.Shift)) && ThumbnailTooltipForm.ExtIsSupported(Path.GetExtension(tsmi.ThumbnailPath).ToLower())) {
                     if(this.iThumbnailIndex == tsmi.ThumbnailIndex) {
                         return false;
                     }

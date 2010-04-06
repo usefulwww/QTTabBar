@@ -338,10 +338,6 @@ namespace QTTabBarLib {
             return ((ConfigValues[index] & value) == value);
         }
 
-        public static bool CheckConfig(int index, byte value) {
-            return ((ConfigValues[index] & value) == value);
-        }
-
         public static bool ExtHasIcon(string ext) {
             if((!(ext == ".exe") && !(ext == ".lnk")) && (!(ext == ".ico") && !(ext == ".url"))) {
                 return (ext == ".sln");
@@ -566,58 +562,58 @@ namespace QTTabBarLib {
 
         public static TabBarOption GetTabBarOption() {
             Dictionary<int, object> dictionary = new Dictionary<int, object>();
-            dictionary[0] = CheckConfig(0, 0x80);
-            dictionary[1] = CheckConfig(0, 0x40);
-            dictionary[2] = CheckConfig(0, 0x20);
-            dictionary[3] = CheckConfig(0, 8);
-            dictionary[4] = CheckConfig(5, 0x20);
-            dictionary[5] = CheckConfig(5, 0x80);
-            dictionary[6] = !CheckConfig(5, 2);
-            dictionary[7] = !CheckConfig(6, 0x20);
-            dictionary[8] = CheckConfig(10, 0x80);
-            dictionary[9] = !CheckConfig(10, 0x20);
-            dictionary[10] = CheckConfig(6, 0x80);
-            dictionary[11] = !CheckConfig(6, 0x40);
-            dictionary[12] = CheckConfig(6, 2);
-            dictionary[13] = CheckConfig(8, 4);
-            dictionary[14] = !CheckConfig(6, 0x10);
-            dictionary[15] = !CheckConfig(6, 4);
-            dictionary[0x10] = CheckConfig(10, 0x40);
-            dictionary[0x11] = !CheckConfig(10, 0x10);
-            dictionary[0x12] = !CheckConfig(10, 8);
-            dictionary[0x13] = CheckConfig(0, 2);
-            dictionary[20] = CheckConfig(0, 1);
-            dictionary[0x15] = CheckConfig(0, 0x10);
-            dictionary[0x16] = CheckConfig(6, 8);
-            dictionary[0x17] = CheckConfig(5, 8);
-            dictionary[0x18] = CheckConfig(7, 2);
-            dictionary[0x19] = CheckConfig(5, 0x10);
-            dictionary[0x1a] = CheckConfig(7, 4);
-            dictionary[0x1b] = CheckConfig(7, 8);
-            dictionary[0x1c] = CheckConfig(7, 1);
-            dictionary[0x1d] = CheckConfig(8, 0x40) ^ IsVista;
-            dictionary[30] = CheckConfig(8, 0x80);
-            dictionary[0x1f] = CheckConfig(8, 8);
-            dictionary[0x20] = CheckConfig(8, 2);
-            dictionary[0x21] = CheckConfig(8, 1);
-            dictionary[0x22] = !CheckConfig(9, 0x40);
-            dictionary[0x23] = CheckConfig(9, 0x20);
-            dictionary[0x24] = !CheckConfig(9, 4);
-            dictionary[0x25] = CheckConfig(9, 0x10);
-            dictionary[0x26] = CheckConfig(10, 4);
-            dictionary[0x27] = CheckConfig(9, 8);
-            dictionary[40] = !CheckConfig(8, 0x20);
-            dictionary[0x29] = CheckConfig(10, 2);
-            dictionary[0x10000] = CheckConfig(5, 0x40) ? 1 : 0;
+            dictionary[0] = CheckConfig(Settings.ActivateNewTab);
+            dictionary[1] = CheckConfig(Settings.DontOpenSame);
+            dictionary[2] = CheckConfig(Settings.CloseWhenGroup);
+            dictionary[3] = CheckConfig(Settings.ShowTooltips);
+            dictionary[4] = CheckConfig(Settings.CaptureX1X2);
+            dictionary[5] = CheckConfig(Settings.ShowNavButtons);
+            dictionary[6] = !CheckConfig(Settings.NoHistory);
+            dictionary[7] = !CheckConfig(Settings.NoRecentFiles);
+            dictionary[8] = CheckConfig(Settings.DragDropOntoTabs);
+            dictionary[9] = !CheckConfig(Settings.NoRenameAmbTabs);
+            dictionary[10] = CheckConfig(Settings.MidClickNewWindow);
+            dictionary[11] = !CheckConfig(Settings.DblClickUpLevel);
+            dictionary[12] = CheckConfig(Settings.NoWindowResizing);
+            dictionary[13] = CheckConfig(Settings.SaveTransparency);
+            dictionary[14] = !CheckConfig(Settings.DontCaptureNewWnds);
+            dictionary[15] = !CheckConfig(Settings.NoNewWndFolderTree);
+            dictionary[0x10] = CheckConfig(Settings.NoTabsFromOutside);
+            dictionary[0x11] = !CheckConfig(Settings.HorizontalScroll);
+            dictionary[0x12] = !CheckConfig(Settings.CtrlWheelChangeView);
+            dictionary[0x13] = CheckConfig(Settings.NeverCloseWindow);
+            dictionary[20] = CheckConfig(Settings.NeverCloseWndLocked);
+            dictionary[0x15] = CheckConfig(Settings.RestoreClosed);
+            dictionary[0x16] = CheckConfig(Settings.RestoreLockedTabs);
+            dictionary[0x17] = CheckConfig(Settings.UseTabSkin);
+            dictionary[0x18] = CheckConfig(Settings.FolderIcon);
+            dictionary[0x19] = CheckConfig(Settings.ActiveTabInBold);
+            dictionary[0x1a] = CheckConfig(Settings.ToolbarBGColor);
+            dictionary[0x1b] = CheckConfig(Settings.HideMenuBar);
+            dictionary[0x1c] = CheckConfig(Settings.BackspaceUpLevel);
+            dictionary[0x1d] = CheckConfig(Settings.NoFullRowSelect) ^ IsVista;
+            dictionary[30] = CheckConfig(Settings.DetailsGridLines);
+            dictionary[0x1f] = CheckConfig(Settings.AlternateRowColors);
+            dictionary[0x20] = CheckConfig(Settings.ShowTooltipPreviews);
+            dictionary[0x21] = CheckConfig(Settings.PreviewsWithShift);
+            dictionary[0x22] = !CheckConfig(Settings.NoShowSubDirTips);
+            dictionary[0x23] = CheckConfig(Settings.SubDirTipsWithShift);
+            dictionary[0x24] = !CheckConfig(Settings.SubDirTipsPreview);
+            dictionary[0x25] = CheckConfig(Settings.SubDirTipsHidden);
+            dictionary[0x26] = CheckConfig(Settings.SubDirTipsSystem);
+            dictionary[0x27] = CheckConfig(Settings.SubDirTipsFiles);
+            dictionary[40] = !CheckConfig(Settings.NoExtWhileRenaming);
+            dictionary[0x29] = CheckConfig(Settings.TrayOnClose);
+            dictionary[0x10000] = CheckConfig(Settings.NavButtonsOnRight) ? 1 : 0;
             dictionary[0x10001] = MaxCount_History;
             dictionary[0x10002] = ConfigValues[1];
             dictionary[0x10003] = ConfigValues[2];
             dictionary[0x10004] = ConfigValues[3];
             dictionary[0x10005] = ConfigValues[4];
-            dictionary[0x10006] = CheckConfig(7, 0x20) ? 1 : (CheckConfig(7, 0x10) ? 2 : 0);
-            dictionary[0x10007] = CheckConfig(5, 1) ? 1 : 0;
+            dictionary[0x10006] = CheckConfig(Settings.MultipleRow1) ? 1 : (CheckConfig(Settings.MultipleRow2) ? 2 : 0);
+            dictionary[0x10007] = CheckConfig(Settings.CaptureMiddleClick) ? 1 : 0;
             dictionary[0x10008] = TabHeight;
-            dictionary[0x10009] = CheckConfig(0, 4) ? 1 : (CheckConfig(5, 4) ? 2 : 0);
+            dictionary[0x10009] = CheckConfig(Settings.FixedWidthTabs) ? 1 : (CheckConfig(Settings.LimitedWidthTabs) ? 2 : 0);
             dictionary[0x1000a] = TabWidth;
             dictionary[0x1000b] = MaxTabWidth;
             dictionary[0x1000c] = MinTabWidth;
@@ -1054,16 +1050,7 @@ namespace QTTabBarLib {
                 ConfigValues[index] = (byte)(ConfigValues[index] & ((byte)(0xff - value)));
             }
         }
-
-        public static void SetConfigAt(int index, byte value, bool fOn) {
-            if(fOn) {
-                ConfigValues[index] = (byte)(ConfigValues[index] | value);
-            }
-            else {
-                ConfigValues[index] = (byte)(ConfigValues[index] & ((byte)(0xff - value)));
-            }
-        }
-
+        
         private static void SetImageKey(string key, string itemPath) {
             if(!ImageListGlobal.Images.ContainsKey(key)) {
                 ImageListGlobal.Images.Add(key, GetIcon(itemPath, false));
@@ -1071,8 +1058,8 @@ namespace QTTabBarLib {
         }
 
         public static void SetTabBarOption(TabBarOption tabBarOption, QTTabBarClass tabBar) {
-            bool fAutoSubText = !CheckConfig(10, 0x20);
-            bool fPaintBG = CheckConfig(7, 4);
+            bool fAutoSubText = !CheckConfig(Settings.NoRenameAmbTabs);
+            bool fPaintBG = CheckConfig(Settings.ToolbarBGColor);
             string str = Path_LanguageFile;
             Dictionary<int, object> dictionary = tabBarOption.Dictionary;
             Dictionary<int, object> dictionary2 = GetTabBarOption().Dictionary;
@@ -1086,49 +1073,49 @@ namespace QTTabBarLib {
                     dictionary2[num] = dictionary[num];
                 }
             }
-            SetConfigAt(0, 0x80, (bool)dictionary2[0]);
-            SetConfigAt(0, 0x40, (bool)dictionary2[1]);
-            SetConfigAt(0, 0x20, (bool)dictionary2[2]);
-            SetConfigAt(0, 8, (bool)dictionary2[3]);
-            SetConfigAt(5, 0x20, (bool)dictionary2[4]);
-            SetConfigAt(5, 0x80, (bool)dictionary2[5]);
-            SetConfigAt(5, 2, !((bool)dictionary2[6]));
-            SetConfigAt(6, 0x20, !((bool)dictionary2[7]));
-            SetConfigAt(10, 0x80, (bool)dictionary2[8]);
-            SetConfigAt(10, 0x20, !((bool)dictionary2[9]));
-            SetConfigAt(6, 0x80, (bool)dictionary2[10]);
-            SetConfigAt(6, 0x40, !((bool)dictionary2[11]));
-            SetConfigAt(6, 2, (bool)dictionary2[12]);
-            SetConfigAt(8, 4, (bool)dictionary2[13]);
-            SetConfigAt(6, 0x10, !((bool)dictionary2[14]));
-            SetConfigAt(6, 4, !((bool)dictionary2[15]));
-            SetConfigAt(10, 0x40, (bool)dictionary2[0x10]);
-            SetConfigAt(10, 0x10, !((bool)dictionary2[0x11]));
-            SetConfigAt(10, 8, !((bool)dictionary2[0x12]));
-            SetConfigAt(0, 2, (bool)dictionary2[0x13]);
-            SetConfigAt(0, 1, (bool)dictionary2[20]);
-            SetConfigAt(0, 0x10, (bool)dictionary2[0x15]);
-            SetConfigAt(6, 8, (bool)dictionary2[0x16]);
-            SetConfigAt(5, 8, (bool)dictionary2[0x17]);
-            SetConfigAt(7, 2, (bool)dictionary2[0x18]);
-            SetConfigAt(5, 0x10, (bool)dictionary2[0x19]);
-            SetConfigAt(7, 4, (bool)dictionary2[0x1a]);
-            SetConfigAt(7, 8, (bool)dictionary2[0x1b]);
-            SetConfigAt(7, 1, (bool)dictionary2[0x1c]);
-            SetConfigAt(8, 0x40, ((bool)dictionary2[0x1d]) ^ IsVista);
-            SetConfigAt(8, 0x80, (bool)dictionary2[30]);
-            SetConfigAt(8, 8, (bool)dictionary2[0x1f]);
-            SetConfigAt(8, 2, (bool)dictionary2[0x20]);
-            SetConfigAt(8, 1, (bool)dictionary2[0x21]);
-            SetConfigAt(9, 0x40, !((bool)dictionary2[0x22]));
-            SetConfigAt(9, 0x20, (bool)dictionary2[0x23]);
-            SetConfigAt(9, 4, !((bool)dictionary2[0x24]));
-            SetConfigAt(9, 0x10, (bool)dictionary2[0x25]);
-            SetConfigAt(10, 4, (bool)dictionary2[0x26]);
-            SetConfigAt(9, 8, (bool)dictionary2[0x27]);
-            SetConfigAt(8, 0x20, !((bool)dictionary2[40]));
-            SetConfigAt(10, 2, (bool)dictionary2[0x29]);
-            SetConfigAt(5, 0x40, ((int)dictionary2[0x10000]) == 1);
+            SetConfigAt(Settings.ActivateNewTab, (bool)dictionary2[0]);
+            SetConfigAt(Settings.DontOpenSame, (bool)dictionary2[1]);
+            SetConfigAt(Settings.CloseWhenGroup, (bool)dictionary2[2]);
+            SetConfigAt(Settings.ShowTooltips, (bool)dictionary2[3]);
+            SetConfigAt(Settings.CaptureX1X2, (bool)dictionary2[4]);
+            SetConfigAt(Settings.ShowNavButtons, (bool)dictionary2[5]);
+            SetConfigAt(Settings.NoHistory, !((bool)dictionary2[6]));
+            SetConfigAt(Settings.NoRecentFiles, !((bool)dictionary2[7]));
+            SetConfigAt(Settings.DragDropOntoTabs, (bool)dictionary2[8]);
+            SetConfigAt(Settings.NoRenameAmbTabs, !((bool)dictionary2[9]));
+            SetConfigAt(Settings.MidClickNewWindow, (bool)dictionary2[10]);
+            SetConfigAt(Settings.DblClickUpLevel, !((bool)dictionary2[11]));
+            SetConfigAt(Settings.NoWindowResizing, (bool)dictionary2[12]);
+            SetConfigAt(Settings.SaveTransparency, (bool)dictionary2[13]);
+            SetConfigAt(Settings.DontCaptureNewWnds, !((bool)dictionary2[14]));
+            SetConfigAt(Settings.NoNewWndFolderTree, !((bool)dictionary2[15]));
+            SetConfigAt(Settings.NoTabsFromOutside, (bool)dictionary2[0x10]);
+            SetConfigAt(Settings.HorizontalScroll, !((bool)dictionary2[0x11]));
+            SetConfigAt(Settings.CtrlWheelChangeView, !((bool)dictionary2[0x12]));
+            SetConfigAt(Settings.NeverCloseWindow, (bool)dictionary2[0x13]);
+            SetConfigAt(Settings.NeverCloseWndLocked, (bool)dictionary2[20]);
+            SetConfigAt(Settings.RestoreClosed, (bool)dictionary2[0x15]);
+            SetConfigAt(Settings.RestoreLockedTabs, (bool)dictionary2[0x16]);
+            SetConfigAt(Settings.UseTabSkin, (bool)dictionary2[0x17]);
+            SetConfigAt(Settings.FolderIcon, (bool)dictionary2[0x18]);
+            SetConfigAt(Settings.ActiveTabInBold, (bool)dictionary2[0x19]);
+            SetConfigAt(Settings.ToolbarBGColor, (bool)dictionary2[0x1a]);
+            SetConfigAt(Settings.HideMenuBar, (bool)dictionary2[0x1b]);
+            SetConfigAt(Settings.BackspaceUpLevel, (bool)dictionary2[0x1c]);
+            SetConfigAt(Settings.NoFullRowSelect, ((bool)dictionary2[0x1d]) ^ IsVista);
+            SetConfigAt(Settings.DetailsGridLines, (bool)dictionary2[30]);
+            SetConfigAt(Settings.AlternateRowColors, (bool)dictionary2[0x1f]);
+            SetConfigAt(Settings.ShowTooltipPreviews, (bool)dictionary2[0x20]);
+            SetConfigAt(Settings.PreviewsWithShift, (bool)dictionary2[0x21]);
+            SetConfigAt(Settings.NoShowSubDirTips, !((bool)dictionary2[0x22]));
+            SetConfigAt(Settings.SubDirTipsWithShift, (bool)dictionary2[0x23]);
+            SetConfigAt(Settings.SubDirTipsPreview, !((bool)dictionary2[0x24]));
+            SetConfigAt(Settings.SubDirTipsHidden, (bool)dictionary2[0x25]);
+            SetConfigAt(Settings.SubDirTipsSystem, (bool)dictionary2[0x26]);
+            SetConfigAt(Settings.SubDirTipsFiles, (bool)dictionary2[0x27]);
+            SetConfigAt(Settings.NoExtWhileRenaming, !((bool)dictionary2[40]));
+            SetConfigAt(Settings.TrayOnClose, (bool)dictionary2[0x29]);
+            SetConfigAt(Settings.NavButtonsOnRight, ((int)dictionary2[0x10000]) == 1);
             MaxCount_History = ValidateMaxMin((int)dictionary2[0x10001], 0x40, 1);
             ConfigValues[1] = (byte)ValidateMaxMin((int)dictionary2[0x10002], 3, 0);
             ConfigValues[2] = (byte)ValidateMaxMin((int)dictionary2[0x10003], 4, 0);

@@ -141,7 +141,7 @@ namespace QTTabBarLib {
                     width = sizeActual.Width;
                 }
                 bool flag4 = false;
-                if(!QTUtility.CheckConfig(14, 8)) {
+                if(!QTUtility.CheckConfig(Settings.PreviewInfo)) {
                     SizeF ef;
                     string text = Path.GetFileName(path) + "\r\n";
                     if(thumbnail && (toolTipText != null)) {

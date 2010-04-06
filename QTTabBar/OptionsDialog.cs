@@ -4103,7 +4103,7 @@ namespace QTTabBarLib {
             this.cmbTabDblClck.SelectedIndex = QTUtility.ConfigValues[3];
             this.cmbBGDblClick.SelectedIndex = QTUtility.ConfigValues[4];
             this.cmbTabWhlClck.SelectedIndex = QTUtility.ConfigValues[12];
-            this.cmbTabTextAlignment.SelectedIndex = QTUtility.CheckConfig(13, 0x40) ? 1 : 0;
+            this.cmbTabTextAlignment.SelectedIndex = QTUtility.CheckConfig(Settings.AlignTabTextCenter) ? 1 : 0;
             this.chbNavBtn.Checked = (QTUtility.ConfigValues[5] & 0x80) == 0x80;
             if((QTUtility.ConfigValues[5] & 0x40) == 0x40) {
                 this.cmbNavBtn.SelectedIndex = 1;
@@ -4133,7 +4133,7 @@ namespace QTTabBarLib {
             this.chbRestoreLocked.Checked = (QTUtility.ConfigValues[6] & 8) == 8;
             this.chbFoldrTree.Checked = (QTUtility.ConfigValues[6] & 4) == 0;
             this.chbWndUnresizable.Checked = (QTUtility.ConfigValues[6] & 2) == 2;
-            if(!QTUtility.CheckConfig(6, 0x20)) {
+            if(!QTUtility.CheckConfig(Settings.NoRecentFiles)) {
                 if(QTUtility.CheckConfig(14, 4)) {
                     this.chbSaveExecuted.CheckState = CheckState.Checked;
                 }
@@ -4184,7 +4184,7 @@ namespace QTTabBarLib {
             this.btnHiliteClsc.ForeColor = QTUtility.TabHiliteColor;
             this.btnShadowAct.ForeColor = QTUtility.TabTextColor_ActivShdw;
             this.btnShadowIna.ForeColor = QTUtility.TabTextColor_InAtvShdw;
-            this.chbTabTitleShadow.Checked = QTUtility.CheckConfig(13, 2);
+            this.chbTabTitleShadow.Checked = QTUtility.CheckConfig(Settings.TabTitleShadows);
             this.btnShadowAct.Enabled = this.btnShadowIna.Enabled = this.chbTabTitleShadow.Checked;
             this.textBoxAction_BarDblClck.Text = QTUtility.Action_BarDblClick;
             QTUtility.RefreshGroupsDic();
@@ -4192,7 +4192,7 @@ namespace QTTabBarLib {
             QTUtility.RefreshUserAppDic(false);
             this.InitializeTreeView_UserApps();
             this.btnTabFont.Font = QTUtility.TabFont;
-            if(QTUtility.CheckConfig(7, 8)) {
+            if(QTUtility.CheckConfig(Settings.HideMenuBar)) {
                 this.chbHideMenu.Checked = true;
             }
             if(QTUtility.IsVista) {
@@ -4202,7 +4202,7 @@ namespace QTTabBarLib {
             else {
                 this.chbBSUpOneLvl.Enabled = false;
                 this.chbSelectWithoutExt.Checked = (QTUtility.ConfigValues[8] & 0x20) == 0;
-                this.chbTreeShftWhlTab.Checked = !QTUtility.CheckConfig(13, 8);
+                this.chbTreeShftWhlTab.Checked = !QTUtility.CheckConfig(Settings.MidClickFolderTree);
             }
             this.btnToolBarBGClr.Enabled = this.chbToolbarBGClr.Checked = (QTUtility.ConfigValues[7] & 4) == 4;
             this.btnToolBarBGClr.BackColor = QTUtility.RebarBGColor;
@@ -4222,7 +4222,7 @@ namespace QTTabBarLib {
                 else if((QTUtility.ConfigValues[11] & 0x20) == 0x20) {
                     this.cmbRebarBGImageMode.SelectedIndex = 2;
                 }
-                else if(QTUtility.CheckConfig(13, 1)) {
+                else if(QTUtility.CheckConfig(Settings.RebarImageStretch2)) {
                     this.cmbRebarBGImageMode.SelectedIndex = 3;
                 }
                 else {
@@ -4234,9 +4234,9 @@ namespace QTTabBarLib {
                 this.chbRebarBGImage.Enabled = this.tbRebarImagePath.Enabled = this.btnRebarImage.Enabled = this.cmbRebarBGImageMode.Enabled = false;
             }
             this.chbWndRestrAlpha.Checked = (QTUtility.ConfigValues[8] & 4) == 4;
-            this.chbShowPreview.Checked = QTUtility.CheckConfig(8, 2);
-            this.chbPreviewMode.Checked = QTUtility.CheckConfig(8, 1);
-            this.chbPreviewInfo.Checked = !QTUtility.CheckConfig(14, 8);
+            this.chbShowPreview.Checked = QTUtility.CheckConfig(Settings.ShowTooltipPreviews);
+            this.chbPreviewMode.Checked = QTUtility.CheckConfig(Settings.PreviewsWithShift);
+            this.chbPreviewInfo.Checked = !QTUtility.CheckConfig(Settings.PreviewInfo);
             this.nudPreviewMaxWidth.Enabled = this.nudPreviewMaxHeight.Enabled = this.cmbTextExts.Enabled = this.btnAddTextExt.Enabled = this.btnDelTextExt.Enabled = this.btnDefaultTextExt.Enabled = this.cmbImgExts.Enabled = this.btnAddImgExt.Enabled = this.btnDelImgExt.Enabled = this.btnDefaultImgExt.Enabled = this.btnPreviewFont.Enabled = this.btnPreviewFontDefault.Enabled = this.chbPreviewInfo.Enabled = this.chbPreviewMode.Enabled = this.chbShowPreview.Checked;
             this.nudPreviewMaxWidth.Value = QTUtility.PreviewMaxWidth;
             this.nudPreviewMaxHeight.Value = QTUtility.PreviewMaxHeight;
@@ -4247,33 +4247,33 @@ namespace QTTabBarLib {
                 catch {
                 }
             }
-            this.chbSubDirTip.Checked = !QTUtility.CheckConfig(9, 0x40);
-            this.chbSubDirTipMode.Checked = QTUtility.CheckConfig(9, 0x20);
-            this.chbSubDirTipModeHidden.Checked = QTUtility.CheckConfig(9, 0x10);
-            this.chbSubDirTipModeFile.Checked = QTUtility.CheckConfig(9, 8);
-            this.chbSubDirTipPreview.Checked = !QTUtility.CheckConfig(9, 4);
+            this.chbSubDirTip.Checked = !QTUtility.CheckConfig(Settings.NoShowSubDirTips);
+            this.chbSubDirTipMode.Checked = QTUtility.CheckConfig(Settings.SubDirTipsWithShift);
+            this.chbSubDirTipModeHidden.Checked = QTUtility.CheckConfig(Settings.SubDirTipsHidden);
+            this.chbSubDirTipModeFile.Checked = QTUtility.CheckConfig(Settings.SubDirTipsFiles);
+            this.chbSubDirTipPreview.Checked = !QTUtility.CheckConfig(Settings.SubDirTipsPreview);
             this.chbSubDirTipMode.Enabled = this.chbSubDirTipModeHidden.Enabled = this.chbSubDirTipModeFile.Enabled = this.chbSubDirTipPreview.Enabled = this.chbSubDirTip.Checked;
-            this.chbSubDirTipModeSystem.Checked = QTUtility.CheckConfig(10, 4);
+            this.chbSubDirTipModeSystem.Checked = QTUtility.CheckConfig(Settings.SubDirTipsSystem);
             this.nudMaxUndo.Value = QTUtility.MaxCount_History;
             this.nudMaxRecentFile.Value = QTUtility.MaxCount_Executed;
-            this.chbDD.Checked = QTUtility.CheckConfig(10, 0x80);
-            this.chbNoTabFromOuteside.Checked = QTUtility.CheckConfig(10, 0x40);
-            this.chbHolizontalScroll.Checked = !QTUtility.CheckConfig(10, 0x10);
-            this.chbWhlChangeView.Checked = !QTUtility.CheckConfig(10, 8);
-            this.chbAutoSubText.Checked = !QTUtility.CheckConfig(10, 0x20);
-            this.chbSendToTray.Checked = QTUtility.CheckConfig(10, 2);
-            this.chbSendToTrayOnMinimize.Checked = QTUtility.CheckConfig(13, 0x80);
-            this.chbF2Selection.Checked = !QTUtility.CheckConfig(10, 1);
-            this.chbTabCloseBtnAlt.Enabled = this.chbTabCloseBtnHover.Enabled = this.chbTabCloseButton.Checked = QTUtility.CheckConfig(11, 0x10);
-            this.chbTabCloseBtnAlt.Checked = QTUtility.CheckConfig(11, 4);
-            this.chbTabCloseBtnHover.Checked = QTUtility.CheckConfig(11, 1);
-            this.chbCursorLoop.Checked = QTUtility.CheckConfig(11, 2);
+            this.chbDD.Checked = QTUtility.CheckConfig(Settings.DragDropOntoTabs);
+            this.chbNoTabFromOuteside.Checked = QTUtility.CheckConfig(Settings.NoTabsFromOutside);
+            this.chbHolizontalScroll.Checked = !QTUtility.CheckConfig(Settings.HorizontalScroll);
+            this.chbWhlChangeView.Checked = !QTUtility.CheckConfig(Settings.CtrlWheelChangeView);
+            this.chbAutoSubText.Checked = !QTUtility.CheckConfig(Settings.NoRenameAmbTabs);
+            this.chbSendToTray.Checked = QTUtility.CheckConfig(Settings.TrayOnClose);
+            this.chbSendToTrayOnMinimize.Checked = QTUtility.CheckConfig(Settings.TrayOnMinimize);
+            this.chbF2Selection.Checked = !QTUtility.CheckConfig(Settings.F2Selection);
+            this.chbTabCloseBtnAlt.Enabled = this.chbTabCloseBtnHover.Enabled = this.chbTabCloseButton.Checked = QTUtility.CheckConfig(Settings.ShowTabCloseButtons);
+            this.chbTabCloseBtnAlt.Checked = QTUtility.CheckConfig(Settings.TabCloseBtnsWithAlt);
+            this.chbTabCloseBtnHover.Checked = QTUtility.CheckConfig(Settings.TabCloseBtnsOnHover);
+            this.chbCursorLoop.Checked = QTUtility.CheckConfig(Settings.CursorLoop);
             this.chbDriveLetter.Enabled = this.chbSubDirTipOnTab.Enabled = this.chbFolderIcon.Checked;
-            this.chbSubDirTipOnTab.Checked = QTUtility.CheckConfig(11, 8);
+            this.chbSubDirTipOnTab.Checked = QTUtility.CheckConfig(Settings.ShowSubDirTipOnTab);
             this.nudNetworkTimeOut.Value = IDLWrapper.iPingTimeOutMS / 0x3e8;
             this.textBoxLang.Text = QTUtility.Path_LanguageFile;
-            if(QTUtility.CheckConfig(13, 0x20)) {
-                if(QTUtility.CheckConfig(13, 0x10)) {
+            if(QTUtility.CheckConfig(Settings.NonDefaultMenu)) {
+                if(QTUtility.CheckConfig(Settings.XPStyleMenus)) {
                     this.cmbMenuRenderer.SelectedIndex = 2;
                 }
                 else {
@@ -4283,11 +4283,11 @@ namespace QTTabBarLib {
             else {
                 this.cmbMenuRenderer.SelectedIndex = 0;
             }
-            this.chbTabSwitcher.Checked = !QTUtility.CheckConfig(13, 4);
-            this.chbAutoUpdate.Checked = QTUtility.CheckConfig(14, 0x80);
-            this.chbRemoveOnSeparate.Checked = !QTUtility.CheckConfig(14, 0x40);
-            this.chbDriveLetter.Checked = QTUtility.CheckConfig(14, 0x20);
-            this.chbPlaySound.Checked = !QTUtility.CheckConfig(14, 0x10);
+            this.chbTabSwitcher.Checked = !QTUtility.CheckConfig(Settings.TabSwitcher);
+            this.chbAutoUpdate.Checked = QTUtility.CheckConfig(Settings.AutoUpdate);
+            this.chbRemoveOnSeparate.Checked = !QTUtility.CheckConfig(Settings.KeepOnSeparate);
+            this.chbDriveLetter.Checked = QTUtility.CheckConfig(Settings.ShowDriveLetters);
+            this.chbPlaySound.Checked = !QTUtility.CheckConfig(Settings.DisableSound);
             this.InitializePluginView();
             this.textBoxPluginLang.Text = QTUtility.Path_PluginLangFile;
             this.CreateShortcutItems();
