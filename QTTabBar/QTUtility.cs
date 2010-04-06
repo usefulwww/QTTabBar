@@ -28,6 +28,89 @@ namespace QTTabBarLib {
     using System.Windows.Forms;
     using System.Xml;
 
+    public enum Settings : uint {
+        NeverCloseWndLocked = 8 * 00 + 0, // 0x01,
+        NeverCloseWindow    = 8 * 00 + 1, // 0x02,
+        FixedWidthTabs      = 8 * 00 + 2, // 0x04,
+        ShowTooltips        = 8 * 00 + 3, // 0x08,
+        RestoreClosed       = 8 * 00 + 4, // 0x10,
+        CloseWhenGroup      = 8 * 00 + 5, // 0x20,
+        DontOpenSame        = 8 * 00 + 6, // 0x40,
+        ActivateNewTab      = 8 * 00 + 7, // 0x80,
+        CaptureMiddleClick  = 8 * 05 + 0, // 0x01,
+        NoHistory           = 8 * 05 + 1, // 0x02,
+        LimitedWidthTabs    = 8 * 05 + 2, // 0x04,
+        UseTabSkin          = 8 * 05 + 3, // 0x08,
+        ActiveTabInBold     = 8 * 05 + 4, // 0x10,
+        CaptureX1X2         = 8 * 05 + 5, // 0x20,
+        NavButtonsOnRight   = 8 * 05 + 6, // 0x40,
+        ShowNavButtons      = 8 * 05 + 7, // 0x80,
+        ShowHashResult      = 8 * 06 + 0, // 0x01,
+        NoWindowResizing    = 8 * 06 + 1, // 0x02,
+        NoNewWndFolderTree  = 8 * 06 + 2, // 0x04,
+        RestoreLockedTabs   = 8 * 06 + 3, // 0x08,
+        DontCaptureNewWnds  = 8 * 06 + 4, // 0x10,
+        NoRecentFiles       = 8 * 06 + 5, // 0x20,
+        DblClickUpLevel     = 8 * 06 + 6, // 0x40,
+        MidClickNewWindow   = 8 * 06 + 7, // 0x80,
+        BackspaceUpLevel    = 8 * 07 + 0, // 0x01,
+        FolderIcon          = 8 * 07 + 1, // 0x02,
+        ToolbarBGColor      = 8 * 07 + 2, // 0x04,
+        HideMenuBar         = 8 * 07 + 3, // 0x08,
+        MultipleRow2        = 8 * 07 + 4, // 0x10,
+        MultipleRow1        = 8 * 07 + 5, // 0x20,
+        /* [unused]         = 8 * 07 + 6, // 0x40 */
+        HashTopMost         = 8 * 07 + 7, // 0x80 */
+        PreviewsWithShift   = 8 * 08 + 0, // 0x01,
+        ShowTooltipPreviews = 8 * 08 + 1, // 0x02,
+        SaveTransparency    = 8 * 08 + 2, // 0x04,
+        AlternateRowColors  = 8 * 08 + 3, // 0x08,
+        HashFullPath        = 8 * 08 + 4, // 0x10, */
+        NoExtWhileRenaming  = 8 * 08 + 5, // 0x20,
+        NoFullRowSelect     = 8 * 08 + 6, // 0x40,
+        DetailsGridLines    = 8 * 08 + 7, // 0x80,
+        /* [unused]         = 8 * 09 + 0, // 0x01 */
+        HashClearOnClose    = 8 * 09 + 1, // 0x02 */
+        SubDirTipsPreview   = 8 * 09 + 2, // 0x04,
+        SubDirTipsFiles     = 8 * 09 + 3, // 0x08,
+        SubDirTipsHidden    = 8 * 09 + 4, // 0x10,
+        SubDirTipsWithShift = 8 * 09 + 5, // 0x20,
+        NoShowSubDirTips    = 8 * 09 + 6, // 0x40,
+        /* [unused]         = 8 * 09 + 7, // 0x80 */
+        F2Selection         = 8 * 10 + 0, // 0x01,
+        TrayOnClose         = 8 * 10 + 1, // 0x02,
+        SubDirTipsSystem    = 8 * 10 + 2, // 0x04,
+        CtrlWheelChangeView = 8 * 10 + 3, // 0x08,
+        HorizontalScroll    = 8 * 10 + 4, // 0x10,
+        NoRenameAmbTabs     = 8 * 10 + 5, // 0x20,
+        NoTabsFromOutside   = 8 * 10 + 6, // 0x40,
+        DragDropOntoTabs    = 8 * 10 + 7, // 0x80,
+        TabCloseBtnsOnHover = 8 * 11 + 0, // 0x01,
+        CursorLoop          = 8 * 11 + 1, // 0x02,
+        TabCloseBtnsWithAlt = 8 * 11 + 2, // 0x04,
+        ShowSubDirTipOnTab  = 8 * 11 + 3, // 0x08,
+        ShowTabCloseButtons = 8 * 11 + 4, // 0x10,
+        RebarImageActual    = 8 * 11 + 5, // 0x20,
+        RebarImageTile      = 8 * 11 + 6, // 0x40,
+        RebarImage          = 8 * 11 + 7, // 0x80,
+        RebarImageStretch2  = 8 * 13 + 0, // 0x01,
+        TabTitleShadows     = 8 * 13 + 1, // 0x02,
+        TabSwitcher         = 8 * 13 + 2, // 0x04,
+        MidClickFolderTree  = 8 * 13 + 3, // 0x08, 
+        XPStyleMenus        = 8 * 13 + 4, // 0x10,
+        NonDefaultMenu      = 8 * 13 + 5, // 0x20,
+        AlignTabTextCenter  = 8 * 13 + 6, // 0x40,
+        TrayOnMinimize      = 8 * 13 + 7, // 0x80,
+        /* [unused]         = 8 * 14 + 0, // 0x01 */
+        /* [unused]         = 8 * 14 + 1, // 0x02 */
+        AllRecentFiles      = 8 * 14 + 2, // 0x04 */
+        PreviewInfo         = 8 * 14 + 3, // 0x08,
+        DisableSound        = 8 * 14 + 4, // 0x10,
+        ShowDriveLetters    = 8 * 14 + 5, // 0x20,
+        KeepOnSeparate      = 8 * 14 + 6, // 0x40,
+        AutoUpdate          = 8 * 14 + 7, // 0x80,
+    }
+
     internal static class QTUtility {
         internal static string Action_BarDblClick;
         internal static Version BetaRevision = new Version(0, 0);
@@ -247,6 +330,12 @@ namespace QTTabBarLib {
                     QTUtility2.MakeErrorLog(exception, null);
                 }
             }
+        }
+
+        public static bool CheckConfig(Settings setting) {
+            int index = (uint)setting >> 3;
+            byte value = (byte)(1 << ((uint)setting & 7));
+            return ((ConfigValues[index] & value) == value);
         }
 
         public static bool CheckConfig(int index, byte value) {
@@ -952,6 +1041,17 @@ namespace QTTabBarLib {
                         }
                     }
                 }
+            }
+        }
+
+        public static void SetConfigAt(Settings setting, bool fOn) {
+            int index = (uint)setting >> 3;
+            byte value = (byte)(1 << ((uint)setting & 7));
+            if (fOn) {
+                ConfigValues[index] = (byte)(ConfigValues[index] | value);
+            }
+            else {
+                ConfigValues[index] = (byte)(ConfigValues[index] & ((byte)(0xff - value)));
             }
         }
 

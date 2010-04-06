@@ -3663,128 +3663,11 @@ namespace QTTabBarLib {
             }
         }
 
-        private enum Settings0 : byte {
-            ActivateNewTab      = 0x80,
-            DontOpenSame        = 0x40,
-            CloseWhenGroup      = 0x20,
-            RestoreClosed       = 0x10,
-            ShowTooltips        = 0x08,
-            FixedWidthTabs      = 0x04,
-            NeverCloseWindow    = 0x02,
-            NeverCloseWndLocked = 0x01
-        }
-
-        private enum Settings5 : byte {
-            ShowNavButtons      = 0x80,
-            NavButtonsOnRight   = 0x40,
-            CaptureX1X2         = 0x20,
-            ActiveTabInBold     = 0x10,
-            UseTabSkin          = 0x08,
-            LimitedWidthTabs    = 0x04,
-            NoHistory           = 0x02,
-            CaptureMiddleClick  = 0x01
-        }
-
-        private enum Settings6 : byte {
-            MidClickNewWindow   = 0x80,
-            DblClickUpLevel     = 0x40,
-            NoRecentFiles       = 0x20,
-            DontCaptureNewWnds  = 0x10,
-            RestoreLockedTabs   = 0x08,
-            NoNewWndFolderTree  = 0x04,
-            NoWindowResizing    = 0x02,
-            /* ???              = 0x01 */
-        }
-
-        private enum Settings7 : byte {
-            /* ???              = 0x80 */
-            MultipleRow1        = 0x20,
-            MultipleRow2        = 0x10,
-            HideMenuBar         = 0x08,
-            ToolbarBGColor      = 0x04,
-            FolderIcon          = 0x02,
-            BackspaceUpLevel    = 0x01
-        }
-
-        private enum Settings7 : byte {
-            /* ???              = 0x80 */
-            /* ???              = 0x40 */
-            MultipleRow1        = 0x20,
-            MultipleRow2        = 0x10,
-            HideMenuBar         = 0x08,
-            ToolbarBGColor      = 0x04,
-            FolderIcon          = 0x02,
-            BackspaceUpLevel    = 0x01
-        }
-
-        private enum Settings8 : byte {
-            DetailsGridLines    = 0x80,
-            NoFullRowSelect     = 0x40,
-            NoExtWhileRenaming  = 0x20,
-            /* ???              = 0x10, */
-            AlternateRowColors  = 0x08,
-            SaveTransparency    = 0x04,
-            ShowTooltipPreviews = 0x02,
-            PreviewsWithShift   = 0x01
-        }
-
-        private enum Settings9 : byte {
-            /* ???              = 0x80 */
-            NoShowSubDirTips    = 0x40,
-            SubDirTipsWithShift = 0x20,
-            SubDirTipsHidden    = 0x10,
-            SubDirTipsFiles     = 0x08,
-            SubDirTipsPreview   = 0x04,
-            /* ???              = 0x02 */
-            /* ???              = 0x01 */
-        }
-
-        private enum Settings10 : byte {
-            DragDropOntoTabs    = 0x80,
-            NoTabsFromOutside   = 0x40,
-            NoRenameAmbTabs     = 0x20,
-            HorizontalScroll    = 0x10,
-            CtrlWheelChangeView = 0x08,
-            SubDirTipsSystem    = 0x04,
-            TrayOnClose         = 0x02,
-            F2Selection         = 0x01,
-        }
-
-        private enum Settings11 : byte {
-            RebarImage          = 0x80,
-            RebarImageTile      = 0x40,
-            RebarImageActual    = 0x20,
-            ShowTabCloseButtons = 0x10,
-            ShowSubDirTipOnTab  = 0x08,
-            TabCloseBtnsWithAlt = 0x04,
-            CursorLoop          = 0x02,
-            TabCloseBtnsOnHover = 0x01,
-        }
-
-        private enum Settings13 : byte {
-            TrayOnMinimize      = 0x80,
-            AlignTabTextCenter  = 0x40,
-            NonDefaultMenu      = 0x20,
-            XPStyleMenus        = 0x10,
-            MidClickFolderTree  = 0x08,
-            TabSwitcher         = 0x04,
-            TabTitleShadows     = 0x02,
-            RebarImageStretch2  = 0x01
-        }
-
-        private enum Settings14 : byte {
-            AutoUpdate          = 0x80,
-            KeepOnSeparate      = 0x40,
-            ShowDriveLetters    = 0x20,
-            DisableSound        = 0x10,
-            PreviewInfo         = 0x08,
-        }
-
         private void SaveSettings(bool fApply) {
-            bool flag = (QTUtility.ConfigValues[8] & 0x10) == 0x10;
-            bool flag2 = (QTUtility.ConfigValues[9] & 2) == 2;
-            bool flag3 = (QTUtility.ConfigValues[6] & 1) == 1;
-            bool flag4 = (QTUtility.ConfigValues[7] & 0x80) == 0;
+            bool flag = QTUtility.CheckConfig(Settings.HashFullPath);
+            bool flag2 = QTUtility.CheckConfig(Settings.HashClearOnClose);
+            bool flag3 = QTUtility.CheckConfig(Settings.ShowHashResult);
+            bool flag4 = QTUtility.CheckConfig(Settings.HashTopMost);
             QTUtility.ConfigValues[0] = 0;
             QTUtility.ConfigValues[5] = 0;
             QTUtility.ConfigValues[6] = 0;
@@ -3796,25 +3679,25 @@ namespace QTTabBarLib {
             QTUtility.ConfigValues[13] = 0;
             QTUtility.ConfigValues[14] = 0;
             if(this.chbActivateNew.Checked) {
-                QTUtility.ConfigValues[0] |= 0x80;
+                QTUtility.SetConfigAt(Settings.ActivateNewTab);
             }
             if(this.chbDontOpenSame.Checked) {
-                QTUtility.ConfigValues[0] |= 0x40;
+                QTUtility.SetConfigAt(Settings.DontOpenSame);
             }
             if(this.chbCloseWhenGroup.Checked) {
-                QTUtility.ConfigValues[0] |= 0x20;
+                QTUtility.SetConfigAt(Settings.CloseWhenGroup, true);
             }
             if(this.chbRestoreClosed.Checked) {
-                QTUtility.ConfigValues[0] |= 0x10;
+                QTUtility.SetConfigAt(Settings.RestoreClosed, true);
             }
             if(this.chbShowTooltip.Checked) {
-                QTUtility.ConfigValues[0] |= 8;
+                QTUtility.SetConfigAt(Settings.ShowTooltips, true);
             }
             if(this.chbNeverCloseWindow.Checked) {
-                QTUtility.ConfigValues[0] |= 2;
+                QTUtility.SetConfigAt(Settings.NeverCloseWindow, true);
             }
             if(this.chbNeverCloseWndLocked.Checked) {
-                QTUtility.ConfigValues[0] |= 1;
+                QTUtility.SetConfigAt(Settings.NeverCloseWndLocked, true);
             }
             QTUtility.ConfigValues[1] = (byte)this.cmbNewTabLoc.SelectedIndex;
             QTUtility.ConfigValues[2] = (byte)this.cmbActvClose.SelectedIndex;
@@ -3823,64 +3706,64 @@ namespace QTTabBarLib {
             QTUtility.ConfigValues[12] = (byte)this.cmbTabWhlClck.SelectedIndex;
             QTUtility.Action_BarDblClick = this.textBoxAction_BarDblClck.Text;
             if(this.cmbTabSizeMode.SelectedIndex == 1) {
-                QTUtility.ConfigValues[0] |= 4;
+                QTUtility.SetConfigAt(Settings.FixedWidthTabs, true);
             }
             else if(this.cmbTabSizeMode.SelectedIndex == 2) {
-                QTUtility.ConfigValues[5] |= 4;
+                QTUtility.SetConfigAt(Settings.LimitedWidthTabs, true);
             }
             QTUtility.TabWidth = (int)this.nudTabWidth.Value;
             QTUtility.TabHeight = (int)this.nudTabHeight.Value;
             QTUtility.MaxTabWidth = (int)this.nudTabWidthMax.Value;
             QTUtility.MinTabWidth = (int)this.nudTabWidthMin.Value;
             if(this.chbNavBtn.Checked) {
-                QTUtility.ConfigValues[5] |= 0x80;
+                QTUtility.SetConfigAt(Settings.ShowNavButtons, true);
             }
             if(this.cmbNavBtn.SelectedIndex == 1) {
-                QTUtility.ConfigValues[5] |= 0x40;
+                QTUtility.SetConfigAt(Settings.NavButtonsOnRight, true);
             }
             if(this.chbX1X2.Checked) {
-                QTUtility.ConfigValues[5] |= 0x20;
+                QTUtility.SetConfigAt(Settings.CaptureX1X2, true);
             }
             if(this.chbBoldActv.Checked) {
-                QTUtility.ConfigValues[5] |= 0x10;
+                QTUtility.SetConfigAt(Settings.ActiveTabInBold, true);
             }
             if(this.chbUseTabSkin.Checked) {
-                QTUtility.ConfigValues[5] |= 8;
+                QTUtility.SetConfigAt(Settings.UseTabSkin, true);
             }
             if(!this.chbNoHistory.Checked) {
-                QTUtility.ConfigValues[5] |= 2;
+                QTUtility.SetConfigAt(Settings.NoHistory, true);
             }
             if(!this.chbWhlClick.Checked) {
-                QTUtility.ConfigValues[5] |= 1;
+                QTUtility.SetConfigAt(Settings.CaptureMiddleClick, true);
             }
             if(this.cmbWhlClick.SelectedIndex == 1) {
-                QTUtility.ConfigValues[6] |= 0x80;
+                QTUtility.SetConfigAt(Settings.MidClickNewWindow, true);
             }
             if(!this.chbNCADblClck.Checked) {
-                QTUtility.ConfigValues[6] |= 0x40;
+                QTUtility.SetConfigAt(Settings.DblClickUpLevel, true);
             }
             if(this.chbSaveExecuted.CheckState != CheckState.Unchecked) {
                 if(this.chbSaveExecuted.CheckState == CheckState.Checked) {
-                    QTUtility.ConfigValues[14] |= 4;
+                    QTUtility.SetConfigAt(Settings.AllRecentFiles, true);
                 }
             }
             else {
-                QTUtility.ConfigValues[6] |= 0x20;
+                QTUtility.SetConfigAt(Settings.NoRecentFiles, true);
             }
             if(!this.chbBlockProcess.Checked) {
-                QTUtility.ConfigValues[6] |= 0x10;
+                QTUtility.SetConfigAt(Settings.DontCaptureNewWnds, true);
             }
             if(this.chbRestoreLocked.Checked) {
-                QTUtility.ConfigValues[6] |= 8;
+                QTUtility.SetConfigAt(Settings.RestoreLockedTabs, true);
             }
             if(!this.chbFoldrTree.Checked) {
-                QTUtility.ConfigValues[6] |= 4;
+                QTUtility.SetConfigAt(Settings.NoNewWndFolderTree, true);
             }
             if(this.chbWndUnresizable.Checked) {
-                QTUtility.ConfigValues[6] |= 2;
+                QTUtility.SetConfigAt(Settings.NoWindowResizing, true);
             }
             if(flag3) {
-                QTUtility.ConfigValues[6] |= 1;
+                QTUtility.SetConfigAt(Settings.ShowHashResult, true);
             }
             QTUtility.TabTextColor_Active = this.btnActTxtClr.ForeColor;
             QTUtility.TabTextColor_Inactv = this.btnInactTxtClr.ForeColor;
@@ -3888,164 +3771,164 @@ namespace QTTabBarLib {
             QTUtility.RebarBGColor = this.btnToolBarBGClr.BackColor;
             QTUtility.TabTextColor_ActivShdw = this.btnShadowAct.ForeColor;
             QTUtility.TabTextColor_InAtvShdw = this.btnShadowIna.ForeColor;
-            if(!flag4) {
-                QTUtility.ConfigValues[7] |= 0x80;
+            if(flag4) {
+                QTUtility.SetConfigAt(Settings.HashTopMost, true);
             }
             if(this.cmbMultiRow.SelectedIndex == 1) {
-                QTUtility.ConfigValues[7] |= 0x20;
+                QTUtility.SetConfigAt(Settings.MultipleRow1, true);
             }
             else if(this.cmbMultiRow.SelectedIndex == 2) {
-                QTUtility.ConfigValues[7] |= 0x10;
+                QTUtility.SetConfigAt(Settings.MultipleRow2, true);
             }
             if(this.chbHideMenu.Checked) {
-                QTUtility.ConfigValues[7] |= 8;
+                QTUtility.SetConfigAt(Settings.HideMenuBar, true);
             }
             if(this.chbToolbarBGClr.Checked) {
-                QTUtility.ConfigValues[7] |= 4;
+                QTUtility.SetConfigAt(Settings.ToolbarBGColor, true);
             }
             if(this.chbFolderIcon.Checked) {
-                QTUtility.ConfigValues[7] |= 2;
+                QTUtility.SetConfigAt(Settings.FolderIcon, true);
             }
             if(this.chbBSUpOneLvl.Checked) {
-                QTUtility.ConfigValues[7] |= 1;
+                QTUtility.SetConfigAt(Settings.BackspaceUpLevel, true);
             }
             QTUtility.Path_TabImage = this.tbTabImagePath.Text;
             QTUtility.TabImageSizingMargin = this.tabImageSetting.SizingMargin;
             if(this.chbGridLine.Checked) {
-                QTUtility.ConfigValues[8] |= 0x80;
+                QTUtility.SetConfigAt(Settings.DetailsGridLines, true);
             }
             if(this.chbNoFulRowSelect.Checked ^ QTUtility.IsVista) {
-                QTUtility.ConfigValues[8] |= 0x40;
+                QTUtility.SetConfigAt(Settings.NoFullRowSelect, true);
             }
             if(!QTUtility.IsVista && !this.chbSelectWithoutExt.Checked) {
-                QTUtility.ConfigValues[8] |= 0x20;
+                QTUtility.SetConfigAt(Settings.NoExtWhileRenaming, true);
             }
             if(flag) {
-                QTUtility.ConfigValues[8] |= 0x10;
+                QTUtility.SetConfigAt(Settings.HashFullPath, true);
             }
             if(this.chbAlternateColor.Checked) {
-                QTUtility.ConfigValues[8] |= 8;
+                QTUtility.SetConfigAt(Settings.AlternateRowColors, true);
             }
             QTUtility.ShellViewRowCOLORREF_Background = QTUtility2.MakeCOLORREF(this.btnAlternateColor.BackColor);
             QTUtility.ShellViewRowCOLORREF_Text = QTUtility2.MakeCOLORREF(this.btnAlternateColor_Text.ForeColor);
             if(this.chbWndRestrAlpha.Checked) {
-                QTUtility.ConfigValues[8] |= 4;
+                QTUtility.SetConfigAt(Settings.SaveTransparency, true);
             }
             if(this.chbShowPreview.Checked) {
-                QTUtility.ConfigValues[8] |= 2;
+                QTUtility.SetConfigAt(Settings.ShowTooltipPreviews, true);
             }
             if(this.chbPreviewMode.Checked) {
-                QTUtility.ConfigValues[8] |= 1;
+                QTUtility.SetConfigAt(Settings.PreviewsWithShift, true);
             }
             if(!this.chbSubDirTip.Checked) {
-                QTUtility.ConfigValues[9] |= 0x40;
+                QTUtility.SetConfigAt(Settings.NoShowSubDirTips, true);
             }
             if(this.chbSubDirTipMode.Checked) {
-                QTUtility.ConfigValues[9] |= 0x20;
+                QTUtility.SetConfigAt(Settings.SubDirTipsWithShift, true);
             }
             if(this.chbSubDirTipModeHidden.Checked) {
-                QTUtility.ConfigValues[9] |= 0x10;
+                QTUtility.SetConfigAt(Settings.SubDirTipsHidden, true);
             }
             if(this.chbSubDirTipModeFile.Checked) {
-                QTUtility.ConfigValues[9] |= 8;
+                QTUtility.SetConfigAt(Settings.SubDirTipsFiles, true);
             }
             if(!this.chbSubDirTipPreview.Checked) {
-                QTUtility.ConfigValues[9] |= 4;
+                QTUtility.SetConfigAt(Settings.SubDirTipsPreview, true);
             }
             if(flag2) {
-                QTUtility.ConfigValues[9] |= 2;
+                QTUtility.SetConfigAt(Settings.HashClearOnClose, true);
             }
             if(this.chbDD.Checked) {
-                QTUtility.ConfigValues[10] |= 0x80;
+                QTUtility.SetConfigAt(Settings.DragDropOntoTabs, true);
             }
             if(this.chbNoTabFromOuteside.Checked) {
-                QTUtility.ConfigValues[10] |= 0x40;
+                QTUtility.SetConfigAt(Settings.NoTabsFromOutside, true);
             }
             if(!this.chbAutoSubText.Checked) {
-                QTUtility.ConfigValues[10] |= 0x20;
+                QTUtility.SetConfigAt(Settings.NoRenameAmbTabs, true);
             }
             if(!this.chbHolizontalScroll.Checked) {
-                QTUtility.ConfigValues[10] |= 0x10;
+                QTUtility.SetConfigAt(Settings.HorizontalScroll, true);
             }
             if(!this.chbWhlChangeView.Checked) {
-                QTUtility.ConfigValues[10] |= 8;
+                QTUtility.SetConfigAt(Settings.CtrlWheelChangeView, true);
             }
             if(this.chbSubDirTipModeSystem.Checked) {
-                QTUtility.ConfigValues[10] |= 4;
+                QTUtility.SetConfigAt(Settings.SubDirTipsSystem, true);
             }
             if(this.chbSendToTray.Checked) {
-                QTUtility.ConfigValues[10] |= 2;
+                QTUtility.SetConfigAt(Settings.TrayOnClose, true);
             }
             if(!this.chbF2Selection.Checked) {
-                QTUtility.ConfigValues[10] |= 1;
+                QTUtility.SetConfigAt(Settings.F2Selection, true);
             }
             if(this.chbRebarBGImage.Checked) {
-                QTUtility.ConfigValues[11] |= 0x80;
+                QTUtility.SetConfigAt(Settings.RebarImage, true);
             }
             switch(this.cmbRebarBGImageMode.SelectedIndex) {
                 case 1:
-                    QTUtility.ConfigValues[11] |= 0x40;
+                    QTUtility.SetConfigAt(Settings.RebarImageTile, true);
                     break;
 
                 case 2:
-                    QTUtility.ConfigValues[11] |= 0x20;
+                    QTUtility.SetConfigAt(Settings.RebarImageActual, true);
                     break;
 
                 case 3:
-                    QTUtility.ConfigValues[13] |= 1;
+                    QTUtility.SetConfigAt(Settings.RebarImageStretch2, true);
                     break;
             }
             QTUtility.Path_RebarImage = this.tbRebarImagePath.Text;
             if(this.chbTabCloseButton.Checked) {
-                QTUtility.ConfigValues[11] |= 0x10;
+                QTUtility.SetConfigAt(Settings.ShowTabCloseButtons, true);
             }
             if(this.chbSubDirTipOnTab.Checked) {
-                QTUtility.ConfigValues[11] |= 8;
+                QTUtility.SetConfigAt(Settings.ShowSubDirTipOnTab, true);
             }
             if(this.chbTabCloseBtnAlt.Checked) {
-                QTUtility.ConfigValues[11] |= 4;
+                QTUtility.SetConfigAt(Settings.TabCloseBtnsWithAlt, true);
             }
             if(this.chbCursorLoop.Checked) {
-                QTUtility.ConfigValues[11] |= 2;
+                QTUtility.SetConfigAt(Settings.CursorLoop, true);
             }
             if(this.chbTabCloseBtnHover.Checked) {
-                QTUtility.ConfigValues[11] |= 1;
+                QTUtility.SetConfigAt(Settings.TabCloseBtnsOnHover, true);
             }
             if(this.chbSendToTrayOnMinimize.Checked) {
-                QTUtility.ConfigValues[13] |= 0x80;
+                QTUtility.SetConfigAt(Settings.TrayOnMinimize, true);
             }
             if(this.cmbTabTextAlignment.SelectedIndex == 1) {
-                QTUtility.ConfigValues[13] |= 0x40;
+                QTUtility.SetConfigAt(Settings.AlignTabTextCenter, true);
             }
             if(this.cmbMenuRenderer.SelectedIndex != 0) {
-                QTUtility.ConfigValues[13] |= 0x20;
+                QTUtility.SetConfigAt(Settings.NonDefaultMenu, true);
                 if(this.cmbMenuRenderer.SelectedIndex == 2) {
-                    QTUtility.ConfigValues[13] |= 0x10;
+                    QTUtility.SetConfigAt(Settings.XPStyleMenus, true);
                 }
             }
             if(!this.chbTreeShftWhlTab.Checked) {
-                QTUtility.ConfigValues[13] |= 8;
+                QTUtility.SetConfigAt(Settings.MidClickFolderTree, true);
             }
             if(!this.chbTabSwitcher.Checked) {
-                QTUtility.ConfigValues[13] |= 4;
+                QTUtility.SetConfigAt(Settings.TabSwitcher, true);
             }
             if(this.chbTabTitleShadow.Checked) {
-                QTUtility.ConfigValues[13] |= 2;
+                QTUtility.SetConfigAt(Settings.TabTitleShadows, true);
             }
             if(this.chbAutoUpdate.Checked) {
-                QTUtility.ConfigValues[14] |= 0x80;
+                QTUtility.SetConfigAt(Settings.AutoUpdate, true);
             }
             if(!this.chbRemoveOnSeparate.Checked) {
-                QTUtility.ConfigValues[14] |= 0x40;
+                QTUtility.SetConfigAt(Settings.KeepOnSeparate, true);
             }
             if(this.chbDriveLetter.Checked) {
-                QTUtility.ConfigValues[14] |= 0x20;
+                QTUtility.SetConfigAt(Settings.ShowDriveLetters, true);
             }
             if(!this.chbPlaySound.Checked) {
-                QTUtility.ConfigValues[14] |= 0x10;
+                QTUtility.SetConfigAt(Settings.DisableSound, true);
             }
             if(!this.chbPreviewInfo.Checked) {
-                QTUtility.ConfigValues[14] |= 8;
+                QTUtility.SetConfigAt(Settings.PreviewInfo, true);
             }
             QTUtility.MaxCount_History = (int)this.nudMaxUndo.Value;
             QTUtility.MaxCount_Executed = (int)this.nudMaxRecentFile.Value;
