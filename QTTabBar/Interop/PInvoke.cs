@@ -35,6 +35,8 @@ namespace QTTabBarLib.Interop {
         [DllImport("user32.dll")]
         public static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
         [DllImport("user32.dll")]
+        public static extern bool ClientToScreen(IntPtr hwnd, ref Point lpPoint);
+        [DllImport("user32.dll")]
         public static extern bool CloseClipboard();
         [DllImport("ole32.dll")]
         public static extern int CoCreateInstance([In] ref Guid rclsid, IntPtr pUnkOuter, uint dwClsContext, [In] ref Guid riid, [MarshalAs(UnmanagedType.IUnknown)] out object ppv);

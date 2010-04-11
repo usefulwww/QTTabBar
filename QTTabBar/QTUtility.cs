@@ -66,7 +66,7 @@ namespace QTTabBarLib {
         SaveTransparency    = 8 * 08 + 2, // 0x04,
         AlternateRowColors  = 8 * 08 + 3, // 0x08,
         HashFullPath        = 8 * 08 + 4, // 0x10, */
-        NoExtWhileRenaming  = 8 * 08 + 5, // 0x20,
+        ExtWhileRenaming    = 8 * 08 + 5, // 0x20,
         NoFullRowSelect     = 8 * 08 + 6, // 0x40,
         DetailsGridLines    = 8 * 08 + 7, // 0x80,
         /* [unused]         = 8 * 09 + 0, // 0x01 */
@@ -602,7 +602,7 @@ namespace QTTabBarLib {
             dictionary[0x25] = CheckConfig(Settings.SubDirTipsHidden);
             dictionary[0x26] = CheckConfig(Settings.SubDirTipsSystem);
             dictionary[0x27] = CheckConfig(Settings.SubDirTipsFiles);
-            dictionary[40] = !CheckConfig(Settings.NoExtWhileRenaming);
+            dictionary[40] = !CheckConfig(Settings.ExtWhileRenaming);
             dictionary[0x29] = CheckConfig(Settings.TrayOnClose);
             dictionary[0x10000] = CheckConfig(Settings.NavButtonsOnRight) ? 1 : 0;
             dictionary[0x10001] = MaxCount_History;
@@ -1113,7 +1113,7 @@ namespace QTTabBarLib {
             SetConfigAt(Settings.SubDirTipsHidden, (bool)dictionary2[0x25]);
             SetConfigAt(Settings.SubDirTipsSystem, (bool)dictionary2[0x26]);
             SetConfigAt(Settings.SubDirTipsFiles, (bool)dictionary2[0x27]);
-            SetConfigAt(Settings.NoExtWhileRenaming, !((bool)dictionary2[40]));
+            SetConfigAt(Settings.ExtWhileRenaming, !((bool)dictionary2[40]));
             SetConfigAt(Settings.TrayOnClose, (bool)dictionary2[0x29]);
             SetConfigAt(Settings.NavButtonsOnRight, ((int)dictionary2[0x10000]) == 1);
             MaxCount_History = ValidateMaxMin((int)dictionary2[0x10001], 0x40, 1);

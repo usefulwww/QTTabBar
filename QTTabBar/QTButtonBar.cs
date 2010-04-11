@@ -1317,7 +1317,7 @@ namespace QTTabBarLib {
             else if(e.KeyChar == '\x001b') {
                 QTTabBarClass tabBar = QTUtility.instanceManager.GetTabBar(this.ExplorerHandle);
                 if(tabBar != null) {
-                    QTTabBarLib.Interop.PInvoke.SetFocus(tabBar.GetSysListView32());
+                    QTTabBarLib.Interop.PInvoke.SetFocus(tabBar.GetExplorerListView());
                     e.Handled = true;
                 }
             }
@@ -1377,7 +1377,7 @@ namespace QTTabBarLib {
                         return false;
                     }
                     view2.ItemCount(2, out num);
-                    IntPtr hwnd = QTUtility.instanceManager.GetTabBar(this.ExplorerHandle).GetSysListView32();
+                    IntPtr hwnd = QTUtility.instanceManager.GetTabBar(this.ExplorerHandle).GetExplorerListView();
                     QTTabBarLib.Interop.PInvoke.SetRedraw(hwnd, false);
                     try {
                         Regex regex;

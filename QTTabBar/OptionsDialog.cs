@@ -3801,7 +3801,7 @@ namespace QTTabBarLib {
                 QTUtility.SetConfigAt(Settings.NoFullRowSelect, true);
             }
             if(!QTUtility.IsVista && !this.chbSelectWithoutExt.Checked) {
-                QTUtility.SetConfigAt(Settings.NoExtWhileRenaming, true);
+                QTUtility.SetConfigAt(Settings.ExtWhileRenaming, true);
             }
             if(flag) {
                 QTUtility.SetConfigAt(Settings.HashFullPath, true);

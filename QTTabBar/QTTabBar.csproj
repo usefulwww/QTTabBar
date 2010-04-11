@@ -55,6 +55,12 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationClient">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppLauncher.cs" />
@@ -133,6 +139,7 @@
     <Compile Include="Interop\IThumbnailCache.cs" />
     <Compile Include="Interop\ITravelLogEntry.cs" />
     <Compile Include="Interop\ITravelLogStg.cs" />
+    <Compile Include="Interop\ListViewConstants.cs" />
     <Compile Include="Interop\LocalThumbnailCache.cs" />
     <Compile Include="Interop\LOGFONT.cs" />
     <Compile Include="Interop\LVHITTESTINFO.cs" />

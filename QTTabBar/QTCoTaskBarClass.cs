@@ -1817,7 +1817,7 @@ namespace QTTabBarLib {
                             return this.HandleTabFolderActions(-1, modKey, fEnqExec);
                         }
                     case -175:
-                        if(!QTUtility.IsVista && !QTUtility.CheckConfig(Settings.NoExtWhileRenaming)) {
+                        if(!QTUtility.IsVista && !QTUtility.CheckConfig(Settings.ExtWhileRenaming)) {
                             this.shellViewControler.DefWndProc(ref msg);
                             if(msg.Result == IntPtr.Zero) {
                                 QTTabBarLib.Interop.NMLVDISPINFO nmlvdispinfo = (QTTabBarLib.Interop.NMLVDISPINFO)Marshal.PtrToStructure(msg.LParam, typeof(QTTabBarLib.Interop.NMLVDISPINFO));
