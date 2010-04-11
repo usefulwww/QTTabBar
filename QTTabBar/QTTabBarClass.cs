@@ -6231,12 +6231,13 @@ namespace QTTabBarLib {
 
         private bool shellViewController_MessageCaptured(ref System.Windows.Forms.Message msg) {
             IntPtr ptr;
-            if(msg.Msg == WM.DESTROY) {
-                this.HandleF5();
-                return false;
-            }
-            if(msg.Msg != WM.NOTIFY) {
-                if(msg.Msg == WM.MOUSEACTIVATE) {
+            switch(msg.Msg) {
+                // The ShellView is destroyed and recreated when Explorer is refreshed.
+                case WM.DESTROY: 
+                    this.HandleF5();
+                    break;
+                   
+                case WM.MOUSEACTIVATE:
                     if(((this.subDirTip != null) && this.subDirTip.MenuIsShowing) || ((this.subDirTip_Tab != null) && this.subDirTip_Tab.MenuIsShowing)) {
                         IntPtr optionalHandle = this.shellViewController.OptionalHandle;
                         if(1 == ((int)PInvoke.SendMessage(optionalHandle, 0x1032, IntPtr.Zero, IntPtr.Zero))) {
@@ -6257,15 +6258,22 @@ namespace QTTabBarLib {
                             }
                         }
                     }
-                }
-                else if(msg.Msg == WM.ENTERMENULOOP) {
+                    break;
+
+                case WM.ENTERMENULOOP:
                     this.fEnteredMenuLoop = true;
-                }
-                else if(msg.Msg == WM.EXITMENULOOP) {
+                    break;
+
+                case WM.EXITMENULOOP:
                     this.fEnteredMenuLoop = false;
-                }
-                goto Label_0D0B;
+                    break;
             }
+
+            if(msg.Msg != WM.NOTIFY) {
+                return false;
+            }
+
+            // Process WM.NOTIFY
             NMHDR nmhdr = (NMHDR)Marshal.PtrToStructure(msg.LParam, typeof(NMHDR));
             if(nmhdr.hwndFrom != this.shellViewController.OptionalHandle) {
                 if(((nmhdr.code == -12) && (nmhdr.idFrom == IntPtr.Zero)) && this.fTrackMouseEvent) {
@@ -6278,222 +6286,9 @@ namespace QTTabBarLib {
                 }
                 return false;
             }
-            int code = nmhdr.code;
-            if(code <= -155) {
-                switch(code) {
-                    case LVN.GETINFOTIP:
-                        goto Label_03E3;
-
-                    case LVN.KEYDOWN: {
-                            if((!QTUtility.CheckConfig(Settings.ShowTooltipPreviews) && QTUtility.CheckConfig(Settings.NoShowSubDirTips)) && !QTUtility.CheckConfig(Settings.CursorLoop)) {
-                                goto Label_0D0B;
-                            }
-                            NMLVKEYDOWN nmlvkeydown = (NMLVKEYDOWN)Marshal.PtrToStructure(msg.LParam, typeof(NMLVKEYDOWN));
-                            int wVKey = nmlvkeydown.wVKey;
-                            if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews)) {
-                                if(QTUtility.CheckConfig(Settings.PreviewsWithShift)) {
-                                    if(wVKey != 0x10) {
-                                        this.HideThumbnailTooltip(2);
-                                    }
-                                }
-                                else {
-                                    this.HideThumbnailTooltip(2);
-                                }
-                            }
-                            if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
-                                if(QTUtility.CheckConfig(Settings.SubDirTipsWithShift)) {
-                                    if(wVKey != 0x10) {
-                                        this.HideSubDirTip(3);
-                                    }
-                                }
-                                else if(wVKey != 0x11) {
-                                    this.HideSubDirTip(3);
-                                }
-                            }
-                            if(((!QTUtility.CheckConfig(Settings.CursorLoop) || (0x25 > wVKey)) || ((wVKey > 40) || (Control.ModifierKeys != Keys.None))) || !this.HandleLVKEYDOWN_CursorLoop(wVKey)) {
-                                goto Label_0D0B;
-                            }
-                            msg.Result = (IntPtr)1;
-                            return true;
-                        }
-                    case LVN.ENDLABELEDIT: {
-                            NMLVDISPINFO nmlvdispinfo2 = (NMLVDISPINFO)Marshal.PtrToStructure(msg.LParam, typeof(NMLVDISPINFO));
-                            if(!(nmlvdispinfo2.item.pszText != IntPtr.Zero)) {
-                                goto Label_0D0B;
-                            }
-                            IShellView ppshv = null;
-                            IntPtr zero = IntPtr.Zero;
-                            IntPtr ptr5 = IntPtr.Zero;
-                            IntPtr pIDL = IntPtr.Zero;
-                            try {
-                                try {
-                                    if(this.ShellBrowser.QueryActiveShellView(out ppshv) == 0) {
-                                        IFolderView view2 = (IFolderView)ppshv;
-                                        if(view2.Item(nmlvdispinfo2.item.iItem, out zero) == 0) {
-                                            ptr5 = ShellMethods.ShellGetPath(this.ShellBrowser);
-                                            pIDL = PInvoke.ILCombine(ptr5, zero);
-                                            string displayName = ShellMethods.GetDisplayName(pIDL, true);
-                                            string str2 = Marshal.PtrToStringUni(nmlvdispinfo2.item.pszText);
-                                            if(displayName != str2) {
-                                                this.HandleF5();
-                                            }
-                                        }
-                                    }
-                                }
-                                catch {
-                                }
-                                goto Label_0D0B;
-                            }
-                            finally {
-                                if(ppshv != null) {
-                                    Marshal.ReleaseComObject(ppshv);
-                                }
-                                if(zero != IntPtr.Zero) {
-                                    PInvoke.CoTaskMemFree(zero);
-                                }
-                                if(ptr5 != IntPtr.Zero) {
-                                    PInvoke.CoTaskMemFree(ptr5);
-                                }
-                                if(pIDL != IntPtr.Zero) {
-                                    PInvoke.CoTaskMemFree(pIDL);
-                                }
-                            }
-                            goto Label_03E3;
-                        }
-                    case LVN.BEGINLABELEDIT:
-                        if(QTUtility.IsVista || QTUtility.CheckConfig(Settings.ExtWhileRenaming)) {
-                            goto Label_0D0B;
-                        }
-                        this.shellViewController.DefWndProc(ref msg);
-                        if(msg.Result == IntPtr.Zero) {
-                            NMLVDISPINFO nmlvdispinfo = (NMLVDISPINFO)Marshal.PtrToStructure(msg.LParam, typeof(NMLVDISPINFO));
-                            IntPtr ptr2 = ShellMethods.ShellGetPath(this.ShellBrowser);
-                            if((ptr2 != IntPtr.Zero) && (nmlvdispinfo.item.lParam != IntPtr.Zero)) {
-                                IntPtr ptr3 = PInvoke.ILCombine(ptr2, nmlvdispinfo.item.lParam);
-                                HandleRenaming(nmhdr.hwndFrom, ptr3, this);
-                                PInvoke.CoTaskMemFree(ptr2);
-                                PInvoke.CoTaskMemFree(ptr3);
-                            }
-                        }
-                        return true;
-
-                    case LVN.BEGINSCROLL:
-                        if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews)) {
-                            this.HideThumbnailTooltip(8);
-                        }
-                        if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
-                            this.HideSubDirTip(8);
-                        }
-                        goto Label_0D0B;
-                }
-                goto Label_0D0B;
-            }
-            if(code <= -114) {
-                switch(code) {
-                    case LVN.ODSTATECHANGED:
-                        if(QTUtility.IsVista && QTUtility.CheckConfig(Settings.NoFullRowSelect)) {
-                            NMLVODSTATECHANGE nmlvodstatechange = (NMLVODSTATECHANGE)Marshal.PtrToStructure(msg.LParam, typeof(NMLVODSTATECHANGE));
-                            if(((nmlvodstatechange.uNewState & 2) == 2) && (1 == ((int)PInvoke.SendMessage(nmlvodstatechange.hdr.hwndFrom, LVM.GETVIEW, IntPtr.Zero, IntPtr.Zero)))) {
-                                PInvoke.SendMessage(nmlvodstatechange.hdr.hwndFrom, LVM.REDRAWITEMS, (IntPtr)nmlvodstatechange.iFrom, (IntPtr)nmlvodstatechange.iTo);
-                            }
-                        }
-                        goto Label_0D0B;
-
-                    case LVN.ITEMACTIVATE:
-                        if(this.timerSelectionChanged != null) {
-                            this.timerSelectionChanged.Enabled = false;
-                        }
-                        return this.HandleITEMACTIVATE(msg.LParam, this.shellViewController.OptionalHandle);
-
-                    case LVN.HOTTRACK:
-                        if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews) || !QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
-                            NMLISTVIEW nmlistview = (NMLISTVIEW)Marshal.PtrToStructure(msg.LParam, typeof(NMLISTVIEW));
-                            Keys modifierKeys = Control.ModifierKeys;
-                            if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews)) {
-                                if((this.thumbnailTooltip != null) && (this.thumbnailTooltip.IsShowing || this.fThumbnailPending)) {
-                                    if(!QTUtility.CheckConfig(Settings.PreviewsWithShift) ^ (modifierKeys == Keys.Shift)) {
-                                        if(nmlistview.iItem != this.thumbnailIndex) {
-                                            if(nmlistview.iItem > -1) {
-                                                if(this.ShowThumbnailTooltip(nmlistview.iItem, Control.MousePosition, false)) {
-                                                    return false;
-                                                }
-                                            }
-                                            else {
-                                                int num;
-                                                if(((!QTUtility.IsVista && (1 == ((int)PInvoke.SendMessage(nmhdr.hwndFrom, LVM.GETVIEW, IntPtr.Zero, IntPtr.Zero)))) && ((((int)PInvoke.SendMessage(nmhdr.hwndFrom, 0x1004, IntPtr.Zero, IntPtr.Zero)) > 0) && IsTrackingInMainItemRectDetailsView(nmhdr.hwndFrom, out num))) && ((num == this.thumbnailIndex) || this.ShowThumbnailTooltip(num, Control.MousePosition, false))) {
-                                                    return false;
-                                                }
-                                            }
-                                            if(this.thumbnailTooltip.HideToolTip()) {
-                                                this.thumbnailIndex = -1;
-                                            }
-                                        }
-                                    }
-                                    else if(this.thumbnailTooltip.HideToolTip()) {
-                                        this.thumbnailIndex = -1;
-                                    }
-                                }
-                                if(this.timer_HoverThumbnail == null) {
-                                    this.timer_HoverThumbnail = new System.Windows.Forms.Timer(this.components);
-                                    this.timer_HoverThumbnail.Interval = (int)(SystemInformation.MouseHoverTime * 0.2);
-                                    this.timer_HoverThumbnail.Tick += new EventHandler(this.timer_HoverThumbnail_Tick);
-                                }
-                                this.timer_HoverThumbnail.Enabled = false;
-                                this.timer_HoverThumbnail.Enabled = true;
-                            }
-                            if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
-                                if(!QTUtility.CheckConfig(Settings.SubDirTipsWithShift) ^ (modifierKeys == Keys.Shift)) {
-                                    int iItem = nmlistview.iItem;
-                                    if((this.subDirIndex == iItem) && (QTUtility.IsVista || (iItem != -1))) {
-                                        return false;
-                                    }
-                                    if(QTUtility.IsVista) {
-                                        this.subDirIndex = iItem;
-                                    }
-                                    if((iItem > -1) && (nmlistview.iSubItem == 0)) {
-                                        if(this.ShowSubDirTip(iItem, nmhdr.hwndFrom, false, true)) {
-                                            if(!QTUtility.IsVista) {
-                                                this.subDirIndex = iItem;
-                                            }
-                                            return false;
-                                        }
-                                        this.subDirIndex = -1;
-                                    }
-                                    else if(((!QTUtility.IsVista && (iItem == -1)) &&
-                                            ((1 == ((int)PInvoke.SendMessage(nmhdr.hwndFrom, LVM.GETVIEW, IntPtr.Zero, IntPtr.Zero))) &&
-                                            (((int)PInvoke.SendMessage(nmhdr.hwndFrom, LVM.GETITEMCOUNT, IntPtr.Zero, IntPtr.Zero)) > 0))) &&
-                                            (IsTrackingInMainItemRectDetailsView(nmhdr.hwndFrom, out iItem) &&
-                                            ((this.subDirIndex == iItem) || this.ShowSubDirTip(iItem, nmhdr.hwndFrom, false, true)))) {
-                                        this.subDirIndex = iItem;
-                                        return false;
-                                    }
-                                }
-                                this.HideSubDirTip(2);
-                            }
-                        }
-                        goto Label_0D0B;
-                }
-                goto Label_0D0B;
-            }
-            switch(code) {
-                case LVN.DELETEALLITEMS:
-                    this.HandleF5();
-                    goto Label_0D0B;
-
-                case LVN.DELETEITEM:
-                    if(QTUtility.instanceManager.TryGetButtonBarHandle(this.ExplorerHandle, out ptr)) {
-                        QTUtility2.SendCOPYDATASTRUCT(ptr, (IntPtr)14, null, IntPtr.Zero);
-                    }
-                    if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
-                        this.HideSubDirTip(1);
-                    }
-                    if(QTUtility.CheckConfig(Settings.AlternateRowColors) && (1 == ((int)PInvoke.SendMessage(nmhdr.hwndFrom, 0x108f, IntPtr.Zero, IntPtr.Zero)))) {
-                        PInvoke.InvalidateRect(nmhdr.hwndFrom, IntPtr.Zero, true);
-                    }
-                    goto Label_0D0B;
-
-                case LVN.INSERTITEM:
-                    goto Label_0D0B;
+            switch(nmhdr.code) {
+                case -12: // NM_CUSTOMDRAW
+                    return this.HandleLVCUSTOMDRAW(ref msg, this.shellViewController.OptionalHandle);
 
                 case LVN.ITEMCHANGED: {
                         if(QTUtility.instanceManager.TryGetButtonBarHandle(this.ExplorerHandle, out ptr)) {
@@ -6536,36 +6331,235 @@ namespace QTTabBarLib {
                                 }
                             }
                         }
-                        goto Label_0D0B;
+                        break;
                     }
+
+                case LVN.INSERTITEM: // Shouldn't this be the same as DELETEITEM?
+                    break;           // TODO: Investigate
+                
+                case LVN.DELETEITEM:
+                    if(QTUtility.instanceManager.TryGetButtonBarHandle(this.ExplorerHandle, out ptr)) {
+                        QTUtility2.SendCOPYDATASTRUCT(ptr, (IntPtr)14, null, IntPtr.Zero);
+                    }
+                    if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
+                        this.HideSubDirTip(1);
+                    }
+                    if(QTUtility.CheckConfig(Settings.AlternateRowColors) && (1 == ((int)PInvoke.SendMessage(nmhdr.hwndFrom, 0x108f, IntPtr.Zero, IntPtr.Zero)))) {
+                        PInvoke.InvalidateRect(nmhdr.hwndFrom, IntPtr.Zero, true);
+                    }
+                    break;
+
+                case LVN.DELETEALLITEMS:
+                    this.HandleF5();
+                    break;
+
                 case LVN.BEGINDRAG:
                     this.shellViewController.DefWndProc(ref msg);
                     this.HideSubDirTip(0xff);
-                    return true;
+                    break;
 
-                default:
-                    if(code != -12) {
-                        goto Label_0D0B;
+                case LVN.ITEMACTIVATE:
+                    if(this.timerSelectionChanged != null) {
+                        this.timerSelectionChanged.Enabled = false;
                     }
-                    return this.HandleLVCUSTOMDRAW(ref msg, this.shellViewController.OptionalHandle);
+                    return this.HandleITEMACTIVATE(msg.LParam, this.shellViewController.OptionalHandle);
+
+                case LVN.ODSTATECHANGED:
+                    if(QTUtility.IsVista && QTUtility.CheckConfig(Settings.NoFullRowSelect)) {
+                        NMLVODSTATECHANGE nmlvodstatechange = (NMLVODSTATECHANGE)Marshal.PtrToStructure(msg.LParam, typeof(NMLVODSTATECHANGE));
+                        if(((nmlvodstatechange.uNewState & 2) == 2) && (1 == ((int)PInvoke.SendMessage(nmlvodstatechange.hdr.hwndFrom, LVM.GETVIEW, IntPtr.Zero, IntPtr.Zero)))) {
+                            PInvoke.SendMessage(nmlvodstatechange.hdr.hwndFrom, LVM.REDRAWITEMS, (IntPtr)nmlvodstatechange.iFrom, (IntPtr)nmlvodstatechange.iTo);
+                        }
+                    }
+                    break;
+
+                case LVN.HOTTRACK:
+                    if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews) || !QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
+                        NMLISTVIEW nmlistview = (NMLISTVIEW)Marshal.PtrToStructure(msg.LParam, typeof(NMLISTVIEW));
+                        Keys modifierKeys = Control.ModifierKeys;
+                        if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews)) {
+                            if((this.thumbnailTooltip != null) && (this.thumbnailTooltip.IsShowing || this.fThumbnailPending)) {
+                                if(!QTUtility.CheckConfig(Settings.PreviewsWithShift) ^ (modifierKeys == Keys.Shift)) {
+                                    if(nmlistview.iItem != this.thumbnailIndex) {
+                                        if(nmlistview.iItem > -1) {
+                                            if(this.ShowThumbnailTooltip(nmlistview.iItem, Control.MousePosition, false)) {
+                                                return false;
+                                            }
+                                        }
+                                        else {
+                                            int num;
+                                            if(((!QTUtility.IsVista && (1 == ((int)PInvoke.SendMessage(nmhdr.hwndFrom, LVM.GETVIEW, IntPtr.Zero, IntPtr.Zero)))) && ((((int)PInvoke.SendMessage(nmhdr.hwndFrom, 0x1004, IntPtr.Zero, IntPtr.Zero)) > 0) && IsTrackingInMainItemRectDetailsView(nmhdr.hwndFrom, out num))) && ((num == this.thumbnailIndex) || this.ShowThumbnailTooltip(num, Control.MousePosition, false))) {
+                                                return false;
+                                            }
+                                        }
+                                        if(this.thumbnailTooltip.HideToolTip()) {
+                                            this.thumbnailIndex = -1;
+                                        }
+                                    }
+                                }
+                                else if(this.thumbnailTooltip.HideToolTip()) {
+                                    this.thumbnailIndex = -1;
+                                }
+                            }
+                            if(this.timer_HoverThumbnail == null) {
+                                this.timer_HoverThumbnail = new System.Windows.Forms.Timer(this.components);
+                                this.timer_HoverThumbnail.Interval = (int)(SystemInformation.MouseHoverTime * 0.2);
+                                this.timer_HoverThumbnail.Tick += new EventHandler(this.timer_HoverThumbnail_Tick);
+                            }
+                            this.timer_HoverThumbnail.Enabled = false;
+                            this.timer_HoverThumbnail.Enabled = true;
+                        }
+                        if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
+                            if(!QTUtility.CheckConfig(Settings.SubDirTipsWithShift) ^ (modifierKeys == Keys.Shift)) {
+                                int iItem = nmlistview.iItem;
+                                if((this.subDirIndex == iItem) && (QTUtility.IsVista || (iItem != -1))) {
+                                    return false;
+                                }
+                                if(QTUtility.IsVista) {
+                                    this.subDirIndex = iItem;
+                                }
+                                if((iItem > -1) && (nmlistview.iSubItem == 0)) {
+                                    if(this.ShowSubDirTip(iItem, nmhdr.hwndFrom, false, true)) {
+                                        if(!QTUtility.IsVista) {
+                                            this.subDirIndex = iItem;
+                                        }
+                                        return false;
+                                    }
+                                    this.subDirIndex = -1;
+                                }
+                                else if(((!QTUtility.IsVista && (iItem == -1)) &&
+                                        ((1 == ((int)PInvoke.SendMessage(nmhdr.hwndFrom, LVM.GETVIEW, IntPtr.Zero, IntPtr.Zero))) &&
+                                        (((int)PInvoke.SendMessage(nmhdr.hwndFrom, LVM.GETITEMCOUNT, IntPtr.Zero, IntPtr.Zero)) > 0))) &&
+                                        (IsTrackingInMainItemRectDetailsView(nmhdr.hwndFrom, out iItem) &&
+                                        ((this.subDirIndex == iItem) || this.ShowSubDirTip(iItem, nmhdr.hwndFrom, false, true)))) {
+                                    this.subDirIndex = iItem;
+                                    return false;
+                                }
+                            }
+                            this.HideSubDirTip(2);
+                        }
+                    }
+                    break;
+
+                case LVN.KEYDOWN: {
+                        if((!QTUtility.CheckConfig(Settings.ShowTooltipPreviews) && QTUtility.CheckConfig(Settings.NoShowSubDirTips)) && !QTUtility.CheckConfig(Settings.CursorLoop)) {
+                            return false;
+                        }
+                        NMLVKEYDOWN nmlvkeydown = (NMLVKEYDOWN)Marshal.PtrToStructure(msg.LParam, typeof(NMLVKEYDOWN));
+                        int wVKey = nmlvkeydown.wVKey;
+                        if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews)) {
+                            if(QTUtility.CheckConfig(Settings.PreviewsWithShift)) {
+                                if(wVKey != 0x10) {
+                                    this.HideThumbnailTooltip(2);
+                                }
+                            }
+                            else {
+                                this.HideThumbnailTooltip(2);
+                            }
+                        }
+                        if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
+                            if(QTUtility.CheckConfig(Settings.SubDirTipsWithShift)) {
+                                if(wVKey != 0x10) {
+                                    this.HideSubDirTip(3);
+                                }
+                            }
+                            else if(wVKey != 0x11) {
+                                this.HideSubDirTip(3);
+                            }
+                        }
+                        if(((!QTUtility.CheckConfig(Settings.CursorLoop) || (0x25 > wVKey)) || ((wVKey > 40) || (Control.ModifierKeys != Keys.None))) || !this.HandleLVKEYDOWN_CursorLoop(wVKey)) {
+                            return false;
+                        }
+                        msg.Result = (IntPtr)1;
+                        return true;
+                    }
+
+                case LVN.GETINFOTIP:
+                    if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews) && (!QTUtility.CheckConfig(Settings.PreviewsWithShift) ^ (Control.ModifierKeys == Keys.Shift))) {
+                        NMLVGETINFOTIP nmlvgetinfotip = (NMLVGETINFOTIP)Marshal.PtrToStructure(msg.LParam, typeof(NMLVGETINFOTIP));
+                        if(((this.thumbnailTooltip != null) && this.thumbnailTooltip.IsShowing) && (nmlvgetinfotip.iItem == this.thumbnailIndex)) {
+                            return true;
+                        }
+                        if((this.timer_HoverThumbnail != null) && this.timer_HoverThumbnail.Enabled) {
+                            return true;
+                        }
+                        RECT lprc = GetLVITEMRECT(nmhdr.hwndFrom, nmlvgetinfotip.iItem, false, 0);
+                        Point pnt = Control.MousePosition;
+                        if(PInvoke.PtInRect(ref lprc, new BandObjectLib.POINT(pnt))) {
+                            return this.ShowThumbnailTooltip(nmlvgetinfotip.iItem, pnt, false);
+                        }
+                        return this.ShowThumbnailTooltip(nmlvgetinfotip.iItem, new Point(lprc.right - 0x20, lprc.bottom - 0x10), true);
+                    }
+                    break;
+
+                case LVN.BEGINLABELEDIT:
+                    if(QTUtility.IsVista || QTUtility.CheckConfig(Settings.ExtWhileRenaming)) {
+                        return false;
+                    }
+                    this.shellViewController.DefWndProc(ref msg);
+                    if(msg.Result == IntPtr.Zero) {
+                        NMLVDISPINFO nmlvdispinfo = (NMLVDISPINFO)Marshal.PtrToStructure(msg.LParam, typeof(NMLVDISPINFO));
+                        IntPtr ptr2 = ShellMethods.ShellGetPath(this.ShellBrowser);
+                        if((ptr2 != IntPtr.Zero) && (nmlvdispinfo.item.lParam != IntPtr.Zero)) {
+                            IntPtr ptr3 = PInvoke.ILCombine(ptr2, nmlvdispinfo.item.lParam);
+                            HandleRenaming(nmhdr.hwndFrom, ptr3, this);
+                            PInvoke.CoTaskMemFree(ptr2);
+                            PInvoke.CoTaskMemFree(ptr3);
+                        }
+                    }
+                    break;
+
+                case LVN.ENDLABELEDIT: {
+                        NMLVDISPINFO nmlvdispinfo2 = (NMLVDISPINFO)Marshal.PtrToStructure(msg.LParam, typeof(NMLVDISPINFO));
+                        if(!(nmlvdispinfo2.item.pszText != IntPtr.Zero)) {
+                            return false;
+                        }
+                        IShellView ppshv = null;
+                        IntPtr zero = IntPtr.Zero;
+                        IntPtr ptr5 = IntPtr.Zero;
+                        IntPtr pIDL = IntPtr.Zero;
+                        try {
+                            if(this.ShellBrowser.QueryActiveShellView(out ppshv) == 0) {
+                                IFolderView view2 = (IFolderView)ppshv;
+                                if(view2.Item(nmlvdispinfo2.item.iItem, out zero) == 0) {
+                                    ptr5 = ShellMethods.ShellGetPath(this.ShellBrowser);
+                                    pIDL = PInvoke.ILCombine(ptr5, zero);
+                                    string displayName = ShellMethods.GetDisplayName(pIDL, true);
+                                    string str2 = Marshal.PtrToStringUni(nmlvdispinfo2.item.pszText);
+                                    if(displayName != str2) {
+                                        this.HandleF5();
+                                    }
+                                }
+                            }
+                        }
+                        catch {
+                        }
+                        finally {
+                            if(ppshv != null) {
+                                Marshal.ReleaseComObject(ppshv);
+                            }
+                            if(zero != IntPtr.Zero) {
+                                PInvoke.CoTaskMemFree(zero);
+                            }
+                            if(ptr5 != IntPtr.Zero) {
+                                PInvoke.CoTaskMemFree(ptr5);
+                            }
+                            if(pIDL != IntPtr.Zero) {
+                                PInvoke.CoTaskMemFree(pIDL);
+                            }
+                        }
+                        break;
+                    }
+
+                case LVN.BEGINSCROLL:
+                    if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews)) {
+                        this.HideThumbnailTooltip(8);
+                    }
+                    if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
+                        this.HideSubDirTip(8);
+                    }
+                    break;
             }
-        Label_03E3:
-            if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews) && (!QTUtility.CheckConfig(Settings.PreviewsWithShift) ^ (Control.ModifierKeys == Keys.Shift))) {
-                NMLVGETINFOTIP nmlvgetinfotip = (NMLVGETINFOTIP)Marshal.PtrToStructure(msg.LParam, typeof(NMLVGETINFOTIP));
-                if(((this.thumbnailTooltip != null) && this.thumbnailTooltip.IsShowing) && (nmlvgetinfotip.iItem == this.thumbnailIndex)) {
-                    return true;
-                }
-                if((this.timer_HoverThumbnail != null) && this.timer_HoverThumbnail.Enabled) {
-                    return true;
-                }
-                RECT lprc = GetLVITEMRECT(nmhdr.hwndFrom, nmlvgetinfotip.iItem, false, 0);
-                Point pnt = Control.MousePosition;
-                if(PInvoke.PtInRect(ref lprc, new BandObjectLib.POINT(pnt))) {
-                    return this.ShowThumbnailTooltip(nmlvgetinfotip.iItem, pnt, false);
-                }
-                return this.ShowThumbnailTooltip(nmlvgetinfotip.iItem, new Point(lprc.right - 0x20, lprc.bottom - 0x10), true);
-            }
-        Label_0D0B:
             return false;
         }
 
