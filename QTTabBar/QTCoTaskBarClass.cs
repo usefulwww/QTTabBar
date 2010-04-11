@@ -90,7 +90,7 @@ namespace QTTabBarLib {
         private List<ToolStripItem> RecentFileItemsList = new List<ToolStripItem>();
         private TitleMenuItem recentFileMenuItem;
         private IShellBrowser shellBrowser;
-        private NativeWindowControler shellViewControler;
+        private NativeWindowController shellViewController;
         private StringFormat stringFormat;
         private SubDirTipForm subDirTip;
         private const string TEXT_TOOLBAR = "QTTab Desktop Tool";
@@ -377,9 +377,9 @@ namespace QTTabBarLib {
                 PInvoke.UnhookWindowsHookEx(this.hHook_KeyDesktop);
                 this.hHook_KeyDesktop = IntPtr.Zero;
             }
-            if(this.shellViewControler != null) {
-                this.shellViewControler.ReleaseHandle();
-                this.shellViewControler = null;
+            if(this.shellViewController != null) {
+                this.shellViewController.ReleaseHandle();
+                this.shellViewController = null;
             }
             base.CloseDW(dwReserved);
         }
@@ -1265,9 +1265,9 @@ namespace QTTabBarLib {
             PInvoke.PostMessage(this.hwndListView, WM.APP + 100, IntPtr.Zero, IntPtr.Zero);
             IntPtr windowLongPtr = PInvoke.GetWindowLongPtr(this.hwndListView, -8);
             if(windowLongPtr != IntPtr.Zero) {
-                this.shellViewControler = new NativeWindowControler(windowLongPtr);
-                this.shellViewControler.OptionalHandle = this.hwndListView;
-                this.shellViewControler.MessageCaptured += new NativeWindowControler.MessageEventHandler(this.shellViewControler_MessageCaptured);
+                this.shellViewController = new NativeWindowController(windowLongPtr);
+                this.shellViewController.OptionalHandle = this.hwndListView;
+                this.shellViewController.MessageCaptured += new NativeWindowController.MessageEventHandler(this.shellViewController_MessageCaptured);
             }
         }
 
@@ -1767,11 +1767,11 @@ namespace QTTabBarLib {
             Myself = this;
         }
 
-        private bool shellViewControler_MessageCaptured(ref Message msg) {
+        private bool shellViewController_MessageCaptured(ref Message msg) {
             QTTabBarLib.Interop.NMHDR nmhdr;
             if(msg.Msg == WM.NOTIFY) {
                 nmhdr = (QTTabBarLib.Interop.NMHDR)Marshal.PtrToStructure(msg.LParam, typeof(QTTabBarLib.Interop.NMHDR));
-                if(nmhdr.hwndFrom != this.shellViewControler.OptionalHandle) {
+                if(nmhdr.hwndFrom != this.shellViewController.OptionalHandle) {
                     return false;
                 }
                 if(this.folderView == null) {
@@ -1818,7 +1818,7 @@ namespace QTTabBarLib {
                         }
                     case -175:
                         if(!QTUtility.IsVista && !QTUtility.CheckConfig(Settings.ExtWhileRenaming)) {
-                            this.shellViewControler.DefWndProc(ref msg);
+                            this.shellViewController.DefWndProc(ref msg);
                             if(msg.Result == IntPtr.Zero) {
                                 QTTabBarLib.Interop.NMLVDISPINFO nmlvdispinfo = (QTTabBarLib.Interop.NMLVDISPINFO)Marshal.PtrToStructure(msg.LParam, typeof(QTTabBarLib.Interop.NMLVDISPINFO));
                                 QTTabBarClass.HandleRenaming(this.hwndListView, nmlvdispinfo.item.lParam, this);

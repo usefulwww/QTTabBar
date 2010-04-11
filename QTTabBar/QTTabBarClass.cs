@@ -63,7 +63,7 @@ namespace QTTabBarLib {
         private Rectangle DraggingDestRect;
         private QTabItem DraggingTab;
         private DropTargetWrapper dropTargetWrapper;
-        private NativeWindowControler explorerControler;
+        private NativeWindowController explorerController;
         private IntPtr ExplorerHandle;
         private bool fDrivesContainedDD;
         private bool fEnteredMenuLoop;
@@ -102,7 +102,7 @@ namespace QTTabBarLib {
         private int iSequential_WM_CLOSE;
         private bool IsShown;
         private int itemIndexDROPHILITED = -1;
-        private NativeWindowControler listViewController;
+        private NativeWindowController listViewController;
         private Dictionary<int, ITravelLogEntry> LogEntryDic = new Dictionary<int, ITravelLogEntry>();
         private List<QTabItem> lstActivatedTabs = new List<QTabItem>(0x10);
         private List<int> lstColumnFMT;
@@ -125,9 +125,9 @@ namespace QTTabBarLib {
         private bool NowTopMost;
         private static OptionsDialog optionsDialog;
         private PluginManager pluginManager;
-        private NativeWindowControler rebarControler;
+        private NativeWindowController rebarController;
         private IShellBrowser ShellBrowser;
-        private NativeWindowControler shellViewControler;
+        private NativeWindowController shellViewController;
         private string strDraggingDrive;
         private string strDraggingStartPath;
         private int subDirIndex = -1;
@@ -150,7 +150,7 @@ namespace QTTabBarLib {
         private static bool TMPfNowOptionDialogOpening;
         private ToolStripEx toolStrip;
         private System.Windows.Forms.ToolTip toolTipForDD;
-        private NativeWindowControler travelBtnControler;
+        private NativeWindowController travelBtnController;
         private ITravelLogStg TravelLog;
         private IntPtr TravelToolBarHandle;
         private ToolStripMenuItem tsmiAddToGroup;
@@ -944,21 +944,21 @@ namespace QTTabBarLib {
                         PInvoke.UnhookWindowsHookEx(this.hHook_Msg);
                         this.hHook_Msg = IntPtr.Zero;
                     }
-                    if(this.explorerControler != null) {
-                        this.explorerControler.ReleaseHandle();
-                        this.explorerControler = null;
+                    if(this.explorerController != null) {
+                        this.explorerController.ReleaseHandle();
+                        this.explorerController = null;
                     }
-                    if(this.shellViewControler != null) {
-                        this.shellViewControler.ReleaseHandle();
-                        this.shellViewControler = null;
+                    if(this.shellViewController != null) {
+                        this.shellViewController.ReleaseHandle();
+                        this.shellViewController = null;
                     }
-                    if(this.rebarControler != null) {
-                        this.rebarControler.ReleaseHandle();
-                        this.rebarControler = null;
+                    if(this.rebarController != null) {
+                        this.rebarController.ReleaseHandle();
+                        this.rebarController = null;
                     }
-                    if(QTUtility.IsVista && (this.travelBtnControler != null)) {
-                        this.travelBtnControler.ReleaseHandle();
-                        this.travelBtnControler = null;
+                    if(QTUtility.IsVista && (this.travelBtnController != null)) {
+                        this.travelBtnController.ReleaseHandle();
+                        this.travelBtnController = null;
                     }
                     if(dicNotifyIcon != null) {
                         dicNotifyIcon.Remove(this.ExplorerHandle);
@@ -1836,18 +1836,18 @@ namespace QTTabBarLib {
                 if(this.listViewController != null) {
                     this.listViewController.ReleaseHandle();
                 }
-                this.listViewController = new NativeWindowControler(hWnd);
-                this.listViewController.MessageCaptured += new NativeWindowControler.MessageEventHandler(this.listViewController_MessageCaptured);
+                this.listViewController = new NativeWindowController(hWnd);
+                this.listViewController.MessageCaptured += new NativeWindowController.MessageEventHandler(this.listViewController_MessageCaptured);
                 // TODO
             }
 
-            if((ptr != IntPtr.Zero) && ((this.shellViewControler == null) || (this.shellViewControler.Handle != ptr))) {
-                if(this.shellViewControler != null) {
-                    this.shellViewControler.ReleaseHandle();
+            if((ptr != IntPtr.Zero) && ((this.shellViewController == null) || (this.shellViewController.Handle != ptr))) {
+                if(this.shellViewController != null) {
+                    this.shellViewController.ReleaseHandle();
                 }
-                this.shellViewControler = new NativeWindowControler(ptr);
-                this.shellViewControler.OptionalHandle = hWnd;
-                this.shellViewControler.MessageCaptured += new NativeWindowControler.MessageEventHandler(this.shellViewControler_MessageCaptured);
+                this.shellViewController = new NativeWindowController(ptr);
+                this.shellViewController.OptionalHandle = hWnd;
+                this.shellViewController.MessageCaptured += new NativeWindowController.MessageEventHandler(this.shellViewController_MessageCaptured);
                 this.fTrackMouseEvent = false;
                 TRACKMOUSEEVENT structure = new TRACKMOUSEEVENT();
                 structure.cbSize = Marshal.SizeOf(structure);
@@ -2317,7 +2317,7 @@ namespace QTTabBarLib {
             }
         }
 
-        private bool explorerControler_MessageCaptured(ref System.Windows.Forms.Message msg) {
+        private bool explorerController_MessageCaptured(ref System.Windows.Forms.Message msg) {
             if(msg.Msg == WM.CLOSE) {
                 if(this.iSequential_WM_CLOSE > 0) {
                     return true;
@@ -4472,11 +4472,11 @@ namespace QTTabBarLib {
             this.hHook_Key = PInvoke.SetWindowsHookEx(2, this.hookProc_Key, IntPtr.Zero, currentThreadId);
             this.hHook_Mouse = PInvoke.SetWindowsHookEx(7, this.hookProc_Mouse, IntPtr.Zero, currentThreadId);
             this.hHook_Msg = PInvoke.SetWindowsHookEx(3, this.hookProc_GetMsg, IntPtr.Zero, currentThreadId);
-            this.explorerControler = new NativeWindowControler(this.ExplorerHandle);
-            this.explorerControler.MessageCaptured += new NativeWindowControler.MessageEventHandler(this.explorerControler_MessageCaptured);
+            this.explorerController = new NativeWindowController(this.ExplorerHandle);
+            this.explorerController.MessageCaptured += new NativeWindowController.MessageEventHandler(this.explorerController_MessageCaptured);
             if(base.ReBarHandle != IntPtr.Zero) {
-                this.rebarControler = new NativeWindowControler(base.ReBarHandle);
-                this.rebarControler.MessageCaptured += new NativeWindowControler.MessageEventHandler(this.rebarControler_MessageCaptured);
+                this.rebarController = new NativeWindowController(base.ReBarHandle);
+                this.rebarController.MessageCaptured += new NativeWindowController.MessageEventHandler(this.rebarController_MessageCaptured);
                 if(QTUtility.CheckConfig(Settings.ToolbarBGColor)) {
                     if(QTUtility.DefaultRebarCOLORREF == -1) {
                         QTUtility.DefaultRebarCOLORREF = (int)PInvoke.SendMessage(base.ReBarHandle, 0x414, IntPtr.Zero, IntPtr.Zero);
@@ -4488,8 +4488,8 @@ namespace QTTabBarLib {
             if(QTUtility.IsVista) {
                 this.TravelToolBarHandle = this.GetTravelToolBarWindow32();
                 if(this.TravelToolBarHandle != IntPtr.Zero) {
-                    this.travelBtnControler = new NativeWindowControler(this.TravelToolBarHandle);
-                    this.travelBtnControler.MessageCaptured += new NativeWindowControler.MessageEventHandler(this.travelBtnControler_MessageCaptured);
+                    this.travelBtnController = new NativeWindowController(this.TravelToolBarHandle);
+                    this.travelBtnController.MessageCaptured += new NativeWindowController.MessageEventHandler(this.travelBtnController_MessageCaptured);
                 }
             }
             this.dropTargetWrapper = new DropTargetWrapper(this);
@@ -5753,12 +5753,12 @@ namespace QTTabBarLib {
             }
         }
 
-        private bool rebarControler_MessageCaptured(ref System.Windows.Forms.Message m) {
+        private bool rebarController_MessageCaptured(ref System.Windows.Forms.Message m) {
             if((m.Msg == WM.ERASEBKGND) && (QTUtility.CheckConfig(Settings.ToolbarBGColor) || QTUtility.CheckConfig(Settings.RebarImage))) {
                 bool flag = false;
                 using(Graphics graphics = Graphics.FromHdc(m.WParam)) {
                     RECT rect;
-                    PInvoke.GetWindowRect(this.rebarControler.Handle, out rect);
+                    PInvoke.GetWindowRect(this.rebarController.Handle, out rect);
                     Rectangle rectangle = new Rectangle(0, 0, rect.Width, rect.Height);
                     if(QTUtility.CheckConfig(Settings.ToolbarBGColor)) {
                         using(SolidBrush brush = new SolidBrush(QTUtility.RebarBGColor)) {
@@ -5774,19 +5774,19 @@ namespace QTTabBarLib {
                             switch(((QTUtility.ConfigValues[11] & 0x60) | (QTUtility.ConfigValues[13] & 1))) {
                                 case 1: {
                                         if(!flag) {
-                                            this.rebarControler.DefWndProc(ref m);
+                                            this.rebarController.DefWndProc(ref m);
                                         }
-                                        int num2 = (int)PInvoke.SendMessage(this.rebarControler.Handle, 0x40c, IntPtr.Zero, IntPtr.Zero);
+                                        int num2 = (int)PInvoke.SendMessage(this.rebarController.Handle, 0x40c, IntPtr.Zero, IntPtr.Zero);
                                         RECT rect2 = new RECT();
                                         IntPtr lParam = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(RECT)));
                                         graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
                                         for(int i = 0; i < num2; i++) {
                                             RECT rect3 = new RECT();
                                             IntPtr ptr2 = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(RECT)));
-                                            PInvoke.SendMessage(this.rebarControler.Handle, 0x422, (IntPtr)i, ptr2);
+                                            PInvoke.SendMessage(this.rebarController.Handle, 0x422, (IntPtr)i, ptr2);
                                             rect3 = (RECT)Marshal.PtrToStructure(ptr2, typeof(RECT));
                                             Marshal.FreeHGlobal(ptr2);
-                                            if(IntPtr.Zero != PInvoke.SendMessage(this.rebarControler.Handle, 0x409, (IntPtr)i, lParam)) {
+                                            if(IntPtr.Zero != PInvoke.SendMessage(this.rebarController.Handle, 0x409, (IntPtr)i, lParam)) {
                                                 rect2 = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT));
                                                 rect2.left -= QTUtility.IsVista ? 4 : rect3.left;
                                                 rect2.top -= rect3.top;
@@ -5800,7 +5800,7 @@ namespace QTTabBarLib {
                                     }
                                 case 0x20: {
                                         if(!flag) {
-                                            this.rebarControler.DefWndProc(ref m);
+                                            this.rebarController.DefWndProc(ref m);
                                         }
                                         Rectangle destRect = new Rectangle(Point.Empty, this.bmpRebar.Size);
                                         graphics.DrawImage(this.bmpRebar, destRect, destRect, GraphicsUnit.Pixel);
@@ -6229,7 +6229,7 @@ namespace QTTabBarLib {
             }
         }
 
-        private bool shellViewControler_MessageCaptured(ref System.Windows.Forms.Message msg) {
+        private bool shellViewController_MessageCaptured(ref System.Windows.Forms.Message msg) {
             IntPtr ptr;
             if(msg.Msg == WM.DESTROY) {
                 this.HandleF5();
@@ -6238,7 +6238,7 @@ namespace QTTabBarLib {
             if(msg.Msg != WM.NOTIFY) {
                 if(msg.Msg == WM.MOUSEACTIVATE) {
                     if(((this.subDirTip != null) && this.subDirTip.MenuIsShowing) || ((this.subDirTip_Tab != null) && this.subDirTip_Tab.MenuIsShowing)) {
-                        IntPtr optionalHandle = this.shellViewControler.OptionalHandle;
+                        IntPtr optionalHandle = this.shellViewController.OptionalHandle;
                         if(1 == ((int)PInvoke.SendMessage(optionalHandle, 0x1032, IntPtr.Zero, IntPtr.Zero))) {
                             RECT rect2;
                             Point mousePosition = Control.MousePosition;
@@ -6267,13 +6267,13 @@ namespace QTTabBarLib {
                 goto Label_0D0B;
             }
             NMHDR nmhdr = (NMHDR)Marshal.PtrToStructure(msg.LParam, typeof(NMHDR));
-            if(nmhdr.hwndFrom != this.shellViewControler.OptionalHandle) {
+            if(nmhdr.hwndFrom != this.shellViewController.OptionalHandle) {
                 if(((nmhdr.code == -12) && (nmhdr.idFrom == IntPtr.Zero)) && this.fTrackMouseEvent) {
                     this.fTrackMouseEvent = false;
                     TRACKMOUSEEVENT structure = new TRACKMOUSEEVENT();
                     structure.cbSize = Marshal.SizeOf(structure);
                     structure.dwFlags = 2;
-                    structure.hwndTrack = this.shellViewControler.OptionalHandle;
+                    structure.hwndTrack = this.shellViewController.OptionalHandle;
                     PInvoke.TrackMouseEvent(ref structure);
                 }
                 return false;
@@ -6364,7 +6364,7 @@ namespace QTTabBarLib {
                         if(QTUtility.IsVista || QTUtility.CheckConfig(Settings.ExtWhileRenaming)) {
                             goto Label_0D0B;
                         }
-                        this.shellViewControler.DefWndProc(ref msg);
+                        this.shellViewController.DefWndProc(ref msg);
                         if(msg.Result == IntPtr.Zero) {
                             NMLVDISPINFO nmlvdispinfo = (NMLVDISPINFO)Marshal.PtrToStructure(msg.LParam, typeof(NMLVDISPINFO));
                             IntPtr ptr2 = ShellMethods.ShellGetPath(this.ShellBrowser);
@@ -6403,7 +6403,7 @@ namespace QTTabBarLib {
                         if(this.timerSelectionChanged != null) {
                             this.timerSelectionChanged.Enabled = false;
                         }
-                        return this.HandleITEMACTIVATE(msg.LParam, this.shellViewControler.OptionalHandle);
+                        return this.HandleITEMACTIVATE(msg.LParam, this.shellViewController.OptionalHandle);
 
                     case LVN.HOTTRACK:
                         if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews) || !QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
@@ -6539,7 +6539,7 @@ namespace QTTabBarLib {
                         goto Label_0D0B;
                     }
                 case LVN.BEGINDRAG:
-                    this.shellViewControler.DefWndProc(ref msg);
+                    this.shellViewController.DefWndProc(ref msg);
                     this.HideSubDirTip(0xff);
                     return true;
 
@@ -6547,7 +6547,7 @@ namespace QTTabBarLib {
                     if(code != -12) {
                         goto Label_0D0B;
                     }
-                    return this.HandleLVCUSTOMDRAW(ref msg, this.shellViewControler.OptionalHandle);
+                    return this.HandleLVCUSTOMDRAW(ref msg, this.shellViewController.OptionalHandle);
             }
         Label_03E3:
             if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews) && (!QTUtility.CheckConfig(Settings.PreviewsWithShift) ^ (Control.ModifierKeys == Keys.Shift))) {
@@ -7636,7 +7636,7 @@ namespace QTTabBarLib {
             return base.TranslateAcceleratorIO(ref msg);
         }
 
-        private bool travelBtnControler_MessageCaptured(ref System.Windows.Forms.Message m) {
+        private bool travelBtnController_MessageCaptured(ref System.Windows.Forms.Message m) {
             if(this.CurrentTab == null) {
                 return false;
             }
@@ -7648,24 +7648,24 @@ namespace QTTabBarLib {
                         structure.y = QTUtility2.GET_Y_LPARAM(m.LParam);
                         IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
                         Marshal.StructureToPtr(structure, ptr, false);
-                        int num = (int)PInvoke.SendMessage(this.travelBtnControler.Handle, 0x445, IntPtr.Zero, ptr);
+                        int num = (int)PInvoke.SendMessage(this.travelBtnController.Handle, 0x445, IntPtr.Zero, ptr);
                         Marshal.FreeHGlobal(ptr);
                         bool flag = this.CurrentTab.HistoryCount_Back > 1;
                         bool flag2 = this.CurrentTab.HistoryCount_Forward > 0;
                         if(m.Msg != 0x202) {
-                            PInvoke.SetCapture(this.travelBtnControler.Handle);
+                            PInvoke.SetCapture(this.travelBtnController.Handle);
                             if(((flag && (num == 0)) || (flag2 && (num == 1))) || ((flag || flag2) && (num == 2))) {
-                                int num5 = (int)PInvoke.SendMessage(this.travelBtnControler.Handle, 0x412, (IntPtr)(0x100 + num), IntPtr.Zero);
+                                int num5 = (int)PInvoke.SendMessage(this.travelBtnController.Handle, 0x412, (IntPtr)(0x100 + num), IntPtr.Zero);
                                 int num6 = num5 | 2;
-                                PInvoke.SendMessage(this.travelBtnControler.Handle, 0x411, (IntPtr)(0x100 + num), (IntPtr)num6);
+                                PInvoke.SendMessage(this.travelBtnController.Handle, 0x411, (IntPtr)(0x100 + num), (IntPtr)num6);
                             }
                             if((num == 2) && (flag || flag2)) {
                                 RECT rect;
-                                IntPtr hWnd = PInvoke.SendMessage(this.travelBtnControler.Handle, 0x423, IntPtr.Zero, IntPtr.Zero);
+                                IntPtr hWnd = PInvoke.SendMessage(this.travelBtnController.Handle, 0x423, IntPtr.Zero, IntPtr.Zero);
                                 if(hWnd != IntPtr.Zero) {
                                     PInvoke.SendMessage(hWnd, 0x41c, IntPtr.Zero, IntPtr.Zero);
                                 }
-                                PInvoke.GetWindowRect(this.travelBtnControler.Handle, out rect);
+                                PInvoke.GetWindowRect(this.travelBtnController.Handle, out rect);
                                 this.NavigationButtons_DropDownOpening(this.buttonNavHistoryMenu, new EventArgs());
                                 this.buttonNavHistoryMenu.DropDown.Show(new Point(rect.left - 2, rect.bottom + 1));
                             }
@@ -7673,9 +7673,9 @@ namespace QTTabBarLib {
                         }
                         PInvoke.ReleaseCapture();
                         for(int i = 0; i < 3; i++) {
-                            int num3 = (int)PInvoke.SendMessage(this.travelBtnControler.Handle, 0x412, (IntPtr)(0x100 + i), IntPtr.Zero);
+                            int num3 = (int)PInvoke.SendMessage(this.travelBtnController.Handle, 0x412, (IntPtr)(0x100 + i), IntPtr.Zero);
                             int num4 = num3 & -3;
-                            PInvoke.SendMessage(this.travelBtnControler.Handle, 0x411, (IntPtr)(0x100 + i), (IntPtr)num4);
+                            PInvoke.SendMessage(this.travelBtnController.Handle, 0x411, (IntPtr)(0x100 + i), (IntPtr)num4);
                         }
                         if((num == 0) && flag) {
                             this.NavigateCurrentTab(true);

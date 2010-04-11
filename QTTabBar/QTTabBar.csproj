@@ -190,7 +190,7 @@
     <Compile Include="MessageForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="NativeWindowControler.cs" />
+    <Compile Include="NativeWindowController.cs" />
     <Compile Include="NavigationCompleteCallback.cs" />
     <Compile Include="OptionsDialog.cs">
       <SubType>Form</SubType>

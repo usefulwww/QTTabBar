@@ -20,12 +20,12 @@ namespace QTTabBarLib {
     using System.Runtime.CompilerServices;
     using System.Windows.Forms;
 
-    internal sealed class NativeWindowControler : NativeWindow {
+    internal sealed class NativeWindowController : NativeWindow {
         private IntPtr hwndOptional;
 
         internal event MessageEventHandler MessageCaptured;
 
-        public NativeWindowControler(IntPtr hwnd) {
+        public NativeWindowController(IntPtr hwnd) {
             base.AssignHandle(hwnd);
         }
 
