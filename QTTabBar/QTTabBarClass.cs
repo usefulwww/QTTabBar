@@ -84,6 +84,8 @@ namespace QTTabBarLib {
         private IntPtr hHook_Key;
         private IntPtr hHook_Mouse;
         private IntPtr hHook_Msg;
+        private IntPtr hHook_Wnd;
+        private HookProc hookProc_CallWnd;
         private HookProc hookProc_GetMsg;
         private HookProc hookProc_Key;
         private HookProc hookProc_Mouse;
@@ -379,7 +381,22 @@ namespace QTTabBarLib {
                 }
             }
         }
-        
+
+        private IntPtr CallbackCallWndProc(int nCode, IntPtr wParam, IntPtr lParam) {
+            CWPSTRUCT msg = (CWPSTRUCT)Marshal.PtrToStructure(lParam, typeof(CWPSTRUCT));
+            if(msg.message == 0xE9) { // SBM_SETSCROLLINFO
+                IntPtr hwndListView = GetExplorerListView();
+                if(hwndListView != IntPtr.Zero && PInvoke.IsChild(hwndListView, msg.hwnd)) {
+                    if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews)) {
+                        this.HideThumbnailTooltip(8);
+                    }
+                    if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
+                        this.HideSubDirTip(8);
+                    }
+                }
+            }
+            return PInvoke.CallNextHookEx(this.hHook_Msg, nCode, wParam, lParam);
+        }
 
         private void CallBackDoOpenGroups(object obj, IntPtr ptr) {
             string[] strArray = (string[])obj;
@@ -944,6 +961,10 @@ namespace QTTabBarLib {
                         PInvoke.UnhookWindowsHookEx(this.hHook_Msg);
                         this.hHook_Msg = IntPtr.Zero;
                     }
+                    if(this.hHook_Wnd != IntPtr.Zero) {
+                        PInvoke.UnhookWindowsHookEx(this.hHook_Wnd);
+                        this.hHook_Wnd = IntPtr.Zero;
+                    } 
                     if(this.explorerController != null) {
                         this.explorerController.ReleaseHandle();
                         this.explorerController = null;
@@ -4468,10 +4489,12 @@ namespace QTTabBarLib {
             this.hookProc_Key = new HookProc(this.CallbackKeyboardProc);
             this.hookProc_Mouse = new HookProc(this.CallbackMouseProc);
             this.hookProc_GetMsg = new HookProc(this.CallbackGetMsgProc);
+            this.hookProc_CallWnd = new HookProc(this.CallbackCallWndProc);
             int currentThreadId = PInvoke.GetCurrentThreadId();
             this.hHook_Key = PInvoke.SetWindowsHookEx(2, this.hookProc_Key, IntPtr.Zero, currentThreadId);
             this.hHook_Mouse = PInvoke.SetWindowsHookEx(7, this.hookProc_Mouse, IntPtr.Zero, currentThreadId);
             this.hHook_Msg = PInvoke.SetWindowsHookEx(3, this.hookProc_GetMsg, IntPtr.Zero, currentThreadId);
+            this.hHook_Wnd = PInvoke.SetWindowsHookEx(4, this.hookProc_CallWnd, IntPtr.Zero, currentThreadId);
             this.explorerController = new NativeWindowController(this.ExplorerHandle);
             this.explorerController.MessageCaptured += new NativeWindowController.MessageEventHandler(this.explorerController_MessageCaptured);
             if(base.ReBarHandle != IntPtr.Zero) {
@@ -4539,34 +4562,44 @@ namespace QTTabBarLib {
             return false;
         }
 
-        int RightModifier = 20;
+        int RightModifier = 16;
         private RECT cachedRect;
         private bool listViewController_MessageCaptured(ref System.Windows.Forms.Message msg) {
+
             switch(msg.Msg) {
                 case WM.MOUSEMOVE:
-                    AutomationElement elem = GetHotListItemElement(
-                            listViewController.Handle, msg.LParam);
-                    int idx;
-                    if(elem != null) {
-                        string str;
-                        bool b = TryGetHotTrackPath(0, out str);
-                        idx = ItemIndexFromElement(elem);
-                        if(idx != -1) {
-
-                            System.Windows.Rect wRect = elem.Current.BoundingRectangle;
-                            cachedRect = new RECT();
-                            cachedRect.top = (int)wRect.Top;
-                            cachedRect.bottom = (int)wRect.Bottom;
-                            cachedRect.left = (int)wRect.Left;
-                            cachedRect.right = (int)wRect.Right + RightModifier;
-                            this.ShowSubDirTip(idx, listViewController.Handle, false, false);
+                    Keys modifierKeys = Control.ModifierKeys;
+                    if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips) && 
+                            (!QTUtility.CheckConfig(Settings.SubDirTipsWithShift) ^ (modifierKeys == Keys.Shift))) {
+                        AutomationElement elem = GetHotListItemElement(
+                                listViewController.Handle, msg.LParam);
+                        int iItem;
+                        if(elem != null) {
+                            iItem = ItemIndexFromElement(elem);
+                            if(this.subDirIndex == iItem) {
+                                return false;
+                            }
+                            this.subDirIndex = iItem;
+                            if(iItem > -1) {
+                                System.Windows.Rect wRect = elem.Current.BoundingRectangle;
+                                cachedRect = new RECT();
+                                cachedRect.top = (int)wRect.Top;
+                                cachedRect.bottom = (int)wRect.Bottom;
+                                cachedRect.left = (int)wRect.Left;
+                                cachedRect.right = (int)wRect.Right + RightModifier;
+                                if(this.ShowSubDirTip(iItem, listViewController.Handle, false, false)) {
+                                    this.subDirIndex = iItem;
+                                    return false;
+                                }
+                                this.subDirIndex = -1;
+                            }
                         }
                     }
+                    this.HideSubDirTip(2);
                     break;
             }
             return false;
         }
-
         
         private int ItemIndexFromElement(AutomationElement elem) {
             string id = elem.Current.AutomationId;
