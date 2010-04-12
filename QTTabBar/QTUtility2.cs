@@ -311,7 +311,7 @@ namespace QTTabBarLib {
             structure.dwData = dwData;
             IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
             Marshal.StructureToPtr(structure, ptr, false);
-            IntPtr ptr3 = PInvoke.SendMessage(hWnd, 0x4a, wParam, ptr);
+            IntPtr ptr3 = PInvoke.SendMessage(hWnd, WM.COPYDATA, wParam, ptr);
             Marshal.FreeHGlobal(hglobal);
             Marshal.FreeHGlobal(ptr);
             return ptr3;

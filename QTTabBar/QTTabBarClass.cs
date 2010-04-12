@@ -6306,7 +6306,6 @@ namespace QTTabBarLib {
                 return false;
             }
 
-            // Process WM.NOTIFY
             NMHDR nmhdr = (NMHDR)Marshal.PtrToStructure(msg.LParam, typeof(NMHDR));
             if(nmhdr.hwndFrom != this.shellViewController.OptionalHandle) {
                 if(((nmhdr.code == -12) && (nmhdr.idFrom == IntPtr.Zero)) && this.fTrackMouseEvent) {
@@ -6319,8 +6318,16 @@ namespace QTTabBarLib {
                 }
                 return false;
             }
+
+            // Process WM.NOTIFY.  These are all notifications from the 
+            // SysListView32 control.  We will not get ANY of these on 
+            // Windows 7, which means every single one of them has to 
+            // have an alternative somewhere for the non-SysListView32,
+            // or it's not going to happen.
             switch(nmhdr.code) {
                 case -12: // NM_CUSTOMDRAW
+                    // This is for drawing alternating row colors.  I doubt
+                    // very much we'll find an alternative for this...
                     return this.HandleLVCUSTOMDRAW(ref msg, this.shellViewController.OptionalHandle);
 
                 case LVN.ITEMCHANGED: {
@@ -6371,6 +6378,7 @@ namespace QTTabBarLib {
                     break;           // TODO: Investigate
                 
                 case LVN.DELETEITEM:
+                    // For this, probably the only way to go is 
                     if(QTUtility.instanceManager.TryGetButtonBarHandle(this.ExplorerHandle, out ptr)) {
                         QTUtility2.SendCOPYDATASTRUCT(ptr, (IntPtr)14, null, IntPtr.Zero);
                     }
@@ -6383,6 +6391,8 @@ namespace QTTabBarLib {
                     break;
 
                 case LVN.DELETEALLITEMS:
+                    // No idea for this one.
+                    // TODO: Figure out how important this is.
                     this.HandleF5();
                     break;
 
@@ -6407,6 +6417,7 @@ namespace QTTabBarLib {
                     break;
 
                 case LVN.HOTTRACK:
+                    // This will be handled through WM_MOUSEMOVE.
                     if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews) || !QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
                         NMLISTVIEW nmlistview = (NMLISTVIEW)Marshal.PtrToStructure(msg.LParam, typeof(NMLISTVIEW));
                         Keys modifierKeys = Control.ModifierKeys;
@@ -6526,6 +6537,8 @@ namespace QTTabBarLib {
                     break;
 
                 case LVN.BEGINLABELEDIT:
+                    // This is just for file renaming, which there's no need to
+                    // mess with in Windows 7.
                     if(QTUtility.IsVista || QTUtility.CheckConfig(Settings.ExtWhileRenaming)) {
                         return false;
                     }
@@ -6585,6 +6598,8 @@ namespace QTTabBarLib {
                     }
 
                 case LVN.BEGINSCROLL:
+                    // This we can handle by intercepting SBM_SETSCROLLINFO
+                    // when it's sent to the scrollbars.
                     if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews)) {
                         this.HideThumbnailTooltip(8);
                     }
