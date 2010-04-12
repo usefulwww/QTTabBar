@@ -395,7 +395,7 @@ namespace QTTabBarLib {
                     }
                 }
             }
-            return PInvoke.CallNextHookEx(this.hHook_Msg, nCode, wParam, lParam);
+            return PInvoke.CallNextHookEx(this.hHook_Wnd, nCode, wParam, lParam);
         }
 
         private void CallBackDoOpenGroups(object obj, IntPtr ptr) {
