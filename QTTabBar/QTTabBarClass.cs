@@ -2940,7 +2940,7 @@ namespace QTTabBarLib {
             else {
                 if(this.timer_HoverSubDirTipMenu == null) {
                     this.timer_HoverSubDirTipMenu = new System.Windows.Forms.Timer(this.components);
-                    this.timer_HoverSubDirTipMenu.Interval = 0x4b0;
+                    this.timer_HoverSubDirTipMenu.Interval = 1200;
                     this.timer_HoverSubDirTipMenu.Tick += new EventHandler(this.timer_HoverSubDirTipMenu_Tick);
                 }
                 this.itemIndexDROPHILITED = iItem;
@@ -3797,12 +3797,14 @@ namespace QTTabBarLib {
         }
 
         private bool HandleMBUTTONUP(BandObjectLib.MSG msg) {
-            // TODO
-            IntPtr hwnd = this.GetExplorerListView();
+            bool isSLV;
+            IntPtr hwnd = this.GetExplorerListView(out isSLV);
             if(!(hwnd != IntPtr.Zero) || !(hwnd == msg.hwnd)) {
                 return false;
             }
-            int index = PInvoke.ListView_HitTest(hwnd, msg.lParam);
+            int index = isSLV ?
+                PInvoke.ListView_HitTest(hwnd, msg.lParam) :
+                DirectUIHitTest(hwnd, msg.lParam, false);
             if(index == -1) {
                 return false;
             }
@@ -4564,37 +4566,50 @@ namespace QTTabBarLib {
 
         int RightModifier = 16;
         private RECT cachedRect;
+
+        private int DirectUIHitTest(IntPtr hwndListView, IntPtr lParam, bool forSubDirTipPt) {
+            return DirectUIHitTest(hwndListView, new Point(
+                    QTUtility2.GET_X_LPARAM(lParam),
+                    QTUtility2.GET_Y_LPARAM(lParam)), forSubDirTipPt);
+
+        }
+
+        private int DirectUIHitTest(IntPtr hwndListView, Point pt, bool forSubDirTipPt) {
+            int iItem = -1;
+            AutomationElement elem = GetHotListItemElement(hwndListView, pt);
+            if(elem != null) {
+                iItem = ItemIndexFromElement(elem);
+                if(forSubDirTipPt && this.subDirIndex != iItem && iItem > -1) {
+                    System.Windows.Rect wRect = elem.Current.BoundingRectangle;
+                    cachedRect = new RECT();
+                    cachedRect.top = (int)wRect.Top;
+                    cachedRect.bottom = (int)wRect.Bottom;
+                    cachedRect.left = (int)wRect.Left;
+                    cachedRect.right = (int)wRect.Right + RightModifier;
+                }
+            }
+            return iItem;
+        }
+
         private bool listViewController_MessageCaptured(ref System.Windows.Forms.Message msg) {
+            Keys modifierKeys = Control.ModifierKeys;
 
             switch(msg.Msg) {
-                case WM.MOUSEMOVE:
-                    Keys modifierKeys = Control.ModifierKeys;
+                case WM.MOUSEMOVE:        
                     if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips) && 
                             (!QTUtility.CheckConfig(Settings.SubDirTipsWithShift) ^ (modifierKeys == Keys.Shift))) {
-                        AutomationElement elem = GetHotListItemElement(
-                                listViewController.Handle, msg.LParam);
-                        int iItem;
-                        if(elem != null) {
-                            iItem = ItemIndexFromElement(elem);
-                            if(this.subDirIndex == iItem) {
+                        int idx = DirectUIHitTest(listViewController.Handle, msg.LParam, true);
+                        if(idx > -1) {
+                            if(this.subDirIndex == idx) {
                                 return false;
                             }
-                            this.subDirIndex = iItem;
-                            if(iItem > -1) {
-                                System.Windows.Rect wRect = elem.Current.BoundingRectangle;
-                                cachedRect = new RECT();
-                                cachedRect.top = (int)wRect.Top;
-                                cachedRect.bottom = (int)wRect.Bottom;
-                                cachedRect.left = (int)wRect.Left;
-                                cachedRect.right = (int)wRect.Right + RightModifier;
-                                if(this.ShowSubDirTip(iItem, listViewController.Handle, false, false)) {
-                                    this.subDirIndex = iItem;
-                                    return false;
-                                }
-                                this.subDirIndex = -1;
+                            this.subDirIndex = idx;
+                            if(this.ShowSubDirTip(idx, listViewController.Handle, false, false)) {
+                                return false;
                             }
                         }
                     }
+                    this.subDirIndex = -1;
                     this.HideSubDirTip(2);
                     break;
             }
