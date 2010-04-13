@@ -106,6 +106,8 @@ namespace QTTabBarLib {
         private int itemIndexDROPHILITED = -1;
         private NativeWindowController listViewController;
         private Dictionary<int, ITravelLogEntry> LogEntryDic = new Dictionary<int, ITravelLogEntry>();
+        private Point lastLButtonPoint;
+        private Int64 lastLButtonTime;
         private List<QTabItem> lstActivatedTabs = new List<QTabItem>(0x10);
         private List<int> lstColumnFMT;
         private List<ToolStripItem> lstPluginMenuItems_Sys;
@@ -502,6 +504,28 @@ namespace QTTabBarLib {
                         break;
 
                     case WM.LBUTTONDOWN:
+                        // The DirectUI ListView doesn't have the CS_DBLCLKS 
+                        // class style, which means we won't be receiving the
+                        // WM.LBUTTONDBLCLK message.  We'll just have to make 
+                        // do without...
+                        {
+                            Int64 now = DateTime.Now.Ticks;
+                            int x = QTUtility2.GET_X_LPARAM(msg.lParam);
+                            int y = QTUtility2.GET_Y_LPARAM(msg.lParam);
+                            if((now - lastLButtonTime) / 10000 <= SystemInformation.DoubleClickTime) {
+                                Size size = SystemInformation.DoubleClickSize;
+                                if(Math.Abs(x - lastLButtonPoint.X) <= size.Width) {
+                                    if(Math.Abs(y - lastLButtonPoint.Y) <= size.Height) {
+                                        lastLButtonTime = 0;
+                                        goto case WM.LBUTTONDBLCLK;
+                                    }
+                                }
+                            }
+                            lastLButtonPoint = new Point(x, y);
+                            lastLButtonTime = now;
+                        }
+                        goto case WM.LBUTTONUP;
+
                     case WM.LBUTTONUP:
                         if((!QTUtility.IsVista && !QTUtility.CheckConfig(Settings.MidClickFolderTree)) && ((((int)((long)msg.wParam)) & 4) != 0)) {
                             this.HandleLBUTTON_Tree(msg, msg.message == 0x201);
@@ -634,19 +658,19 @@ namespace QTTabBarLib {
             if((nCode >= 0) && !this.NowModalDialogShown) {
                 IntPtr ptr = (IntPtr)1;
                 switch(((int)wParam)) {
-                    case 0x20a:
+                    case WM.MOUSEWHEEL:
                         if(!this.HandleMOUSEWHEEL(lParam)) {
                             break;
                         }
                         return ptr;
 
-                    case 0x20b:
+                    case WM.XBUTTONDOWN:
                         if(!QTUtility.CheckConfig(Settings.CaptureX1X2)) {
                             break;
                         }
                         return ptr;
 
-                    case 0x20c:
+                    case WM.XBUTTONUP:
                         if(!QTUtility.CheckConfig(Settings.CaptureX1X2)) {
                             break;
                         }
@@ -3513,11 +3537,16 @@ namespace QTTabBarLib {
         }
 
         private bool HandleLBUTTONDBLCLK(BandObjectLib.MSG msg) {
-            // TODO
-            IntPtr hwnd = this.GetExplorerListView();
-            if(((hwnd != IntPtr.Zero) && (hwnd == msg.hwnd)) && (!QTUtility.CheckConfig(Settings.DblClickUpLevel) && (PInvoke.ListView_HitTest(hwnd, msg.lParam) == -1))) {
-                this.UpOneLevel();
-                return true;
+            bool isSLV;
+            IntPtr hwnd = this.GetExplorerListView(out isSLV);
+            if(hwnd != IntPtr.Zero && hwnd == msg.hwnd && !QTUtility.CheckConfig(Settings.DblClickUpLevel)) {
+                int idx = isSLV ? 
+                    PInvoke.ListView_HitTest(hwnd, msg.lParam) :
+                    DirectUIHitTest(hwnd, msg.lParam, false);
+                if(idx == -1) {
+                    this.UpOneLevel();
+                    return true;
+                }
             }
             return false;
         }
@@ -4574,12 +4603,12 @@ namespace QTTabBarLib {
 
         }
 
-        private int DirectUIHitTest(IntPtr hwndListView, Point pt, bool forSubDirTipPt) {
+        private int DirectUIHitTest(IntPtr hwndListView, Point pt, bool forSubDirTip) {
             int iItem = -1;
             AutomationElement elem = GetHotListItemElement(hwndListView, pt);
             if(elem != null) {
                 iItem = ItemIndexFromElement(elem);
-                if(forSubDirTipPt && this.subDirIndex != iItem && iItem > -1) {
+                if(forSubDirTip && this.subDirIndex != iItem && iItem > -1) {
                     System.Windows.Rect wRect = elem.Current.BoundingRectangle;
                     cachedRect = new RECT();
                     cachedRect.top = (int)wRect.Top;
@@ -4682,11 +4711,6 @@ namespace QTTabBarLib {
                 }
             }
             return null;
-        }
-
-        private static AutomationElement GetHotListItemElement(IntPtr hwnd, IntPtr lParam) {
-            return GetHotListItemElement(hwnd, new Point(
-                    QTUtility2.GET_X_LPARAM(lParam), QTUtility2.GET_Y_LPARAM(lParam)));
         }
 
         private string MakeTravelBtnTooltipText(bool fBack) {
