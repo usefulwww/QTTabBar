@@ -4593,8 +4593,7 @@ namespace QTTabBarLib {
             return false;
         }
 
-        int RightModifier = 16;
-        private RECT cachedRect;
+        private Point nextSubDirPt;
 
         private int DirectUIHitTest(IntPtr hwndListView, IntPtr lParam, bool forSubDirTipPt) {
             return DirectUIHitTest(hwndListView, new Point(
@@ -4609,15 +4608,79 @@ namespace QTTabBarLib {
             if(elem != null) {
                 iItem = ItemIndexFromElement(elem);
                 if(forSubDirTip && this.subDirIndex != iItem && iItem > -1) {
-                    System.Windows.Rect wRect = elem.Current.BoundingRectangle;
-                    cachedRect = new RECT();
-                    cachedRect.top = (int)wRect.Top;
-                    cachedRect.bottom = (int)wRect.Bottom;
-                    cachedRect.left = (int)wRect.Left;
-                    cachedRect.right = (int)wRect.Right + RightModifier;
+                    SetNextSubDirTipPoint(elem);
                 }
             }
             return iItem;
+        }
+
+        AutomationElement GetChildOfListElem(AutomationElement listElement, string childType) {
+            AutomationElement child = TreeWalker.ControlViewWalker.GetFirstChild(listElement);
+            while(child != null) {
+                if(child.Current.LocalizedControlType == childType) {
+                    return child;
+                }
+                child = TreeWalker.ControlViewWalker.GetNextSibling(child);
+            }
+            return null;
+        }
+
+        void SetNextSubDirTipPoint(AutomationElement listElement) {
+            FOLDERSETTINGS fs = GetCurrentFolderSettings();
+            int xb = (int)listElement.Current.BoundingRectangle.Right;
+            int yb = (int)listElement.Current.BoundingRectangle.Bottom;
+            System.Windows.Rect rect;
+            int x, y;
+            try {
+                switch(fs.ViewMode) {
+                    case FVM.CONTENT:
+                        y = (int)listElement.Current.BoundingRectangle.Bottom;
+                        listElement = GetChildOfListElem(listElement, "edit");
+                        x = (int)listElement.Current.BoundingRectangle.Left;
+                        nextSubDirPt = new Point(x, y - 16);
+                        return;
+
+                    case FVM.DETAILS:
+                        listElement = GetChildOfListElem(listElement, "edit");
+                        rect = listElement.Current.BoundingRectangle;
+                        x = (int)rect.Right;
+                        y = (int)rect.Top;
+                        y += ((int)rect.Bottom - y) / 2;
+                        nextSubDirPt = new Point(x - 16, y - 8);
+                        return;
+
+                    case FVM.SMALLICON:
+                        rect = listElement.Current.BoundingRectangle;
+                        nextSubDirPt = new Point((int)rect.Right - 16, (int)rect.Bottom - 16);
+                        return;
+
+                    case FVM.TILE:
+                        y = (int)listElement.Current.BoundingRectangle.Bottom;
+                        listElement = GetChildOfListElem(listElement, "image");
+                        x = (int)listElement.Current.BoundingRectangle.Right;
+                        nextSubDirPt = new Point(x - 16, y - 16);
+                        return;
+
+                    case FVM.THUMBSTRIP:
+                    case FVM.THUMBNAIL:
+                    case FVM.ICON:
+                        x = (int)listElement.Current.BoundingRectangle.Right;
+                        listElement = GetChildOfListElem(listElement, "image");
+                        y = (int)listElement.Current.BoundingRectangle.Bottom;
+                        nextSubDirPt = new Point(x - 16, y - 16);
+                        return;
+
+                    ///case FVM.LIST:
+                    default:
+                        rect = listElement.Current.BoundingRectangle;
+                        nextSubDirPt = new Point((int)rect.Right, (int)rect.Bottom - 15);
+                        return;
+                }
+            }
+            catch(NullReferenceException) {
+                nextSubDirPt = new Point(xb, yb - 15);
+                return;
+            }
         }
 
         private bool listViewController_MessageCaptured(ref System.Windows.Forms.Message msg) {
@@ -6774,6 +6837,23 @@ namespace QTTabBarLib {
             object pvarSize = null;
             base.Explorer.ShowBrowserBar(ref pvaClsid, ref pvarShow, ref pvarSize);
         }
+        private FOLDERSETTINGS GetCurrentFolderSettings() {
+            IShellView ppshv = null;
+            FOLDERSETTINGS lpfs = new FOLDERSETTINGS();
+
+            // lpfs.ViewMode = 1; ???
+            try {
+                if(this.ShellBrowser.QueryActiveShellView(out ppshv) == 0) {
+                    ppshv.GetCurrentInfo(ref lpfs);
+                }
+            }
+            finally {
+                if(ppshv != null) {
+                    Marshal.ReleaseComObject(ppshv);
+                }
+            }
+            return lpfs;
+        }
 
         private bool ShowSubDirTip(int iItem, IntPtr hwndListView, bool fSkipForegroundCheck, bool isSysListView) {
             string str;
@@ -6783,24 +6863,16 @@ namespace QTTabBarLib {
                     if(!TryMakeSubDirTipPath(ref str)) {
                         return false;
                     }
-                    IShellView ppshv = null;
-                    FOLDERSETTINGS lpfs = new FOLDERSETTINGS();
-                    lpfs.ViewMode = 1;
-                    try {
-                        if(this.ShellBrowser.QueryActiveShellView(out ppshv) == 0) {
-                            ppshv.GetCurrentInfo(ref lpfs);
-                        }
+                    Point pnt;
+                    if(isSysListView) {
+                        FOLDERSETTINGS lpfs = GetCurrentFolderSettings();
+                        RECT rect = GetLVITEMRECT(hwndListView, iItem, true, lpfs.ViewMode);
+                        pnt = new Point(rect.right - 16, rect.bottom - 16);
                     }
-                    finally {
-                        if(ppshv != null) {
-                            Marshal.ReleaseComObject(ppshv);
-                        }
+                    else {
+                        pnt = nextSubDirPt;
                     }
-                    RECT rect = isSysListView ?
-                            GetLVITEMRECT(hwndListView, iItem, true, lpfs.ViewMode) :
-                            cachedRect;
 
-                    Point pnt = new Point(rect.right - 0x10, rect.bottom - 0x10);
                     if(this.subDirTip == null) {
                         this.subDirTip = new SubDirTipForm(base.Handle, this.ExplorerHandle, true);
                         this.subDirTip.MenuItemClicked += new ToolStripItemClickedEventHandler(this.subDirTip_MenuItemClicked);
