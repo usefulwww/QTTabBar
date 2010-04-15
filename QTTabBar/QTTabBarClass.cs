@@ -3834,7 +3834,7 @@ namespace QTTabBarLib {
             int index = isSLV ?
                 PInvoke.ListView_HitTest(hwnd, msg.lParam) :
                 DirectUIHitTest(hwnd, msg.lParam, false);
-            if(index == -1) {
+            if(index <= -1) {
                 return false;
             }
             Keys modifierKeys = Control.ModifierKeys;
@@ -4602,6 +4602,8 @@ namespace QTTabBarLib {
 
         }
 
+        // This will return -1 if no list item is under the given point, or
+        // -2 if nothing can be determined.
         private int DirectUIHitTest(IntPtr hwndListView, Point pt, bool forSubDirTip) {
             int iItem = -1;
             AutomationElement elem = GetHotListItemElement(hwndListView, pt);
@@ -4709,52 +4711,53 @@ namespace QTTabBarLib {
         }
         
         private int ItemIndexFromElement(AutomationElement elem) {
-            string id = elem.Current.AutomationId;
-            if(String.IsNullOrEmpty(id)) {
-                return -1;
-            }
-            int idx = Convert.ToInt32(id);
-            /*
-            string DisplayName = GetItemDisplayName(idx);
-            if(string.IsNullOrEmpty(DisplayName) || DisplayName != elem.Current.Name) {
-                return -1;
-            }
-            */
-            return idx;
-        }
-
-        private string GetItemDisplayName(int iItem) {
-            if(!this.fIFolderViewNotImplemented) {
-                IShellView ppshv = null;
-                IFolderView view2 = null;
-                IntPtr ppidl = IntPtr.Zero;
-                try {
-                    if(this.ShellBrowser.QueryActiveShellView(out ppshv) == 0) {
-                        try {
-                            view2 = (IFolderView)ppshv;
+            try {
+                int offset = 0;
+                string id;
+                AutomationElement parent = TreeWalker.ControlViewWalker.GetParent(elem);
+                if(parent.Current.LocalizedControlType == "group") {
+                    // If grouping is enabled, we're basically screwed:  The id 
+                    // of the element will be its index IN THAT GROUP, not the
+                    // overall index, which is what we need.  The only thing we
+                    // can do here is add up the group totals for all the groups
+                    // before the current one, which, luckily, are in the group
+                    // headers.  Of course, this assumes all group headers are
+                    // accessible through automation, which they might not be
+                    // if they're off-screen.  In that case, there's nothing we 
+                    // can do... that I know of.
+                    id = parent.Current.AutomationId;
+                    int i = Convert.ToInt32(id) - 1;
+                    for(; i >= 0; --i) {
+                        parent = TreeWalker.ControlViewWalker.GetPreviousSibling(parent);
+                        if(parent == null || parent.Current.LocalizedControlType != "group") {
+                            return -2;
                         }
-                        catch(InvalidCastException) {
-                            this.fIFolderViewNotImplemented = true;
-                            return null;
+                        id = parent.Current.AutomationId;
+                        if(i != Convert.ToInt32(id)) {
+                            return -2;
                         }
-                        if(view2 == null || view2.Item(iItem, out ppidl) != 0) {
-                            return ShellMethods.GetDisplayName(ppidl, false);
+                        AutomationElement child = TreeWalker.ControlViewWalker.GetFirstChild(parent);
+                        if(child == null || child.Current.LocalizedControlType != "Group Header") {
+                            return -2;
                         }
+                        child = TreeWalker.ControlViewWalker.GetLastChild(child);
+                        if(child == null || child.Current.LocalizedControlType != "edit" || child.Current.Name != "Count") {
+                            return -2;
+                        }
+                        ValuePattern p = child.GetCurrentPattern(ValuePattern.Pattern) as ValuePattern;
+                        string str = p.Current.Value;
+                        if(str.Length < 3) {
+                            return -2;
+                        }
+                        offset += Convert.ToInt32(str.Substring(1, str.Length - 2));
                     }
                 }
-                catch(Exception exception) {
-                    QTUtility2.MakeErrorLog(exception, null);
-                }
-                finally {
-                    if(ppshv != null) {
-                        Marshal.ReleaseComObject(ppshv);
-                    }
-                    if(ppidl != IntPtr.Zero) {
-                        PInvoke.CoTaskMemFree(ppidl);
-                    }
-                }
+                id = elem.Current.AutomationId;
+                return Convert.ToInt32(id) + offset;
             }
-            return null;
+            catch(Exception) {
+                return -2;
+            }
         }
 
         private static AutomationElement GetHotListItemElement(IntPtr hwnd, Point pt) {
