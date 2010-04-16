@@ -106,6 +106,7 @@ namespace QTTabBarLib {
         private int itemIndexDROPHILITED = -1;
         private NativeWindowController listViewController;
         private Dictionary<int, ITravelLogEntry> LogEntryDic = new Dictionary<int, ITravelLogEntry>();
+        private Point lastDragPoint;
         private Point lastLButtonPoint;
         private Int64 lastLButtonTime;
         private List<QTabItem> lstActivatedTabs = new List<QTabItem>(0x10);
@@ -4687,6 +4688,7 @@ namespace QTTabBarLib {
 
         private bool listViewController_MessageCaptured(ref System.Windows.Forms.Message msg) {
             Keys modifierKeys = Control.ModifierKeys;
+            Point pt;
 
             switch(msg.Msg) {
                 case WM.MOUSEMOVE:        
@@ -4706,6 +4708,21 @@ namespace QTTabBarLib {
                     this.subDirIndex = -1;
                     this.HideSubDirTip(2);
                     break;
+
+                case WM.USER + 209: // This message appears to control dragging.
+                    {
+                        pt = new Point((int)msg.WParam, (int)msg.LParam);
+                        if(pt == lastDragPoint) {
+                            return false;
+                        }
+                        lastDragPoint = pt;
+                        int idx = DirectUIHitTest(listViewController.Handle, pt, false);
+                        if(idx > -1 && idx != itemIndexDROPHILITED) {
+                            HandleDROPHILITED(idx, listViewController.Handle);
+                        }
+                    }
+                    break;
+
             }
             return false;
         }
@@ -6436,6 +6453,11 @@ namespace QTTabBarLib {
                     return this.HandleLVCUSTOMDRAW(ref msg, this.shellViewController.OptionalHandle);
 
                 case LVN.ITEMCHANGED: {
+                    // There are three things happening here.
+                    // 1. Notify plugins of selection changing: TODO
+                    // 2. Redraw for Full Row Select: Not happening
+                    // 3. Set new item DropHilighted: Handled in the ListView
+                    //    Controller.
                         if(QTUtility.instanceManager.TryGetButtonBarHandle(this.ExplorerHandle, out ptr)) {
                             int num4 = (int)PInvoke.SendMessage(this.hwndSysListView32, 0x1004, IntPtr.Zero, IntPtr.Zero);
                             QTUtility2.SendCOPYDATASTRUCT(ptr, (IntPtr)13, null, (IntPtr)num4);
@@ -6483,7 +6505,6 @@ namespace QTTabBarLib {
                     break;           // TODO: Investigate
                 
                 case LVN.DELETEITEM:
-                    // For this, probably the only way to go is 
                     if(QTUtility.instanceManager.TryGetButtonBarHandle(this.ExplorerHandle, out ptr)) {
                         QTUtility2.SendCOPYDATASTRUCT(ptr, (IntPtr)14, null, IntPtr.Zero);
                     }
@@ -6502,17 +6523,22 @@ namespace QTTabBarLib {
                     break;
 
                 case LVN.BEGINDRAG:
+                    // This won't be necessary it seems.  On Windows 7, when you
+                    // start to drag, a MOUSELEAVE message is sent, which hides
+                    // the SubDirTip anyway.
                     this.shellViewController.DefWndProc(ref msg);
                     this.HideSubDirTip(0xff);
                     break;
 
                 case LVN.ITEMACTIVATE:
+                    // Ugh...
                     if(this.timerSelectionChanged != null) {
                         this.timerSelectionChanged.Enabled = false;
                     }
                     return this.HandleITEMACTIVATE(msg.LParam, this.shellViewController.OptionalHandle);
 
                 case LVN.ODSTATECHANGED:
+                    // FullRowSelect doesn't look possible anyway, so whatever.
                     if(QTUtility.IsVista && QTUtility.CheckConfig(Settings.NoFullRowSelect)) {
                         NMLVODSTATECHANGE nmlvodstatechange = (NMLVODSTATECHANGE)Marshal.PtrToStructure(msg.LParam, typeof(NMLVODSTATECHANGE));
                         if(((nmlvodstatechange.uNewState & 2) == 2) && (1 == ((int)PInvoke.SendMessage(nmlvodstatechange.hdr.hwndFrom, LVM.GETVIEW, IntPtr.Zero, IntPtr.Zero)))) {
@@ -6591,6 +6617,7 @@ namespace QTTabBarLib {
                     break;
 
                 case LVN.KEYDOWN: {
+                        // This will be handled through WM_KEYDOWN.
                         if((!QTUtility.CheckConfig(Settings.ShowTooltipPreviews) && QTUtility.CheckConfig(Settings.NoShowSubDirTips)) && !QTUtility.CheckConfig(Settings.CursorLoop)) {
                             return false;
                         }
@@ -7643,14 +7670,20 @@ namespace QTTabBarLib {
         private void timer_HoverSubDirTipMenu_Tick(object sender, EventArgs e) {
             this.timer_HoverSubDirTipMenu.Enabled = false;
             if(Control.MouseButtons != MouseButtons.None) {
-                IntPtr tag = (IntPtr)this.timer_HoverSubDirTipMenu.Tag;
+                //IntPtr tag = (IntPtr)this.timer_HoverSubDirTipMenu.Tag;
+                bool isSLV;
+                IntPtr hwnd = GetExplorerListView(out isSLV);
                 Point mousePosition = Control.MousePosition;
-                PInvoke.MapWindowPoints(IntPtr.Zero, tag, ref mousePosition, 1);
-                if(this.itemIndexDROPHILITED == PInvoke.ListView_HitTest(tag, QTUtility2.Make_LPARAM(mousePosition.X, mousePosition.Y))) {
+                PInvoke.MapWindowPoints(IntPtr.Zero, hwnd, ref mousePosition, 1);
+                int idx = isSLV ?
+                    PInvoke.ListView_HitTest(hwnd, QTUtility2.Make_LPARAM(mousePosition.X, mousePosition.Y)) :
+                    DirectUIHitTest(hwnd, mousePosition, true);
+                
+                if(this.itemIndexDROPHILITED == idx) {
                     if(this.subDirTip != null) {
                         this.subDirTip.HideMenu();
                     }
-                    if(this.ShowSubDirTip(this.itemIndexDROPHILITED, tag, true, true)) { // TODO
+                    if(this.ShowSubDirTip(this.itemIndexDROPHILITED, hwnd, true, isSLV)) {
                         WindowUtils.BringExplorerToFront(this.ExplorerHandle);
                         this.subDirTip.ShowMenu();
                         return;
