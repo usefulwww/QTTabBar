@@ -4620,7 +4620,7 @@ namespace QTTabBarLib {
         AutomationElement GetChildOfListElem(AutomationElement listElement, string childType) {
             AutomationElement child = TreeWalker.ControlViewWalker.GetFirstChild(listElement);
             while(child != null) {
-                if(child.Current.LocalizedControlType == childType) {
+                if(child.Current.ClassName == childType) {
                     return child;
                 }
                 child = TreeWalker.ControlViewWalker.GetNextSibling(child);
@@ -4638,13 +4638,13 @@ namespace QTTabBarLib {
                 switch(fs.ViewMode) {
                     case FVM.CONTENT:
                         y = (int)listElement.Current.BoundingRectangle.Bottom;
-                        listElement = GetChildOfListElem(listElement, "edit");
+                        listElement = GetChildOfListElem(listElement, "UIProperty");
                         x = (int)listElement.Current.BoundingRectangle.Left;
                         nextSubDirPt = new Point(x, y - 16);
                         return;
 
                     case FVM.DETAILS:
-                        listElement = GetChildOfListElem(listElement, "edit");
+                        listElement = GetChildOfListElem(listElement, "UIProperty");
                         rect = listElement.Current.BoundingRectangle;
                         x = (int)rect.Right;
                         y = (int)rect.Top;
@@ -4654,12 +4654,16 @@ namespace QTTabBarLib {
 
                     case FVM.SMALLICON:
                         rect = listElement.Current.BoundingRectangle;
-                        nextSubDirPt = new Point((int)rect.Right - 16, (int)rect.Bottom - 16);
+                        x = (int)rect.Right;
+                        y = (int)rect.Top;
+                        x -= ((int)rect.Bottom - y) / 2;
+                        y += ((int)rect.Bottom - y) / 2;
+                        nextSubDirPt = new Point(x - 8, y - 8);
                         return;
 
                     case FVM.TILE:
                         y = (int)listElement.Current.BoundingRectangle.Bottom;
-                        listElement = GetChildOfListElem(listElement, "image");
+                        listElement = GetChildOfListElem(listElement, "UIImage");
                         x = (int)listElement.Current.BoundingRectangle.Right;
                         nextSubDirPt = new Point(x - 16, y - 16);
                         return;
@@ -4668,7 +4672,7 @@ namespace QTTabBarLib {
                     case FVM.THUMBNAIL:
                     case FVM.ICON:
                         x = (int)listElement.Current.BoundingRectangle.Right;
-                        listElement = GetChildOfListElem(listElement, "image");
+                        listElement = GetChildOfListElem(listElement, "UIImage");
                         y = (int)listElement.Current.BoundingRectangle.Bottom;
                         nextSubDirPt = new Point(x - 16, y - 16);
                         return;
@@ -4732,7 +4736,7 @@ namespace QTTabBarLib {
                 int offset = 0;
                 string id;
                 AutomationElement parent = TreeWalker.ControlViewWalker.GetParent(elem);
-                if(parent.Current.LocalizedControlType == "group") {
+                if(parent.Current.ClassName == "UIGroupItem") {
                     // If grouping is enabled, we're basically screwed:  The id 
                     // of the element will be its index IN THAT GROUP, not the
                     // overall index, which is what we need.  The only thing we
@@ -4746,7 +4750,7 @@ namespace QTTabBarLib {
                     int i = Convert.ToInt32(id) - 1;
                     for(; i >= 0; --i) {
                         parent = TreeWalker.ControlViewWalker.GetPreviousSibling(parent);
-                        if(parent == null || parent.Current.LocalizedControlType != "group") {
+                        if(parent == null || parent.Current.ClassName != "UIGroupItem") {
                             return -2;
                         }
                         id = parent.Current.AutomationId;
@@ -4754,11 +4758,11 @@ namespace QTTabBarLib {
                             return -2;
                         }
                         AutomationElement child = TreeWalker.ControlViewWalker.GetFirstChild(parent);
-                        if(child == null || child.Current.LocalizedControlType != "Group Header") {
+                        if(child == null || child.Current.ClassName != "UIGroupHeader") {
                             return -2;
                         }
                         child = TreeWalker.ControlViewWalker.GetLastChild(child);
-                        if(child == null || child.Current.LocalizedControlType != "edit" || child.Current.Name != "Count") {
+                        if(child == null || child.Current.ClassName != "UICount") {
                             return -2;
                         }
                         ValuePattern p = child.GetCurrentPattern(ValuePattern.Pattern) as ValuePattern;
@@ -4784,12 +4788,10 @@ namespace QTTabBarLib {
             }
             AutomationElement elem = AutomationElement.FromPoint(new System.Windows.Point(pt.X, pt.Y));
             if(elem != null) {
-                AutomationElement.AutomationElementInformation aei = elem.Current;
-                if(aei.LocalizedControlType != "list item") {
+                if(elem.Current.ClassName != "UIItem") {
                     elem = TreeWalker.ControlViewWalker.GetParent(elem);
-                    aei = elem.Current;
                 }
-                if(aei.LocalizedControlType == "list item") {
+                if(elem.Current.ClassName == "UIItem") {
                     return elem;
                 }
             }
