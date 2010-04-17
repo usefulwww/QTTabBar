@@ -3058,448 +3058,476 @@ namespace QTTabBarLib {
 
         private bool HandleKEYDOWN(IntPtr wParam, bool fRepeat) {
             bool flag;
-            int num = (int)wParam;
-            int num2 = ((int)wParam) | ((int)Control.ModifierKeys);
-            switch(num) {
-                case 0x10:
+            Keys key = (Keys)((int)wParam);
+            Keys mkey = (Keys)(((int)wParam) | ((int)Control.ModifierKeys));
+
+            switch(key) {
+                case Keys.ShiftKey:
                     if(!QTUtility.CheckConfig(Settings.PreviewsWithShift)) {
                         this.HideThumbnailTooltip(5);
                     }
-                    if(((!QTUtility.CheckConfig(Settings.NoShowSubDirTips) && !QTUtility.CheckConfig(Settings.SubDirTipsWithShift)) && ((this.subDirTip != null) && this.subDirTip.IsShowing)) && !this.subDirTip.MenuIsShowing) {
-                        this.HideSubDirTip(6);
-                    }
-                    return false;
-
-                case 13:
-                    return false;
-
-                default:
-                    if(num2 == 8) {
-                        if(QTUtility.IsVista) {
-                            IntPtr focus = PInvoke.GetFocus();
-                            if((focus != IntPtr.Zero) && (focus == this.GetExplorerListView())) {
-                                if(!fRepeat) {
-                                    if(QTUtility.CheckConfig(Settings.BackspaceUpLevel)) {
-                                        this.UpOneLevel();
-                                    }
-                                    else {
-                                        this.NavigateCurrentTab(true);
-                                    }
+                    
+                    if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
+                        if(QTUtility.CheckConfig(Settings.SubDirTipsWithShift)) {
+                            bool isSLV;
+                            IntPtr hwnd = GetExplorerListView(out isSLV);
+                            if(PInvoke.WindowFromPoint(Control.MousePosition) == hwnd) {
+                                int idx;
+                                int subidx;
+                                Point relpt = Control.MousePosition;
+                                PInvoke.ScreenToClient(hwnd, ref relpt);
+                                if(isSLV) {
+                                    idx = PInvoke.ListView_HitTest(hwnd, QTUtility2.Make_LPARAM(relpt.X, relpt.Y));
+                                    subidx = 0; // TODO
                                 }
-                                return true;
+                                else {
+                                    idx = DirectUIHitTest(hwnd, relpt, true);
+                                    subidx = 0;
+                                }
+                                this.HandleLVHOTTRACK(hwnd, isSLV, idx, subidx);
                             }
                         }
-                        return false;
+                        else if(this.subDirTip != null && this.subDirTip.IsShowing && !this.subDirTip.MenuIsShowing) {
+                            this.HideSubDirTip(6);
+                        }
                     }
-                    if(!fRepeat && (num == 0x11)) {
-                        if((this.NowTabDragging && (this.DraggingTab != null)) && (this.tabControl1.GetTabMouseOn() == null)) {
-                            this.Cursor = this.GetCursor(false);
+                    return false;
+
+                case Keys.Enter:
+                    return false;
+
+                case Keys.Menu:
+                    if((!fRepeat && QTUtility.CheckConfig(Settings.ShowTabCloseButtons)) && QTUtility.CheckConfig(Settings.TabCloseBtnsWithAlt)) {
+                        this.tabControl1.ShowCloseButton(true);
+                        if(QTUtility.IsVista) {
+                            return QTUtility.CheckConfig(Settings.HideMenuBar);
+                        }
+                    }
+                    return false;
+
+                case Keys.ControlKey:
+                    if(!fRepeat && this.NowTabDragging && (this.DraggingTab != null) && this.tabControl1.GetTabMouseOn() == null) {
+                        this.Cursor = this.GetCursor(false);
+                    }
+                    break;
+
+                case Keys.Tab:
+                    if(!QTUtility.CheckConfig(Settings.TabSwitcher) && (mkey & Keys.Control) != Keys.None) {
+                        return this.ShowTabSwitcher((mkey & Keys.Shift) != Keys.None, fRepeat);
+                    }
+                    break;
+            }
+
+            switch(mkey) {
+                case Keys.Back:
+                    if(QTUtility.IsVista) {
+                        IntPtr focus = PInvoke.GetFocus();
+                        if((focus != IntPtr.Zero) && (focus == this.GetExplorerListView())) {
+                            if(!fRepeat) {
+                                if(QTUtility.CheckConfig(Settings.BackspaceUpLevel)) {
+                                    this.UpOneLevel();
+                                }
+                                else {
+                                    this.NavigateCurrentTab(true);
+                                }
+                            }
+                            return true;
+                        }
+                    }
+                    return false;
+
+                case Keys.Alt | Keys.Left:
+                    this.NavigateCurrentTab(true);
+                    return true;
+
+                case Keys.Alt | Keys.Right:
+                    this.NavigateCurrentTab(false);
+                    return true;
+
+                case Keys.Alt | Keys.F4:
+                    if(!fRepeat) {
+                        WindowUtils.CloseExplorer(this.ExplorerHandle, 1);
+                    }
+                    return true;
+
+                case Keys.F2:
+                    if(!QTUtility.CheckConfig(Settings.F2Selection)) {
+                        HandleF2(this.GetExplorerListView());
+                    }
+                    return false;
+
+            }
+            if(((Keys.ControlKey | Keys.NumPad0) <= mkey && mkey <= (Keys.ControlKey | Keys.NumPad9)) ||
+                    ((Keys.ControlKey | Keys.D0) <= mkey && mkey <= (Keys.ControlKey | Keys.D9))) {
+                int num3;
+                if(mkey >= (Keys.ControlKey | Keys.NumPad0)) {
+                    num3 = (int)(mkey - (Keys.ControlKey | Keys.NumPad0));
+                }
+                else {
+                    num3 = (int)(mkey - (Keys.ControlKey | Keys.D0));
+                }
+                if(num3 == 0) {
+                    num3 = 10;
+                }
+                if(this.tabControl1.TabCount >= num3) {
+                    this.tabControl1.SelectTab((int)(num3 - 1));
+                }
+                return true;
+            }
+
+            int imkey = (int)mkey | 0x100000;
+            if(imkey == QTUtility.ShortcutKeys[0]) {
+                this.NavigateCurrentTab(true);
+                return true;
+            }
+            if(imkey == QTUtility.ShortcutKeys[1]) {
+                this.NavigateCurrentTab(false);
+                return true;
+            }
+            if(imkey == QTUtility.ShortcutKeys[2]) {
+                if(!fRepeat) {
+                    this.NavigateToFirstOrLast(true);
+                }
+                return true;
+            }
+            if(imkey == QTUtility.ShortcutKeys[3]) {
+                if(!fRepeat) {
+                    this.NavigateToFirstOrLast(false);
+                }
+                return true;
+            }
+            if(imkey == QTUtility.ShortcutKeys[4]) {
+                if(!fRepeat) {
+                    int selectedIndex = this.tabControl1.SelectedIndex;
+                    if(selectedIndex == (this.tabControl1.TabCount - 1)) {
+                        this.tabControl1.SelectedIndex = 0;
+                    }
+                    else {
+                        this.tabControl1.SelectedIndex = selectedIndex + 1;
+                    }
+                }
+                return true;
+            }
+            if(imkey == QTUtility.ShortcutKeys[5]) {
+                if(!fRepeat) {
+                    int num5 = this.tabControl1.SelectedIndex;
+                    if(num5 == 0) {
+                        this.tabControl1.SelectedIndex = this.tabControl1.TabCount - 1;
+                    }
+                    else {
+                        this.tabControl1.SelectedIndex = num5 - 1;
+                    }
+                }
+                return true;
+            }
+            if(imkey == QTUtility.ShortcutKeys[6]) {
+                if(!fRepeat && (this.tabControl1.TabCount > 0)) {
+                    this.tabControl1.SelectedIndex = 0;
+                }
+                return true;
+            }
+            if(imkey == QTUtility.ShortcutKeys[7]) {
+                if(!fRepeat && (this.tabControl1.TabCount > 1)) {
+                    this.tabControl1.SelectedIndex = this.tabControl1.TabCount - 1;
+                }
+                return true;
+            }
+            if(imkey == QTUtility.ShortcutKeys[8]) {
+                if(!fRepeat) {
+                    if(this.tabControl1.TabCount > 1) {
+                        this.CloseTab(this.CurrentTab);
+                    }
+                    else {
+                        WindowUtils.CloseExplorer(this.ExplorerHandle, 1);
+                    }
+                }
+                return true;
+            }
+            if(imkey == QTUtility.ShortcutKeys[9]) {
+                if(!fRepeat && (this.tabControl1.TabCount > 1)) {
+                    foreach(QTabItem item in this.tabControl1.TabPages) {
+                        if(item != this.CurrentTab) {
+                            this.CloseTab(item);
+                        }
+                    }
+                }
+                return true;
+            }
+            if(imkey == QTUtility.ShortcutKeys[10]) {
+                if(!fRepeat) {
+                    this.CloseLeftRight(true, -1);
+                }
+                return true;
+            }
+            if(imkey == QTUtility.ShortcutKeys[11]) {
+                if(!fRepeat) {
+                    this.CloseLeftRight(false, -1);
+                }
+                return true;
+            }
+            if(imkey == QTUtility.ShortcutKeys[12]) {
+                if(!fRepeat) {
+                    WindowUtils.CloseExplorer(this.ExplorerHandle, 1);
+                }
+                return true;
+            }
+            if(imkey == QTUtility.ShortcutKeys[13]) {
+                if(!fRepeat) {
+                    this.RestoreNearest();
+                }
+                return true;
+            }
+            if(imkey == QTUtility.ShortcutKeys[14]) {
+                if(!fRepeat) {
+                    this.CloneTabButton(this.CurrentTab, null, true, -1);
+                }
+                return true;
+            }
+            if(imkey == QTUtility.ShortcutKeys[15]) {
+                if(!fRepeat && (this.CurrentTab != null)) {
+                    using(IDLWrapper wrapper = new IDLWrapper(this.CurrentTab.CurrentIDL)) {
+                        this.OpenNewWindow(wrapper);
+                    }
+                }
+                return true;
+            }
+            if(imkey == QTUtility.ShortcutKeys[0x10]) {
+                if(this.CurrentTab != null) {
+                    this.CurrentTab.TabLocked = !this.CurrentTab.TabLocked;
+                }
+                return true;
+            }
+            if(imkey != QTUtility.ShortcutKeys[0x11]) {
+                if(imkey == QTUtility.ShortcutKeys[0x12]) {
+                    if(!fRepeat) {
+                        this.ChooseNewDirectory();
+                    }
+                    return true;
+                }
+                if(imkey == QTUtility.ShortcutKeys[0x13]) {
+                    if(!fRepeat && (this.CurrentTab != null)) {
+                        this.CreateGroup(this.CurrentTab);
+                    }
+                    return true;
+                }
+                if(imkey == QTUtility.ShortcutKeys[20]) {
+                    if(!fRepeat) {
+                        this.OpenOptionsDialog();
+                    }
+                    return true;
+                }
+                if(imkey == QTUtility.ShortcutKeys[0x15]) {
+                    if(!fRepeat) {
+                        Rectangle tabRect = this.tabControl1.GetTabRect(this.tabControl1.TabCount - 1, true);
+                        this.contextMenuSys.Show(base.PointToScreen(new Point(tabRect.Right + 10, tabRect.Bottom - 10)));
+                    }
+                    return true;
+                }
+                if(imkey == QTUtility.ShortcutKeys[0x16]) {
+                    if(!fRepeat) {
+                        int index = this.tabControl1.TabPages.IndexOf(this.CurrentTab);
+                        if(index != -1) {
+                            this.ContextMenuedTab = this.CurrentTab;
+                            Rectangle rectangle2 = this.tabControl1.GetTabRect(index, true);
+                            this.contextMenuTab.Show(base.PointToScreen(new Point(rectangle2.Right + 10, rectangle2.Bottom - 10)));
+                        }
+                    }
+                    return true;
+                }
+                if(((imkey == QTUtility.ShortcutKeys[0x17]) || (imkey == QTUtility.ShortcutKeys[0x18])) || (imkey == QTUtility.ShortcutKeys[0x19])) {
+                    if(!fRepeat) {
+                        IntPtr ptr2;
+                        int num7 = 3;
+                        if(imkey == QTUtility.ShortcutKeys[0x18]) {
+                            num7 = 4;
+                        }
+                        else if(imkey == QTUtility.ShortcutKeys[0x19]) {
+                            num7 = 5;
+                        }
+                        if(QTUtility.instanceManager.TryGetButtonBarHandle(this.ExplorerHandle, out ptr2)) {
+                            return (1 == ((int)QTUtility2.SendCOPYDATASTRUCT(ptr2, (IntPtr)4, "fromTab", (IntPtr)num7)));
+                        }
+                    }
+                }
+                else {
+                    if(imkey == QTUtility.ShortcutKeys[0x1a]) {
+                        WindowUtils.ShowMenuBar(QTUtility.CheckConfig(Settings.HideMenuBar), base.ReBarHandle);
+                        if(QTUtility.CheckConfig(Settings.HideMenuBar)) {
+                            QTUtility.ConfigValues[7] = (byte)(QTUtility.ConfigValues[7] & 0xf7);
+                        }
+                        else {
+                            QTUtility.ConfigValues[7] = (byte)(QTUtility.ConfigValues[7] | 8);
+                        }
+                        using(RegistryKey rkey = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+                            rkey.SetValue("Config", QTUtility.ConfigValues);
+                        }
+                        return true;
+                    }
+                    if(((imkey == QTUtility.ShortcutKeys[0x1b]) || (imkey == QTUtility.ShortcutKeys[0x1c])) || (((imkey == QTUtility.ShortcutKeys[0x1d]) || (imkey == QTUtility.ShortcutKeys[30])) || (imkey == QTUtility.ShortcutKeys[0x1f]))) {
+                        if(!fRepeat) {
+                            int num8 = 0;
+                            if(imkey == QTUtility.ShortcutKeys[0x1c]) {
+                                num8 = 1;
+                            }
+                            else if(imkey == QTUtility.ShortcutKeys[0x1d]) {
+                                num8 = 2;
+                            }
+                            else if(imkey == QTUtility.ShortcutKeys[30]) {
+                                num8 = 3;
+                            }
+                            else if(imkey == QTUtility.ShortcutKeys[0x1f]) {
+                                num8 = 4;
+                            }
+                            if((num8 < 2) && (((this.subDirTip != null) && this.subDirTip.MenuIsShowing) || ((this.subDirTip_Tab != null) && this.subDirTip_Tab.MenuIsShowing))) {
+                                return false;
+                            }
+                            this.DoFileTools(num8);
+                        }
+                        return true;
+                    }
+                    if(imkey == QTUtility.ShortcutKeys[0x20]) {
+                        this.ToggleTopMost();
+                        this.SyncButtonBarCurrent(0x40);
+                        return true;
+                    }
+                    if((imkey == QTUtility.ShortcutKeys[0x21]) || (imkey == QTUtility.ShortcutKeys[0x22])) {
+                        int num9;
+                        int num10;
+                        byte num11;
+                        if(0x80000 != ((int)PInvoke.Ptr_OP_AND(PInvoke.GetWindowLongPtr(this.ExplorerHandle, -20), 0x80000))) {
+                            if(imkey == QTUtility.ShortcutKeys[0x21]) {
+                                return true;
+                            }
+                            PInvoke.SetWindowLongPtr(this.ExplorerHandle, -20, PInvoke.Ptr_OP_OR(PInvoke.GetWindowLongPtr(this.ExplorerHandle, -20), 0x80000));
+                            PInvoke.SetLayeredWindowAttributes(this.ExplorerHandle, 0, 0xff, 2);
+                        }
+                        if(PInvoke.GetLayeredWindowAttributes(this.ExplorerHandle, out num9, out num11, out num10)) {
+                            IntPtr ptr3;
+                            if(imkey == QTUtility.ShortcutKeys[0x21]) {
+                                if(num11 > 0xf3) {
+                                    num11 = 0xff;
+                                }
+                                else {
+                                    num11 = (byte)(num11 + 12);
+                                }
+                            }
+                            else if(num11 < 0x20) {
+                                num11 = 20;
+                            }
+                            else {
+                                num11 = (byte)(num11 - 12);
+                            }
+                            PInvoke.SetLayeredWindowAttributes(this.ExplorerHandle, 0, num11, 2);
+                            if(QTUtility.instanceManager.TryGetButtonBarHandle(this.ExplorerHandle, out ptr3)) {
+                                QTUtility2.SendCOPYDATASTRUCT(ptr3, (IntPtr)7, "track", (IntPtr)num11);
+                            }
+                            if(num11 == 0xff) {
+                                PInvoke.SetWindowLongPtr(this.ExplorerHandle, -20, PInvoke.Ptr_OP_AND(PInvoke.GetWindowLongPtr(this.ExplorerHandle, -20), 0xfff7ffff));
+                            }
+                        }
+                        return true;
+                    }
+                    if(imkey == QTUtility.ShortcutKeys[0x23]) {
+                        this.FocusListView();
+                        return true;
+                    }
+                    if(imkey == QTUtility.ShortcutKeys[0x24]) {
+                        if(QTUtility.IsVista) {
+                            PInvoke.SetFocus(this.GetSearchBand_Edit());
+                            return true;
+                        }
+                    }
+                    else if(imkey == QTUtility.ShortcutKeys[0x25]) {
+                        IntPtr ptr4;
+                        if(QTUtility.instanceManager.TryGetButtonBarHandle(this.ExplorerHandle, out ptr4) && PInvoke.IsWindow(ptr4)) {
+                            QTUtility2.SendCOPYDATASTRUCT(ptr4, (IntPtr)8, null, IntPtr.Zero);
+                            return true;
+                        }
+                    }
+                    else if(imkey == QTUtility.ShortcutKeys[0x26]) {
+                        if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
+                            if(!fRepeat) {
+                                this.ShowAndClickSubDirTip();
+                            }
+                            return true;
                         }
                     }
                     else {
-                        if(num == 0x12) {
-                            if((!fRepeat && QTUtility.CheckConfig(Settings.ShowTabCloseButtons)) && QTUtility.CheckConfig(Settings.TabCloseBtnsWithAlt)) {
-                                this.tabControl1.ShowCloseButton(true);
-                                if(QTUtility.IsVista) {
-                                    return QTUtility.CheckConfig(Settings.HideMenuBar);
-                                }
-                            }
-                            return false;
-                        }
-                        switch(num2) {
-                            case 0x40025:
-                                this.NavigateCurrentTab(true);
-                                return true;
-
-                            case 0x40027:
-                                this.NavigateCurrentTab(false);
-                                return true;
-
-                            case 0x40073:
-                                if(!fRepeat) {
-                                    WindowUtils.CloseExplorer(this.ExplorerHandle, 1);
-                                }
-                                return true;
-                        }
-                        if(((0x20030 <= num2) && (num2 <= 0x20039)) || ((0x20060 <= num2) && (num2 <= 0x20069))) {
-                            int num3;
-                            if(num2 > 0x20059) {
-                                num3 = num2 - 0x20060;
-                            }
-                            else {
-                                num3 = num2 - 0x20030;
-                            }
-                            if(num3 == 0) {
-                                num3 = 10;
-                            }
-                            if(this.tabControl1.TabCount >= num3) {
-                                this.tabControl1.SelectTab((int)(num3 - 1));
-                            }
-                            return true;
-                        }
-                        if(num2 == 0x71) {
-                            if(!QTUtility.CheckConfig(Settings.F2Selection)) {
-                                HandleF2(this.GetExplorerListView());
-                            }
-                            return false;
-                        }
-                        if(((num == 9) && !QTUtility.CheckConfig(Settings.TabSwitcher)) && ((num2 & 0x20000) != 0)) {
-                            return this.ShowTabSwitcher((num2 & 0x10000) != 0, fRepeat);
-                        }
-                    }
-                    num2 |= 0x100000;
-                    if(num2 == QTUtility.ShortcutKeys[0]) {
-                        this.NavigateCurrentTab(true);
-                        return true;
-                    }
-                    if(num2 == QTUtility.ShortcutKeys[1]) {
-                        this.NavigateCurrentTab(false);
-                        return true;
-                    }
-                    if(num2 == QTUtility.ShortcutKeys[2]) {
-                        if(!fRepeat) {
-                            this.NavigateToFirstOrLast(true);
-                        }
-                        return true;
-                    }
-                    if(num2 == QTUtility.ShortcutKeys[3]) {
-                        if(!fRepeat) {
-                            this.NavigateToFirstOrLast(false);
-                        }
-                        return true;
-                    }
-                    if(num2 == QTUtility.ShortcutKeys[4]) {
-                        if(!fRepeat) {
-                            int selectedIndex = this.tabControl1.SelectedIndex;
-                            if(selectedIndex == (this.tabControl1.TabCount - 1)) {
-                                this.tabControl1.SelectedIndex = 0;
-                            }
-                            else {
-                                this.tabControl1.SelectedIndex = selectedIndex + 1;
-                            }
-                        }
-                        return true;
-                    }
-                    if(num2 == QTUtility.ShortcutKeys[5]) {
-                        if(!fRepeat) {
-                            int num5 = this.tabControl1.SelectedIndex;
-                            if(num5 == 0) {
-                                this.tabControl1.SelectedIndex = this.tabControl1.TabCount - 1;
-                            }
-                            else {
-                                this.tabControl1.SelectedIndex = num5 - 1;
-                            }
-                        }
-                        return true;
-                    }
-                    if(num2 == QTUtility.ShortcutKeys[6]) {
-                        if(!fRepeat && (this.tabControl1.TabCount > 0)) {
-                            this.tabControl1.SelectedIndex = 0;
-                        }
-                        return true;
-                    }
-                    if(num2 == QTUtility.ShortcutKeys[7]) {
-                        if(!fRepeat && (this.tabControl1.TabCount > 1)) {
-                            this.tabControl1.SelectedIndex = this.tabControl1.TabCount - 1;
-                        }
-                        return true;
-                    }
-                    if(num2 == QTUtility.ShortcutKeys[8]) {
-                        if(!fRepeat) {
-                            if(this.tabControl1.TabCount > 1) {
-                                this.CloseTab(this.CurrentTab);
-                            }
-                            else {
-                                WindowUtils.CloseExplorer(this.ExplorerHandle, 1);
-                            }
-                        }
-                        return true;
-                    }
-                    if(num2 == QTUtility.ShortcutKeys[9]) {
-                        if(!fRepeat && (this.tabControl1.TabCount > 1)) {
-                            foreach(QTabItem item in this.tabControl1.TabPages) {
-                                if(item != this.CurrentTab) {
-                                    this.CloseTab(item);
-                                }
-                            }
-                        }
-                        return true;
-                    }
-                    if(num2 == QTUtility.ShortcutKeys[10]) {
-                        if(!fRepeat) {
-                            this.CloseLeftRight(true, -1);
-                        }
-                        return true;
-                    }
-                    if(num2 == QTUtility.ShortcutKeys[11]) {
-                        if(!fRepeat) {
-                            this.CloseLeftRight(false, -1);
-                        }
-                        return true;
-                    }
-                    if(num2 == QTUtility.ShortcutKeys[12]) {
-                        if(!fRepeat) {
-                            WindowUtils.CloseExplorer(this.ExplorerHandle, 1);
-                        }
-                        return true;
-                    }
-                    if(num2 == QTUtility.ShortcutKeys[13]) {
-                        if(!fRepeat) {
-                            this.RestoreNearest();
-                        }
-                        return true;
-                    }
-                    if(num2 == QTUtility.ShortcutKeys[14]) {
-                        if(!fRepeat) {
-                            this.CloneTabButton(this.CurrentTab, null, true, -1);
-                        }
-                        return true;
-                    }
-                    if(num2 == QTUtility.ShortcutKeys[15]) {
-                        if(!fRepeat && (this.CurrentTab != null)) {
-                            using(IDLWrapper wrapper = new IDLWrapper(this.CurrentTab.CurrentIDL)) {
-                                this.OpenNewWindow(wrapper);
-                            }
-                        }
-                        return true;
-                    }
-                    if(num2 == QTUtility.ShortcutKeys[0x10]) {
-                        if(this.CurrentTab != null) {
-                            this.CurrentTab.TabLocked = !this.CurrentTab.TabLocked;
-                        }
-                        return true;
-                    }
-                    if(num2 != QTUtility.ShortcutKeys[0x11]) {
-                        if(num2 == QTUtility.ShortcutKeys[0x12]) {
+                        if(imkey == QTUtility.ShortcutKeys[0x27]) {
                             if(!fRepeat) {
-                                this.ChooseNewDirectory();
+                                ShowTaksbarItem(this.ExplorerHandle, false);
                             }
                             return true;
                         }
-                        if(num2 == QTUtility.ShortcutKeys[0x13]) {
-                            if(!fRepeat && (this.CurrentTab != null)) {
-                                this.CreateGroup(this.CurrentTab);
-                            }
+                        if(imkey == QTUtility.ShortcutKeys[40]) {
+                            this.tabControl1.Focus();
+                            this.tabControl1.FocusNextTab(false, true, false);
                             return true;
                         }
-                        if(num2 == QTUtility.ShortcutKeys[20]) {
-                            if(!fRepeat) {
-                                this.OpenOptionsDialog();
-                            }
-                            return true;
-                        }
-                        if(num2 == QTUtility.ShortcutKeys[0x15]) {
-                            if(!fRepeat) {
-                                Rectangle tabRect = this.tabControl1.GetTabRect(this.tabControl1.TabCount - 1, true);
-                                this.contextMenuSys.Show(base.PointToScreen(new Point(tabRect.Right + 10, tabRect.Bottom - 10)));
-                            }
-                            return true;
-                        }
-                        if(num2 == QTUtility.ShortcutKeys[0x16]) {
-                            if(!fRepeat) {
-                                int index = this.tabControl1.TabPages.IndexOf(this.CurrentTab);
-                                if(index != -1) {
-                                    this.ContextMenuedTab = this.CurrentTab;
-                                    Rectangle rectangle2 = this.tabControl1.GetTabRect(index, true);
-                                    this.contextMenuTab.Show(base.PointToScreen(new Point(rectangle2.Right + 10, rectangle2.Bottom - 10)));
-                                }
-                            }
-                            return true;
-                        }
-                        if(((num2 == QTUtility.ShortcutKeys[0x17]) || (num2 == QTUtility.ShortcutKeys[0x18])) || (num2 == QTUtility.ShortcutKeys[0x19])) {
-                            if(!fRepeat) {
-                                IntPtr ptr2;
-                                int num7 = 3;
-                                if(num2 == QTUtility.ShortcutKeys[0x18]) {
-                                    num7 = 4;
-                                }
-                                else if(num2 == QTUtility.ShortcutKeys[0x19]) {
-                                    num7 = 5;
-                                }
-                                if(QTUtility.instanceManager.TryGetButtonBarHandle(this.ExplorerHandle, out ptr2)) {
-                                    return (1 == ((int)QTUtility2.SendCOPYDATASTRUCT(ptr2, (IntPtr)4, "fromTab", (IntPtr)num7)));
+                        if(Array.IndexOf<int>(QTUtility.PluginShortcutKeysCache, imkey) != -1) {
+                            foreach(string str in QTUtility.dicPluginShortcutKeys.Keys) {
+                                int[] numArray = QTUtility.dicPluginShortcutKeys[str];
+                                if(numArray != null) {
+                                    for(int i = 0; i < numArray.Length; i++) {
+                                        if(imkey == numArray[i]) {
+                                            Plugin plugin;
+                                            if(this.pluginManager.TryGetPlugin(str, out plugin)) {
+                                                try {
+                                                    plugin.Instance.OnShortcutKeyPressed(i);
+                                                }
+                                                catch(Exception exception) {
+                                                    PluginManager.HandlePluginException(exception, this.ExplorerHandle, plugin.PluginInformation.Name, "On shortcut key pressed. Index is " + i);
+                                                }
+                                                return true;
+                                            }
+                                            return false;
+                                        }
+                                    }
                                 }
                             }
                         }
                         else {
-                            if(num2 == QTUtility.ShortcutKeys[0x1a]) {
-                                WindowUtils.ShowMenuBar(QTUtility.CheckConfig(Settings.HideMenuBar), base.ReBarHandle);
-                                if(QTUtility.CheckConfig(Settings.HideMenuBar)) {
-                                    QTUtility.ConfigValues[7] = (byte)(QTUtility.ConfigValues[7] & 0xf7);
+                            if(!fRepeat && QTUtility.dicUserAppShortcutKeys.ContainsKey(imkey)) {
+                                MenuItemArguments mia = QTUtility.dicUserAppShortcutKeys[imkey];
+                                try {
+                                    using(IDLWrapper wrapper2 = new IDLWrapper(this.GetCurrentPIDL())) {
+                                        Address[] addressArray;
+                                        string str2;
+                                        if((wrapper2.Available && wrapper2.HasPath) && this.TryGetSelection(out addressArray, out str2, false)) {
+                                            AppLauncher launcher = new AppLauncher(addressArray, wrapper2.Path);
+                                            launcher.ReplaceTokens_WorkingDir(mia);
+                                            launcher.ReplaceTokens_Arguments(mia);
+                                        }
+                                    }
+                                    AppLauncher.Execute(mia, this.ExplorerHandle);
                                 }
-                                else {
-                                    QTUtility.ConfigValues[7] = (byte)(QTUtility.ConfigValues[7] | 8);
+                                catch(Exception exception2) {
+                                    QTUtility2.MakeErrorLog(exception2, null);
                                 }
-                                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
-                                    key.SetValue("Config", QTUtility.ConfigValues);
+                                finally {
+                                    mia.RestoreOriginalArgs();
                                 }
                                 return true;
                             }
-                            if(((num2 == QTUtility.ShortcutKeys[0x1b]) || (num2 == QTUtility.ShortcutKeys[0x1c])) || (((num2 == QTUtility.ShortcutKeys[0x1d]) || (num2 == QTUtility.ShortcutKeys[30])) || (num2 == QTUtility.ShortcutKeys[0x1f]))) {
-                                if(!fRepeat) {
-                                    int num8 = 0;
-                                    if(num2 == QTUtility.ShortcutKeys[0x1c]) {
-                                        num8 = 1;
-                                    }
-                                    else if(num2 == QTUtility.ShortcutKeys[0x1d]) {
-                                        num8 = 2;
-                                    }
-                                    else if(num2 == QTUtility.ShortcutKeys[30]) {
-                                        num8 = 3;
-                                    }
-                                    else if(num2 == QTUtility.ShortcutKeys[0x1f]) {
-                                        num8 = 4;
-                                    }
-                                    if((num8 < 2) && (((this.subDirTip != null) && this.subDirTip.MenuIsShowing) || ((this.subDirTip_Tab != null) && this.subDirTip_Tab.MenuIsShowing))) {
-                                        return false;
-                                    }
-                                    this.DoFileTools(num8);
-                                }
+                            if(!fRepeat && QTUtility.dicGroupShortcutKeys.ContainsKey(imkey)) {
+                                this.OpenGroup(QTUtility.dicGroupShortcutKeys[imkey], false);
                                 return true;
-                            }
-                            if(num2 == QTUtility.ShortcutKeys[0x20]) {
-                                this.ToggleTopMost();
-                                this.SyncButtonBarCurrent(0x40);
-                                return true;
-                            }
-                            if((num2 == QTUtility.ShortcutKeys[0x21]) || (num2 == QTUtility.ShortcutKeys[0x22])) {
-                                int num9;
-                                int num10;
-                                byte num11;
-                                if(0x80000 != ((int)PInvoke.Ptr_OP_AND(PInvoke.GetWindowLongPtr(this.ExplorerHandle, -20), 0x80000))) {
-                                    if(num2 == QTUtility.ShortcutKeys[0x21]) {
-                                        return true;
-                                    }
-                                    PInvoke.SetWindowLongPtr(this.ExplorerHandle, -20, PInvoke.Ptr_OP_OR(PInvoke.GetWindowLongPtr(this.ExplorerHandle, -20), 0x80000));
-                                    PInvoke.SetLayeredWindowAttributes(this.ExplorerHandle, 0, 0xff, 2);
-                                }
-                                if(PInvoke.GetLayeredWindowAttributes(this.ExplorerHandle, out num9, out num11, out num10)) {
-                                    IntPtr ptr3;
-                                    if(num2 == QTUtility.ShortcutKeys[0x21]) {
-                                        if(num11 > 0xf3) {
-                                            num11 = 0xff;
-                                        }
-                                        else {
-                                            num11 = (byte)(num11 + 12);
-                                        }
-                                    }
-                                    else if(num11 < 0x20) {
-                                        num11 = 20;
-                                    }
-                                    else {
-                                        num11 = (byte)(num11 - 12);
-                                    }
-                                    PInvoke.SetLayeredWindowAttributes(this.ExplorerHandle, 0, num11, 2);
-                                    if(QTUtility.instanceManager.TryGetButtonBarHandle(this.ExplorerHandle, out ptr3)) {
-                                        QTUtility2.SendCOPYDATASTRUCT(ptr3, (IntPtr)7, "track", (IntPtr)num11);
-                                    }
-                                    if(num11 == 0xff) {
-                                        PInvoke.SetWindowLongPtr(this.ExplorerHandle, -20, PInvoke.Ptr_OP_AND(PInvoke.GetWindowLongPtr(this.ExplorerHandle, -20), 0xfff7ffff));
-                                    }
-                                }
-                                return true;
-                            }
-                            if(num2 == QTUtility.ShortcutKeys[0x23]) {
-                                this.FocusListView();
-                                return true;
-                            }
-                            if(num2 == QTUtility.ShortcutKeys[0x24]) {
-                                if(QTUtility.IsVista) {
-                                    PInvoke.SetFocus(this.GetSearchBand_Edit());
-                                    return true;
-                                }
-                            }
-                            else if(num2 == QTUtility.ShortcutKeys[0x25]) {
-                                IntPtr ptr4;
-                                if(QTUtility.instanceManager.TryGetButtonBarHandle(this.ExplorerHandle, out ptr4) && PInvoke.IsWindow(ptr4)) {
-                                    QTUtility2.SendCOPYDATASTRUCT(ptr4, (IntPtr)8, null, IntPtr.Zero);
-                                    return true;
-                                }
-                            }
-                            else if(num2 == QTUtility.ShortcutKeys[0x26]) {
-                                if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
-                                    if(!fRepeat) {
-                                        this.ShowAndClickSubDirTip();
-                                    }
-                                    return true;
-                                }
-                            }
-                            else {
-                                if(num2 == QTUtility.ShortcutKeys[0x27]) {
-                                    if(!fRepeat) {
-                                        ShowTaksbarItem(this.ExplorerHandle, false);
-                                    }
-                                    return true;
-                                }
-                                if(num2 == QTUtility.ShortcutKeys[40]) {
-                                    this.tabControl1.Focus();
-                                    this.tabControl1.FocusNextTab(false, true, false);
-                                    return true;
-                                }
-                                if(Array.IndexOf<int>(QTUtility.PluginShortcutKeysCache, num2) != -1) {
-                                    foreach(string str in QTUtility.dicPluginShortcutKeys.Keys) {
-                                        int[] numArray = QTUtility.dicPluginShortcutKeys[str];
-                                        if(numArray != null) {
-                                            for(int i = 0; i < numArray.Length; i++) {
-                                                if(num2 == numArray[i]) {
-                                                    Plugin plugin;
-                                                    if(this.pluginManager.TryGetPlugin(str, out plugin)) {
-                                                        try {
-                                                            plugin.Instance.OnShortcutKeyPressed(i);
-                                                        }
-                                                        catch(Exception exception) {
-                                                            PluginManager.HandlePluginException(exception, this.ExplorerHandle, plugin.PluginInformation.Name, "On shortcut key pressed. Index is " + i);
-                                                        }
-                                                        return true;
-                                                    }
-                                                    return false;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                else {
-                                    if(!fRepeat && QTUtility.dicUserAppShortcutKeys.ContainsKey(num2)) {
-                                        MenuItemArguments mia = QTUtility.dicUserAppShortcutKeys[num2];
-                                        try {
-                                            using(IDLWrapper wrapper2 = new IDLWrapper(this.GetCurrentPIDL())) {
-                                                Address[] addressArray;
-                                                string str2;
-                                                if((wrapper2.Available && wrapper2.HasPath) && this.TryGetSelection(out addressArray, out str2, false)) {
-                                                    AppLauncher launcher = new AppLauncher(addressArray, wrapper2.Path);
-                                                    launcher.ReplaceTokens_WorkingDir(mia);
-                                                    launcher.ReplaceTokens_Arguments(mia);
-                                                }
-                                            }
-                                            AppLauncher.Execute(mia, this.ExplorerHandle);
-                                        }
-                                        catch(Exception exception2) {
-                                            QTUtility2.MakeErrorLog(exception2, null);
-                                        }
-                                        finally {
-                                            mia.RestoreOriginalArgs();
-                                        }
-                                        return true;
-                                    }
-                                    if(!fRepeat && QTUtility.dicGroupShortcutKeys.ContainsKey(num2)) {
-                                        this.OpenGroup(QTUtility.dicGroupShortcutKeys[num2], false);
-                                        return true;
-                                    }
-                                }
                             }
                         }
-                        num2 -= 0x100000;
-                        return (num2 == 0x20057);
                     }
-                    flag = true;
-                    foreach(QTabItem item2 in this.tabControl1.TabPages) {
-                        if(!item2.TabLocked) {
-                            flag = false;
-                            break;
-                        }
-                    }
-                    break;
+                }
+                imkey -= 0x100000;
+                return (imkey == 0x20057);
             }
+
+            flag = true;
+            foreach(QTabItem item2 in this.tabControl1.TabPages) {
+                if(!item2.TabLocked) {
+                    flag = false;
+                    break;
+                }
+            }
+
             foreach(QTabItem item3 in this.tabControl1.TabPages) {
                 item3.TabLocked = !flag;
             }
@@ -4677,7 +4705,7 @@ namespace QTTabBarLib {
                         nextSubDirPt = new Point(x - 16, y - 16);
                         return;
 
-                    ///case FVM.LIST:
+                    //case FVM.LIST:
                     default:
                         rect = listElement.Current.BoundingRectangle;
                         nextSubDirPt = new Point((int)rect.Right, (int)rect.Bottom - 15);
@@ -4690,28 +4718,120 @@ namespace QTTabBarLib {
             }
         }
 
+        private void HandleLVHOTTRACK(IntPtr hwndListView, bool isSysListView32, int iItem, int iSubItem) {
+            Keys modifierKeys = Control.ModifierKeys;
+            if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews)) {
+                if((this.thumbnailTooltip != null) && (this.thumbnailTooltip.IsShowing || this.fThumbnailPending)) {
+                    if(!QTUtility.CheckConfig(Settings.PreviewsWithShift) ^ (modifierKeys == Keys.Shift)) {
+                        if(iItem != this.thumbnailIndex) {
+                            if(iItem > -1) {
+                                if(this.ShowThumbnailTooltip(iItem, Control.MousePosition, false)) {
+                                    return;
+                                }
+                            }
+                            else {
+                                int num;
+                                if(((!QTUtility.IsVista &&
+                                        (1 == ((int)PInvoke.SendMessage(hwndListView, LVM.GETVIEW, IntPtr.Zero, IntPtr.Zero)))) &&
+                                        ((((int)PInvoke.SendMessage(hwndListView, 0x1004, IntPtr.Zero, IntPtr.Zero)) > 0) &&
+                                        IsTrackingInMainItemRectDetailsView(hwndListView, out num))) && 
+                                        ((num == this.thumbnailIndex) || this.ShowThumbnailTooltip(num, Control.MousePosition, false))) {
+                                    return;
+                                }
+                            }
+                            if(this.thumbnailTooltip.HideToolTip()) {
+                                this.thumbnailIndex = -1;
+                            }
+                        }
+                    }
+                    else if(this.thumbnailTooltip.HideToolTip()) {
+                        this.thumbnailIndex = -1;
+                    }
+                }
+                if(this.timer_HoverThumbnail == null) {
+                    this.timer_HoverThumbnail = new System.Windows.Forms.Timer(this.components);
+                    this.timer_HoverThumbnail.Interval = (int)(SystemInformation.MouseHoverTime * 0.2);
+                    this.timer_HoverThumbnail.Tick += new EventHandler(this.timer_HoverThumbnail_Tick);
+                }
+                this.timer_HoverThumbnail.Enabled = false;
+                this.timer_HoverThumbnail.Enabled = true;
+            }
+            if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
+                if(!QTUtility.CheckConfig(Settings.SubDirTipsWithShift) ^ (modifierKeys == Keys.Shift)) {
+                    if((this.subDirIndex == iItem) && (QTUtility.IsVista || (iItem != -1))) {
+                        return;
+                    }
+                    if(QTUtility.IsVista) {
+                        this.subDirIndex = iItem;
+                    }
+                    if((iItem > -1) && (iSubItem == 0)) {
+                        if(this.ShowSubDirTip(iItem, hwndListView, false, isSysListView32)) {
+                            if(!QTUtility.IsVista) {
+                                this.subDirIndex = iItem;
+                            }
+                            return;
+                        }
+                        this.subDirIndex = -1;
+                    }
+                    else if(((!QTUtility.IsVista && (iItem == -1)) &&
+                            ((1 == ((int)PInvoke.SendMessage(hwndListView, LVM.GETVIEW, IntPtr.Zero, IntPtr.Zero))) &&
+                            (((int)PInvoke.SendMessage(hwndListView, LVM.GETITEMCOUNT, IntPtr.Zero, IntPtr.Zero)) > 0))) &&
+                            (IsTrackingInMainItemRectDetailsView(hwndListView, out iItem) &&
+                            ((this.subDirIndex == iItem) || this.ShowSubDirTip(iItem, hwndListView, false, isSysListView32)))) {
+                        this.subDirIndex = iItem;
+                        return;
+                    }
+                }
+                this.HideSubDirTip(2);
+            }
+        }
+
+
         private bool listViewController_MessageCaptured(ref System.Windows.Forms.Message msg) {
             Keys modifierKeys = Control.ModifierKeys;
             Point pt;
 
             switch(msg.Msg) {
-                case WM.MOUSEMOVE:        
-                    if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips) && 
+                case WM.MOUSEMOVE:
+                    if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips) &&
                             (!QTUtility.CheckConfig(Settings.SubDirTipsWithShift) ^ (modifierKeys == Keys.Shift))) {
                         int idx = DirectUIHitTest(listViewController.Handle, msg.LParam, true);
-                        if(idx > -1) {
-                            if(this.subDirIndex == idx) {
-                                return false;
-                            }
-                            this.subDirIndex = idx;
-                            if(this.ShowSubDirTip(idx, listViewController.Handle, false, false)) {
-                                return false;
+                        HandleLVHOTTRACK(listViewController.Handle, false, idx, 0);
+                    }
+                    break;
+                
+                case WM.KEYDOWN:
+                    if((!QTUtility.CheckConfig(Settings.ShowTooltipPreviews) && QTUtility.CheckConfig(Settings.NoShowSubDirTips)) && !QTUtility.CheckConfig(Settings.CursorLoop)) {
+                        return false;
+                    }
+                    int wVKey = (int)msg.WParam;
+                    if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews)) {
+                        if(QTUtility.CheckConfig(Settings.PreviewsWithShift)) {
+                            if(wVKey != 0x10) {
+                                this.HideThumbnailTooltip(2);
                             }
                         }
+                        else {
+                            this.HideThumbnailTooltip(2);
+                        }
                     }
-                    this.subDirIndex = -1;
-                    this.HideSubDirTip(2);
+                    if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
+                        if(QTUtility.CheckConfig(Settings.SubDirTipsWithShift)) {
+                            if(wVKey != 0x10) {
+                                this.HideSubDirTip(3);
+                            }
+                        }
+                        else if(wVKey != 0x11) {
+                            this.HideSubDirTip(3);
+                        }
+                    }
+                    //if(((!QTUtility.CheckConfig(Settings.CursorLoop) || (0x25 > wVKey)) || ((wVKey > 40) || (Control.ModifierKeys != Keys.None))) || !this.HandleLVKEYDOWN_CursorLoop(wVKey)) {
+                    //    return false;
+                    //}
+                    //msg.Result = (IntPtr)1;
+                    //return true;
                     break;
+
 
                 case WM.USER + 209: // This message appears to control dragging.
                     {
@@ -6553,68 +6673,7 @@ namespace QTTabBarLib {
                     // This will be handled through WM_MOUSEMOVE.
                     if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews) || !QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
                         NMLISTVIEW nmlistview = (NMLISTVIEW)Marshal.PtrToStructure(msg.LParam, typeof(NMLISTVIEW));
-                        Keys modifierKeys = Control.ModifierKeys;
-                        if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews)) {
-                            if((this.thumbnailTooltip != null) && (this.thumbnailTooltip.IsShowing || this.fThumbnailPending)) {
-                                if(!QTUtility.CheckConfig(Settings.PreviewsWithShift) ^ (modifierKeys == Keys.Shift)) {
-                                    if(nmlistview.iItem != this.thumbnailIndex) {
-                                        if(nmlistview.iItem > -1) {
-                                            if(this.ShowThumbnailTooltip(nmlistview.iItem, Control.MousePosition, false)) {
-                                                return false;
-                                            }
-                                        }
-                                        else {
-                                            int num;
-                                            if(((!QTUtility.IsVista && (1 == ((int)PInvoke.SendMessage(nmhdr.hwndFrom, LVM.GETVIEW, IntPtr.Zero, IntPtr.Zero)))) && ((((int)PInvoke.SendMessage(nmhdr.hwndFrom, 0x1004, IntPtr.Zero, IntPtr.Zero)) > 0) && IsTrackingInMainItemRectDetailsView(nmhdr.hwndFrom, out num))) && ((num == this.thumbnailIndex) || this.ShowThumbnailTooltip(num, Control.MousePosition, false))) {
-                                                return false;
-                                            }
-                                        }
-                                        if(this.thumbnailTooltip.HideToolTip()) {
-                                            this.thumbnailIndex = -1;
-                                        }
-                                    }
-                                }
-                                else if(this.thumbnailTooltip.HideToolTip()) {
-                                    this.thumbnailIndex = -1;
-                                }
-                            }
-                            if(this.timer_HoverThumbnail == null) {
-                                this.timer_HoverThumbnail = new System.Windows.Forms.Timer(this.components);
-                                this.timer_HoverThumbnail.Interval = (int)(SystemInformation.MouseHoverTime * 0.2);
-                                this.timer_HoverThumbnail.Tick += new EventHandler(this.timer_HoverThumbnail_Tick);
-                            }
-                            this.timer_HoverThumbnail.Enabled = false;
-                            this.timer_HoverThumbnail.Enabled = true;
-                        }
-                        if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
-                            if(!QTUtility.CheckConfig(Settings.SubDirTipsWithShift) ^ (modifierKeys == Keys.Shift)) {
-                                int iItem = nmlistview.iItem;
-                                if((this.subDirIndex == iItem) && (QTUtility.IsVista || (iItem != -1))) {
-                                    return false;
-                                }
-                                if(QTUtility.IsVista) {
-                                    this.subDirIndex = iItem;
-                                }
-                                if((iItem > -1) && (nmlistview.iSubItem == 0)) {
-                                    if(this.ShowSubDirTip(iItem, nmhdr.hwndFrom, false, true)) {
-                                        if(!QTUtility.IsVista) {
-                                            this.subDirIndex = iItem;
-                                        }
-                                        return false;
-                                    }
-                                    this.subDirIndex = -1;
-                                }
-                                else if(((!QTUtility.IsVista && (iItem == -1)) &&
-                                        ((1 == ((int)PInvoke.SendMessage(nmhdr.hwndFrom, LVM.GETVIEW, IntPtr.Zero, IntPtr.Zero))) &&
-                                        (((int)PInvoke.SendMessage(nmhdr.hwndFrom, LVM.GETITEMCOUNT, IntPtr.Zero, IntPtr.Zero)) > 0))) &&
-                                        (IsTrackingInMainItemRectDetailsView(nmhdr.hwndFrom, out iItem) &&
-                                        ((this.subDirIndex == iItem) || this.ShowSubDirTip(iItem, nmhdr.hwndFrom, false, true)))) {
-                                    this.subDirIndex = iItem;
-                                    return false;
-                                }
-                            }
-                            this.HideSubDirTip(2);
-                        }
+                        HandleLVHOTTRACK(nmhdr.hwndFrom, true, nmlistview.iItem, nmlistview.iSubItem);
                     }
                     break;
 

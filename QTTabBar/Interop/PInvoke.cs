@@ -260,6 +260,8 @@ namespace QTTabBarLib.Interop {
         public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
         [DllImport("user32.dll")]
         public static extern IntPtr SetWindowsHookEx(int idHook, QTTabBarLib.Interop.HookProc lpfn, IntPtr hInstance, int dwThreadId);
+        [DllImport("user32.dll")]
+        public static extern bool ScreenToClient(IntPtr hwnd, ref Point lpPoint);
         [DllImport("shell32.dll")]
         public static extern int SHBindToParent(IntPtr pidl, [MarshalAs(UnmanagedType.LPStruct)] Guid riid, out IShellFolder ppv, out IntPtr ppidlLast);
         [DllImport("shell32.dll")]
