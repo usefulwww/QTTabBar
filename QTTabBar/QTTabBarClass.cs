@@ -3063,6 +3063,10 @@ namespace QTTabBarLib {
 
             switch(key) {
                 case Keys.ShiftKey:
+                    if(fRepeat) {
+                        return false;
+                    }
+
                     if(!QTUtility.CheckConfig(Settings.PreviewsWithShift)) {
                         this.HideThumbnailTooltip(5);
                     }
@@ -4788,13 +4792,11 @@ namespace QTTabBarLib {
 
 
         private bool listViewController_MessageCaptured(ref System.Windows.Forms.Message msg) {
-            Keys modifierKeys = Control.ModifierKeys;
             Point pt;
 
             switch(msg.Msg) {
                 case WM.MOUSEMOVE:
-                    if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips) &&
-                            (!QTUtility.CheckConfig(Settings.SubDirTipsWithShift) ^ (modifierKeys == Keys.Shift))) {
+                    if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews) || !QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
                         int idx = DirectUIHitTest(listViewController.Handle, msg.LParam, true);
                         HandleLVHOTTRACK(listViewController.Handle, false, idx, 0);
                     }
