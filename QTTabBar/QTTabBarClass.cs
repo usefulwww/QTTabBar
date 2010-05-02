@@ -3161,14 +3161,14 @@ namespace QTTabBarLib {
                     return false;
 
             }
-            if(((Keys.ControlKey | Keys.NumPad0) <= mkey && mkey <= (Keys.ControlKey | Keys.NumPad9)) ||
-                    ((Keys.ControlKey | Keys.D0) <= mkey && mkey <= (Keys.ControlKey | Keys.D9))) {
+            if(((Keys.Control | Keys.NumPad0) <= mkey && mkey <= (Keys.Control | Keys.NumPad9)) ||
+                    ((Keys.Control | Keys.D0) <= mkey && mkey <= (Keys.Control | Keys.D9))) {
                 int num3;
-                if(mkey >= (Keys.ControlKey | Keys.NumPad0)) {
-                    num3 = (int)(mkey - (Keys.ControlKey | Keys.NumPad0));
+                if(mkey >= (Keys.Control | Keys.NumPad0)) {
+                    num3 = (int)(mkey - (Keys.Control | Keys.NumPad0));
                 }
                 else {
-                    num3 = (int)(mkey - (Keys.ControlKey | Keys.D0));
+                    num3 = (int)(mkey - (Keys.Control | Keys.D0));
                 }
                 if(num3 == 0) {
                     num3 = 10;
