@@ -866,7 +866,8 @@ namespace QTTabBarLib {
             }
             if(key == 0x71) {
                 if(!QTUtility.CheckConfig(Settings.F2Selection)) {
-                    QTTabBarClass.HandleF2(this.hwndListView);
+                    // TODO
+                    // QTTabBarClass.HandleF2(this.hwndListView);
                 }
                 return false;
             }
@@ -1821,7 +1822,8 @@ namespace QTTabBarLib {
                             this.shellViewController.DefWndProc(ref msg);
                             if(msg.Result == IntPtr.Zero) {
                                 QTTabBarLib.Interop.NMLVDISPINFO nmlvdispinfo = (QTTabBarLib.Interop.NMLVDISPINFO)Marshal.PtrToStructure(msg.LParam, typeof(QTTabBarLib.Interop.NMLVDISPINFO));
-                                QTTabBarClass.HandleRenaming(this.hwndListView, nmlvdispinfo.item.lParam, this);
+                                // TODO
+                                // QTTabBarClass.HandleRenaming(this.hwndListView, nmlvdispinfo.item.lParam, this);
                             }
                         }
                         goto Label_057E;
@@ -1842,7 +1844,9 @@ namespace QTTabBarLib {
                                 if((this.timer_HoverThumbnail != null) && this.timer_HoverThumbnail.Enabled) {
                                     return true;
                                 }
-                                QTTabBarLib.Interop.RECT lprc = QTTabBarClass.GetLVITEMRECT(nmhdr.hwndFrom, nmlvgetinfotip.iItem, false, 0);
+                                // TODO
+                                // QTTabBarLib.Interop.RECT lprc = QTTabBarClass.GetLVITEMRECT(nmhdr.hwndFrom, nmlvgetinfotip.iItem, false, 0);
+                                QTTabBarLib.Interop.RECT lprc = new QTTabBarLib.Interop.RECT();
                                 Point mousePosition = Control.MousePosition;
                                 return this.ShowThumbnailTooltip(zero, nmlvgetinfotip.iItem, nmhdr.hwndFrom, !PInvoke.PtInRect(ref lprc, new BandObjectLib.POINT(mousePosition)));
                             }
@@ -1922,7 +1926,9 @@ namespace QTTabBarLib {
                     }
                     int pViewMode = 1;
                     this.folderView.GetCurrentViewMode(ref pViewMode);
-                    QTTabBarLib.Interop.RECT rect = QTTabBarClass.GetLVITEMRECT(hwndListView, iItem, true, pViewMode);
+                    // TODO
+                    // QTTabBarLib.Interop.RECT rect = QTTabBarClass.GetLVITEMRECT(hwndListView, iItem, true, pViewMode);
+                    QTTabBarLib.Interop.RECT rect = new QTTabBarLib.Interop.RECT();
                     Point pnt = new Point(rect.right - 0x10, rect.bottom - 0x10);
                     if(this.subDirTip == null) {
                         this.subDirTip = new SubDirTipForm(this.ThisHandle, this.hwndListView, false);
@@ -1935,7 +1941,8 @@ namespace QTTabBarLib {
                     if(QTUtility.IsVista && string.Equals(displayName, IDLWrapper.PATH_USERSFILES, StringComparison.OrdinalIgnoreCase)) {
                         idl = ShellMethods.GetIDLData(pIDL);
                     }
-                    this.subDirTip.ShowSubDirTip(displayName, idl, pnt, hwndListView);
+                    // TODO
+                    // this.subDirTip.ShowSubDirTip(displayName, idl, pnt, hwndListView);
                     return true;
                 }
                 catch(Exception exception) {
@@ -1975,7 +1982,9 @@ namespace QTTabBarLib {
                         }
                         this.thumbnailIndex = iItem;
                         this.thumbnailTooltip.IsShownByKey = fKey;
-                        QTTabBarLib.Interop.RECT rect = QTTabBarClass.GetLVITEMRECT(hwndListView, iItem, false, 0);
+                        // TODO
+                        // QTTabBarLib.Interop.RECT rect = QTTabBarClass.GetLVITEMRECT(hwndListView, iItem, false, 0);
+                        QTTabBarLib.Interop.RECT rect = new QTTabBarLib.Interop.RECT();
                         return this.thumbnailTooltip.ShowToolTip(path, new Point(rect.right - 0x10, rect.bottom - 8));
                     }
                 }

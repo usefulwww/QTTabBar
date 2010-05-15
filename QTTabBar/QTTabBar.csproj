@@ -55,18 +55,13 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="UIAutomationClient">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="UIAutomationTypes">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
-    </Reference>
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppLauncher.cs" />
+    <Compile Include="AutomationElement.cs" />
     <Compile Include="ButtonBarOptionForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -109,6 +104,10 @@
     <Compile Include="Interop\BITMAPINFO.cs" />
     <Compile Include="Interop\BITMAPINFOHEADER.cs" />
     <Compile Include="Interop\CMINVOKECOMMANDINFO.cs" />
+    <Compile Include="Interop\IUIAutomationRegistrar.cs" />
+    <Compile Include="Interop\IUIAutomationSelectionItemPattern.cs" />
+    <Compile Include="Interop\UIAutomationPropertyInfo.cs" />
+    <Compile Include="Interop\IUIAutomationTreeWalker.cs" />
     <Compile Include="Interop\COPYDATASTRUCT.cs" />
     <Compile Include="Interop\CWPSTRUCT.cs" />
     <Compile Include="Interop\DEV_BROADCAST_HDR.cs" />
@@ -142,6 +141,7 @@
     <Compile Include="Interop\IThumbnailCache.cs" />
     <Compile Include="Interop\ITravelLogEntry.cs" />
     <Compile Include="Interop\ITravelLogStg.cs" />
+    <Compile Include="Interop\IUIAutomationElement.cs" />
     <Compile Include="Interop\ListViewConstants.cs" />
     <Compile Include="Interop\LocalThumbnailCache.cs" />
     <Compile Include="Interop\LOGFONT.cs" />
@@ -162,6 +162,7 @@
     <Compile Include="Interop\NMTTDISPINFO.cs" />
     <Compile Include="Interop\NMUPDOWN.cs" />
     <Compile Include="Interop\PInvoke.cs" />
+    <Compile Include="Interop\IUIAutomation.cs" />
     <Compile Include="Interop\RECT.cs" />
     <Compile Include="Interop\RGBQUAD.cs" />
     <Compile Include="Interop\SHELLEXECUTEINFO.cs" />
@@ -179,6 +180,7 @@
     <Compile Include="Interop\_ShellLinkObject.cs" />
     <Compile Include="ItemRightClickedEventArgs.cs" />
     <Compile Include="ItemRightClickedEventHandler.cs" />
+    <Compile Include="ListViewWrapper.cs" />
     <Compile Include="LogData.cs" />
     <Compile Include="MC.cs" />
     <Compile Include="MemoForm.cs" />

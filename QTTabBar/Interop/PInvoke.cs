@@ -127,6 +127,11 @@ namespace QTTabBarLib.Interop {
         public static extern IntPtr GlobalLock(IntPtr hMem);
         [DllImport("kernel32.dll")]
         public static extern bool GlobalUnlock(IntPtr hMem);
+
+        public static int HiWord(int dwValue) {
+            return (dwValue >> 16) & 0xFFFF;
+        }
+
         [DllImport("shell32.dll")]
         public static extern IntPtr ILClone(IntPtr pidl);
         [DllImport("shell32.dll")]
@@ -175,6 +180,10 @@ namespace QTTabBarLib.Interop {
             int num = (int)SendMessage(hwnd, 0x1012, IntPtr.Zero, ptr);
             Marshal.FreeHGlobal(ptr);
             return num;
+        }
+
+        public static int LoWord(int dwValue) {
+            return dwValue & 0xFFFF;
         }
 
         [DllImport("user32.dll")]

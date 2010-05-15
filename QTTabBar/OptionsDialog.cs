@@ -3740,7 +3740,7 @@ namespace QTTabBarLib {
                 QTUtility.SetConfigAt(Settings.MidClickNewWindow, true);
             }
             if(!this.chbNCADblClck.Checked) {
-                QTUtility.SetConfigAt(Settings.DblClickUpLevel, true);
+                QTUtility.SetConfigAt(Settings.NoDblClickUpLevel, true);
             }
             if(this.chbSaveExecuted.CheckState != CheckState.Unchecked) {
                 if(this.chbSaveExecuted.CheckState == CheckState.Checked) {

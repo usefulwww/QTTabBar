@@ -43,12 +43,12 @@ namespace QTTabBarLib {
         private bool fSuppressThumbnail;
         private IntPtr hwndDialogParent;
         private IntPtr hwndFocusOnMenu;
-        private IntPtr hwndListView;
         private IntPtr hwndMessageReflect;
         private bool isShowing;
         private int iThumbnailIndex = -1;
         private int iToolTipIndex = -1;
         private LabelEx lblSubDirBtn;
+        private ListViewWrapper listViewWrapper;
         private List<Rectangle> lstRcts = new List<Rectangle>();
         private List<string> lstTempDirectoryPaths = new List<string>();
         private bool menuIsShowing;
@@ -171,7 +171,7 @@ namespace QTTabBarLib {
                     this.fShownByKey = false;
                     this.HideSubDirTip();
                 }
-                else if(PInvoke.WindowFromPoint(Control.MousePosition) != this.hwndListView) {
+                else if(!listViewWrapper.MouseIsOverListView()) {
                     this.HideSubDirTip();
                 }
             }
@@ -1025,10 +1025,10 @@ namespace QTTabBarLib {
             return false;
         }
 
-        public void ShowSubDirTip(string path, byte[] idl, Point pnt, IntPtr hwndListView) {
+        public void ShowSubDirTip(string path, byte[] idl, Point pnt, ListViewWrapper lvw) {
             this.lblSubDirBtn.SetPressed(false);
-            this.hwndListView = hwndListView;
-            if(PInvoke.WindowFromPoint(new Point(pnt.X, pnt.Y + 2)) == hwndListView) {
+            this.listViewWrapper = lvw;
+            if(PInvoke.WindowFromPoint(new Point(pnt.X, pnt.Y + 2)) == lvw.GetListViewHandle()) {
                 this.isShowing = true;
                 this.currentDir = this.contextMenuSubDir.Path = path;
                 this.currentIDL = idl;

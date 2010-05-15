@@ -36,7 +36,6 @@ namespace QTTabBarLib {
     using System.Runtime.Remoting.Messaging;
     using System.Text;
     using System.Threading;
-    using System.Windows.Automation;
     using System.Windows.Forms;
     using System.Windows.Forms.VisualStyles;
 
@@ -66,12 +65,9 @@ namespace QTTabBarLib {
         private NativeWindowController explorerController;
         private IntPtr ExplorerHandle;
         private bool fDrivesContainedDD;
-        private bool fEnteredMenuLoop;
-        private bool fExplrEventsAttached;
         private bool fIFolderViewNotImplemented;
         private static bool fInitialized;
         private volatile bool FirstNavigationCompleted;
-        private bool fListViewHasFocus;
         private bool fNavigatedByTabSelection;
         private bool fNowInTray;
         private bool fNowQuitting;
@@ -80,12 +76,9 @@ namespace QTTabBarLib {
         private bool fOptionDialogCreated;
         private bool fThumbnailPending;
         private bool fToggleTabMenu;
-        private bool fTrackMouseEvent;
         private IntPtr hHook_Key;
         private IntPtr hHook_Mouse;
         private IntPtr hHook_Msg;
-        private IntPtr hHook_Wnd;
-        private HookProc hookProc_CallWnd;
         private HookProc hookProc_GetMsg;
         private HookProc hookProc_Key;
         private HookProc hookProc_Mouse;
@@ -97,20 +90,15 @@ namespace QTTabBarLib {
         private IntPtr hwndTravelBand;
         private static Icon icoNotify;
         private IContextMenu2 iContextMenu2;
-        private int iListViewItemState;
         private int iModKeyStateDD;
         private const int INTERVAL_SELCTTAB = 700;
         internal const int INTERVAL_SHOWMENU = 0x4b0;
         private int iSequential_WM_CLOSE;
         private bool IsShown;
         private int itemIndexDROPHILITED = -1;
-        private NativeWindowController listViewController;
         private Dictionary<int, ITravelLogEntry> LogEntryDic = new Dictionary<int, ITravelLogEntry>();
-        private Point lastDragPoint;
-        private Point lastLButtonPoint;
-        private Int64 lastLButtonTime;
+        private ListViewWrapper listViewWrapper;
         private List<QTabItem> lstActivatedTabs = new List<QTabItem>(0x10);
-        private List<int> lstColumnFMT;
         private List<ToolStripItem> lstPluginMenuItems_Sys;
         private List<ToolStripItem> lstPluginMenuItems_Tab;
         private static List<PluginAssembly> lstTempAssemblies_Refresh;
@@ -385,22 +373,6 @@ namespace QTTabBarLib {
             }
         }
 
-        private IntPtr CallbackCallWndProc(int nCode, IntPtr wParam, IntPtr lParam) {
-            CWPSTRUCT msg = (CWPSTRUCT)Marshal.PtrToStructure(lParam, typeof(CWPSTRUCT));
-            if(msg.message == 0xE9) { // SBM_SETSCROLLINFO
-                IntPtr hwndListView = GetExplorerListView();
-                if(hwndListView != IntPtr.Zero && PInvoke.IsChild(hwndListView, msg.hwnd)) {
-                    if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews)) {
-                        this.HideThumbnailTooltip(8);
-                    }
-                    if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
-                        this.HideSubDirTip(8);
-                    }
-                }
-            }
-            return PInvoke.CallNextHookEx(this.hHook_Wnd, nCode, wParam, lParam);
-        }
-
         private void CallBackDoOpenGroups(object obj, IntPtr ptr) {
             string[] strArray = (string[])obj;
             this.tabControl1.SetRedraw(false);
@@ -493,49 +465,11 @@ namespace QTTabBarLib {
                     }
                 }
                 switch(msg.message) {
-                    case WM.MOUSEMOVE:
-                        if(this.fTrackMouseEvent && (msg.hwnd == this.GetExplorerListView())) {
-                            this.fTrackMouseEvent = false;
-                            TRACKMOUSEEVENT structure = new TRACKMOUSEEVENT();
-                            structure.cbSize = Marshal.SizeOf(structure);
-                            structure.dwFlags = 2;
-                            structure.hwndTrack = msg.hwnd;
-                            PInvoke.TrackMouseEvent(ref structure);
-                        }
-                        break;
 
                     case WM.LBUTTONDOWN:
-                        // The DirectUI ListView doesn't have the CS_DBLCLKS 
-                        // class style, which means we won't be receiving the
-                        // WM.LBUTTONDBLCLK message.  We'll just have to make 
-                        // do without...
-                        {
-                            Int64 now = DateTime.Now.Ticks;
-                            int x = QTUtility2.GET_X_LPARAM(msg.lParam);
-                            int y = QTUtility2.GET_Y_LPARAM(msg.lParam);
-                            if((now - lastLButtonTime) / 10000 <= SystemInformation.DoubleClickTime) {
-                                Size size = SystemInformation.DoubleClickSize;
-                                if(Math.Abs(x - lastLButtonPoint.X) <= size.Width) {
-                                    if(Math.Abs(y - lastLButtonPoint.Y) <= size.Height) {
-                                        lastLButtonTime = 0;
-                                        goto case WM.LBUTTONDBLCLK;
-                                    }
-                                }
-                            }
-                            lastLButtonPoint = new Point(x, y);
-                            lastLButtonTime = now;
-                        }
-                        goto case WM.LBUTTONUP;
-
                     case WM.LBUTTONUP:
                         if((!QTUtility.IsVista && !QTUtility.CheckConfig(Settings.MidClickFolderTree)) && ((((int)((long)msg.wParam)) & 4) != 0)) {
                             this.HandleLBUTTON_Tree(msg, msg.message == 0x201);
-                        }
-                        break;
-
-                    case WM.LBUTTONDBLCLK:
-                        if(this.HandleLBUTTONDBLCLK(msg)) {
-                            Marshal.StructureToPtr(new BandObjectLib.MSG(), lParam, false);
                         }
                         break;
 
@@ -547,19 +481,6 @@ namespace QTTabBarLib {
                             break;
                         }
                         Marshal.StructureToPtr(new BandObjectLib.MSG(), lParam, false);
-                        break;
-
-                    case WM.MOUSELEAVE:
-                        if(msg.hwnd == this.GetExplorerListView()) {
-                            this.HideThumbnailTooltip(4);
-                            if(this.timer_HoverThumbnail != null) {
-                                this.timer_HoverThumbnail.Enabled = false;
-                            }
-                            if(((this.subDirTip != null) && !this.subDirTip.MouseIsOnThis()) && !this.subDirTip.MenuIsShowing) {
-                                this.HideSubDirTip(5);
-                            }
-                            this.fTrackMouseEvent = true;
-                        }
                         break;
 
                     case WM.CLOSE:
@@ -986,10 +907,6 @@ namespace QTTabBarLib {
                         PInvoke.UnhookWindowsHookEx(this.hHook_Msg);
                         this.hHook_Msg = IntPtr.Zero;
                     }
-                    if(this.hHook_Wnd != IntPtr.Zero) {
-                        PInvoke.UnhookWindowsHookEx(this.hHook_Wnd);
-                        this.hHook_Wnd = IntPtr.Zero;
-                    } 
                     if(this.explorerController != null) {
                         this.explorerController.ReleaseHandle();
                         this.explorerController = null;
@@ -1850,59 +1767,6 @@ namespace QTTabBarLib {
             return list;
         }
 
-        private void CustomizeSysListView() {
-            IntPtr ptr;
-            uint mask = LVS_EX.GRIDLINES | LVS_EX.FULLROWSELECT;
-            uint flags = 0;
-            bool isSysListView;
-            IntPtr hWnd = this.GetExplorerListView(out isSysListView, out ptr);
-            if(isSysListView) {
-                if(QTUtility.CheckConfig(Settings.DetailsGridLines)) {
-                    flags |= LVS_EX.GRIDLINES;
-                }
-                if(QTUtility.IsVista) {
-                    if(!QTUtility.CheckConfig(Settings.NoFullRowSelect)) {
-                        flags |= LVS_EX.FULLROWSELECT;
-                    }
-                }
-                else if(QTUtility.CheckConfig(Settings.NoFullRowSelect)) {
-                    if(((int)PInvoke.SendMessage(hWnd, LVM.GETVIEW, IntPtr.Zero, IntPtr.Zero)) == 1) {
-                        flags |= LVS_EX.FULLROWSELECT;
-                    }
-                }
-                if(hWnd != IntPtr.Zero) {
-                    PInvoke.SendMessage(hWnd, LVM.SETEXTENDEDLISTVIEWSTYLE, (IntPtr)mask, (IntPtr)flags);
-                }
-            }
-            else {
-                // The SysListView32 will send notifications to the ShellView
-                // window, so we can only subclass the ShellView in that case.
-                // For DirectUIHWND, we're not so lucky.  We have to subclass
-                // the ListView itself to catch what we need.
-                if(this.listViewController != null) {
-                    this.listViewController.ReleaseHandle();
-                }
-                this.listViewController = new NativeWindowController(hWnd);
-                this.listViewController.MessageCaptured += new NativeWindowController.MessageEventHandler(this.listViewController_MessageCaptured);
-                // TODO
-            }
-
-            if((ptr != IntPtr.Zero) && ((this.shellViewController == null) || (this.shellViewController.Handle != ptr))) {
-                if(this.shellViewController != null) {
-                    this.shellViewController.ReleaseHandle();
-                }
-                this.shellViewController = new NativeWindowController(ptr);
-                this.shellViewController.OptionalHandle = hWnd;
-                this.shellViewController.MessageCaptured += new NativeWindowController.MessageEventHandler(this.shellViewController_MessageCaptured);
-                this.fTrackMouseEvent = false;
-                TRACKMOUSEEVENT structure = new TRACKMOUSEEVENT();
-                structure.cbSize = Marshal.SizeOf(structure);
-                structure.dwFlags = 2;
-                structure.hwndTrack = hWnd;
-                PInvoke.TrackMouseEvent(ref structure);
-            }
-        }
-
         private void ddmrUndoClose_ItemRightClicked(object sender, ItemRightClickedEventArgs e) {
             QMenuItem clickedItem = e.ClickedItem as QMenuItem;
             if(clickedItem != null) {
@@ -2328,7 +2192,6 @@ namespace QTTabBarLib {
                         this.TrySetSelection(addresses, null, true);
                         QTUtility.PathToSelectInCommandLineArg = string.Empty;
                     }
-                    this.CustomizeSysListView();
                     if(QTUtility.RestoreFolderTree_Hide) {
                         new WaitTimeoutCallback(QTTabBarClass.WaitTimeout).BeginInvoke(150, new AsyncCallback(this.AsyncComplete_FolderTree), false);
                     }
@@ -2413,7 +2276,7 @@ namespace QTTabBarLib {
                                 this.HideSubDirTip_ExplorerInactivated();
                                 this.HideTabSwitcher(false);
                                 if(this.tabControl1.Focused) {
-                                    this.FocusListView();
+                                    listViewWrapper.SetFocus();
                                 }
                                 if((QTUtility.CheckConfig(Settings.ShowTabCloseButtons) && QTUtility.CheckConfig(Settings.TabCloseBtnsWithAlt)) && this.tabControl1.EnableCloseButton) {
                                     this.tabControl1.EnableCloseButton = false;
@@ -2552,10 +2415,6 @@ namespace QTTabBarLib {
             return false;
         }
 
-        private void FocusListView() {
-            PInvoke.SetFocus(this.GetExplorerListView());
-        }
-
         public override void GetBandInfo(uint dwBandID, uint dwViewMode, ref DESKBANDINFO dbi) {
             if((dbi.dwMask & DBIM.ACTUAL) != ((DBIM)0)) {
                 dbi.ptActual.X = base.Size.Width;
@@ -2627,77 +2486,6 @@ namespace QTTabBarLib {
             return this.curTabCloning;
         }
 
-        internal static RECT GetLVITEMRECT(IntPtr hwnd, int iItem, bool fSubDirTip, int fvm) {
-            RECT rect;
-        
-            int num = (int)PInvoke.SendMessage(hwnd, 0x108f, IntPtr.Zero, IntPtr.Zero);
-            int code = (num == 1) ? 2 : 0;
-            bool flag = false;
-            bool flag2 = false;
-            if(fSubDirTip) {
-                switch(num) {
-                    case 0:
-                        flag = !QTUtility.IsVista;
-                        code = 1;
-                        break;
-
-                    case 1:
-                        code = 2;
-                        break;
-
-                    case 3:
-                        if(QTUtility.IsVista) {
-                            code = 2;
-                        }
-                        else {
-                            flag2 = true;
-                            code = 1;
-                        }
-                        break;
-
-                    case 4:
-                        code = 1;
-                        break;
-                    default:
-                        code = 0;
-                        break;
-                }
-            }
-        
-            rect = PInvoke.ListView_GetItemRect(hwnd, iItem, 0, code);
-            PInvoke.MapWindowPoints(hwnd, IntPtr.Zero, ref rect, 2);
-            if(flag) {
-                if((fvm == 5) || (fvm == 7)) {
-                    rect.right -= 13;
-                    return rect;
-                }
-                int num3 = (int)PInvoke.SendMessage(hwnd, 0x1033, IntPtr.Zero, IntPtr.Zero);
-                Size iconSize = SystemInformation.IconSize;
-                rect.right = ((rect.left + (((num3 & 0xffff) - iconSize.Width) / 2)) + iconSize.Width) + 8;
-                rect.bottom = (rect.top + iconSize.Height) + 6;
-                return rect;
-            }
-            if(flag2) {
-                LVITEM structure = new LVITEM();
-                IntPtr zero = IntPtr.Zero;
-                structure.pszText = Marshal.AllocHGlobal(520);
-                structure.cchTextMax = 260;
-                structure.iItem = iItem;
-                structure.mask = 1;
-                zero = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
-                Marshal.StructureToPtr(structure, zero, false);
-                PInvoke.SendMessage(hwnd, 0x104b, IntPtr.Zero, zero);
-                int num4 = (int)PInvoke.SendMessage(hwnd, 0x1057, IntPtr.Zero, structure.pszText);
-                num4 += 20;
-                Marshal.FreeHGlobal(structure.pszText);
-                Marshal.FreeHGlobal(zero);
-                rect.right += num4;
-                rect.top += 2;
-                rect.bottom += 2;
-            }
-            return rect;
-        }
-
         private static string GetNameToSelectFromCommandLineArg() {
             string str = Marshal.PtrToStringUni(PInvoke.GetCommandLine());
             if(!string.IsNullOrEmpty(str)) {
@@ -2734,54 +2522,6 @@ namespace QTTabBarLib {
 
         internal IShellBrowser GetShellBrower() {
             return this.ShellBrowser;
-        }
-
-        internal IntPtr GetExplorerListView() {
-            bool isSLV32;
-            IntPtr ptr;
-            return this.GetExplorerListView(out isSLV32, out ptr);
-        }
-
-        internal IntPtr GetExplorerListView(out bool isSysListView32) {
-            IntPtr ptr;
-            return this.GetExplorerListView(out isSysListView32, out ptr);
-        }
-
-        internal IntPtr GetExplorerListView(out bool isSysListView32, out IntPtr hwndShellView) {
-            hwndShellView = IntPtr.Zero;
-            IShellView ppshv = null;
-            try {
-                if(this.ShellBrowser.QueryActiveShellView(out ppshv) == 0) {
-                    ppshv.GetWindow(out hwndShellView);
-                    if(hwndShellView != IntPtr.Zero) {
-                        this.hwndDirectUI = IntPtr.Zero;
-                        this.hwndSysListView32 = IntPtr.Zero;
-                        PInvoke.EnumChildWindows(
-                                hwndShellView,
-                                new EnumWndProc(this.CallbackEnumChildProc_SysListView32), 
-                                IntPtr.Zero);
-
-                        if(this.hwndSysListView32 != IntPtr.Zero) {
-                            isSysListView32 = true;
-                            return this.hwndSysListView32;
-                        }
-                        else if(this.hwndDirectUI != IntPtr.Zero) {
-                            isSysListView32 = false;
-                            return this.hwndDirectUI;
-                        }                      
-                    }
-                }
-            }
-            catch(Exception exception) {
-                QTUtility2.MakeErrorLog(exception, null);
-            }
-            finally {
-                if(ppshv != null) {
-                    Marshal.ReleaseComObject(ppshv);
-                }
-            }
-            isSysListView32 = false;
-            return IntPtr.Zero;
         }
 
         internal static FileSystemInfo GetTargetIfFolderLink(DirectoryInfo di, out bool fTargetIsDirectory) {
@@ -2951,71 +2691,44 @@ namespace QTTabBarLib {
             return 1;
         }
 
-        private void HandleDROPHILITED(int iItem, IntPtr hwndListView) {
-            if(iItem == -1) {
-                if(this.timer_HoverSubDirTipMenu != null) {
-                    this.timer_HoverSubDirTipMenu.Enabled = false;
-                }
-                if(this.subDirTip != null) {
-                    this.subDirTip.HideMenu();
-                    this.HideSubDirTip(10);
-                }
-                this.itemIndexDROPHILITED = -1;
-            }
-            else {
-                if(this.timer_HoverSubDirTipMenu == null) {
-                    this.timer_HoverSubDirTipMenu = new System.Windows.Forms.Timer(this.components);
-                    this.timer_HoverSubDirTipMenu.Interval = 1200;
-                    this.timer_HoverSubDirTipMenu.Tick += new EventHandler(this.timer_HoverSubDirTipMenu_Tick);
-                }
-                this.itemIndexDROPHILITED = iItem;
-                this.timer_HoverSubDirTipMenu.Tag = hwndListView;
-                this.timer_HoverSubDirTipMenu.Enabled = false;
-                this.timer_HoverSubDirTipMenu.Enabled = true;
-            }
-        }
-
-        internal static void HandleF2(IntPtr hwndListView) {
-            // TODO
-            if(hwndListView != IntPtr.Zero) {
-                IntPtr hWnd = PInvoke.SendMessage(hwndListView, 0x1018, IntPtr.Zero, IntPtr.Zero);
-                if(hWnd != IntPtr.Zero) {
-                    IntPtr lParam = Marshal.AllocHGlobal(520);
-                    if(0 < ((int)PInvoke.SendMessage(hWnd, 13, (IntPtr)260, lParam))) {
-                        string str = Marshal.PtrToStringUni(lParam);
-                        if(str.Length > 2) {
-                            int num = str.LastIndexOf(".");
-                            if(num != -1) {
-                                IntPtr ptr3 = PInvoke.SendMessage(hWnd, 0xb0, IntPtr.Zero, IntPtr.Zero);
-                                int num2 = QTUtility2.GET_X_LPARAM(ptr3);
-                                int length = QTUtility2.GET_Y_LPARAM(ptr3);
-                                if((length - num2) >= 0) {
-                                    if((num2 == 0) && (length == num)) {
-                                        num2 = length = num;
-                                    }
-                                    else if((num2 == length) && (length == num)) {
-                                        num2 = num + 1;
-                                        length = str.Length;
-                                    }
-                                    else if((num2 == (num + 1)) && (length == str.Length)) {
-                                        num2 = 0;
-                                        length = -1;
-                                    }
-                                    else if((num2 == 0) && (length == str.Length)) {
-                                        num2 = 0;
-                                        length = 0;
-                                    }
-                                    else {
-                                        num2 = 0;
-                                        length = num;
-                                    }
-                                    PInvoke.SendMessage(hWnd, 0xb1, (IntPtr)num2, (IntPtr)length);
+        internal static void HandleF2(ListViewWrapper listViewWrapper) {
+            IntPtr hWnd = listViewWrapper.GetEditControl();
+            if(hWnd != IntPtr.Zero) {
+                IntPtr lParam = Marshal.AllocHGlobal(520);
+                if(0 < ((int)PInvoke.SendMessage(hWnd, 13, (IntPtr)260, lParam))) {
+                    string str = Marshal.PtrToStringUni(lParam);
+                    if(str.Length > 2) {
+                        int num = str.LastIndexOf(".");
+                        if(num != -1) {
+                            IntPtr ptr3 = PInvoke.SendMessage(hWnd, 0xb0, IntPtr.Zero, IntPtr.Zero);
+                            int num2 = QTUtility2.GET_X_LPARAM(ptr3);
+                            int length = QTUtility2.GET_Y_LPARAM(ptr3);
+                            if((length - num2) >= 0) {
+                                if((num2 == 0) && (length == num)) {
+                                    num2 = length = num;
                                 }
+                                else if((num2 == length) && (length == num)) {
+                                    num2 = num + 1;
+                                    length = str.Length;
+                                }
+                                else if((num2 == (num + 1)) && (length == str.Length)) {
+                                    num2 = 0;
+                                    length = -1;
+                                }
+                                else if((num2 == 0) && (length == str.Length)) {
+                                    num2 = 0;
+                                    length = 0;
+                                }
+                                else {
+                                    num2 = 0;
+                                    length = num;
+                                }
+                                PInvoke.SendMessage(hWnd, 0xb1, (IntPtr)num2, (IntPtr)length);
                             }
                         }
                     }
-                    Marshal.FreeHGlobal(lParam);
                 }
+                Marshal.FreeHGlobal(lParam);
             }
         }
 
@@ -3040,22 +2753,6 @@ namespace QTTabBarLib {
             }
         }
 
-        private bool HandleITEMACTIVATE(IntPtr lParam, IntPtr hwndListView) {
-            NMITEMACTIVATE nmitemactivate = (NMITEMACTIVATE)Marshal.PtrToStructure(lParam, typeof(NMITEMACTIVATE));
-            int num = (int)PInvoke.SendMessage(hwndListView, 0x1032, IntPtr.Zero, IntPtr.Zero);
-            bool fEnqExec = !QTUtility.CheckConfig(Settings.NoRecentFiles);
-            if(((num != 1) || (nmitemactivate.uKeyFlags != 0)) || fEnqExec) {
-                if(nmitemactivate.uKeyFlags == 1) {
-                    return false;
-                }
-                if((fEnqExec || (num > 1)) || (((nmitemactivate.uKeyFlags & 4) == 4) || (nmitemactivate.uKeyFlags == 2))) {
-                    Keys modKeys = ((((nmitemactivate.uKeyFlags & 1) == 1) ? Keys.Alt : Keys.None) | (((nmitemactivate.uKeyFlags & 2) == 2) ? Keys.Control : Keys.None)) | (((nmitemactivate.uKeyFlags & 4) == 4) ? Keys.Shift : Keys.None);
-                    return this.HandleTabFolderActions(-1, modKeys, fEnqExec);
-                }
-            }
-            return false;
-        }
-
         private bool HandleKEYDOWN(IntPtr wParam, bool fRepeat) {
             bool flag;
             Keys key = (Keys)((int)wParam);
@@ -3073,22 +2770,8 @@ namespace QTTabBarLib {
                     
                     if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
                         if(QTUtility.CheckConfig(Settings.SubDirTipsWithShift)) {
-                            bool isSLV;
-                            IntPtr hwnd = GetExplorerListView(out isSLV);
-                            if(PInvoke.WindowFromPoint(Control.MousePosition) == hwnd) {
-                                int idx;
-                                int subidx;
-                                Point relpt = Control.MousePosition;
-                                PInvoke.ScreenToClient(hwnd, ref relpt);
-                                if(isSLV) {
-                                    idx = PInvoke.ListView_HitTest(hwnd, QTUtility2.Make_LPARAM(relpt.X, relpt.Y));
-                                    subidx = 0; // TODO
-                                }
-                                else {
-                                    idx = DirectUIHitTest(hwnd, relpt, true);
-                                    subidx = 0;
-                                }
-                                this.HandleLVHOTTRACK(hwnd, isSLV, idx, subidx);
+                            if(listViewWrapper.MouseIsOverListView()) {
+                                listViewWrapper.FireHotTrack();
                             }
                         }
                         else if(this.subDirTip != null && this.subDirTip.IsShowing && !this.subDirTip.MenuIsShowing) {
@@ -3125,8 +2808,7 @@ namespace QTTabBarLib {
             switch(mkey) {
                 case Keys.Back:
                     if(QTUtility.IsVista) {
-                        IntPtr focus = PInvoke.GetFocus();
-                        if((focus != IntPtr.Zero) && (focus == this.GetExplorerListView())) {
+                        if(listViewWrapper.HasFocus()) {
                             if(!fRepeat) {
                                 if(QTUtility.CheckConfig(Settings.BackspaceUpLevel)) {
                                     this.UpOneLevel();
@@ -3156,7 +2838,7 @@ namespace QTTabBarLib {
 
                 case Keys.F2:
                     if(!QTUtility.CheckConfig(Settings.F2Selection)) {
-                        HandleF2(this.GetExplorerListView());
+                        HandleF2(listViewWrapper);
                     }
                     return false;
 
@@ -3432,7 +3114,7 @@ namespace QTTabBarLib {
                         return true;
                     }
                     if(imkey == QTUtility.ShortcutKeys[0x23]) {
-                        this.FocusListView();
+                        listViewWrapper.SetFocus();
                         return true;
                     }
                     if(imkey == QTUtility.ShortcutKeys[0x24]) {
@@ -3567,223 +3249,12 @@ namespace QTTabBarLib {
                 }
                 Marshal.FreeHGlobal(ptr2);
             }
-        }
+        }        
 
-        private bool HandleLBUTTONDBLCLK(BandObjectLib.MSG msg) {
-            bool isSLV;
-            IntPtr hwnd = this.GetExplorerListView(out isSLV);
-            if(hwnd != IntPtr.Zero && hwnd == msg.hwnd && !QTUtility.CheckConfig(Settings.DblClickUpLevel)) {
-                int idx = isSLV ? 
-                    PInvoke.ListView_HitTest(hwnd, msg.lParam) :
-                    DirectUIHitTest(hwnd, msg.lParam, false);
-                if(idx == -1) {
-                    this.UpOneLevel();
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private bool HandleLVCUSTOMDRAW(ref System.Windows.Forms.Message msg, IntPtr hwndListView) {
-            if(QTUtility.CheckConfig(Settings.AlternateRowColors) && (1 == ((int)PInvoke.SendMessage(hwndListView, 0x108f, IntPtr.Zero, IntPtr.Zero)))) {
-                NMLVCUSTOMDRAW structure = (NMLVCUSTOMDRAW)Marshal.PtrToStructure(msg.LParam, typeof(NMLVCUSTOMDRAW));
-                int dwItemSpec = (int)structure.nmcd.dwItemSpec;
-                switch(structure.nmcd.dwDrawStage) {
-                    case 0x30001:
-                        this.iListViewItemState = (int)PInvoke.SendMessage(hwndListView, 0x102c, (IntPtr)dwItemSpec, (IntPtr)11);
-                        if(QTUtility.IsVista) {
-                            int num4 = this.lstColumnFMT[structure.iSubItem];
-                            structure.clrTextBk = QTUtility.ShellViewRowCOLORREF_Background;
-                            structure.clrText = QTUtility.ShellViewRowCOLORREF_Text;
-                            Marshal.StructureToPtr(structure, msg.LParam, false);
-                            bool flag = dwItemSpec == ((int)PInvoke.SendMessage(hwndListView, 0x103d, IntPtr.Zero, IntPtr.Zero));
-                            bool flag2 = !QTUtility.CheckConfig(Settings.NoFullRowSelect);
-                            if(((structure.iSubItem == 0) && !flag) && (((this.iListViewItemState == 0) && (((num4 & 0x400) == 0x400) || ((num4 & 0x200) == 0x200))) || ((this.iListViewItemState == 1) && !flag2))) {
-                                msg.Result = (IntPtr)0x12;
-                            }
-                            else {
-                                msg.Result = (IntPtr)2;
-                            }
-                            if((!flag2 || !flag) && ((structure.iSubItem > 0) && (!flag2 || (((this.iListViewItemState & 2) != 2) && ((this.iListViewItemState & 8) != 8))))) {
-                                using(Graphics graphics = Graphics.FromHdc(structure.nmcd.hdc)) {
-                                    if(QTUtility.sbAlternate == null) {
-                                        QTUtility.sbAlternate = new SolidBrush(QTUtility2.MakeColor(QTUtility.ShellViewRowCOLORREF_Background));
-                                    }
-                                    graphics.FillRectangle(QTUtility.sbAlternate, structure.nmcd.rc.ToRectangle());
-                                }
-                            }
-                            return true;
-                        }
-                        msg.Result = (IntPtr)0x10;
-                        return true;
-
-                    case 0x30002: {
-                            RECT rc = structure.nmcd.rc;
-                            if(!QTUtility.IsVista) {
-                                rc = PInvoke.ListView_GetItemRect(hwndListView, dwItemSpec, structure.iSubItem, 2);
-                            }
-                            else {
-                                rc.left += 0x10;
-                            }
-                            bool flag3 = false;
-                            bool flag4 = false;
-                            bool flag5 = QTUtility.CheckConfig(Settings.DetailsGridLines);
-                            bool flag6 = QTUtility.CheckConfig(Settings.NoFullRowSelect) ^ QTUtility.IsVista;
-                            bool flag7 = false;
-                            if(!QTUtility.IsVista && QTUtility.fSingleClick) {
-                                flag7 = dwItemSpec == ((int)PInvoke.SendMessage(hwndListView, 0x103d, IntPtr.Zero, IntPtr.Zero));
-                            }
-                            LVITEM lvitem = new LVITEM();
-                            lvitem.pszText = Marshal.AllocHGlobal(520);
-                            lvitem.cchTextMax = 260;
-                            lvitem.iSubItem = structure.iSubItem;
-                            lvitem.iItem = dwItemSpec;
-                            lvitem.mask = 1;
-                            IntPtr ptr3 = Marshal.AllocHGlobal(Marshal.SizeOf(lvitem));
-                            Marshal.StructureToPtr(lvitem, ptr3, false);
-                            PInvoke.SendMessage(hwndListView, 0x104b, IntPtr.Zero, ptr3);
-                            if(QTUtility.sbAlternate == null) {
-                                QTUtility.sbAlternate = new SolidBrush(QTUtility2.MakeColor(QTUtility.ShellViewRowCOLORREF_Background));
-                            }
-                            using(Graphics graphics2 = Graphics.FromHdc(structure.nmcd.hdc)) {
-                                Rectangle rect = rc.ToRectangle();
-                                if(flag5) {
-                                    rect = new Rectangle(rc.left + 1, rc.top, rc.Width - 1, rc.Height - 1);
-                                }
-                                graphics2.FillRectangle(QTUtility.sbAlternate, rect);
-                                if(!QTUtility.IsVista && ((structure.iSubItem == 0) || flag6)) {
-                                    flag4 = (this.iListViewItemState & 8) == 8;
-                                    if((this.iListViewItemState != 0) && (((this.iListViewItemState == 1) && this.fListViewHasFocus) || (this.iListViewItemState != 1))) {
-                                        int width = 0;
-                                        if(flag6) {
-                                            width = rc.Width;
-                                        }
-                                        else {
-                                            width = 8 + ((int)PInvoke.SendMessage(hwndListView, 0x1057, IntPtr.Zero, lvitem.pszText));
-                                            if(width > rc.Width) {
-                                                width = rc.Width;
-                                            }
-                                        }
-                                        Rectangle rectangle2 = new Rectangle(rc.left, rc.top, width, flag5 ? (rc.Height - 1) : rc.Height);
-                                        if(((this.iListViewItemState & 2) == 2) || flag4) {
-                                            if(flag4) {
-                                                graphics2.FillRectangle(SystemBrushes.Highlight, rectangle2);
-                                            }
-                                            else if(QTUtility.fSingleClick && flag7) {
-                                                graphics2.FillRectangle(this.fListViewHasFocus ? SystemBrushes.HotTrack : SystemBrushes.Control, rectangle2);
-                                            }
-                                            else {
-                                                graphics2.FillRectangle(this.fListViewHasFocus ? SystemBrushes.Highlight : SystemBrushes.Control, rectangle2);
-                                            }
-                                            flag3 = true;
-                                        }
-                                        if((this.fListViewHasFocus && ((this.iListViewItemState & 1) == 1)) && !flag6) {
-                                            ControlPaint.DrawFocusRectangle(graphics2, rectangle2);
-                                        }
-                                    }
-                                }
-                                if(QTUtility.IsVista && ((this.iListViewItemState & 1) == 1)) {
-                                    int num6 = rc.Width;
-                                    if(!flag6) {
-                                        num6 = 4 + ((int)PInvoke.SendMessage(hwndListView, 0x1057, IntPtr.Zero, lvitem.pszText));
-                                        if(num6 > rc.Width) {
-                                            num6 = rc.Width;
-                                        }
-                                    }
-                                    Rectangle rectangle = new Rectangle(rc.left + 1, rc.top + 1, num6, flag5 ? (rc.Height - 2) : (rc.Height - 1));
-                                    ControlPaint.DrawFocusRectangle(graphics2, rectangle);
-                                }
-                            }
-                            IntPtr zero = IntPtr.Zero;
-                            IntPtr hgdiobj = IntPtr.Zero;
-                            if(!QTUtility.IsVista && QTUtility.fSingleClick) {
-                                LOGFONT logfont;
-                                zero = PInvoke.GetCurrentObject(structure.nmcd.hdc, 6);
-                                PInvoke.GetObject(zero, Marshal.SizeOf(typeof(LOGFONT)), out logfont);
-                                if((structure.iSubItem == 0) || flag6) {
-                                    logfont.lfUnderline = ((QTUtility.iIconUnderLineVal == 3) || flag7) ? ((byte)1) : ((byte)0);
-                                }
-                                else {
-                                    logfont.lfUnderline = 0;
-                                }
-                                hgdiobj = PInvoke.CreateFontIndirect(ref logfont);
-                                PInvoke.SelectObject(structure.nmcd.hdc, hgdiobj);
-                            }
-                            PInvoke.SetBkMode(structure.nmcd.hdc, 1);
-                            int dwDTFormat = 0x8824;
-                            if(QTUtility.IsRTL ? ((this.lstColumnFMT[structure.iSubItem] & 1) == 0) : ((this.lstColumnFMT[structure.iSubItem] & 1) == 1)) {
-                                if(QTUtility.IsRTL) {
-                                    dwDTFormat &= -3;
-                                }
-                                else {
-                                    dwDTFormat |= 2;
-                                }
-                                rc.right -= 6;
-                            }
-                            else if(structure.iSubItem == 0) {
-                                rc.left += 2;
-                                rc.right -= 2;
-                            }
-                            else {
-                                rc.left += 6;
-                            }
-                            if(flag3) {
-                                PInvoke.SetTextColor(structure.nmcd.hdc, QTUtility2.MakeCOLORREF((this.fListViewHasFocus || flag4) ? SystemColors.HighlightText : SystemColors.WindowText));
-                            }
-                            else {
-                                PInvoke.SetTextColor(structure.nmcd.hdc, QTUtility.ShellViewRowCOLORREF_Text);
-                            }
-                            PInvoke.DrawTextExW(structure.nmcd.hdc, lvitem.pszText, -1, ref rc, dwDTFormat, IntPtr.Zero);
-                            Marshal.FreeHGlobal(lvitem.pszText);
-                            Marshal.FreeHGlobal(ptr3);
-                            msg.Result = IntPtr.Zero;
-                            if(zero != IntPtr.Zero) {
-                                PInvoke.SelectObject(structure.nmcd.hdc, zero);
-                            }
-                            if(hgdiobj != IntPtr.Zero) {
-                                PInvoke.DeleteObject(hgdiobj);
-                            }
-                            return true;
-                        }
-                    case 0x10001:
-                        if((dwItemSpec % 2) == 0) {
-                            msg.Result = (IntPtr)0x20;
-                            return true;
-                        }
-                        msg.Result = IntPtr.Zero;
-                        return false;
-
-                    case 1: {
-                            HDITEM hditem = new HDITEM();
-                            hditem.mask = 4;
-                            IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(hditem));
-                            Marshal.StructureToPtr(hditem, ptr, false);
-                            IntPtr hWnd = PInvoke.SendMessage(hwndListView, 0x101f, IntPtr.Zero, IntPtr.Zero);
-                            int num2 = (int)PInvoke.SendMessage(hWnd, 0x1200, IntPtr.Zero, IntPtr.Zero);
-                            if(this.lstColumnFMT == null) {
-                                this.lstColumnFMT = new List<int>();
-                            }
-                            else {
-                                this.lstColumnFMT.Clear();
-                            }
-                            for(int i = 0; i < num2; i++) {
-                                PInvoke.SendMessage(hWnd, 0x120b, (IntPtr)i, ptr);
-                                hditem = (HDITEM)Marshal.PtrToStructure(ptr, typeof(HDITEM));
-                                this.lstColumnFMT.Add(hditem.fmt);
-                            }
-                            Marshal.FreeHGlobal(ptr);
-                            this.fListViewHasFocus = hwndListView == PInvoke.GetFocus();
-                            msg.Result = (IntPtr)0x20;
-                            return true;
-                        }
-                }
-            }
-            return false;
-        }
-
-        private bool HandleLVKEYDOWN_CursorLoop(int key) {
+        private bool HandleLVKEYDOWN_CursorLoop(Keys key) {
             // TODO
-            IntPtr hWnd = this.GetExplorerListView();
+            /*
+            IntPtr hWnd = IntPtr.Zero; // this.GetExplorerListView();
             if(hWnd == PInvoke.GetFocus()) {
                 if(IntPtr.Zero != PInvoke.SendMessage(hWnd, 0x10af, IntPtr.Zero, IntPtr.Zero)) {
                     return false;
@@ -3855,18 +3326,12 @@ namespace QTTabBarLib {
                 }
             }
         Label_025A:
+             */
             return false;
         }
 
         private bool HandleMBUTTONUP(BandObjectLib.MSG msg) {
-            bool isSLV;
-            IntPtr hwnd = this.GetExplorerListView(out isSLV);
-            if(!(hwnd != IntPtr.Zero) || !(hwnd == msg.hwnd)) {
-                return false;
-            }
-            int index = isSLV ?
-                PInvoke.ListView_HitTest(hwnd, msg.lParam) :
-                DirectUIHitTest(hwnd, msg.lParam, false);
+            int index = listViewWrapper.HitTest(msg.lParam);
             if(index <= -1) {
                 return false;
             }
@@ -3908,26 +3373,22 @@ namespace QTTabBarLib {
                 DropDownMenuReorderable reorderable = control as DropDownMenuReorderable;
                 if(reorderable != null) {
                     if(reorderable.CanScroll) {
-                        PInvoke.SendMessage(handle, 0x20a, QTUtility2.Make_LPARAM(0, y), QTUtility2.Make_LPARAM(mousehookstructex.mhs.pt.x, mousehookstructex.mhs.pt.y));
+                        PInvoke.SendMessage(handle, WM.MOUSEWHEEL, QTUtility2.Make_LPARAM(0, y), QTUtility2.Make_LPARAM(mousehookstructex.mhs.pt.x, mousehookstructex.mhs.pt.y));
                     }
                     return true;
                 }
                 flag = (control == this.tabControl1) || (handle == base.Handle);
                 if(!flag && QTUtility.instanceManager.TryGetButtonBarHandle(this.ExplorerHandle, out ptr2)) {
-                    flag = (handle == ptr2) || (handle == PInvoke.SendMessage(ptr2, WM.APP, IntPtr.Zero, IntPtr.Zero));
+                    flag = (handle == ptr2) || (handle == listViewWrapper.GetListViewHandle()); // TODO make sure this didn't break
                 }
             }
             if(!flag) {
                 Keys modifierKeys = Control.ModifierKeys;
                 if((!QTUtility.CheckConfig(Settings.HorizontalScroll) && (modifierKeys == Keys.Shift)) || ((!QTUtility.IsVista && !QTUtility.CheckConfig(Settings.CtrlWheelChangeView)) && (modifierKeys == Keys.Control))) {
-                    RECT rect;
-                    IntPtr hWnd = this.GetExplorerListView();
-                    PInvoke.GetWindowRect(hWnd, out rect);
-                    if(PInvoke.PtInRect(ref rect, mousehookstructex.mhs.pt)) {
+                    if(listViewWrapper.MouseIsOverListView()) {
                         switch(modifierKeys) {
                             case Keys.Shift:
-                                // TODO
-                                PInvoke.SendMessage(hWnd, LVM.SCROLL, (IntPtr)(-y), IntPtr.Zero);
+                                listViewWrapper.ScrollHorizontal(y);
                                 return true;
 
                             case Keys.Control:
@@ -3959,7 +3420,7 @@ namespace QTTabBarLib {
             return true;
         }
 
-        internal static void HandleRenaming(IntPtr hwndListView, IntPtr pIDL, Control ctrl) {
+        internal static void HandleRenaming(ListViewWrapper lvw, IntPtr pIDL, Control ctrl) {
             if(pIDL != IntPtr.Zero) {
                 StringBuilder pszPath = new StringBuilder(260);
                 if(PInvoke.SHGetPathFromIDList(pIDL, pszPath) && (pszPath.Length > 0)) {
@@ -3971,10 +3432,10 @@ namespace QTTabBarLib {
                                 return;
                             }
                         }
-                        IntPtr hWnd = PInvoke.SendMessage(hwndListView, 0x1018, IntPtr.Zero, IntPtr.Zero);
+                        IntPtr hWnd = lvw.GetEditControl();
                         if(hWnd != IntPtr.Zero) {
                             IntPtr lParam = Marshal.AllocHGlobal(520);
-                            if(0 < ((int)PInvoke.SendMessage(hWnd, 13, (IntPtr)260, lParam))) {
+                            if(0 < ((int)PInvoke.SendMessage(hWnd, WM.GETTEXT, (IntPtr)260, lParam))) {
                                 string str3 = Marshal.PtrToStringUni(lParam);
                                 if(str3.Length > 2) {
                                     int num = str3.LastIndexOf(".");
@@ -4428,6 +3889,25 @@ namespace QTTabBarLib {
                 PInvoke.SetWindowLongPtr(this.ExplorerHandle, -20, PInvoke.Ptr_OP_OR(PInvoke.GetWindowLongPtr(this.ExplorerHandle, -20), 0x80000));
                 PInvoke.SetLayeredWindowAttributes(this.ExplorerHandle, 0, QTUtility.WindowAlpha, 2);
             }
+
+            listViewWrapper = new ListViewWrapper(ShellBrowser, ExplorerHandle);
+            listViewWrapper.SVDestroy       += ListView_SVDestroy;
+            listViewWrapper.SVMouseActivate += ListView_SVMouseActivate;
+            listViewWrapper.ItemInserted    += ListView_ItemInserted;
+            listViewWrapper.ItemDeleted     += ListView_ItemDeleted;
+            listViewWrapper.ItemActivated   += ListView_ItemActivated;
+            listViewWrapper.AllItemsDeleted += ListView_AllItemsDeleted;
+            listViewWrapper.SelectionChanged+= ListView_SelectionChanged;
+            listViewWrapper.BeginDrag       += ListView_BeginDrag;
+            listViewWrapper.DropHilighted   += ListView_DropHilighted;
+            listViewWrapper.HotTrack        += ListView_HotTrack;
+            listViewWrapper.DoubleClick     += ListView_DoubleClick;
+            listViewWrapper.KeyDown         += ListView_KeyDown;
+            listViewWrapper.GetInfoTip      += ListView_GetInfoTip;
+            listViewWrapper.BeginLabelEdit  += ListView_BeginLabelEdit;
+            listViewWrapper.EndLabelEdit    += ListView_EndLabelEdit;
+            listViewWrapper.BeginScroll     += ListView_BeginScroll;
+            listViewWrapper.MouseLeave      += ListView_MouseLeave;
         }
 
         private static void InitializeStaticFields() {
@@ -4553,12 +4033,10 @@ namespace QTTabBarLib {
             this.hookProc_Key = new HookProc(this.CallbackKeyboardProc);
             this.hookProc_Mouse = new HookProc(this.CallbackMouseProc);
             this.hookProc_GetMsg = new HookProc(this.CallbackGetMsgProc);
-            this.hookProc_CallWnd = new HookProc(this.CallbackCallWndProc);
             int currentThreadId = PInvoke.GetCurrentThreadId();
             this.hHook_Key = PInvoke.SetWindowsHookEx(2, this.hookProc_Key, IntPtr.Zero, currentThreadId);
             this.hHook_Mouse = PInvoke.SetWindowsHookEx(7, this.hookProc_Mouse, IntPtr.Zero, currentThreadId);
             this.hHook_Msg = PInvoke.SetWindowsHookEx(3, this.hookProc_GetMsg, IntPtr.Zero, currentThreadId);
-            this.hHook_Wnd = PInvoke.SetWindowsHookEx(4, this.hookProc_CallWnd, IntPtr.Zero, currentThreadId);
             this.explorerController = new NativeWindowController(this.ExplorerHandle);
             this.explorerController.MessageCaptured += new NativeWindowController.MessageEventHandler(this.explorerController_MessageCaptured);
             if(base.ReBarHandle != IntPtr.Zero) {
@@ -4614,310 +4092,308 @@ namespace QTTabBarLib {
             return true;
         }
 
-        private static bool IsTrackingInMainItemRectDetailsView(IntPtr hwndListView, out int iItem) {
-            iItem = -1;
-            RECT rect = PInvoke.ListView_GetItemRect(hwndListView, 0, 0, 2);
-            Point mousePosition = Control.MousePosition;
-            PInvoke.MapWindowPoints(IntPtr.Zero, hwndListView, ref mousePosition, 1);
-            if((Math.Min(rect.left, rect.right) <= mousePosition.X) && (mousePosition.X <= Math.Max(rect.left, rect.right))) {
-                iItem = PInvoke.ListView_HitTest(hwndListView, QTUtility2.Make_LPARAM(Math.Min(rect.left, rect.right) + 2, mousePosition.Y));
-                return (iItem != -1);
+        private bool ListView_SVDestroy() {
+            // I'm pretty sure this is unnecessary.  Refreshing doesn't seem to
+            // produce this message on any platform.
+            HandleF5();
+            return false;
+        }
+
+        private bool ListView_SVMouseActivate(ref int result) {
+            // The purpose of this is probably to prevent accidentally
+            // renaming an item when clicking out of a SubDirTip menu.
+            if((subDirTip != null && subDirTip.MenuIsShowing) || (subDirTip_Tab != null && subDirTip_Tab.MenuIsShowing)) {
+                if(listViewWrapper.GetSelectedCount() == 1 && listViewWrapper.HotItemIsSelected()) {
+                    result = 2;
+                    if(subDirTip != null) {
+                        subDirTip.HideMenu();
+                    }
+                    HideSubDirTip_Tab_Menu();
+                    listViewWrapper.SetFocus();
+                    return true;
+                }
             }
             return false;
         }
 
-        private Point nextSubDirPt;
-
-        private int DirectUIHitTest(IntPtr hwndListView, IntPtr lParam, bool forSubDirTipPt) {
-            return DirectUIHitTest(hwndListView, new Point(
-                    QTUtility2.GET_X_LPARAM(lParam),
-                    QTUtility2.GET_Y_LPARAM(lParam)), forSubDirTipPt);
-
+        private bool ListView_ItemInserted() { 
+            return ListView_ItemDeleted();
         }
 
-        // This will return -1 if no list item is under the given point, or
-        // -2 if nothing can be determined.
-        private int DirectUIHitTest(IntPtr hwndListView, Point pt, bool forSubDirTip) {
-            int iItem = -1;
-            AutomationElement elem = GetHotListItemElement(hwndListView, pt);
-            if(elem != null) {
-                iItem = ItemIndexFromElement(elem);
-                if(forSubDirTip && this.subDirIndex != iItem && iItem > -1) {
-                    SetNextSubDirTipPoint(elem);
-                }
-            }
-            return iItem;
-        }
-
-        AutomationElement GetChildOfListElem(AutomationElement listElement, string childType) {
-            AutomationElement child = TreeWalker.ControlViewWalker.GetFirstChild(listElement);
-            while(child != null) {
-                if(child.Current.ClassName == childType) {
-                    return child;
-                }
-                child = TreeWalker.ControlViewWalker.GetNextSibling(child);
-            }
-            return null;
-        }
-
-        void SetNextSubDirTipPoint(AutomationElement listElement) {
-            FOLDERSETTINGS fs = GetCurrentFolderSettings();
-            int xb = (int)listElement.Current.BoundingRectangle.Right;
-            int yb = (int)listElement.Current.BoundingRectangle.Bottom;
-            System.Windows.Rect rect;
-            int x, y;
-            try {
-                switch(fs.ViewMode) {
-                    case FVM.CONTENT:
-                        y = (int)listElement.Current.BoundingRectangle.Bottom;
-                        listElement = GetChildOfListElem(listElement, "UIProperty");
-                        x = (int)listElement.Current.BoundingRectangle.Left;
-                        nextSubDirPt = new Point(x, y - 16);
-                        return;
-
-                    case FVM.DETAILS:
-                        listElement = GetChildOfListElem(listElement, "UIProperty");
-                        rect = listElement.Current.BoundingRectangle;
-                        x = (int)rect.Right;
-                        y = (int)rect.Top;
-                        y += ((int)rect.Bottom - y) / 2;
-                        nextSubDirPt = new Point(x - 16, y - 8);
-                        return;
-
-                    case FVM.SMALLICON:
-                        rect = listElement.Current.BoundingRectangle;
-                        x = (int)rect.Right;
-                        y = (int)rect.Top;
-                        x -= ((int)rect.Bottom - y) / 2;
-                        y += ((int)rect.Bottom - y) / 2;
-                        nextSubDirPt = new Point(x - 8, y - 8);
-                        return;
-
-                    case FVM.TILE:
-                        y = (int)listElement.Current.BoundingRectangle.Bottom;
-                        listElement = GetChildOfListElem(listElement, "UIImage");
-                        x = (int)listElement.Current.BoundingRectangle.Right;
-                        nextSubDirPt = new Point(x - 16, y - 16);
-                        return;
-
-                    case FVM.THUMBSTRIP:
-                    case FVM.THUMBNAIL:
-                    case FVM.ICON:
-                        x = (int)listElement.Current.BoundingRectangle.Right;
-                        listElement = GetChildOfListElem(listElement, "UIImage");
-                        y = (int)listElement.Current.BoundingRectangle.Bottom;
-                        nextSubDirPt = new Point(x - 16, y - 16);
-                        return;
-
-                    //case FVM.LIST:
-                    default:
-                        rect = listElement.Current.BoundingRectangle;
-                        nextSubDirPt = new Point((int)rect.Right, (int)rect.Bottom - 15);
-                        return;
-                }
-            }
-            catch(NullReferenceException) {
-                nextSubDirPt = new Point(xb, yb - 15);
-                return;
-            }
-        }
-
-        private void HandleLVHOTTRACK(IntPtr hwndListView, bool isSysListView32, int iItem, int iSubItem) {
-            Keys modifierKeys = Control.ModifierKeys;
-            if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews)) {
-                if((this.thumbnailTooltip != null) && (this.thumbnailTooltip.IsShowing || this.fThumbnailPending)) {
-                    if(!QTUtility.CheckConfig(Settings.PreviewsWithShift) ^ (modifierKeys == Keys.Shift)) {
-                        if(iItem != this.thumbnailIndex) {
-                            if(iItem > -1) {
-                                if(this.ShowThumbnailTooltip(iItem, Control.MousePosition, false)) {
-                                    return;
-                                }
-                            }
-                            else {
-                                int num;
-                                if(((!QTUtility.IsVista &&
-                                        (1 == ((int)PInvoke.SendMessage(hwndListView, LVM.GETVIEW, IntPtr.Zero, IntPtr.Zero)))) &&
-                                        ((((int)PInvoke.SendMessage(hwndListView, 0x1004, IntPtr.Zero, IntPtr.Zero)) > 0) &&
-                                        IsTrackingInMainItemRectDetailsView(hwndListView, out num))) && 
-                                        ((num == this.thumbnailIndex) || this.ShowThumbnailTooltip(num, Control.MousePosition, false))) {
-                                    return;
-                                }
-                            }
-                            if(this.thumbnailTooltip.HideToolTip()) {
-                                this.thumbnailIndex = -1;
-                            }
-                        }
-                    }
-                    else if(this.thumbnailTooltip.HideToolTip()) {
-                        this.thumbnailIndex = -1;
-                    }
-                }
-                if(this.timer_HoverThumbnail == null) {
-                    this.timer_HoverThumbnail = new System.Windows.Forms.Timer(this.components);
-                    this.timer_HoverThumbnail.Interval = (int)(SystemInformation.MouseHoverTime * 0.2);
-                    this.timer_HoverThumbnail.Tick += new EventHandler(this.timer_HoverThumbnail_Tick);
-                }
-                this.timer_HoverThumbnail.Enabled = false;
-                this.timer_HoverThumbnail.Enabled = true;
+        private bool ListView_ItemDeleted() {
+            IntPtr ptr;
+            if(QTUtility.instanceManager.TryGetButtonBarHandle(this.ExplorerHandle, out ptr)) {
+                QTUtility2.SendCOPYDATASTRUCT(ptr, (IntPtr)14, null, IntPtr.Zero);
             }
             if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
-                if(!QTUtility.CheckConfig(Settings.SubDirTipsWithShift) ^ (modifierKeys == Keys.Shift)) {
-                    if((this.subDirIndex == iItem) && (QTUtility.IsVista || (iItem != -1))) {
-                        return;
-                    }
-                    if(QTUtility.IsVista) {
-                        this.subDirIndex = iItem;
-                    }
-                    if((iItem > -1) && (iSubItem == 0)) {
-                        if(this.ShowSubDirTip(iItem, hwndListView, false, isSysListView32)) {
-                            if(!QTUtility.IsVista) {
-                                this.subDirIndex = iItem;
-                            }
-                            return;
-                        }
-                        this.subDirIndex = -1;
-                    }
-                    else if(((!QTUtility.IsVista && (iItem == -1)) &&
-                            ((1 == ((int)PInvoke.SendMessage(hwndListView, LVM.GETVIEW, IntPtr.Zero, IntPtr.Zero))) &&
-                            (((int)PInvoke.SendMessage(hwndListView, LVM.GETITEMCOUNT, IntPtr.Zero, IntPtr.Zero)) > 0))) &&
-                            (IsTrackingInMainItemRectDetailsView(hwndListView, out iItem) &&
-                            ((this.subDirIndex == iItem) || this.ShowSubDirTip(iItem, hwndListView, false, isSysListView32)))) {
-                        this.subDirIndex = iItem;
-                        return;
-                    }
-                }
-                this.HideSubDirTip(2);
+                HideSubDirTip(1);
             }
+            return false;
         }
 
+        private bool ListView_ItemActivated(Keys modKeys) {
+            if(this.timerSelectionChanged != null) {
+                this.timerSelectionChanged.Enabled = false;
+            }
+            int num = listViewWrapper.GetSelectedCount();
+            bool fEnqExec = !QTUtility.CheckConfig(Settings.NoRecentFiles);
+            if(num != 1 || modKeys != Keys.None || fEnqExec) {
+                if(modKeys == Keys.Alt) {
+                    return false;
+                }
+                if(fEnqExec || num > 1 || (modKeys & Keys.Shift) != Keys.None || modKeys == Keys.Control) {
+                    return this.HandleTabFolderActions(-1, modKeys, fEnqExec);
+                }
+            }
+            return false;
+        }
 
-        private bool listViewController_MessageCaptured(ref System.Windows.Forms.Message msg) {
-            Point pt;
+        private bool ListView_AllItemsDeleted() {
+            // No idea for this one.
+            // TODO: Figure out how important this is.
+            this.HandleF5();
+            return false;
+        }
 
-            switch(msg.Msg) {
-                case WM.MOUSEMOVE:
-                    if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews) || !QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
-                        int idx = DirectUIHitTest(listViewController.Handle, msg.LParam, true);
-                        HandleLVHOTTRACK(listViewController.Handle, false, idx, 0);
+        private bool ListView_SelectionChanged() {
+            if(this.pluginManager != null && this.pluginManager.SelectionChangeAttached) {
+                if(this.timerSelectionChanged == null) {
+                    this.timerSelectionChanged = new System.Windows.Forms.Timer(this.components);
+                    this.timerSelectionChanged.Interval = 250;
+                    this.timerSelectionChanged.Tick += new EventHandler(this.timerSelectionChanged_Tick);
+                }
+                else {
+                    this.timerSelectionChanged.Enabled = false;
+                }
+                this.timerSelectionChanged.Enabled = true;
+            }
+            return false;
+        }
+
+        private bool ListView_BeginDrag() {
+            // This won't be necessary it seems.  On Windows 7, when you
+            // start to drag, a MOUSELEAVE message is sent, which hides
+            // the SubDirTip anyway.
+            this.HideSubDirTip(0xff);
+            return false;
+        }
+
+        private bool ListView_DropHilighted(int iItem) {
+            if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
+                if(iItem != itemIndexDROPHILITED) {
+                    if(iItem == -1) {
+                        if(timer_HoverSubDirTipMenu != null) {
+                            timer_HoverSubDirTipMenu.Enabled = false;
+                        }
+                        if(subDirTip != null) {
+                            subDirTip.HideMenu();
+                            HideSubDirTip(10);
+                        }
+                        itemIndexDROPHILITED = -1;
                     }
-                    break;
-                
-                case WM.KEYDOWN:
-                    if((!QTUtility.CheckConfig(Settings.ShowTooltipPreviews) && QTUtility.CheckConfig(Settings.NoShowSubDirTips)) && !QTUtility.CheckConfig(Settings.CursorLoop)) {
-                        return false;
+                    else {
+                        if(timer_HoverSubDirTipMenu == null) {
+                            timer_HoverSubDirTipMenu = new System.Windows.Forms.Timer(components);
+                            timer_HoverSubDirTipMenu.Interval = 1200;
+                            timer_HoverSubDirTipMenu.Tick += new EventHandler(timer_HoverSubDirTipMenu_Tick);
+                        }
+                        itemIndexDROPHILITED = iItem;
+                        timer_HoverSubDirTipMenu.Enabled = false;
+                        timer_HoverSubDirTipMenu.Enabled = true;
                     }
-                    int wVKey = (int)msg.WParam;
-                    if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews)) {
-                        if(QTUtility.CheckConfig(Settings.PreviewsWithShift)) {
-                            if(wVKey != 0x10) {
-                                this.HideThumbnailTooltip(2);
+                }
+            }
+            return false;
+        }
+
+        private bool ListView_HotTrack(int iItem) { 
+            if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews) || !QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
+
+                Keys modifierKeys = Control.ModifierKeys;
+                if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews)) {
+                    if((this.thumbnailTooltip != null) && (this.thumbnailTooltip.IsShowing || this.fThumbnailPending)) {
+                        if(!QTUtility.CheckConfig(Settings.PreviewsWithShift) ^ (modifierKeys == Keys.Shift)) {
+                            if(iItem != this.thumbnailIndex) {
+                                if(iItem > -1 && listViewWrapper.IsTrackingItemName()) {
+                                    if(this.ShowThumbnailTooltip(iItem, Control.MousePosition, false)) {
+                                        return false;
+                                    }
+                                }
+                                if(this.thumbnailTooltip.HideToolTip()) {
+                                    this.thumbnailIndex = -1;
+                                }
                             }
                         }
-                        else {
-                            this.HideThumbnailTooltip(2);
+                        else if(this.thumbnailTooltip.HideToolTip()) {
+                            this.thumbnailIndex = -1;
                         }
                     }
-                    if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
-                        if(QTUtility.CheckConfig(Settings.SubDirTipsWithShift)) {
-                            if(wVKey != 0x10) {
-                                this.HideSubDirTip(3);
-                            }
-                        }
-                        else if(wVKey != 0x11) {
-                            this.HideSubDirTip(3);
-                        }
+                    if(this.timer_HoverThumbnail == null) {
+                        this.timer_HoverThumbnail = new System.Windows.Forms.Timer(this.components);
+                        this.timer_HoverThumbnail.Interval = (int)(SystemInformation.MouseHoverTime * 0.2);
+                        this.timer_HoverThumbnail.Tick += new EventHandler(this.timer_HoverThumbnail_Tick);
                     }
-                    //if(((!QTUtility.CheckConfig(Settings.CursorLoop) || (0x25 > wVKey)) || ((wVKey > 40) || (Control.ModifierKeys != Keys.None))) || !this.HandleLVKEYDOWN_CursorLoop(wVKey)) {
-                    //    return false;
-                    //}
-                    //msg.Result = (IntPtr)1;
-                    //return true;
-                    break;
-
-
-                case WM.USER + 209: // This message appears to control dragging.
-                    {
-                        pt = new Point((int)msg.WParam, (int)msg.LParam);
-                        if(pt == lastDragPoint) {
+                    this.timer_HoverThumbnail.Enabled = false;
+                    this.timer_HoverThumbnail.Enabled = true;
+                }
+                if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
+                    if(!QTUtility.CheckConfig(Settings.SubDirTipsWithShift) ^ (modifierKeys == Keys.Shift)) {
+                        if((this.subDirIndex == iItem) && (QTUtility.IsVista || (iItem != -1))) {
                             return false;
                         }
-                        lastDragPoint = pt;
-                        int idx = DirectUIHitTest(listViewController.Handle, pt, false);
-                        if(idx > -1 && idx != itemIndexDROPHILITED) {
-                            HandleDROPHILITED(idx, listViewController.Handle);
+                        if(QTUtility.IsVista) {
+                            this.subDirIndex = iItem;
+                        }
+                        if(iItem > -1 && listViewWrapper.IsTrackingItemName()) {
+                            if(this.ShowSubDirTip(iItem, false)) {
+                                if(!QTUtility.IsVista) {
+                                    this.subDirIndex = iItem;
+                                }
+                                return false;
+                            }
                         }
                     }
-                    break;
+                    this.HideSubDirTip(2);
+                    this.subDirIndex = -1;
+                }
+            }
+            return false;
+        }
 
+        private bool ListView_DoubleClick(Point pt) {
+            if(!QTUtility.CheckConfig(Settings.NoDblClickUpLevel) && listViewWrapper.HitTest(pt, false) == -1) {
+                this.UpOneLevel();
+                return true;
+            }
+            return false;
+        }
+
+        private bool ListView_KeyDown(Keys key) {
+            if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews)) {
+                if(QTUtility.CheckConfig(Settings.PreviewsWithShift)) {
+                    if(key != Keys.ShiftKey) {
+                        this.HideThumbnailTooltip(2);
+                    }
+                }
+                else {
+                    this.HideThumbnailTooltip(2);
+                }
+            }
+            if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
+                if(QTUtility.CheckConfig(Settings.SubDirTipsWithShift)) {
+                    if(key != Keys.ShiftKey) {
+                        this.HideSubDirTip(3);
+                    }
+                }
+                else if(key != Keys.ControlKey) {
+                    this.HideSubDirTip(3);
+                }
+            }
+
+            if(QTUtility.CheckConfig(Settings.CursorLoop) && Control.ModifierKeys == Keys.None) {
+                if(key == Keys.Left || key == Keys.Right || key == Keys.Up || key == Keys.Down) {
+                    return this.HandleLVKEYDOWN_CursorLoop(key);
+                }
+            }
+            
+            return false;
+        }
+
+        private bool ListView_GetInfoTip(int iItem, bool byKey) {
+            if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews) && (!QTUtility.CheckConfig(Settings.PreviewsWithShift) ^ (Control.ModifierKeys == Keys.Shift))) {
+                if(((this.thumbnailTooltip != null) && this.thumbnailTooltip.IsShowing) && (iItem == this.thumbnailIndex)) {
+                    return true;
+                }
+                else if((this.timer_HoverThumbnail != null) && this.timer_HoverThumbnail.Enabled) {
+                    return true;
+                }
+                else if(byKey) {
+                    Rectangle rect = listViewWrapper.GetFocusedItemRect();
+                    return this.ShowThumbnailTooltip(iItem, new Point(rect.Right - 32, rect.Bottom - 16), true);
+                }
+                else {
+                    return this.ShowThumbnailTooltip(iItem, Control.MousePosition, false);
+                }
+            }
+            return false;
+        }
+
+        private bool ListView_BeginLabelEdit(LVITEM item) {
+            if(QTUtility.IsVista || QTUtility.CheckConfig(Settings.ExtWhileRenaming)) {
+                return false;
+            }
+            if(item.lParam != IntPtr.Zero) {
+                IntPtr ptr2 = ShellMethods.ShellGetPath(this.ShellBrowser);
+                if((ptr2 != IntPtr.Zero)) {
+                    IntPtr ptr3 = PInvoke.ILCombine(ptr2, item.lParam);
+                    HandleRenaming(listViewWrapper, ptr3, this);
+                    PInvoke.CoTaskMemFree(ptr2);
+                    PInvoke.CoTaskMemFree(ptr3);
+                }
+            }
+            return false;
+        }
+
+        private bool ListView_EndLabelEdit(LVITEM item) {
+            if(item.pszText == IntPtr.Zero) {
+                return false;
+            }
+            IShellView ppshv = null;
+            IntPtr zero = IntPtr.Zero;
+            IntPtr ptr5 = IntPtr.Zero;
+            IntPtr pIDL = IntPtr.Zero;
+            try {
+                if(this.ShellBrowser.QueryActiveShellView(out ppshv) == 0) {
+                    IFolderView view2 = (IFolderView)ppshv;
+                    if(view2.Item(item.iItem, out zero) == 0) {
+                        ptr5 = ShellMethods.ShellGetPath(this.ShellBrowser);
+                        pIDL = PInvoke.ILCombine(ptr5, zero);
+                        string displayName = ShellMethods.GetDisplayName(pIDL, true);
+                        string str2 = Marshal.PtrToStringUni(item.pszText);
+                        if(displayName != str2) {
+                            this.HandleF5();
+                        }
+                    }
+                }
+            }
+            catch {
+            }
+            finally {
+                if(ppshv != null) {
+                    Marshal.ReleaseComObject(ppshv);
+                }
+                if(zero != IntPtr.Zero) {
+                    PInvoke.CoTaskMemFree(zero);
+                }
+                if(ptr5 != IntPtr.Zero) {
+                    PInvoke.CoTaskMemFree(ptr5);
+                }
+                if(pIDL != IntPtr.Zero) {
+                    PInvoke.CoTaskMemFree(pIDL);
+                }
+            }
+            return false;
+        }
+   
+        private bool ListView_BeginScroll() {
+            if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews)) {
+                this.HideThumbnailTooltip(8);
+            }
+            if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
+                this.HideSubDirTip(8);
             }
             return false;
         }
         
-        private int ItemIndexFromElement(AutomationElement elem) {
-            try {
-                int offset = 0;
-                string id;
-                AutomationElement parent = TreeWalker.ControlViewWalker.GetParent(elem);
-                if(parent.Current.ClassName == "UIGroupItem") {
-                    // If grouping is enabled, we're basically screwed:  The id 
-                    // of the element will be its index IN THAT GROUP, not the
-                    // overall index, which is what we need.  The only thing we
-                    // can do here is add up the group totals for all the groups
-                    // before the current one, which, luckily, are in the group
-                    // headers.  Of course, this assumes all group headers are
-                    // accessible through automation, which they might not be
-                    // if they're off-screen.  In that case, there's nothing we 
-                    // can do... that I know of.
-                    id = parent.Current.AutomationId;
-                    int i = Convert.ToInt32(id) - 1;
-                    for(; i >= 0; --i) {
-                        parent = TreeWalker.ControlViewWalker.GetPreviousSibling(parent);
-                        if(parent == null || parent.Current.ClassName != "UIGroupItem") {
-                            return -2;
-                        }
-                        id = parent.Current.AutomationId;
-                        if(i != Convert.ToInt32(id)) {
-                            return -2;
-                        }
-                        AutomationElement child = TreeWalker.ControlViewWalker.GetFirstChild(parent);
-                        if(child == null || child.Current.ClassName != "UIGroupHeader") {
-                            return -2;
-                        }
-                        child = TreeWalker.ControlViewWalker.GetLastChild(child);
-                        if(child == null || child.Current.ClassName != "UICount") {
-                            return -2;
-                        }
-                        ValuePattern p = child.GetCurrentPattern(ValuePattern.Pattern) as ValuePattern;
-                        string str = p.Current.Value;
-                        if(str.Length < 3) {
-                            return -2;
-                        }
-                        offset += Convert.ToInt32(str.Substring(1, str.Length - 2));
-                    }
-                }
-                id = elem.Current.AutomationId;
-                return Convert.ToInt32(id) + offset;
+        private bool ListView_MouseLeave() {
+            this.HideThumbnailTooltip(4);
+            if(this.timer_HoverThumbnail != null) {
+                this.timer_HoverThumbnail.Enabled = false;
             }
-            catch(Exception) {
-                return -2;
+            if(((this.subDirTip != null) && !this.subDirTip.MouseIsOnThis()) && !this.subDirTip.MenuIsShowing) {
+                this.HideSubDirTip(5);
             }
-        }
-
-        private static AutomationElement GetHotListItemElement(IntPtr hwnd, Point pt) {
-            PInvoke.ClientToScreen(hwnd, ref pt);
-            if(PInvoke.WindowFromPoint(pt) != hwnd) {
-                return null;
-            }
-            AutomationElement elem = AutomationElement.FromPoint(new System.Windows.Point(pt.X, pt.Y));
-            if(elem != null) {
-                if(elem.Current.ClassName != "UIItem") {
-                    elem = TreeWalker.ControlViewWalker.GetParent(elem);
-                }
-                if(elem.Current.ClassName == "UIItem") {
-                    return elem;
-                }
-            }
-            return null;
+            return false;
         }
 
         private string MakeTravelBtnTooltipText(bool fBack) {
@@ -5535,7 +5011,6 @@ namespace QTTabBarLib {
             base.Explorer.BeforeNavigate2 += new DWebBrowserEvents2_BeforeNavigate2EventHandler(this.Explorer_BeforeNavigate2);
             base.Explorer.NavigateComplete2 += new DWebBrowserEvents2_NavigateComplete2EventHandler(this.Explorer_NavigateComplete2);
             base.Explorer.DownloadBegin += new SHDocVw.DWebBrowserEvents2_DownloadBeginEventHandler(this.Explorer_DownloadBegin);
-            this.fExplrEventsAttached = true;
         }
 
         protected override void OnPaintBackground(PaintEventArgs e) {
@@ -6274,7 +5749,9 @@ namespace QTTabBarLib {
             if(QTUtility.CheckConfig(Settings.RebarImage)) {
                 this.CreateRebarImage();
             }
-            this.CustomizeSysListView();
+            
+            listViewWrapper.Initialize();
+
             this.tabControl1.ResumeLayout();
             base.ResumeLayout(true);
         }
@@ -6508,304 +5985,6 @@ namespace QTTabBarLib {
             }
         }
 
-        private bool shellViewController_MessageCaptured(ref System.Windows.Forms.Message msg) {
-            IntPtr ptr;
-            switch(msg.Msg) {
-                // The ShellView is destroyed and recreated when Explorer is refreshed.
-                case WM.DESTROY: 
-                    this.HandleF5();
-                    break;
-                   
-                case WM.MOUSEACTIVATE:
-                    if(((this.subDirTip != null) && this.subDirTip.MenuIsShowing) || ((this.subDirTip_Tab != null) && this.subDirTip_Tab.MenuIsShowing)) {
-                        IntPtr optionalHandle = this.shellViewController.OptionalHandle;
-                        if(1 == ((int)PInvoke.SendMessage(optionalHandle, 0x1032, IntPtr.Zero, IntPtr.Zero))) {
-                            RECT rect2;
-                            Point mousePosition = Control.MousePosition;
-                            PInvoke.GetWindowRect(optionalHandle, out rect2);
-                            mousePosition.X -= rect2.left;
-                            mousePosition.Y -= rect2.top;
-                            int num11 = PInvoke.ListView_HitTest(optionalHandle, QTUtility2.Make_LPARAM(mousePosition.X, mousePosition.Y));
-                            if(2L == ((int)PInvoke.SendMessage(optionalHandle, 0x102c, (IntPtr)num11, (IntPtr)2L))) {
-                                msg.Result = (IntPtr)2;
-                                if(this.subDirTip != null) {
-                                    this.subDirTip.HideMenu();
-                                }
-                                this.HideSubDirTip_Tab_Menu();
-                                PInvoke.SetFocus(optionalHandle);
-                                return true;
-                            }
-                        }
-                    }
-                    break;
-
-                case WM.ENTERMENULOOP:
-                    this.fEnteredMenuLoop = true;
-                    break;
-
-                case WM.EXITMENULOOP:
-                    this.fEnteredMenuLoop = false;
-                    break;
-            }
-
-            if(msg.Msg != WM.NOTIFY) {
-                return false;
-            }
-
-            NMHDR nmhdr = (NMHDR)Marshal.PtrToStructure(msg.LParam, typeof(NMHDR));
-            if(nmhdr.hwndFrom != this.shellViewController.OptionalHandle) {
-                if(((nmhdr.code == -12) && (nmhdr.idFrom == IntPtr.Zero)) && this.fTrackMouseEvent) {
-                    this.fTrackMouseEvent = false;
-                    TRACKMOUSEEVENT structure = new TRACKMOUSEEVENT();
-                    structure.cbSize = Marshal.SizeOf(structure);
-                    structure.dwFlags = 2;
-                    structure.hwndTrack = this.shellViewController.OptionalHandle;
-                    PInvoke.TrackMouseEvent(ref structure);
-                }
-                return false;
-            }
-
-            // Process WM.NOTIFY.  These are all notifications from the 
-            // SysListView32 control.  We will not get ANY of these on 
-            // Windows 7, which means every single one of them has to 
-            // have an alternative somewhere for the non-SysListView32,
-            // or it's not going to happen.
-            switch(nmhdr.code) {
-                case -12: // NM_CUSTOMDRAW
-                    // This is for drawing alternating row colors.  I doubt
-                    // very much we'll find an alternative for this...
-                    return this.HandleLVCUSTOMDRAW(ref msg, this.shellViewController.OptionalHandle);
-
-                case LVN.ITEMCHANGED: {
-                    // There are three things happening here.
-                    // 1. Notify plugins of selection changing: TODO
-                    // 2. Redraw for Full Row Select: Not happening
-                    // 3. Set new item DropHilighted: Handled in the ListView
-                    //    Controller.
-                        if(QTUtility.instanceManager.TryGetButtonBarHandle(this.ExplorerHandle, out ptr)) {
-                            int num4 = (int)PInvoke.SendMessage(this.hwndSysListView32, 0x1004, IntPtr.Zero, IntPtr.Zero);
-                            QTUtility2.SendCOPYDATASTRUCT(ptr, (IntPtr)13, null, (IntPtr)num4);
-                        }
-                        bool flag = (this.pluginManager != null) && this.pluginManager.SelectionChangeAttached;
-                        bool flag2 = QTUtility.IsVista && QTUtility.CheckConfig(Settings.NoFullRowSelect);
-                        bool flag3 = !QTUtility.CheckConfig(Settings.NoShowSubDirTips);
-                        if((flag || flag2) || flag3) {
-                            NMLISTVIEW nmlistview2 = (NMLISTVIEW)Marshal.PtrToStructure(msg.LParam, typeof(NMLISTVIEW));
-                            if(nmlistview2.uChanged == 8) {
-                                uint num5 = nmlistview2.uNewState & 2;
-                                uint num6 = nmlistview2.uOldState & 2;
-                                uint num7 = nmlistview2.uNewState & 8;
-                                uint num8 = nmlistview2.uOldState & 8;
-                                uint num9 = nmlistview2.uNewState & 4;
-                                uint num10 = nmlistview2.uOldState & 4;
-                                if((flag3 && (nmlistview2.iItem != this.itemIndexDROPHILITED)) && (num8 != num7)) {
-                                    if(num7 == 0) {
-                                        this.HandleDROPHILITED(-1, IntPtr.Zero);
-                                    }
-                                    else {
-                                        this.HandleDROPHILITED(nmlistview2.iItem, nmhdr.hwndFrom);
-                                    }
-                                }
-                                if(((flag2 && (nmlistview2.iItem != -1)) && (((num5 != num6) || (num7 != num8)) || (num9 != num10))) && (1 == ((int)PInvoke.SendMessage(nmlistview2.hdr.hwndFrom, 0x108f, IntPtr.Zero, IntPtr.Zero)))) {
-                                    PInvoke.SendMessage(nmlistview2.hdr.hwndFrom, 0x1015, (IntPtr)nmlistview2.iItem, (IntPtr)nmlistview2.iItem);
-                                }
-                                if((num5 != num6) && flag) {
-                                    if(this.timerSelectionChanged == null) {
-                                        this.timerSelectionChanged = new System.Windows.Forms.Timer(this.components);
-                                        this.timerSelectionChanged.Interval = 250;
-                                        this.timerSelectionChanged.Tick += new EventHandler(this.timerSelectionChanged_Tick);
-                                    }
-                                    else {
-                                        this.timerSelectionChanged.Enabled = false;
-                                    }
-                                    this.timerSelectionChanged.Enabled = true;
-                                }
-                            }
-                        }
-                        break;
-                    }
-
-                case LVN.INSERTITEM: // Shouldn't this be the same as DELETEITEM?
-                    break;           // TODO: Investigate
-                
-                case LVN.DELETEITEM:
-                    if(QTUtility.instanceManager.TryGetButtonBarHandle(this.ExplorerHandle, out ptr)) {
-                        QTUtility2.SendCOPYDATASTRUCT(ptr, (IntPtr)14, null, IntPtr.Zero);
-                    }
-                    if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
-                        this.HideSubDirTip(1);
-                    }
-                    if(QTUtility.CheckConfig(Settings.AlternateRowColors) && (1 == ((int)PInvoke.SendMessage(nmhdr.hwndFrom, 0x108f, IntPtr.Zero, IntPtr.Zero)))) {
-                        PInvoke.InvalidateRect(nmhdr.hwndFrom, IntPtr.Zero, true);
-                    }
-                    break;
-
-                case LVN.DELETEALLITEMS:
-                    // No idea for this one.
-                    // TODO: Figure out how important this is.
-                    this.HandleF5();
-                    break;
-
-                case LVN.BEGINDRAG:
-                    // This won't be necessary it seems.  On Windows 7, when you
-                    // start to drag, a MOUSELEAVE message is sent, which hides
-                    // the SubDirTip anyway.
-                    this.shellViewController.DefWndProc(ref msg);
-                    this.HideSubDirTip(0xff);
-                    break;
-
-                case LVN.ITEMACTIVATE:
-                    // Ugh...
-                    if(this.timerSelectionChanged != null) {
-                        this.timerSelectionChanged.Enabled = false;
-                    }
-                    return this.HandleITEMACTIVATE(msg.LParam, this.shellViewController.OptionalHandle);
-
-                case LVN.ODSTATECHANGED:
-                    // FullRowSelect doesn't look possible anyway, so whatever.
-                    if(QTUtility.IsVista && QTUtility.CheckConfig(Settings.NoFullRowSelect)) {
-                        NMLVODSTATECHANGE nmlvodstatechange = (NMLVODSTATECHANGE)Marshal.PtrToStructure(msg.LParam, typeof(NMLVODSTATECHANGE));
-                        if(((nmlvodstatechange.uNewState & 2) == 2) && (1 == ((int)PInvoke.SendMessage(nmlvodstatechange.hdr.hwndFrom, LVM.GETVIEW, IntPtr.Zero, IntPtr.Zero)))) {
-                            PInvoke.SendMessage(nmlvodstatechange.hdr.hwndFrom, LVM.REDRAWITEMS, (IntPtr)nmlvodstatechange.iFrom, (IntPtr)nmlvodstatechange.iTo);
-                        }
-                    }
-                    break;
-
-                case LVN.HOTTRACK:
-                    // This will be handled through WM_MOUSEMOVE.
-                    if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews) || !QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
-                        NMLISTVIEW nmlistview = (NMLISTVIEW)Marshal.PtrToStructure(msg.LParam, typeof(NMLISTVIEW));
-                        HandleLVHOTTRACK(nmhdr.hwndFrom, true, nmlistview.iItem, nmlistview.iSubItem);
-                    }
-                    break;
-
-                case LVN.KEYDOWN: {
-                        // This will be handled through WM_KEYDOWN.
-                        if((!QTUtility.CheckConfig(Settings.ShowTooltipPreviews) && QTUtility.CheckConfig(Settings.NoShowSubDirTips)) && !QTUtility.CheckConfig(Settings.CursorLoop)) {
-                            return false;
-                        }
-                        NMLVKEYDOWN nmlvkeydown = (NMLVKEYDOWN)Marshal.PtrToStructure(msg.LParam, typeof(NMLVKEYDOWN));
-                        int wVKey = nmlvkeydown.wVKey;
-                        if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews)) {
-                            if(QTUtility.CheckConfig(Settings.PreviewsWithShift)) {
-                                if(wVKey != 0x10) {
-                                    this.HideThumbnailTooltip(2);
-                                }
-                            }
-                            else {
-                                this.HideThumbnailTooltip(2);
-                            }
-                        }
-                        if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
-                            if(QTUtility.CheckConfig(Settings.SubDirTipsWithShift)) {
-                                if(wVKey != 0x10) {
-                                    this.HideSubDirTip(3);
-                                }
-                            }
-                            else if(wVKey != 0x11) {
-                                this.HideSubDirTip(3);
-                            }
-                        }
-                        if(((!QTUtility.CheckConfig(Settings.CursorLoop) || (0x25 > wVKey)) || ((wVKey > 40) || (Control.ModifierKeys != Keys.None))) || !this.HandleLVKEYDOWN_CursorLoop(wVKey)) {
-                            return false;
-                        }
-                        msg.Result = (IntPtr)1;
-                        return true;
-                    }
-
-                case LVN.GETINFOTIP:
-                    if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews) && (!QTUtility.CheckConfig(Settings.PreviewsWithShift) ^ (Control.ModifierKeys == Keys.Shift))) {
-                        NMLVGETINFOTIP nmlvgetinfotip = (NMLVGETINFOTIP)Marshal.PtrToStructure(msg.LParam, typeof(NMLVGETINFOTIP));
-                        if(((this.thumbnailTooltip != null) && this.thumbnailTooltip.IsShowing) && (nmlvgetinfotip.iItem == this.thumbnailIndex)) {
-                            return true;
-                        }
-                        if((this.timer_HoverThumbnail != null) && this.timer_HoverThumbnail.Enabled) {
-                            return true;
-                        }
-                        RECT lprc = GetLVITEMRECT(nmhdr.hwndFrom, nmlvgetinfotip.iItem, false, 0);
-                        Point pnt = Control.MousePosition;
-                        if(PInvoke.PtInRect(ref lprc, new BandObjectLib.POINT(pnt))) {
-                            return this.ShowThumbnailTooltip(nmlvgetinfotip.iItem, pnt, false);
-                        }
-                        return this.ShowThumbnailTooltip(nmlvgetinfotip.iItem, new Point(lprc.right - 0x20, lprc.bottom - 0x10), true);
-                    }
-                    break;
-
-                case LVN.BEGINLABELEDIT:
-                    // This is just for file renaming, which there's no need to
-                    // mess with in Windows 7.
-                    if(QTUtility.IsVista || QTUtility.CheckConfig(Settings.ExtWhileRenaming)) {
-                        return false;
-                    }
-                    this.shellViewController.DefWndProc(ref msg);
-                    if(msg.Result == IntPtr.Zero) {
-                        NMLVDISPINFO nmlvdispinfo = (NMLVDISPINFO)Marshal.PtrToStructure(msg.LParam, typeof(NMLVDISPINFO));
-                        IntPtr ptr2 = ShellMethods.ShellGetPath(this.ShellBrowser);
-                        if((ptr2 != IntPtr.Zero) && (nmlvdispinfo.item.lParam != IntPtr.Zero)) {
-                            IntPtr ptr3 = PInvoke.ILCombine(ptr2, nmlvdispinfo.item.lParam);
-                            HandleRenaming(nmhdr.hwndFrom, ptr3, this);
-                            PInvoke.CoTaskMemFree(ptr2);
-                            PInvoke.CoTaskMemFree(ptr3);
-                        }
-                    }
-                    break;
-
-                case LVN.ENDLABELEDIT: {
-                        NMLVDISPINFO nmlvdispinfo2 = (NMLVDISPINFO)Marshal.PtrToStructure(msg.LParam, typeof(NMLVDISPINFO));
-                        if(!(nmlvdispinfo2.item.pszText != IntPtr.Zero)) {
-                            return false;
-                        }
-                        IShellView ppshv = null;
-                        IntPtr zero = IntPtr.Zero;
-                        IntPtr ptr5 = IntPtr.Zero;
-                        IntPtr pIDL = IntPtr.Zero;
-                        try {
-                            if(this.ShellBrowser.QueryActiveShellView(out ppshv) == 0) {
-                                IFolderView view2 = (IFolderView)ppshv;
-                                if(view2.Item(nmlvdispinfo2.item.iItem, out zero) == 0) {
-                                    ptr5 = ShellMethods.ShellGetPath(this.ShellBrowser);
-                                    pIDL = PInvoke.ILCombine(ptr5, zero);
-                                    string displayName = ShellMethods.GetDisplayName(pIDL, true);
-                                    string str2 = Marshal.PtrToStringUni(nmlvdispinfo2.item.pszText);
-                                    if(displayName != str2) {
-                                        this.HandleF5();
-                                    }
-                                }
-                            }
-                        }
-                        catch {
-                        }
-                        finally {
-                            if(ppshv != null) {
-                                Marshal.ReleaseComObject(ppshv);
-                            }
-                            if(zero != IntPtr.Zero) {
-                                PInvoke.CoTaskMemFree(zero);
-                            }
-                            if(ptr5 != IntPtr.Zero) {
-                                PInvoke.CoTaskMemFree(ptr5);
-                            }
-                            if(pIDL != IntPtr.Zero) {
-                                PInvoke.CoTaskMemFree(pIDL);
-                            }
-                        }
-                        break;
-                    }
-
-                case LVN.BEGINSCROLL:
-                    // This we can handle by intercepting SBM_SETSCROLLINFO
-                    // when it's sent to the scrollbars.
-                    if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews)) {
-                        this.HideThumbnailTooltip(8);
-                    }
-                    if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
-                        this.HideSubDirTip(8);
-                    }
-                    break;
-            }
-            return false;
-        }
-
         protected override bool ShouldHaveBreak() {
             bool breakBar = true;
             using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
@@ -6838,21 +6017,11 @@ namespace QTTabBarLib {
                         this.subDirTip.MenuItemRightClicked += new ItemRightClickedEventHandler(this.subDirTip_MenuItemRightClicked);
                         this.subDirTip.MultipleMenuItemsRightClicked += new ItemRightClickedEventHandler(this.subDirTip_MultipleMenuItemsRightClicked);
                     }
-                    // TODO: This needs to be replaced with its COM equivalent
-                    IntPtr hWnd = this.GetExplorerListView();
-                    int iItem = -1;
-                    if(hWnd != IntPtr.Zero) {
-                        int num2 = (int)PInvoke.SendMessage(hWnd, LVM.GETITEMCOUNT, IntPtr.Zero, IntPtr.Zero);
-                        for(int i = 0; i < num2; i++) {
-                            if(2 == ((int)PInvoke.SendMessage(hWnd, LVM.GETITEMSTATE, (IntPtr)i, (IntPtr)2))) {
-                                iItem = i;
-                                break;
-                            }
-                        }
-                        if(iItem != -1) {
-                            this.ShowSubDirTip(iItem, hWnd, false, true); // TODO
-                            this.subDirTip.PerformClickByKey();
-                        }
+
+                    int iItem = listViewWrapper.GetFocusedItem();
+                    if(iItem != -1) {
+                        this.ShowSubDirTip(iItem, false);
+                        this.subDirTip.PerformClickByKey();
                     }
                 }
             }
@@ -6930,25 +6099,31 @@ namespace QTTabBarLib {
             object pvarSize = null;
             base.Explorer.ShowBrowserBar(ref pvaClsid, ref pvarShow, ref pvarSize);
         }
-        private FOLDERSETTINGS GetCurrentFolderSettings() {
-            IShellView ppshv = null;
-            FOLDERSETTINGS lpfs = new FOLDERSETTINGS();
 
-            // lpfs.ViewMode = 1; ???
+        public ListViewWrapper GetListViewWrapper() {
+            return listViewWrapper;
+        }
+
+        public IntPtr GetShellViewHWND() {
+            IntPtr hwndShellView = IntPtr.Zero;
+            IShellView ppshv = null;
             try {
                 if(this.ShellBrowser.QueryActiveShellView(out ppshv) == 0) {
-                    ppshv.GetCurrentInfo(ref lpfs);
+                    ppshv.GetWindow(out hwndShellView);
                 }
+            }
+            catch(Exception exception) {
+                QTUtility2.MakeErrorLog(exception, null);
             }
             finally {
                 if(ppshv != null) {
                     Marshal.ReleaseComObject(ppshv);
                 }
             }
-            return lpfs;
+            return hwndShellView;
         }
 
-        private bool ShowSubDirTip(int iItem, IntPtr hwndListView, bool fSkipForegroundCheck, bool isSysListView) {
+        private bool ShowSubDirTip(int iItem, bool fSkipForegroundCheck) {
             string str;
             if((fSkipForegroundCheck || (this.ExplorerHandle == PInvoke.GetForegroundWindow())) && this.TryGetHotTrackPath(iItem, out str)) {
                 bool flag = false;
@@ -6956,15 +6131,7 @@ namespace QTTabBarLib {
                     if(!TryMakeSubDirTipPath(ref str)) {
                         return false;
                     }
-                    Point pnt;
-                    if(isSysListView) {
-                        FOLDERSETTINGS lpfs = GetCurrentFolderSettings();
-                        RECT rect = GetLVITEMRECT(hwndListView, iItem, true, lpfs.ViewMode);
-                        pnt = new Point(rect.right - 16, rect.bottom - 16);
-                    }
-                    else {
-                        pnt = nextSubDirPt;
-                    }
+                    Point pnt = listViewWrapper.GetSubDirTipPoint(iItem);
 
                     if(this.subDirTip == null) {
                         this.subDirTip = new SubDirTipForm(base.Handle, this.ExplorerHandle, true);
@@ -6973,7 +6140,7 @@ namespace QTTabBarLib {
                         this.subDirTip.MenuItemRightClicked += new ItemRightClickedEventHandler(this.subDirTip_MenuItemRightClicked);
                         this.subDirTip.MultipleMenuItemsRightClicked += new ItemRightClickedEventHandler(this.subDirTip_MultipleMenuItemsRightClicked);
                     }
-                    this.subDirTip.ShowSubDirTip(str, null, pnt, hwndListView);
+                    this.subDirTip.ShowSubDirTip(str, null, pnt, listViewWrapper);
                     flag = true;
                 }
                 catch {
@@ -7648,7 +6815,7 @@ namespace QTTabBarLib {
                     this.pluginManager.OnTabChanged(this.tabControl1.SelectedIndex, selectedTab.CurrentIDL, selectedTab.CurrentPath);
                 }
                 if(this.tabControl1.Focused) {
-                    this.FocusListView();
+                    listViewWrapper.SetFocus();
                 }
             }
             else {
@@ -7685,7 +6852,7 @@ namespace QTTabBarLib {
                     }
                 }
                 if(this.tabControl1.Focused) {
-                    this.FocusListView();
+                    listViewWrapper.SetFocus();
                 }
                 if(this.pluginManager != null) {
                     this.pluginManager.OnTabChanged(this.tabControl1.SelectedIndex, this.CurrentTab.CurrentIDL, this.CurrentTab.CurrentPath);
@@ -7734,19 +6901,13 @@ namespace QTTabBarLib {
             this.timer_HoverSubDirTipMenu.Enabled = false;
             if(Control.MouseButtons != MouseButtons.None) {
                 //IntPtr tag = (IntPtr)this.timer_HoverSubDirTipMenu.Tag;
-                bool isSLV;
-                IntPtr hwnd = GetExplorerListView(out isSLV);
-                Point mousePosition = Control.MousePosition;
-                PInvoke.MapWindowPoints(IntPtr.Zero, hwnd, ref mousePosition, 1);
-                int idx = isSLV ?
-                    PInvoke.ListView_HitTest(hwnd, QTUtility2.Make_LPARAM(mousePosition.X, mousePosition.Y)) :
-                    DirectUIHitTest(hwnd, mousePosition, true);
                 
+                int idx = listViewWrapper.GetHotItem();
                 if(this.itemIndexDROPHILITED == idx) {
                     if(this.subDirTip != null) {
                         this.subDirTip.HideMenu();
                     }
-                    if(this.ShowSubDirTip(this.itemIndexDROPHILITED, hwnd, true, isSLV)) {
+                    if(this.ShowSubDirTip(this.itemIndexDROPHILITED, true)) {
                         WindowUtils.BringExplorerToFront(this.ExplorerHandle);
                         this.subDirTip.ShowMenu();
                         return;
@@ -7861,12 +7022,12 @@ namespace QTTabBarLib {
                         if(!flag && !this.tabControl1.SelectFocusedTab()) {
                             break;
                         }
-                        this.FocusListView();
+                        listViewWrapper.SetFocus();
                         return 0;
 
                     case Keys.Escape:
                         if(this.tabControl1.Focused && ((this.subDirTip_Tab == null) || !this.subDirTip_Tab.MenuIsShowing)) {
-                            this.FocusListView();
+                            listViewWrapper.SetFocus();
                         }
                         break;
 
@@ -8360,11 +7521,6 @@ namespace QTTabBarLib {
         protected override void WndProc(ref System.Windows.Forms.Message m) {
             bool flag;
             switch(m.Msg) {
-                case WM.APP:
-                    // This is called by HandleMOUSEWHEEL just to match the
-                    // handle.  Should work fine.
-                    m.Result = this.GetExplorerListView();
-                    return;
 
                 case WM.APP + 1:
                     this.NowModalDialogShown = m.WParam != IntPtr.Zero;
@@ -9002,7 +8158,7 @@ namespace QTTabBarLib {
                             return true;
 
                         case Commands.FocusFileList:
-                            PInvoke.SetFocus(this.tabBar.GetExplorerListView());
+                            this.tabBar.listViewWrapper.SetFocus();
                             return true;
 
                         case Commands.OpenTabBarOptionDialog:

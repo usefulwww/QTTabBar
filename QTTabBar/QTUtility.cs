@@ -51,7 +51,7 @@ namespace QTTabBarLib {
         RestoreLockedTabs   = 8 * 06 + 3, // 0x08,
         DontCaptureNewWnds  = 8 * 06 + 4, // 0x10,
         NoRecentFiles       = 8 * 06 + 5, // 0x20,
-        DblClickUpLevel     = 8 * 06 + 6, // 0x40,
+        NoDblClickUpLevel   = 8 * 06 + 6, // 0x40,
         MidClickNewWindow   = 8 * 06 + 7, // 0x80,
         BackspaceUpLevel    = 8 * 07 + 0, // 0x01,
         FolderIcon          = 8 * 07 + 1, // 0x02,
@@ -573,7 +573,7 @@ namespace QTTabBarLib {
             dictionary[8] = CheckConfig(Settings.DragDropOntoTabs);
             dictionary[9] = !CheckConfig(Settings.NoRenameAmbTabs);
             dictionary[10] = CheckConfig(Settings.MidClickNewWindow);
-            dictionary[11] = !CheckConfig(Settings.DblClickUpLevel);
+            dictionary[11] = !CheckConfig(Settings.NoDblClickUpLevel);
             dictionary[12] = CheckConfig(Settings.NoWindowResizing);
             dictionary[13] = CheckConfig(Settings.SaveTransparency);
             dictionary[14] = !CheckConfig(Settings.DontCaptureNewWnds);
@@ -1084,7 +1084,7 @@ namespace QTTabBarLib {
             SetConfigAt(Settings.DragDropOntoTabs, (bool)dictionary2[8]);
             SetConfigAt(Settings.NoRenameAmbTabs, !((bool)dictionary2[9]));
             SetConfigAt(Settings.MidClickNewWindow, (bool)dictionary2[10]);
-            SetConfigAt(Settings.DblClickUpLevel, !((bool)dictionary2[11]));
+            SetConfigAt(Settings.NoDblClickUpLevel, !((bool)dictionary2[11]));
             SetConfigAt(Settings.NoWindowResizing, (bool)dictionary2[12]);
             SetConfigAt(Settings.SaveTransparency, (bool)dictionary2[13]);
             SetConfigAt(Settings.DontCaptureNewWnds, !((bool)dictionary2[14]));

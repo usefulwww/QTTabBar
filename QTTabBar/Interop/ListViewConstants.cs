@@ -237,6 +237,48 @@ namespace QTTabBarLib.Interop {
         public const int ENDSCROLL              = FIRST - 81;
         public const int LINKCLICK              = FIRST - 84;
         public const int GETEMPTYMARKUP         = FIRST - 87;
-        
     };
+
+    class LVIS {
+        public const int FOCUSED            = 0x0001;
+        public const int SELECTED           = 0x0002;
+        public const int CUT                = 0x0004;
+        public const int DROPHILITED        = 0x0008;
+        public const int GLOW               = 0x0010;
+        public const int ACTIVATING         = 0x0020;
+        public const int OVERLAYMASK        = 0x0F00;
+        public const int STATEIMAGEMASK     = 0xF000;
+    }
+
+    class LVIR {
+        public const int BOUNDS         = 0;
+        public const int ICON           = 1;
+        public const int LABEL          = 2;
+        public const int SELECTBOUNDS   = 3;
+    }
+
+    class CDDS {
+        public const int PREPAINT       = 1;
+        public const int POSTPAINT      = 2;
+        public const int PREERASE       = 3;
+        public const int POSTERASE      = 4;
+        public const int ITEM           = 0x10000;
+        public const int ITEMPREPAINT   = (ITEM | PREPAINT);
+        public const int ITEMPOSTPAINT  = (ITEM | POSTPAINT);
+        public const int ITEMPREERASE   = (ITEM | PREERASE);
+        public const int ITEMPOSTERASE  = (ITEM | POSTERASE);
+        public const int SUBITEM        = 0x20000;
+    }
+
+    class CDRF {
+        public const int DODEFAULT          = 0x000;
+        public const int NEWFONT            = 0x002;
+        public const int SKIPDEFAULT        = 0x004;
+        public const int DOERASE            = 0x008;
+        public const int NOTIFYPOSTPAINT    = 0x010;
+        public const int NOTIFYITEMDRAW     = 0x020;
+        public const int NOTIFYSUBITEMDRAW  = 0x020;
+        public const int NOTIFYPOSTERASE    = 0x040;
+        public const int SKIPPOSTPAINT      = 0x100;
+    }
 }

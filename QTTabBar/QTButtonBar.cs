@@ -1317,7 +1317,7 @@ namespace QTTabBarLib {
             else if(e.KeyChar == '\x001b') {
                 QTTabBarClass tabBar = QTUtility.instanceManager.GetTabBar(this.ExplorerHandle);
                 if(tabBar != null) {
-                    QTTabBarLib.Interop.PInvoke.SetFocus(tabBar.GetExplorerListView());
+                    tabBar.GetListViewWrapper().SetFocus();
                     e.Handled = true;
                 }
             }
@@ -1377,8 +1377,8 @@ namespace QTTabBarLib {
                         return false;
                     }
                     view2.ItemCount(2, out num);
-                    IntPtr hwnd = QTUtility.instanceManager.GetTabBar(this.ExplorerHandle).GetExplorerListView();
-                    QTTabBarLib.Interop.PInvoke.SetRedraw(hwnd, false);
+                    ListViewWrapper lvw = QTUtility.instanceManager.GetTabBar(this.ExplorerHandle).GetListViewWrapper();
+                    lvw.SetRedraw(false);
                     try {
                         Regex regex;
                         int num2;
@@ -1443,7 +1443,7 @@ namespace QTTabBarLib {
                         view2.ItemCount(2, out this.iSearchResultCount);
                     }
                     finally {
-                        QTTabBarLib.Interop.PInvoke.SetRedraw(hwnd, true);
+                        lvw.SetRedraw(true);
                     }
                     this.ShellBrowser.SetStatusTextSB(string.Concat(new object[] { this.iSearchResultCount, " / ", this.iSearchResultCount + this.lstPUITEMIDCHILD.Count, QTUtility.TextResourcesDic["ButtonBar_Misc"][5] }));
                 }
