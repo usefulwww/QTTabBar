@@ -4185,10 +4185,10 @@ namespace QTTabBarLib {
                         if(timer_HoverSubDirTipMenu != null) {
                             timer_HoverSubDirTipMenu.Enabled = false;
                         }
-                        if(subDirTip != null) {
-                            subDirTip.HideMenu();
-                            HideSubDirTip(10);
-                        }
+                        //if(subDirTip != null) {
+                        //    subDirTip.HideMenu();
+                        //    HideSubDirTip(10);
+                        //}
                         itemIndexDROPHILITED = -1;
                     }
                     else {

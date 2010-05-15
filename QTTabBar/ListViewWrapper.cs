@@ -122,7 +122,7 @@ namespace QTTabBarLib {
                 hwndEnumResult = hwnd;
                 return false;
             }
-            else if(name == "DirectUIHWND") {
+            else if(QTUtility.IsVista && name == "DirectUIHWND") {
                 fIsSysListView = false;
                 hwndEnumResult = hwnd;
                 return false;
@@ -213,25 +213,23 @@ namespace QTTabBarLib {
 
         public Rectangle GetFocusedItemRect() {
             if(HasFocus()) {
-                AutomationElement elem = AutomationElement.FromKeyboardFocus();
-                if(elem != null) {
-                    return elem.GetBoundingRect();
+                if(fIsSysListView) {
+                    int i = GetFocusedItem();
+                    int fvm = GetCurrentViewMode();
+                    return GetLVITEMRECT(ListViewController.Handle, i, false, fvm).ToRectangle();
+                }
+                else {
+                    AutomationElement elem = AutomationElement.FromKeyboardFocus();
+                    if(elem != null) {
+                        return elem.GetBoundingRect();
+                    }
                 }
             }
             return new Rectangle(0, 0, 0, 0);
         }
 
         public int GetHotItem() {
-            if(ListViewController == null) {
-                return -1;
-            }
-            else if(fIsSysListView) {
-                // TODO test this
-                return (int)PInvoke.SendMessage(ListViewController.Handle, LVM.GETHOTITEM, IntPtr.Zero, IntPtr.Zero);
-            }
-            else {
-                return HitTest(Control.MousePosition, true);
-            }
+            return HitTest(Control.MousePosition, true);
         }
 
         public int GetItemCount() {
@@ -651,7 +649,7 @@ namespace QTTabBarLib {
 
         public int HitTest(Point pt, bool ScreenCoords) {
             if(ListViewController == null) {
-                return 0;
+                return -1;
             }
             else if(fIsSysListView) {
                 if(ScreenCoords) {
@@ -793,7 +791,6 @@ namespace QTTabBarLib {
 
                 case WM.MOUSEMOVE:
                     if(HotTrack != null) {
-                        ;
                         return HotTrack(HitTest(msg.LParam));
                     }
                     break;
