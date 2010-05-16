@@ -107,7 +107,7 @@ namespace QTTabBarLib {
                         }
                         writer.WriteLine(DateTime.Now.ToString());
                         writer.WriteLine("OS ver: " + Environment.OSVersion.Version.ToString());
-                        writer.WriteLine("QT ver: " + QTUtility.CurrentVersion.ToString() + "(" + QTUtility.BetaRevision.ToString() + ")");
+                        writer.WriteLine("QT ver: " + QTUtility2.MakeVersionString());
                         writer.WriteLine((ex == null) ? "Exception : N/A" : ex.ToString());
                         if(!string.IsNullOrEmpty(optional)) {
                             writer.WriteLine("Optional information : " + optional);
@@ -222,7 +222,10 @@ namespace QTTabBarLib {
         public static string MakeVersionString() {
             string str = QTUtility.CurrentVersion.ToString();
             if(QTUtility.BetaRevision.Major > 0) {
-                str = str + " Beta" + QTUtility.BetaRevision.Major;
+                str = str + " Beta " + QTUtility.BetaRevision.Major;
+            }
+            else if(QTUtility.BetaRevision.Minor > 0) {
+                str = str + " Alpha " + QTUtility.BetaRevision.Minor;
             }
             return str;
         }

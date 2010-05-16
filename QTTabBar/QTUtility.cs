@@ -113,12 +113,12 @@ namespace QTTabBarLib {
 
     internal static class QTUtility {
         internal static string Action_BarDblClick;
-        internal static Version BetaRevision = new Version(0, 0);
+        internal static Version BetaRevision = new Version(0, 1);
         internal static PathList ClosedTabHistoryList = new PathList(0x10);
         internal static byte[] ConfigValues;
         internal static string CreateWindowTMPGroup = string.Empty;
         internal static string CreateWindowTMPPath = string.Empty;
-        internal static Version CurrentVersion = new Version(1, 3, 0, 1);
+        internal static Version CurrentVersion = new Version(1, 5, 0, 0);
         internal static int DefaultRebarCOLORREF = -1;
         internal static Dictionary<string, int> dicGroupNamesAndKeys = new Dictionary<string, int>();
         internal static Dictionary<int, string> dicGroupShortcutKeys = new Dictionary<int, string>();
