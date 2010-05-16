@@ -377,7 +377,7 @@ namespace QTTabBarLib {
                 return Resources_Image.icoEmpty;
             }
             if(path.Length == 0) {
-                if((IntPtr.Zero != PInvoke.SHGetFileInfo(string.Empty, 0x10, ref psfi, Marshal.SizeOf(psfi), 0x111)) && (psfi.hIcon != IntPtr.Zero)) {
+                if((IntPtr.Zero != PInvoke.SHGetFileInfo("dummy", 0x10, ref psfi, Marshal.SizeOf(psfi), 0x111)) && (psfi.hIcon != IntPtr.Zero)) {
                     icon = new Icon(Icon.FromHandle(psfi.hIcon), 0x10, 0x10);
                     PInvoke.DestroyIcon(psfi.hIcon);
                     return icon;
