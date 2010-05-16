@@ -25,7 +25,7 @@ namespace QTTabBarLib {
     using System.Runtime.InteropServices;
     using System.Text;
     using System.Windows.Forms;
-
+    
     public class ListViewWrapper {
         private IntPtr ExplorerHandle;
         private IntPtr ShellContainer;
@@ -38,6 +38,7 @@ namespace QTTabBarLib {
         private Point lastDragPoint;
         private Point lastLButtonPoint;
         private Int64 lastLButtonTime;
+        private Point lastMouseMovePoint;
         private int iListViewItemState;
         private List<int> lstColumnFMT;
         private bool fListViewHasFocus;
@@ -804,7 +805,11 @@ namespace QTTabBarLib {
 
                 case WM.MOUSEMOVE:
                     if(HotTrack != null) {
-                        return HotTrack(HitTest(msg.LParam));
+                        Point pt = new Point(QTUtility2.GET_X_LPARAM(msg.LParam), QTUtility2.GET_Y_LPARAM(msg.LParam));
+                        if(pt != lastMouseMovePoint) {
+                            lastMouseMovePoint = pt;
+                            return HotTrack(HitTest(pt, false));
+                        }
                     }
                     break;
 
@@ -826,7 +831,24 @@ namespace QTTabBarLib {
                         return DropHilighted(HitTest(pt, false));
                     }
                     break;
-
+                
+                case WM.NOTIFY:
+                    if(GetInfoTip != null) {
+                        NMHDR nmhdr = (NMHDR)Marshal.PtrToStructure(msg.LParam, typeof(NMHDR));
+                        if(nmhdr.code == -530 /* TTN_NEEDTEXT */) {
+                            NMTTDISPINFO dispinfo = (NMTTDISPINFO)Marshal.PtrToStructure(msg.LParam, typeof(NMTTDISPINFO));
+                            if((dispinfo.uFlags & 0x20 /* TTF_TRACK */) != 0) {
+                                return GetInfoTip(GetFocusedItem(), true);
+                            }
+                            else {
+                                int i = GetHotItem();
+                                if(i != -1 && IsTrackingItemName()) {
+                                    return GetInfoTip(i, false);    
+                                }
+                            }
+                        }
+                    }
+                    break;
             }
             return false;
         }
