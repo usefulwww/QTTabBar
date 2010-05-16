@@ -67,7 +67,7 @@ namespace QTTabBarLib {
         internal event SVMouseActivateHandler SVMouseActivate;    // OK
         internal event ItemInsertedHandler ItemInserted;          // TODO
         internal event ItemDeletedHandler ItemDeleted;            // TODO
-        internal event ItemActivatedHandler ItemActivated;        // TODO
+        internal event ItemActivatedHandler ItemActivated;        // OK
         internal event AllItemsDeletedHandler AllItemsDeleted;    // SysListView Only
         internal event SelectionChangedHandler SelectionChanged;  // TODO
         internal event BeginDragHandler BeginDrag;                // OK
@@ -770,7 +770,7 @@ namespace QTTabBarLib {
                     // class style, which means we won't be receiving the
                     // WM.LBUTTONDBLCLK message.  We'll just have to make do
                     // without...
-                    if(DoubleClick != null) {
+                    if(DoubleClick != null || ItemActivated != null) {
                         Int64 now = DateTime.Now.Ticks;
                         Point pt = new Point(
                             QTUtility2.GET_X_LPARAM(msg.LParam),
@@ -780,7 +780,20 @@ namespace QTTabBarLib {
                             if(Math.Abs(pt.X - lastLButtonPoint.X) <= size.Width) {
                                 if(Math.Abs(pt.Y - lastLButtonPoint.Y) <= size.Height) {
                                     lastLButtonTime = 0;
-                                    return DoubleClick(pt);
+                                    if(DoubleClick != null && DoubleClick(pt)) {
+                                        return true;
+                                    }
+                                    if(ItemActivated != null) {
+                                        if(HitTest(pt, false) > -1) {
+                                            // Explorer includes an option to make
+                                            // single-clicking activate items.
+                                            // TODO: Support that.
+                                            if(ItemActivated(Control.ModifierKeys)) {
+                                                return true;
+                                            }
+                                        }
+                                    }
+                                    return false;
                                 }
                             }
                         }
@@ -796,7 +809,10 @@ namespace QTTabBarLib {
                     break;
 
                 case WM.KEYDOWN:
-                    if(KeyDown != null) return KeyDown((Keys)msg.WParam);
+                    if(KeyDown != null && KeyDown((Keys)msg.WParam)) return true;
+                    if((Keys)msg.WParam == Keys.Enter && ItemActivated != null) {
+                        return ItemActivated(Control.ModifierKeys);
+                    }
                     break;
 
 
