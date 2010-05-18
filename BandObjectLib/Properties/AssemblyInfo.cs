@@ -23,15 +23,14 @@ using System.Runtime.CompilerServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly: AssemblyTitle("QTTabBar")]
-[assembly: AssemblyDescription("Main QTTabBar Assembly")]
+[assembly: AssemblyTitle("BandObjectLib")]
+[assembly: AssemblyDescription("C# BandObject library")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Quizo and Paul Accisano")]
+[assembly: AssemblyCompany("Pavel Zolnikov, Quizo, Paul Accisano")]
 [assembly: AssemblyProduct("QTTabBar")]
 [assembly: AssemblyCopyright("Copyright (C)  2007-2010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-
 //
 // Version information for an assembly consists of the following four values:
 //

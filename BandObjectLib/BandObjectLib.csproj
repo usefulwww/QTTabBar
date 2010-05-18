@@ -126,6 +126,7 @@
     <Compile Include="Interop\RBBS.cs" />
     <Compile Include="Interop\REBARBANDINFO.cs" />
     <Compile Include="Interop\_IServiceProvider.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">

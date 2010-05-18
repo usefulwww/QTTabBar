@@ -25,9 +25,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("QTPluginLib")]
 [assembly: AssemblyDescription("Plugin library for QTTabBar")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Quizo")]
+[assembly: AssemblyCompany("Quizo and Paul Accisano")]
 [assembly: AssemblyProduct("QTTabBar")]
-[assembly: AssemblyCopyright("Copyright (C)  2007")]
+[assembly: AssemblyCopyright("Copyright (C)  2007-2010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
