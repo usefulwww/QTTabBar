@@ -53,7 +53,7 @@ namespace QTTabBarLib {
             HttpStatusCode statusCode;
             msg = null;
             string str = null;
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Resources_String.SiteURL + "local--files/notifylatest/latestversion.txt");
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Resources_String.SiteURL + "/files/latestversion.txt");
             request.Timeout = 0x1388;
             try {
                 using(HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
@@ -93,7 +93,12 @@ namespace QTTabBarLib {
                             if((version2 <= QTUtility.CurrentVersion) && (!(version2 == QTUtility.CurrentVersion) || (version3 <= QTUtility.BetaRevision))) {
                                 goto Label_01AB;
                             }
-                            msg = strArray[1] + " Beta" + version3.Major;
+                            if(version3.Major == 0) {
+                                msg = strArray[1] + " Alpha " + version3.Minor;
+                            }
+                            else {
+                                msg = strArray[1] + " Beta " + version3.Major;
+                            }
                             num = 1;
                         }
                         catch {

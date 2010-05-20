@@ -140,7 +140,7 @@ Do you want to reassign?;Confirmation of reassignment</value>
     <value>Activate new tab;Reuse existing tab;Close all tabs when group opened;Show tooltips;Capture mouse X1/X2 buttons;Show navigation buttons;Tab history;Recent files;Use file Drag &amp;&amp; Drop onto tabs;Language file:;New tab location:;After current tab closed, activate:;When tab double-clicked:;When background double-clicked:;Path/Group name:;Multiple rows of tab;Rename ambiguous tabs automatically;When mouse wheel clicked on folder:;Up one level when dbl clicked on folder margin;No window resizing;Save window transparency;Capture new Explorer processes;Show folder tree when new process captured;Do not capture window as a new tab when opened from outside;Horizontal scroll with Shift + Wheel;Change view mode with Ctrl + Wheel (XP);Prevent window closing when tabs exist;Prevent window closing when tabs locked;Restore tabs;Restore locked tabs;Use tab image;Highlight color;Tab size:;Width;Height;Max;Min;Font;Bold active tab title;Tab title color;Active;Inactive;Default;Toolbar background color;Folder icon;Path;Arguments;Working directory;Plugin language file:;Hide menu bar;XP-compatibile BS key(Vista);Full row selection in details view;Grid lines for details view;Alternate row color in details view;Show preview tooltip;with Shift key down;Enable 'Sub folder tip';Show hidden objects;Show files;Eliminate file extension from selection when renaming(XP);Show system objects;Send window to Task Tray by clicking Close button;Max Width;Max Height;Toolbar background image;Change selection by F2 when renaming files;Show close button on tabs;When tab wheel-clicked:;Enable 'Sub folder tip' on Tabs;Open new window at...;With Alt key down;On mouse hover;Export settings...;Cursor loop;Network max timeout (seconds, 0 for system value);Send window to Task Tray on minimized;Text alignment;Menu renderer</value>
   </data>
   <data name="SiteURL" xml:space="preserve">
-    <value>https://sourceforge.net/projects/qttabbar</value>
+    <value>http://qttabbar.sourceforge.net</value>
   </data>
   <data name="PayPalURL" xml:space="preserve">
     <value>https://sourceforge.net/donate/index.php?group_id=312930</value>
@@ -249,6 +249,6 @@ Are you sure you want to do this?;Display file information below images</value>
 
 {0}
 
-Press OK to go to the web site.;Your version of QTTabBar is up to date.;New Beta version found : </value>
+Press OK to go to the web site.;Your version of QTTabBar is up to date.;New development version found: </value>
   </data>
 </root>

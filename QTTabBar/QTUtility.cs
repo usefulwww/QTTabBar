@@ -212,10 +212,12 @@ namespace QTTabBarLib {
                 ImageListGlobal.Images.Add("folder", GetIcon(string.Empty, false));
                 try {
                     IsVista = Environment.OSVersion.Version.Major > 5;
+                    // TODO: make this more comprehensible 
                     ConfigValues = new byte[] { 200, 0, 4, 0, 4, 0x60, 0x10, 0x22, 2, 8, 0xe0, 8, 0, 0x20, 0, 0 };
                     if(!IsVista) {
                         ConfigValues[13] = 0x30;
                     }
+                    SetConfigAt(Settings.AutoUpdate, true);
                     using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
                         if(key != null) {
                             float num;

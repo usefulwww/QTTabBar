@@ -7459,6 +7459,10 @@ namespace QTTabBarLib {
             }
             catch {
             }
+            
+            return;
+            
+            // TODO: Make the following code optional in the Uninstaller.
             try {
                 using(RegistryKey key3 = Registry.Users) {
                     try {
