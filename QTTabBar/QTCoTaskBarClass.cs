@@ -1855,7 +1855,7 @@ namespace QTTabBarLib {
                                     PInvoke.CoTaskMemFree(zero);
                                 }
                             }
-                            goto Label_0264;
+                            //goto Label_0264;
                         }
                     case -121:
                         goto Label_0264;

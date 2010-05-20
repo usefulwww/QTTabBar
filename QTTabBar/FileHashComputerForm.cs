@@ -49,7 +49,6 @@ namespace QTTabBarLib {
         private static int colorIndex;
         private static int colorIndexModTimeDiffers = 1;
         private static System.Drawing.Color[] colors = new System.Drawing.Color[] { System.Drawing.Color.FromArgb(0xd1, 0xff, 0xff), System.Drawing.Color.FromArgb(0xd1, 0xff, 0xd1), System.Drawing.Color.FromArgb(0xff, 0xff, 0xd1), System.Drawing.Color.FromArgb(0xff, 0xd1, 0xd1), System.Drawing.Color.FromArgb(0xff, 0xd1, 0xff), System.Drawing.Color.FromArgb(0xd1, 0xd1, 0xff), System.Drawing.Color.FromArgb(0xd1, 0xff, 0xe8), System.Drawing.Color.FromArgb(0xe8, 0xff, 0xd1) };
-        private IContainer components;
         private DataGridView dgvHash;
         private Dictionary<string, List<DataGridViewRow>> dicResult = new Dictionary<string, List<DataGridViewRow>>();
         private volatile bool fCancellationPending;
@@ -342,9 +341,6 @@ namespace QTTabBarLib {
             this.fCancellationPending = true;
             while(this.iThreadsCounter > 0) {
                 Application.DoEvents();
-            }
-            if(disposing && (this.components != null)) {
-                this.components.Dispose();
             }
             base.Dispose(disposing);
         }

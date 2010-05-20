@@ -118,7 +118,7 @@ namespace QTTabBarLib {
                         catch {
                         }
                         return;
-                        flag = true;
+                        //flag = true;
                     }
                     if(!flag) {
                         SHELLEXECUTEINFO shellexecuteinfo2 = new SHELLEXECUTEINFO();

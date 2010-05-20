@@ -728,7 +728,7 @@ namespace QTTabBarLib {
                 QTUtility2.MakeErrorLog(exception2, null);
                 return null;
             }
-            return dictionary;
+            //return dictionary;
         }
 
         public static void RefreshGroupMenuesOnReorderFinished(ToolStripItemCollection itemsList) {

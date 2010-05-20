@@ -207,7 +207,7 @@ namespace QTTabBarLib.Interop {
             if(IntPtr.Size == 8) {
                 return (IntPtr)(((long)ptr) | ui);
             }
-            return (IntPtr)(((int)ptr) | ui);
+            return (IntPtr)(((uint)ptr) | ui);
         }
 
         [DllImport("user32.dll")]

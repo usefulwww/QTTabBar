@@ -3356,7 +3356,7 @@ namespace QTTabBarLib {
             }
         Label_008D:
             return this.HandleTabFolderActions(index, modifierKeys, false);
-            return false;
+            //return false;
         }
 
         private bool HandleMOUSEWHEEL(IntPtr lParam) {

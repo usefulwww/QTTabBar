@@ -169,7 +169,6 @@ namespace QTTabBarLib {
         private System.Windows.Forms.ComboBox cmbTextExts;
         private System.Windows.Forms.ComboBox cmbWhlClick;
         private ContextMenuStrip cmsAddToken;
-        private IContainer components;
         private static bool fInitialized;
         private bool fNowListViewItemEditing;
         private bool fNowTreeNodeEditing;
@@ -1598,9 +1597,6 @@ namespace QTTabBarLib {
                 assembly.Dispose();
             }
             this.lstPluginAssembliesUserAdded.Clear();
-            if(disposing && (this.components != null)) {
-                this.components.Dispose();
-            }
             base.Dispose(disposing);
         }
 

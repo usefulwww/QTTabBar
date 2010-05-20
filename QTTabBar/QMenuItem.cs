@@ -189,7 +189,7 @@ namespace QTTabBarLib {
             }
         }
 
-        public string ImageKey {
+        new public string ImageKey {
             get {
                 return base.ImageKey;
             }

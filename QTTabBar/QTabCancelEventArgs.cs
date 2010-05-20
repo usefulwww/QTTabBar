@@ -27,7 +27,7 @@ namespace QTTabBarLib {
             this.tabPage = tabPage;
         }
 
-        public QTabItemBase TabPage {
+        new public QTabItemBase TabPage {
             get {
                 return this.tabPage;
             }

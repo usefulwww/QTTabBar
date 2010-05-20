@@ -37,7 +37,6 @@ namespace QTTabBarLib {
         private CheckBox chbLockSearchBox;
         private ComboBox comboBoxImageSize;
         private ComboBox comboBoxImageText;
-        private IContainer components;
         private Dictionary<string, int> dicActivePluginMulti = new Dictionary<string, int>();
         public bool fChangedExists;
         public bool fLargeIcon;
@@ -359,9 +358,6 @@ namespace QTTabBarLib {
                 this.imageStripSmall = null;
             }
             this.pluginManager = null;
-            if(disposing && (this.components != null)) {
-                this.components.Dispose();
-            }
             base.Dispose(disposing);
         }
 

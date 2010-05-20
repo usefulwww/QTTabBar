@@ -32,7 +32,6 @@ namespace QTTabBarLib {
     using System.Windows.Forms.VisualStyles;
 
     internal sealed class ThumbnailTooltipForm : Form {
-        private IContainer components;
         private const string EMPTYFILE = "  *empty file";
         private bool fFontAsigned;
         private bool fIsShownByKey;
@@ -256,9 +255,6 @@ namespace QTTabBarLib {
 
         protected override void Dispose(bool disposing) {
             this.imageCacheStore.Clear();
-            if(disposing && (this.components != null)) {
-                this.components.Dispose();
-            }
             base.Dispose(disposing);
         }
 

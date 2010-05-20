@@ -1561,13 +1561,13 @@ namespace QTTabBarLib {
                 this.Owner = owner;
             }
 
-            public void Add(QTabItemBase tabPage) {
+            new public void Add(QTabItemBase tabPage) {
                 base.Add(tabPage);
                 this.Owner.OnTabPageAdded(tabPage, base.Count - 1);
                 this.Owner.Refresh();
             }
 
-            public IEnumerator<QTabItemBase> GetEnumerator() {
+            new public IEnumerator<QTabItemBase> GetEnumerator() {
                 //<GetEnumerator>d__0 d__ = new <GetEnumerator>d__0(0);
                 //d__.<>4__this = this;
                 //return d__;
@@ -1580,13 +1580,13 @@ namespace QTTabBarLib {
                 }
             }
 
-            public void Insert(int index, QTabItemBase tabPage) {
+            new public void Insert(int index, QTabItemBase tabPage) {
                 base.Insert(index, tabPage);
                 this.Owner.OnTabPageInserted(tabPage, index);
                 this.Owner.Refresh();
             }
 
-            public bool Remove(QTabItemBase tabPage) {
+            new public bool Remove(QTabItemBase tabPage) {
                 int index = base.IndexOf(tabPage);
                 this.Owner.OnTabPageRemoved(tabPage, index);
                 bool flag = base.Remove(tabPage);

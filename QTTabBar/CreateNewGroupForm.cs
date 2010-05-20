@@ -25,7 +25,6 @@ namespace QTTabBarLib {
         private Button buttonCancel;
         private Button buttonOK;
         private CheckBox checkBox1;
-        private IContainer components;
         private Label label1;
         private string newPath;
         private QTabControl.QTabCollection Tabs;
@@ -64,9 +63,6 @@ namespace QTTabBarLib {
         }
 
         protected override void Dispose(bool disposing) {
-            if(disposing && (this.components != null)) {
-                this.components.Dispose();
-            }
             base.Dispose(disposing);
         }
 
