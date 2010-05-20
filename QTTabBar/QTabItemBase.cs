@@ -197,7 +197,7 @@ namespace QTTabBarLib {
                 return this.tabLocked;
             }
             set {
-                this.tabLocked = value;
+                this.tabLocked = false /* value */;
                 this.RefreshRectangle();
                 if(this.Owner != null) {
                     this.Owner.Refresh();
