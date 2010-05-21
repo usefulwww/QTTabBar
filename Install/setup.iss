@@ -7,7 +7,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{DAD20769-75D8-4C1D-80E3-D545563FE9EF}
 AppName=QTTabBar
-AppVerName=QTTabBar 1.5.0.0 Alpha 1
+AppVerName=QTTabBar 1.5.0.0 Alpha 2
 AppPublisher=Quizo and Paul Accisano
 AppPublisherURL=http://qttabbar.sourceforge.net/
 AppSupportURL=http://qttabbar.sourceforge.net/

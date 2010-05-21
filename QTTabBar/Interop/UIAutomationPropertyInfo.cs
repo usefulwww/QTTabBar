@@ -22,6 +22,7 @@ namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
     public struct UIAutomationPropertyInfo {
         public Guid guid;
+        [MarshalAs(UnmanagedType.LPWStr)]
         public string pProgrammaticName;
         public int type;
     }

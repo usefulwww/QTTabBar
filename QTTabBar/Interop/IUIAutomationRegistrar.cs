@@ -21,7 +21,7 @@ namespace QTTabBarLib.Interop {
 
     [ComImport, Guid("8609c4ec-4a1a-4d88-a357-5a66e060e1cf"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public interface IUIAutomationRegistrar {
-        void RegisterProperty(UIAutomationPropertyInfo property, out int propertyId);
+        void RegisterProperty(ref UIAutomationPropertyInfo property, out int propertyId);
         /* NOT DECLARED */ void RegisterEvent();
         /* NOT DECLARED */ void RegisterPattern();
     }

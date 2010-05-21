@@ -65,19 +65,19 @@ namespace QTTabBarLib {
                     pProgrammaticName = "ItemCount",
                     type = UIAutomationType_Int
                 };
-                pRegistrar.RegisterProperty(propinfo, out UIA_ItemCountPropertyId);
+                pRegistrar.RegisterProperty(ref propinfo, out UIA_ItemCountPropertyId);
                 propinfo = new UIAutomationPropertyInfo {
                     guid = SelectedItemCount_Property_GUID,
                     pProgrammaticName = "SelectedItemCount",
                     type = UIAutomationType_Int
                 };
-                pRegistrar.RegisterProperty(propinfo, out UIA_SelectedCountPropertyId);
+                pRegistrar.RegisterProperty(ref propinfo, out UIA_SelectedCountPropertyId);
                 propinfo = new UIAutomationPropertyInfo {
                     guid = ItemIndex_Property_GUID,
                     pProgrammaticName = "ItemIndex",
                     type = UIAutomationType_Int
                 };
-                pRegistrar.RegisterProperty(propinfo, out UIA_ItemIndexPropertyId);   
+                pRegistrar.RegisterProperty(ref propinfo, out UIA_ItemIndexPropertyId);   
             }
             finally {
                 if(pRegistrar != null) Marshal.ReleaseComObject(pRegistrar);
