@@ -31,10 +31,13 @@ Source: "..\QTTabBar\bin\Release\QTTabBar.dll"; DestDir: "{app}"; Flags: ignorev
 Source: "..\QTPluginLib\bin\Release\QTPluginLib.dll"; DestDir: "{app}"; Flags: ignoreversion gacinstall; StrongAssemblyName: "QTPluginLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb"; AfterInstall: NGen('QTPluginLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb');
 Source: "..\BandObjectLib\bin\Release\BandObjectLib.dll"; DestDir: "{app}"; Flags: ignoreversion gacinstall; StrongAssemblyName: "BandObjectLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb"; AfterInstall: NGen('BandObjectLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb');
 Source: "..\BandObjectLib\bin\Release\Interop.SHDocVw.dll"; DestDir: "{app}"; Flags: ignoreversion gacinstall; StrongAssemblyName: "Interop.SHDocVw, Version=1.1.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb"; AfterInstall: NGen('Interop.SHDocVw, Version=1.1.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb');
+Source: "Restart Explorer.bat"; DestDir: "{tmp}"
 
 ;[Icons]
 ;Name: "{group}\{cm:ProgramOnTheWeb,QTTabBar}"; Filename: "http://qttabbar.sourceforge.net/"
 ;Name: "{group}\{cm:UninstallProgram,QTTabBar}"; Filename: "{uninstallexe}"
+[Run]
+Filename: "{tmp}\Restart Explorer.bat"; Description: "Restart explorer immediately"; Flags: runhidden unchecked
 
 [UninstallRun]
 Filename: "{dotnet20}\ngen.exe"; Parameters: "uninstall ""QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb"""; StatusMsg: "Removing native images..."; Flags: runhidden
@@ -42,6 +45,7 @@ Filename: "{dotnet20}\ngen.exe"; Parameters: "uninstall ""QTPluginLib, Version=1
 Filename: "{dotnet20}\ngen.exe"; Parameters: "uninstall ""BandObjectLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb"""; StatusMsg: "Removing native images..."; Flags: runhidden
 Filename: "{dotnet20}\ngen.exe"; Parameters: "uninstall ""Interop.SHDocVw, Version=1.1.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb"""; StatusMsg: "Removing native images..."; Flags: runhidden
 Filename: "{dotnet20}\regasm.exe"; Parameters: """{app}\QTTabBar.dll"" /unregister"; StatusMsg: "Unregistering assembly..."; Flags: runhidden
+Filename: "{tmp}\Restart Explorer.bat"; Description: "Restart explorer immediately"; Flags: runhidden unchecked
 
 [Code]
 function san(idx: string): string;

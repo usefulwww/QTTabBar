@@ -16,6 +16,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QTPluginLib", "QTPluginLib\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installer", "Installer", "{00557216-D6B6-40F1-A9A2-35BF5B57DEA1}"
 	ProjectSection(SolutionItems) = preProject
+		Install\Restart Explorer.bat = Install\Restart Explorer.bat
 		Install\setup.iss = Install\setup.iss
 	EndProjectSection
 EndProject
