@@ -26,20 +26,20 @@ ArchitecturesInstallIn64BitMode=x64
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Files]
-Source: "..\QTTabBar\bin\Release\QTTabBar.dll"; DestDir: "{app}"; Flags: ignoreversion gacinstall; StrongAssemblyName: "QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb"; AfterInstall: RegAndNGen('QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb');
-Source: "..\QTPluginLib\bin\Release\QTPluginLib.dll"; DestDir: "{app}"; Flags: ignoreversion gacinstall; StrongAssemblyName: "QTPluginLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb"; AfterInstall: NGen('QTPluginLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb');
-Source: "..\BandObjectLib\bin\Release\BandObjectLib.dll"; DestDir: "{app}"; Flags: ignoreversion gacinstall; StrongAssemblyName: "BandObjectLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb"; AfterInstall: NGen('BandObjectLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb');
 Source: "..\BandObjectLib\bin\Release\Interop.SHDocVw.dll"; DestDir: "{app}"; Flags: ignoreversion gacinstall; StrongAssemblyName: "Interop.SHDocVw, Version=1.1.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb"; AfterInstall: NGen('Interop.SHDocVw, Version=1.1.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb');
+Source: "..\BandObjectLib\bin\Release\BandObjectLib.dll"; DestDir: "{app}"; Flags: ignoreversion gacinstall; StrongAssemblyName: "BandObjectLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb"; AfterInstall: NGen('BandObjectLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb');
+Source: "..\QTPluginLib\bin\Release\QTPluginLib.dll"; DestDir: "{app}"; Flags: ignoreversion gacinstall; StrongAssemblyName: "QTPluginLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb"; AfterInstall: NGen('QTPluginLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb');
+Source: "..\QTTabBar\bin\Release\QTTabBar.dll"; DestDir: "{app}"; Flags: ignoreversion gacinstall; StrongAssemblyName: "QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb"; AfterInstall: RegAndNGen('QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb');
 Source: "Restart Explorer.bat"; DestDir: "{tmp}"
 
 [Run]
 Filename: "{tmp}\Restart Explorer.bat"; Description: "Restart explorer immediately"; Flags: postinstall runhidden unchecked
 
 [UninstallRun]
-Filename: "{dotnet20}\ngen.exe"; Parameters: "uninstall ""QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb"""; StatusMsg: "Removing native images..."; Flags: runhidden
-Filename: "{dotnet20}\ngen.exe"; Parameters: "uninstall ""QTPluginLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb"""; StatusMsg: "Removing native images..."; Flags: runhidden
-Filename: "{dotnet20}\ngen.exe"; Parameters: "uninstall ""BandObjectLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb"""; StatusMsg: "Removing native images..."; Flags: runhidden
 Filename: "{dotnet20}\ngen.exe"; Parameters: "uninstall ""Interop.SHDocVw, Version=1.1.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb"""; StatusMsg: "Removing native images..."; Flags: runhidden
+Filename: "{dotnet20}\ngen.exe"; Parameters: "uninstall ""BandObjectLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb"""; StatusMsg: "Removing native images..."; Flags: runhidden
+Filename: "{dotnet20}\ngen.exe"; Parameters: "uninstall ""QTPluginLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb"""; StatusMsg: "Removing native images..."; Flags: runhidden
+Filename: "{dotnet20}\ngen.exe"; Parameters: "uninstall ""QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb"""; StatusMsg: "Removing native images..."; Flags: runhidden
 Filename: "{dotnet20}\regasm.exe"; Parameters: """{app}\QTTabBar.dll"" /unregister"; StatusMsg: "Unregistering assembly..."; Flags: runhidden
 
 [Messages]
@@ -89,7 +89,7 @@ begin
         MsgBox('QTTabBar requires Microsoft .NET Framework 2, 3, or 3.5.'#13#13
             'Version 4 is not yet supported.  Please install one of these'#13
             'version and then re-run the QTTabBar setup program.', mbInformation, MB_OK);
-        result := true;
+        result := false;
     end else
         result := true;
 end;
