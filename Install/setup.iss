@@ -21,7 +21,6 @@ Compression=lzma
 SolidCompression=yes
 PrivilegesRequired=admin
 ArchitecturesInstallIn64BitMode=x64
-;AlwaysRestart=yes
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -33,11 +32,8 @@ Source: "..\BandObjectLib\bin\Release\BandObjectLib.dll"; DestDir: "{app}"; Flag
 Source: "..\BandObjectLib\bin\Release\Interop.SHDocVw.dll"; DestDir: "{app}"; Flags: ignoreversion gacinstall; StrongAssemblyName: "Interop.SHDocVw, Version=1.1.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb"; AfterInstall: NGen('Interop.SHDocVw, Version=1.1.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb');
 Source: "Restart Explorer.bat"; DestDir: "{tmp}"
 
-;[Icons]
-;Name: "{group}\{cm:ProgramOnTheWeb,QTTabBar}"; Filename: "http://qttabbar.sourceforge.net/"
-;Name: "{group}\{cm:UninstallProgram,QTTabBar}"; Filename: "{uninstallexe}"
 [Run]
-Filename: "{tmp}\Restart Explorer.bat"; Description: "Restart explorer immediately"; Flags: runhidden unchecked
+Filename: "{tmp}\Restart Explorer.bat"; Description: "Restart explorer immediately"; Flags: postinstall runhidden unchecked
 
 [UninstallRun]
 Filename: "{dotnet20}\ngen.exe"; Parameters: "uninstall ""QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb"""; StatusMsg: "Removing native images..."; Flags: runhidden
@@ -45,21 +41,11 @@ Filename: "{dotnet20}\ngen.exe"; Parameters: "uninstall ""QTPluginLib, Version=1
 Filename: "{dotnet20}\ngen.exe"; Parameters: "uninstall ""BandObjectLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb"""; StatusMsg: "Removing native images..."; Flags: runhidden
 Filename: "{dotnet20}\ngen.exe"; Parameters: "uninstall ""Interop.SHDocVw, Version=1.1.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb"""; StatusMsg: "Removing native images..."; Flags: runhidden
 Filename: "{dotnet20}\regasm.exe"; Parameters: """{app}\QTTabBar.dll"" /unregister"; StatusMsg: "Unregistering assembly..."; Flags: runhidden
-Filename: "{tmp}\Restart Explorer.bat"; Description: "Restart explorer immediately"; Flags: runhidden unchecked
+
+[Messages]
+FinishedLabelNoIcons=Setup has finished installing [name] on your computer.  In order to use [name], you must restart Windows Explorer.  You can do this by logging off, rebooting your computer, or by checking the box below.
 
 [Code]
-function san(idx: string): string;
-begin
-  if idx = 'QTTabBar' then
-    result := ''
-  else if idx = 'QTPluginLib' then
-    result := ''
-  else if idx = 'BandObjectLib' then
-    result := ''
-  else if idx = 'Interop.SHDocVw' then
-    result := ''
-end;
-
 function IsDotNetDetected(version: string; service: cardinal): boolean;
 // Indicates whether the specified version and service pack of the .NET Framework is installed.
 //
