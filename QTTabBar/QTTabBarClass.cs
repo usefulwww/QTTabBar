@@ -5751,7 +5751,12 @@ namespace QTTabBarLib {
                 this.CreateRebarImage();
             }
             
-            listViewWrapper.Initialize();
+            // For some very strange reason, executing this line disables
+            // right-click in the list view.  It's not necessary I suppose, 
+            // but it still bothers me that I don't know why it happens.
+            // TODO: Investigate
+
+            //listViewWrapper.Initialize();
 
             this.tabControl1.ResumeLayout();
             base.ResumeLayout(true);
