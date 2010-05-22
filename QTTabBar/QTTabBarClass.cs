@@ -468,19 +468,15 @@ namespace QTTabBarLib {
 
                     case WM.LBUTTONDOWN:
                     case WM.LBUTTONUP:
-                        if((!QTUtility.IsVista && !QTUtility.CheckConfig(Settings.MidClickFolderTree)) && ((((int)((long)msg.wParam)) & 4) != 0)) {
+                        if((!QTUtility.IsVista && !QTUtility.CheckConfig(Settings.NoMidClickTree)) && ((((int)((long)msg.wParam)) & 4) != 0)) {
                             this.HandleLBUTTON_Tree(msg, msg.message == 0x201);
                         }
                         break;
 
                     case WM.MBUTTONUP:
-                        if((QTUtility.CheckConfig(Settings.CaptureMiddleClick) || base.Explorer.Busy) || !this.HandleMBUTTONUP(msg)) {
-                            if(!QTUtility.IsVista && !QTUtility.CheckConfig(Settings.MidClickFolderTree)) {
-                                this.Handle_MButtonUp_Tree(msg);
-                            }
-                            break;
+                        if(!QTUtility.IsVista && !base.Explorer.Busy && !QTUtility.CheckConfig(Settings.NoMidClickTree)) {
+                            this.Handle_MButtonUp_Tree(msg);
                         }
-                        Marshal.StructureToPtr(new BandObjectLib.MSG(), lParam, false);
                         break;
 
                     case WM.CLOSE:
@@ -553,7 +549,7 @@ namespace QTTabBarLib {
                     }
                     switch(((int)wParam)) {
                         case 0x11:
-                            if(!QTUtility.CheckConfig(Settings.TabSwitcher)) {
+                            if(!QTUtility.CheckConfig(Settings.NoTabSwitcher)) {
                                 this.HideTabSwitcher(true);
                             }
                             goto Label_0124;
@@ -565,7 +561,7 @@ namespace QTTabBarLib {
                             goto Label_0124;
 
                         case 9:
-                            if((!QTUtility.CheckConfig(Settings.TabSwitcher) && (this.tabSwitcher != null)) && this.tabSwitcher.IsShown) {
+                            if((!QTUtility.CheckConfig(Settings.NoTabSwitcher) && (this.tabSwitcher != null)) && this.tabSwitcher.IsShown) {
                                 this.tabControl1.SetPseudoHotIndex(this.tabSwitcher.SelectedIndex);
                             }
                             goto Label_0124;
@@ -2799,7 +2795,7 @@ namespace QTTabBarLib {
                     break;
 
                 case Keys.Tab:
-                    if(!QTUtility.CheckConfig(Settings.TabSwitcher) && (mkey & Keys.Control) != Keys.None) {
+                    if(!QTUtility.CheckConfig(Settings.NoTabSwitcher) && (mkey & Keys.Control) != Keys.None) {
                         return this.ShowTabSwitcher((mkey & Keys.Shift) != Keys.None, fRepeat);
                     }
                     break;
@@ -3328,35 +3324,6 @@ namespace QTTabBarLib {
         Label_025A:
              */
             return false;
-        }
-
-        private bool HandleMBUTTONUP(BandObjectLib.MSG msg) {
-            int index = listViewWrapper.HitTest(msg.lParam);
-            if(index <= -1) {
-                return false;
-            }
-            Keys modifierKeys = Control.ModifierKeys;
-            if(modifierKeys != (Keys.Alt | Keys.Control | Keys.Shift)) {
-                modifierKeys &= ~Keys.Alt;
-                if(QTUtility.CheckConfig(Settings.MidClickNewWindow)) {
-                    switch(modifierKeys) {
-                        case Keys.Control:
-                            modifierKeys = Keys.None;
-                            goto Label_008D;
-
-                        case (Keys.Control | Keys.Shift):
-                            modifierKeys = Keys.Shift;
-                            goto Label_008D;
-                    }
-                    modifierKeys = Keys.Control;
-                }
-                else if(modifierKeys == (Keys.Control | Keys.Shift)) {
-                    modifierKeys = Keys.Control;
-                }
-            }
-        Label_008D:
-            return this.HandleTabFolderActions(index, modifierKeys, false);
-            //return false;
         }
 
         private bool HandleMOUSEWHEEL(IntPtr lParam) {
@@ -3901,6 +3868,7 @@ namespace QTTabBarLib {
             listViewWrapper.BeginDrag       += ListView_BeginDrag;
             listViewWrapper.DropHilighted   += ListView_DropHilighted;
             listViewWrapper.HotTrack        += ListView_HotTrack;
+            listViewWrapper.MiddleClick     += ListView_MiddleClick;
             listViewWrapper.DoubleClick     += ListView_DoubleClick;
             listViewWrapper.KeyDown         += ListView_KeyDown;
             listViewWrapper.GetInfoTip      += ListView_GetInfoTip;
@@ -4258,6 +4226,39 @@ namespace QTTabBarLib {
                 }
             }
             return false;
+        }
+
+        private bool ListView_MiddleClick(Point pt) {
+            if(QTUtility.CheckConfig(Settings.NoCaptureMidClick)) {
+                return false;
+            }
+            int index = listViewWrapper.HitTest(pt, false);
+            if(index <= -1) {
+                return false;
+            }
+            Keys modifierKeys = Control.ModifierKeys;
+            if(modifierKeys != (Keys.Alt | Keys.Control | Keys.Shift)) {
+                modifierKeys &= ~Keys.Alt;
+                if(QTUtility.CheckConfig(Settings.MidClickNewWindow)) {
+                    switch(modifierKeys) {
+                        case Keys.Control:
+                            modifierKeys = Keys.None;
+                            break;
+
+                        case (Keys.Control | Keys.Shift):
+                            modifierKeys = Keys.Shift;
+                            break;
+
+                        default:
+                            modifierKeys = Keys.Control;
+                            break;
+                    }
+                }
+                else if(modifierKeys == (Keys.Control | Keys.Shift)) {
+                    modifierKeys = Keys.Control;
+                }
+            }
+            return this.HandleTabFolderActions(index, modifierKeys, false);
         }
 
         private bool ListView_DoubleClick(Point pt) {

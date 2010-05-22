@@ -3730,7 +3730,7 @@ namespace QTTabBarLib {
                 QTUtility.SetConfigAt(Settings.NoHistory, true);
             }
             if(!this.chbWhlClick.Checked) {
-                QTUtility.SetConfigAt(Settings.CaptureMiddleClick, true);
+                QTUtility.SetConfigAt(Settings.NoCaptureMidClick, true);
             }
             if(this.cmbWhlClick.SelectedIndex == 1) {
                 QTUtility.SetConfigAt(Settings.MidClickNewWindow, true);
@@ -3903,10 +3903,10 @@ namespace QTTabBarLib {
                 }
             }
             if(!this.chbTreeShftWhlTab.Checked) {
-                QTUtility.SetConfigAt(Settings.MidClickFolderTree, true);
+                QTUtility.SetConfigAt(Settings.NoMidClickTree, true);
             }
             if(!this.chbTabSwitcher.Checked) {
-                QTUtility.SetConfigAt(Settings.TabSwitcher, true);
+                QTUtility.SetConfigAt(Settings.NoTabSwitcher, true);
             }
             if(this.chbTabTitleShadow.Checked) {
                 QTUtility.SetConfigAt(Settings.TabTitleShadows, true);
@@ -4198,7 +4198,7 @@ namespace QTTabBarLib {
             else {
                 this.chbBSUpOneLvl.Enabled = false;
                 this.chbSelectWithoutExt.Checked = (QTUtility.ConfigValues[8] & 0x20) == 0;
-                this.chbTreeShftWhlTab.Checked = !QTUtility.CheckConfig(Settings.MidClickFolderTree);
+                this.chbTreeShftWhlTab.Checked = !QTUtility.CheckConfig(Settings.NoMidClickTree);
             }
             this.btnToolBarBGClr.Enabled = this.chbToolbarBGClr.Checked = (QTUtility.ConfigValues[7] & 4) == 4;
             this.btnToolBarBGClr.BackColor = QTUtility.RebarBGColor;
@@ -4279,7 +4279,7 @@ namespace QTTabBarLib {
             else {
                 this.cmbMenuRenderer.SelectedIndex = 0;
             }
-            this.chbTabSwitcher.Checked = !QTUtility.CheckConfig(Settings.TabSwitcher);
+            this.chbTabSwitcher.Checked = !QTUtility.CheckConfig(Settings.NoTabSwitcher);
             this.chbAutoUpdate.Checked = QTUtility.CheckConfig(Settings.AutoUpdate);
             this.chbRemoveOnSeparate.Checked = !QTUtility.CheckConfig(Settings.KeepOnSeparate);
             this.chbDriveLetter.Checked = QTUtility.CheckConfig(Settings.ShowDriveLetters);

@@ -215,7 +215,7 @@ namespace QTTabBarLib {
                 }
                 switch(msg.message) {
                     case WM.MBUTTONUP:
-                        if(!QTUtility.CheckConfig(Settings.CaptureMiddleClick)) {
+                        if(!QTUtility.CheckConfig(Settings.NoCaptureMidClick)) {
                             int index = PInvoke.ListView_HitTest(this.hwndListView, msg.lParam);
                             if((index != -1) && this.HandleTabFolderActions(index, Control.ModifierKeys, false)) {
                                 Marshal.StructureToPtr(new BandObjectLib.MSG(), lParam, false);

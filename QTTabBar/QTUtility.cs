@@ -37,7 +37,7 @@ namespace QTTabBarLib {
         CloseWhenGroup      = 8 * 00 + 5, // 0x20,
         DontOpenSame        = 8 * 00 + 6, // 0x40,
         ActivateNewTab      = 8 * 00 + 7, // 0x80,
-        CaptureMiddleClick  = 8 * 05 + 0, // 0x01,
+        NoCaptureMidClick   = 8 * 05 + 0, // 0x01,
         NoHistory           = 8 * 05 + 1, // 0x02,
         LimitedWidthTabs    = 8 * 05 + 2, // 0x04,
         UseTabSkin          = 8 * 05 + 3, // 0x08,
@@ -95,8 +95,8 @@ namespace QTTabBarLib {
         RebarImage          = 8 * 11 + 7, // 0x80,
         RebarImageStretch2  = 8 * 13 + 0, // 0x01,
         TabTitleShadows     = 8 * 13 + 1, // 0x02,
-        TabSwitcher         = 8 * 13 + 2, // 0x04,
-        MidClickFolderTree  = 8 * 13 + 3, // 0x08, 
+        NoTabSwitcher       = 8 * 13 + 2, // 0x04,
+        NoMidClickTree      = 8 * 13 + 3, // 0x08, 
         XPStyleMenus        = 8 * 13 + 4, // 0x10,
         NonDefaultMenu      = 8 * 13 + 5, // 0x20,
         AlignTabTextCenter  = 8 * 13 + 6, // 0x40,
@@ -613,7 +613,7 @@ namespace QTTabBarLib {
             dictionary[0x10004] = ConfigValues[3];
             dictionary[0x10005] = ConfigValues[4];
             dictionary[0x10006] = CheckConfig(Settings.MultipleRow1) ? 1 : (CheckConfig(Settings.MultipleRow2) ? 2 : 0);
-            dictionary[0x10007] = CheckConfig(Settings.CaptureMiddleClick) ? 1 : 0;
+            dictionary[0x10007] = CheckConfig(Settings.NoCaptureMidClick) ? 1 : 0;
             dictionary[0x10008] = TabHeight;
             dictionary[0x10009] = CheckConfig(Settings.FixedWidthTabs) ? 1 : (CheckConfig(Settings.LimitedWidthTabs) ? 2 : 0);
             dictionary[0x1000a] = TabWidth;

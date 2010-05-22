@@ -56,6 +56,7 @@ namespace QTTabBarLib {
         internal delegate bool BeginDragHandler();
         internal delegate bool DropHilightedHandler(int iItem);
         internal delegate bool HotTrackHandler(int iItem);
+        internal delegate bool MiddleClickHandler(Point pt);
         internal delegate bool DoubleClickHandler(Point pt);
         internal delegate bool KeyDownHandler(Keys key);
         internal delegate bool GetInfoTipHandler(int iItem, bool byKey);
@@ -74,6 +75,7 @@ namespace QTTabBarLib {
         internal event BeginDragHandler BeginDrag;                // OK
         internal event DropHilightedHandler DropHilighted;        // OK
         internal event HotTrackHandler HotTrack;                  // OK
+        internal event MiddleClickHandler MiddleClick;            // OK
         internal event DoubleClickHandler DoubleClick;            // OK
         internal event KeyDownHandler KeyDown;                    // OK
         internal event GetInfoTipHandler GetInfoTip;              // TODO
@@ -749,6 +751,14 @@ namespace QTTabBarLib {
                 case WM.LBUTTONDBLCLK:
                     if(DoubleClick != null) {
                         return DoubleClick(new Point(
+                            QTUtility2.GET_X_LPARAM(msg.LParam),
+                            QTUtility2.GET_Y_LPARAM(msg.LParam)));
+                    }
+                    break;
+                
+                case WM.MBUTTONUP:
+                    if(MiddleClick != null) {
+                        return MiddleClick(new Point(
                             QTUtility2.GET_X_LPARAM(msg.LParam),
                             QTUtility2.GET_Y_LPARAM(msg.LParam)));
                     }
