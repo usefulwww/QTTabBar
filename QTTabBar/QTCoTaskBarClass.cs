@@ -1931,7 +1931,7 @@ namespace QTTabBarLib {
                     QTTabBarLib.Interop.RECT rect = new QTTabBarLib.Interop.RECT();
                     Point pnt = new Point(rect.right - 0x10, rect.bottom - 0x10);
                     if(this.subDirTip == null) {
-                        this.subDirTip = new SubDirTipForm(this.ThisHandle, this.hwndListView, false);
+                        this.subDirTip = new SubDirTipForm(this.ThisHandle, this.hwndListView, false, null); // TODO
                         this.subDirTip.MenuItemClicked += new ToolStripItemClickedEventHandler(this.subDirTip_MenuItemClicked);
                         this.subDirTip.MultipleMenuItemsClicked += new EventHandler(this.subDirTip_MultipleMenuItemsClicked);
                         this.subDirTip.MenuItemRightClicked += new ItemRightClickedEventHandler(this.subDirTip_MenuItemRightClicked);

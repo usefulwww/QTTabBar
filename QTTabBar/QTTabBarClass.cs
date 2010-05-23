@@ -6017,7 +6017,7 @@ namespace QTTabBarLib {
                         }
                     }
                     if(this.subDirTip == null) {
-                        this.subDirTip = new SubDirTipForm(base.Handle, this.ExplorerHandle, true);
+                        this.subDirTip = new SubDirTipForm(base.Handle, this.ExplorerHandle, true, listViewWrapper);
                         this.subDirTip.MenuItemClicked += new ToolStripItemClickedEventHandler(this.subDirTip_MenuItemClicked);
                         this.subDirTip.MultipleMenuItemsClicked += new EventHandler(this.subDirTip_MultipleMenuItemsClicked);
                         this.subDirTip.MenuItemRightClicked += new ItemRightClickedEventHandler(this.subDirTip_MenuItemRightClicked);
@@ -6140,13 +6140,13 @@ namespace QTTabBarLib {
                     Point pnt = listViewWrapper.GetSubDirTipPoint(iItem);
 
                     if(this.subDirTip == null) {
-                        this.subDirTip = new SubDirTipForm(base.Handle, this.ExplorerHandle, true);
+                        this.subDirTip = new SubDirTipForm(base.Handle, this.ExplorerHandle, true, listViewWrapper);
                         this.subDirTip.MenuItemClicked += new ToolStripItemClickedEventHandler(this.subDirTip_MenuItemClicked);
                         this.subDirTip.MultipleMenuItemsClicked += new EventHandler(this.subDirTip_MultipleMenuItemsClicked);
                         this.subDirTip.MenuItemRightClicked += new ItemRightClickedEventHandler(this.subDirTip_MenuItemRightClicked);
                         this.subDirTip.MultipleMenuItemsRightClicked += new ItemRightClickedEventHandler(this.subDirTip_MultipleMenuItemsRightClicked);
                     }
-                    this.subDirTip.ShowSubDirTip(str, null, pnt, listViewWrapper);
+                    this.subDirTip.ShowSubDirTip(str, null, pnt);
                     flag = true;
                 }
                 catch {
@@ -6166,11 +6166,11 @@ namespace QTTabBarLib {
                         string currentPath = tab.CurrentPath;
                         if(fParent || TryMakeSubDirTipPath(ref currentPath)) {
                             if(this.subDirTip_Tab == null) {
-                                this.subDirTip_Tab = new SubDirTipForm(base.Handle, this.ExplorerHandle, true);
+                                this.subDirTip_Tab = new SubDirTipForm(base.Handle, this.ExplorerHandle, true, listViewWrapper);
                                 this.subDirTip_Tab.MenuItemClicked += new ToolStripItemClickedEventHandler(this.subDirTip_MenuItemClicked);
                                 this.subDirTip_Tab.MultipleMenuItemsClicked += new EventHandler(this.subDirTip_MultipleMenuItemsClicked);
                                 this.subDirTip_Tab.MenuItemRightClicked += new ItemRightClickedEventHandler(this.subDirTip_MenuItemRightClicked);
-                                this.subDirTip_Tab.MenuClosed += new EventHandler(this.subDriTip_Tab_MenuClosed);
+                                this.subDirTip_Tab.MenuClosed += new EventHandler(this.subDirTip_Tab_MenuClosed);
                                 this.subDirTip_Tab.MultipleMenuItemsRightClicked += new ItemRightClickedEventHandler(this.subDirTip_MultipleMenuItemsRightClicked);
                             }
                             this.ContextMenuedTab = tab;
@@ -6477,7 +6477,7 @@ namespace QTTabBarLib {
             e.HRESULT = ShellMethods.PopUpSystemContextMenu(executedDirectories, e.IsKey ? e.Point : Control.MousePosition, ref this.iContextMenu2, ((SubDirTipForm)sender).Handle);
         }
 
-        private void subDriTip_Tab_MenuClosed(object sender, EventArgs e) {
+        private void subDirTip_Tab_MenuClosed(object sender, EventArgs e) {
             this.tabControl1.SetSubDirTipShown(false);
             this.tabControl1.RefreshFolderImage();
         }
