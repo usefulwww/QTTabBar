@@ -3876,6 +3876,7 @@ namespace QTTabBarLib {
             listViewWrapper.EndLabelEdit    += ListView_EndLabelEdit;
             listViewWrapper.BeginScroll     += ListView_BeginScroll;
             listViewWrapper.MouseLeave      += ListView_MouseLeave;
+            
         }
 
         private static void InitializeStaticFields() {
@@ -4262,7 +4263,7 @@ namespace QTTabBarLib {
         }
 
         private bool ListView_DoubleClick(Point pt) {
-            if(!QTUtility.CheckConfig(Settings.NoDblClickUpLevel) && listViewWrapper.HitTest(pt, false) == -1) {
+            if(!QTUtility.CheckConfig(Settings.NoDblClickUpLevel) && listViewWrapper.IsTrackingBackground()) {
                 this.UpOneLevel();
                 return true;
             }

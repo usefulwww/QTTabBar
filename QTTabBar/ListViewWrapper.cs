@@ -332,8 +332,6 @@ namespace QTTabBarLib {
             return rect;
         }
 
-
-
         public int GetSelectedCount() {
             if(ListViewController == null) {
                 return 0;
@@ -717,6 +715,20 @@ namespace QTTabBarLib {
                 AutomationElement elem = AutomationElement.FromPoint(Control.MousePosition);
                 return elem.GetAutomationId() == "System.ItemNameDisplay";
             }
+        }
+
+        public bool IsTrackingBackground() {
+            if(ListViewController == null || PInvoke.WindowFromPoint(Control.MousePosition) != ListViewController.Handle) {
+                return false;
+            }
+            if(fIsSysListView) {
+                return GetHotItem() == -1;
+            }
+            else {
+                AutomationElement elem = AutomationElement.FromPoint(Control.MousePosition);
+                return elem.GetClassName() == "UIItemsView";
+            }
+            
         }
 
         private AutomationElement ListItemElementAt(Point pt) {
