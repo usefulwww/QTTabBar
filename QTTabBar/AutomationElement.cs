@@ -21,7 +21,7 @@ using System.Runtime.InteropServices;
 using System.Drawing;
 
 namespace QTTabBarLib {
-    class AutomationElement {
+    class AutomationElement : IDisposable {
         private static readonly Guid IID_IUIAutomation = new Guid("{30CBE57D-D9D0-452A-AB13-7AC5AC4825EE}");
         private static readonly Guid CLSID_CUIAutomation = new Guid("{FF48DBA4-60EF-4201-AA87-54103EEF594E}");
         private static readonly Guid IID_IUIAutomationRegistrar = new Guid("{8609C4EC-4A1A-4D88-A357-5A66E060E1CF}");
@@ -92,6 +92,49 @@ namespace QTTabBarLib {
         }
 
         ~AutomationElement() {
+            Dispose();
+        }
+
+        public static AutomationElement AncestorFromPoint(Point pt, int maxDepth, Predicate<AutomationElement> pred) {
+            AutomationElement ae = null;
+            IUIAutomationElement elem;
+            IUIAutomationTreeWalker walker;
+            pAutomation.get_ControlViewWalker(out walker);
+            bool cleanExit = false;
+            try {
+                pAutomation.ElementFromPoint(pt, out elem);
+                if(elem == null) {
+                    return null;
+                }
+                ae = new AutomationElement(elem);
+                if(pred(ae)) {
+                    cleanExit = true;
+                    return ae;
+                }
+                for(int i = 1; i < maxDepth; ++i) {
+                    IUIAutomationElement parent;
+                    walker.GetParentElement(elem, out parent);
+                    ae.Dispose();
+                    elem = parent;
+                    ae = new AutomationElement(elem);
+                    if(pred(ae)) {
+                        cleanExit = true;
+                        return ae;
+                    }
+                }
+                return null;
+            }
+            finally {
+                if(ae != null && !cleanExit) {
+                    ae.Dispose();
+                }
+                if(walker != null) {
+                    Marshal.ReleaseComObject(walker);
+                }
+            }
+        }
+
+        public void Dispose() {
             if(pElement != null) {
                 lock(typeof(AutomationElement)) {
                     --instances;
@@ -99,27 +142,39 @@ namespace QTTabBarLib {
                 Marshal.ReleaseComObject(pElement);
                 pElement = null;
             }
+            GC.SuppressFinalize(this);
         }
 
+
         public AutomationElement FindMatchingChild(Predicate<AutomationElement> pred) {
-            IUIAutomationTreeWalker walker;
+            AutomationElement ae = null;
+            IUIAutomationTreeWalker walker = null;
+            bool cleanExit = false;
             pAutomation.get_ControlViewWalker(out walker);
             try {
                 IUIAutomationElement elem;
                 walker.GetFirstChildElement(pElement, out elem);
                 while(elem != null) {
-                    AutomationElement ae = new AutomationElement(elem);
+                    ae = new AutomationElement(elem);
                     if(pred(ae)) {
+                        cleanExit = true;
                         return ae;
                     }
                     IUIAutomationElement next;
                     walker.GetNextSiblingElement(elem, out next);
+                    ae.Dispose();
+                    ae = null;
                     elem = next;
                 }
                 return null;
             }
             finally {
-                if(walker != null) Marshal.ReleaseComObject(walker);
+                if(ae != null && !cleanExit) {
+                    ae.Dispose();
+                }
+                if(walker != null) {
+                    Marshal.ReleaseComObject(walker);
+                }
             }
         }
 

@@ -72,7 +72,8 @@ namespace QTTabBarLib {
 
         public event ItemRightClickedEventHandler MultipleMenuItemsRightClicked;
 
-        public SubDirTipForm(IntPtr hwndMessageReflect, IntPtr hwndFocusOnMenu, bool fEnableShiftKeyOnDDMR) {
+        public SubDirTipForm(IntPtr hwndMessageReflect, IntPtr hwndFocusOnMenu, bool fEnableShiftKeyOnDDMR, ListViewWrapper lvw) {
+            this.listViewWrapper = lvw;
             this.hwndMessageReflect = hwndMessageReflect;
             this.hwndFocusOnMenu = hwndFocusOnMenu;
             this.hwndDialogParent = hwndFocusOnMenu;
@@ -1025,10 +1026,9 @@ namespace QTTabBarLib {
             return false;
         }
 
-        public void ShowSubDirTip(string path, byte[] idl, Point pnt, ListViewWrapper lvw) {
+        public void ShowSubDirTip(string path, byte[] idl, Point pnt) {
             this.lblSubDirBtn.SetPressed(false);
-            this.listViewWrapper = lvw;
-            if(PInvoke.WindowFromPoint(new Point(pnt.X, pnt.Y + 2)) == lvw.GetListViewHandle()) {
+            if(PInvoke.WindowFromPoint(new Point(pnt.X, pnt.Y + 2)) == listViewWrapper.GetListViewHandle()) {
                 this.isShowing = true;
                 this.currentDir = this.contextMenuSubDir.Path = path;
                 this.currentIDL = idl;
