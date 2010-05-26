@@ -770,7 +770,7 @@ namespace QTTabBarLib {
                 
                 case WM.MBUTTONUP:
                     if(MiddleClick != null) {
-                        return MiddleClick(new Point(
+                        MiddleClick(new Point(
                             QTUtility2.GET_X_LPARAM(msg.LParam),
                             QTUtility2.GET_Y_LPARAM(msg.LParam)));
                     }
