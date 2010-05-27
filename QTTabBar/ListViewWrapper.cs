@@ -45,8 +45,6 @@ namespace QTTabBarLib {
         private List<int> lstColumnFMT;
         private bool fListViewHasFocus;
         private IShellBrowser ShellBrowser;
-        private int StoredListItemIdx;
-        //private AutomationElement StoredListItemElem;
 
         internal delegate bool SVDestroyHandler();
         internal delegate bool SVMouseActivateHandler(ref int result);
@@ -690,17 +688,6 @@ namespace QTTabBarLib {
             }
         }
 
-        private AutomationElement ListItemElementFromPoint(AutomationElementFactory factory, Point pt) {
-            if(PInvoke.WindowFromPoint(pt) != ListViewController.Handle) return null;
-            AutomationElement elem = factory.FromPoint(pt);
-            if(elem == null) return null;
-            if(elem.GetClassName() == "UIItem") return elem;
-            elem = elem.GetParent();
-            if(elem == null) return null;
-            if(elem.GetClassName() == "UIItem") return elem;
-            return null;
-        }
-
         public void Initialize() {
             if(ShellViewController != null) {
                 ShellViewController.ReleaseHandle();
@@ -760,17 +747,16 @@ namespace QTTabBarLib {
             }            
         }
 
-        /*
-        private AutomationElement ListItemElementAt(Point pt) {
+        private AutomationElement ListItemElementFromPoint(AutomationElementFactory factory, Point pt) {
             if(PInvoke.WindowFromPoint(pt) != ListViewController.Handle) return null;
-            AutomationElement elem = AutomationElement.FromPoint(pt);
+            AutomationElement elem = factory.FromPoint(pt);
             if(elem == null) return null;
             if(elem.GetClassName() == "UIItem") return elem;
             elem = elem.GetParent();
+            if(elem == null) return null;
             if(elem.GetClassName() == "UIItem") return elem;
             return null;
         }
-        */
 
         private bool ListViewController_MessageCaptured(ref System.Windows.Forms.Message msg) {
 
