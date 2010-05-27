@@ -349,71 +349,74 @@ namespace QTTabBarLib {
             }
         }
 
-        public Point GetSubDirTipPoint(int iItem) {
+        public Point GetSubDirTipPoint(bool fByKey) {
             int viewMode = GetCurrentViewMode();
             if(fIsSysListView) {
+                int iItem = fByKey ? GetFocusedItem() : GetHotItem();
                 RECT rect = GetLVITEMRECT(ListViewController.Handle, iItem, true, viewMode);
                 return new Point(rect.right - 16, rect.bottom - 16);
             }
             else {
+                return AutoMan.DoQuery<Point>(factory => {
+                    AutomationElement elem = fByKey ?
+                        factory.FromKeyboardFocus() :
+                        ListItemElementFromPoint(factory, Control.MousePosition);
 
-                return new Point(0, 0);
+                    if(elem == null) return new Point(0, 0);
 
-                /*
-                if(iItem != StoredListItemIdx || StoredListItemElem == null) {
-                    // TODO ... maybe
-                }
-                
-                AutomationElement elem = StoredListItemElem;
-                Rectangle rect = elem.GetBoundingRect();
-                int x, y;
-                switch(viewMode) {
-                    case FVM.CONTENT:
-                        y = rect.Bottom;
-                        elem = elem.FindMatchingChild(child => child.GetAutomationId() == "System.ItemNameDisplay");
-                        if(elem == null) return new Point(0, 0);
-                        x = elem.GetBoundingRect().Left;
-                        return new Point(x, y - 16);
+                    Rectangle rect = elem.GetBoundingRect();
+                    int x, y;
+                    switch(viewMode) {
+                        case FVM.CONTENT:
+                            y = rect.Bottom;
+                            elem = elem.FindMatchingChild(child => 
+                                    child.GetAutomationId() == "System.ItemNameDisplay");
+                            if(elem == null) return new Point(0, 0);
+                            x = elem.GetBoundingRect().Left;
+                            return new Point(x, y - 16);
 
-                    case FVM.DETAILS:
-                        elem = elem.FindMatchingChild(child => child.GetAutomationId() == "System.ItemNameDisplay");
-                        if(elem == null) return new Point(0, 0);
-                        rect = elem.GetBoundingRect();
-                        x = rect.Right;
-                        y = rect.Top;
-                        y += (rect.Bottom - y) / 2;
-                        return new Point(x - 16, y - 8);
+                        case FVM.DETAILS:
+                            elem = elem.FindMatchingChild(child => 
+                                    child.GetAutomationId() == "System.ItemNameDisplay");
+                            if(elem == null) return new Point(0, 0);
+                            rect = elem.GetBoundingRect();
+                            x = rect.Right;
+                            y = rect.Top;
+                            y += (rect.Bottom - y) / 2;
+                            return new Point(x - 16, y - 8);
 
-                    case FVM.SMALLICON:
-                        x = rect.Right;
-                        y = rect.Top;
-                        x -= (rect.Bottom - y) / 2;
-                        y += (rect.Bottom - y) / 2;
-                        return new Point(x - 8, y - 8);
+                        case FVM.SMALLICON:
+                            x = rect.Right;
+                            y = rect.Top;
+                            x -= (rect.Bottom - y) / 2;
+                            y += (rect.Bottom - y) / 2;
+                            return new Point(x - 8, y - 8);
 
-                    case FVM.TILE:
-                        y = rect.Bottom;
-                        elem = elem.FindMatchingChild(child => child.GetClassName() == "UIImage");
-                        if(elem == null) return new Point(0, 0);
-                        x = elem.GetBoundingRect().Right;
-                        return new Point(x - 16, y - 16);
+                        case FVM.TILE:
+                            y = rect.Bottom;
+                            elem = elem.FindMatchingChild(child => 
+                                    child.GetClassName() == "UIImage");
+                            if(elem == null) return new Point(0, 0);
+                            x = elem.GetBoundingRect().Right;
+                            return new Point(x - 16, y - 16);
 
-                    case FVM.THUMBSTRIP:
-                    case FVM.THUMBNAIL:
-                    case FVM.ICON:
-                        x = rect.Right;
-                        elem = elem.FindMatchingChild(child => child.GetClassName() == "UIImage");
-                        if(elem == null) return new Point(0, 0);
-                        y = elem.GetBoundingRect().Bottom;
-                        return new Point(x - 16, y - 16);
+                        case FVM.THUMBSTRIP:
+                        case FVM.THUMBNAIL:
+                        case FVM.ICON:
+                            x = rect.Right;
+                            elem = elem.FindMatchingChild(child => 
+                                    child.GetClassName() == "UIImage");
+                            if(elem == null) return new Point(0, 0);
+                            y = elem.GetBoundingRect().Bottom;
+                            return new Point(x - 16, y - 16);
 
-                    case FVM.LIST:
-                    default:
-                        x = rect.Right;
-                        y = rect.Bottom;
-                        return new Point(x, y - 15);
-                }
-            */
+                        case FVM.LIST:
+                        default:
+                            x = rect.Right;
+                            y = rect.Bottom;
+                            return new Point(x, y - 15);
+                    }
+                });
             }
         }
 
