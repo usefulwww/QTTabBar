@@ -649,7 +649,7 @@ namespace QTTabBarLib {
             }
             else {
                 return QueryMan.DoQuery<bool>(ElemMan => {
-                    AutomationElement elem = ListItemElementAt(Control.MousePosition, ElemMan);
+                    AutomationElement elem = ListItemElementFromPoint(ElemMan, Control.MousePosition);
                     return elem == null ? false : elem.IsSelected();
                 });
             }
@@ -681,18 +681,19 @@ namespace QTTabBarLib {
                     PInvoke.ClientToScreen(ListViewController.Handle, ref pt);
                 }
                 return QueryMan.DoQuery<int>(ElemMan => {
-                    AutomationElement elem = ListItemElementAt(pt, ElemMan);
+                    AutomationElement elem = ListItemElementFromPoint(ElemMan, pt);
                     return elem == null ? -1 : elem.GetItemIndex();
                 });
             }
         }
 
-        private AutomationElement ListItemElementAt(Point pt, AutomationElementManager ElemMan) {
+        private AutomationElement ListItemElementFromPoint(AutomationElementManager ElemMan, Point pt) {
             if(PInvoke.WindowFromPoint(pt) != ListViewController.Handle) return null;
             AutomationElement elem = ElemMan.FromPoint(pt);
             if(elem == null) return null;
             if(elem.GetClassName() == "UIItem") return elem;
             elem = elem.GetParent();
+            if(elem == null) return null;
             if(elem.GetClassName() == "UIItem") return elem;
             return null;
         }
