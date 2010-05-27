@@ -61,7 +61,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppLauncher.cs" />
-    <Compile Include="AutomationElement.cs" />
+    <Compile Include="Automation\AutomationElement.cs" />
+    <Compile Include="Automation\AutomationElementFactory.cs" />
+    <Compile Include="Automation\AutomationManager.cs" />
     <Compile Include="ButtonBarOptionForm.cs">
       <SubType>Form</SubType>
     </Compile>

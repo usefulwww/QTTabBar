@@ -16,6 +16,7 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace QTTabBarLib {
+    using QTTabBarLib.Automation;
     using QTTabBarLib.Interop;
     using System;
     using System.Collections.Generic;
@@ -27,6 +28,7 @@ namespace QTTabBarLib {
     using System.Windows.Forms;
     
     public class ListViewWrapper {
+        private AutomationManager AutoMan;
         private IntPtr ExplorerHandle;
         private IntPtr ShellContainer;
         private IntPtr hwndEnumResult;
@@ -44,7 +46,7 @@ namespace QTTabBarLib {
         private bool fListViewHasFocus;
         private IShellBrowser ShellBrowser;
         private int StoredListItemIdx;
-        private AutomationElement StoredListItemElem;
+        //private AutomationElement StoredListItemElem;
 
         internal delegate bool SVDestroyHandler();
         internal delegate bool SVMouseActivateHandler(ref int result);
@@ -87,6 +89,7 @@ namespace QTTabBarLib {
         internal ListViewWrapper(IShellBrowser ShellBrowser, IntPtr ExplorerHandle) {
             this.ShellBrowser = ShellBrowser;
             this.ExplorerHandle = ExplorerHandle;
+            AutoMan = new AutomationManager();
             if(QTUtility.IsVista) {
                 hwndEnumResult = IntPtr.Zero;
                 PInvoke.EnumChildWindows(ExplorerHandle, new EnumWndProc(this.CallbackEnumChildProc_Container), IntPtr.Zero);
@@ -203,14 +206,10 @@ namespace QTTabBarLib {
                 return -1;
             }
             else {
-                AutomationElement elem = AutomationElement.FromKeyboardFocus();
-                if(elem != null) {
-                    // I don't like this solution.  TODO find a better one.
-                    StoredListItemElem = elem;
-                    StoredListItemIdx = elem.GetItemIndex();
-                    return StoredListItemIdx;
-                }
-                return -1;
+                return AutoMan.DoQuery<int>(factory => {
+                    AutomationElement elem = factory.FromKeyboardFocus();
+                    return elem == null ? -1 : elem.GetItemIndex();
+                });
             }
         }
 
@@ -222,10 +221,10 @@ namespace QTTabBarLib {
                     return GetLVITEMRECT(ListViewController.Handle, i, false, fvm).ToRectangle();
                 }
                 else {
-                    AutomationElement elem = AutomationElement.FromKeyboardFocus();
-                    if(elem != null) {
-                        return elem.GetBoundingRect();
-                    }
+                    return AutoMan.DoQuery<Rectangle>(factory => {
+                        AutomationElement elem = factory.FromKeyboardFocus();
+                        return elem == null ? new Rectangle(0, 0, 0, 0) : elem.GetBoundingRect();
+                    });
                 }
             }
             return new Rectangle(0, 0, 0, 0);
@@ -243,7 +242,10 @@ namespace QTTabBarLib {
                 return (int)PInvoke.SendMessage(ListViewController.Handle, LVM.GETITEMCOUNT, IntPtr.Zero, IntPtr.Zero);
             }
             else {
-                return AutomationElement.FromHandle(ListViewController.Handle).GetItemCount();
+                return AutoMan.DoQuery<int>(factory => {
+                    AutomationElement elem = factory.FromHandle(ListViewController.Handle);
+                    return elem == null ? 0 : elem.GetItemCount();
+                });
             }
         }
 
@@ -340,70 +342,81 @@ namespace QTTabBarLib {
                 return (int)PInvoke.SendMessage(ListViewController.Handle, LVM.GETSELECTEDCOUNT, IntPtr.Zero, IntPtr.Zero);
             }
             else {
-                return AutomationElement.FromHandle(ListViewController.Handle).GetSelectedCount();
+                return AutoMan.DoQuery<int>(factory => {
+                    AutomationElement elem = factory.FromHandle(ListViewController.Handle);
+                    return elem == null ? 0 : elem.GetSelectedCount();
+                });
             }
         }
 
-        public Point GetSubDirTipPoint(int iItem) {
+        public Point GetSubDirTipPoint(bool fByKey) {
             int viewMode = GetCurrentViewMode();
             if(fIsSysListView) {
+                int iItem = fByKey ? GetFocusedItem() : GetHotItem();
                 RECT rect = GetLVITEMRECT(ListViewController.Handle, iItem, true, viewMode);
                 return new Point(rect.right - 16, rect.bottom - 16);
             }
             else {
-                if(iItem != StoredListItemIdx || StoredListItemElem == null) {
-                    // TODO ... maybe
-                }
+                return AutoMan.DoQuery<Point>(factory => {
+                    AutomationElement elem = fByKey ?
+                        factory.FromKeyboardFocus() :
+                        ListItemElementFromPoint(factory, Control.MousePosition);
 
-                AutomationElement elem = StoredListItemElem;
-                Rectangle rect = elem.GetBoundingRect();
-                int x, y;
-                switch(viewMode) {
-                    case FVM.CONTENT:
-                        y = rect.Bottom;
-                        elem = elem.FindMatchingChild(child => child.GetAutomationId() == "System.ItemNameDisplay");
-                        if(elem == null) return new Point(0, 0);
-                        x = elem.GetBoundingRect().Left;
-                        return new Point(x, y - 16);
+                    if(elem == null) return new Point(0, 0);
 
-                    case FVM.DETAILS:
-                        elem = elem.FindMatchingChild(child => child.GetAutomationId() == "System.ItemNameDisplay");
-                        if(elem == null) return new Point(0, 0);
-                        rect = elem.GetBoundingRect();
-                        x = rect.Right;
-                        y = rect.Top;
-                        y += (rect.Bottom - y) / 2;
-                        return new Point(x - 16, y - 8);
+                    Rectangle rect = elem.GetBoundingRect();
+                    int x, y;
+                    switch(viewMode) {
+                        case FVM.CONTENT:
+                            y = rect.Bottom;
+                            elem = elem.FindMatchingChild(child => 
+                                    child.GetAutomationId() == "System.ItemNameDisplay");
+                            if(elem == null) return new Point(0, 0);
+                            x = elem.GetBoundingRect().Left;
+                            return new Point(x, y - 16);
 
-                    case FVM.SMALLICON:
-                        x = rect.Right;
-                        y = rect.Top;
-                        x -= (rect.Bottom - y) / 2;
-                        y += (rect.Bottom - y) / 2;
-                        return new Point(x - 8, y - 8);
+                        case FVM.DETAILS:
+                            elem = elem.FindMatchingChild(child => 
+                                    child.GetAutomationId() == "System.ItemNameDisplay");
+                            if(elem == null) return new Point(0, 0);
+                            rect = elem.GetBoundingRect();
+                            x = rect.Right;
+                            y = rect.Top;
+                            y += (rect.Bottom - y) / 2;
+                            return new Point(x - 16, y - 8);
 
-                    case FVM.TILE:
-                        y = rect.Bottom;
-                        elem = elem.FindMatchingChild(child => child.GetClassName() == "UIImage");
-                        if(elem == null) return new Point(0, 0);
-                        x = elem.GetBoundingRect().Right;
-                        return new Point(x - 16, y - 16);
+                        case FVM.SMALLICON:
+                            x = rect.Right;
+                            y = rect.Top;
+                            x -= (rect.Bottom - y) / 2;
+                            y += (rect.Bottom - y) / 2;
+                            return new Point(x - 8, y - 8);
 
-                    case FVM.THUMBSTRIP:
-                    case FVM.THUMBNAIL:
-                    case FVM.ICON:
-                        x = rect.Right;
-                        elem = elem.FindMatchingChild(child => child.GetClassName() == "UIImage");
-                        if(elem == null) return new Point(0, 0);
-                        y = elem.GetBoundingRect().Bottom;
-                        return new Point(x - 16, y - 16);
+                        case FVM.TILE:
+                            y = rect.Bottom;
+                            elem = elem.FindMatchingChild(child => 
+                                    child.GetClassName() == "UIImage");
+                            if(elem == null) return new Point(0, 0);
+                            x = elem.GetBoundingRect().Right;
+                            return new Point(x - 16, y - 16);
 
-                    case FVM.LIST:
-                    default:
-                        x = rect.Right;
-                        y = rect.Bottom;
-                        return new Point(x, y - 15);
-                }
+                        case FVM.THUMBSTRIP:
+                        case FVM.THUMBNAIL:
+                        case FVM.ICON:
+                            x = rect.Right;
+                            elem = elem.FindMatchingChild(child => 
+                                    child.GetClassName() == "UIImage");
+                            if(elem == null) return new Point(0, 0);
+                            y = elem.GetBoundingRect().Bottom;
+                            return new Point(x - 16, y - 16);
+
+                        case FVM.LIST:
+                        default:
+                            x = rect.Right;
+                            y = rect.Bottom;
+                            return new Point(x, y - 15);
+                    }
+                });
             }
         }
 
@@ -638,9 +651,10 @@ namespace QTTabBarLib {
                 return ((state & LVIS.SELECTED) != 0);
             }
             else {
-                AutomationElement elem = ListItemElementAt(Control.MousePosition);
-                if(elem == null) return false;
-                return elem.IsSelected();
+                return AutoMan.DoQuery<bool>(factory => {
+                    AutomationElement elem = ListItemElementFromPoint(factory, Control.MousePosition);
+                    return elem == null ? false : elem.IsSelected();
+                });
             }
         }
 
@@ -669,12 +683,22 @@ namespace QTTabBarLib {
                 if(!ScreenCoords) {
                     PInvoke.ClientToScreen(ListViewController.Handle, ref pt);
                 }
-                AutomationElement elem = ListItemElementAt(pt);
-                if(elem == null) return -1;
-                StoredListItemElem = elem;
-                StoredListItemIdx = elem.GetItemIndex();
-                return StoredListItemIdx;
+                return AutoMan.DoQuery<int>(factory => {
+                    AutomationElement elem = ListItemElementFromPoint(factory, pt);
+                    return elem == null ? -1 : elem.GetItemIndex();
+                });
             }
+        }
+
+        private AutomationElement ListItemElementFromPoint(AutomationElementFactory factory, Point pt) {
+            if(PInvoke.WindowFromPoint(pt) != ListViewController.Handle) return null;
+            AutomationElement elem = factory.FromPoint(pt);
+            if(elem == null) return null;
+            if(elem.GetClassName() == "UIItem") return elem;
+            elem = elem.GetParent();
+            if(elem == null) return null;
+            if(elem.GetClassName() == "UIItem") return elem;
+            return null;
         }
 
         public void Initialize() {
@@ -712,8 +736,10 @@ namespace QTTabBarLib {
                 return (Math.Min(rect.left, rect.right) <= mousePosition.X) && (mousePosition.X <= Math.Max(rect.left, rect.right));
             }
             else {
-                AutomationElement elem = AutomationElement.FromPoint(Control.MousePosition);
-                return elem.GetAutomationId() == "System.ItemNameDisplay";
+                return AutoMan.DoQuery<bool>(factory => {
+                    AutomationElement elem = factory.FromPoint(Control.MousePosition);
+                    return elem == null ? false : elem.GetAutomationId() == "System.ItemNameDisplay";
+                });
             }
         }
 
@@ -725,12 +751,16 @@ namespace QTTabBarLib {
                 return GetHotItem() == -1;
             }
             else {
-                AutomationElement elem = AutomationElement.FromPoint(Control.MousePosition);
-                return elem.GetClassName() == "UIItemsView";
-            }
-            
+                return AutoMan.DoQuery<bool>(factory => {
+                    AutomationElement elem = factory.FromPoint(Control.MousePosition);
+                    if(elem == null) return false;
+                    string className = elem.GetClassName();
+                    return className == "UIItemsView" || className == "UIGroupItem";
+                });
+            }            
         }
 
+        /*
         private AutomationElement ListItemElementAt(Point pt) {
             if(PInvoke.WindowFromPoint(pt) != ListViewController.Handle) return null;
             AutomationElement elem = AutomationElement.FromPoint(pt);
@@ -740,6 +770,8 @@ namespace QTTabBarLib {
             if(elem.GetClassName() == "UIItem") return elem;
             return null;
         }
+        */
+
         private bool ListViewController_MessageCaptured(ref System.Windows.Forms.Message msg) {
 
             // First block is for both SysListView and ItemsView

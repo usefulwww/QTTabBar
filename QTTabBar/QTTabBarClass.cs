@@ -4214,7 +4214,7 @@ namespace QTTabBarLib {
                             this.subDirIndex = iItem;
                         }
                         if(iItem > -1 && listViewWrapper.IsTrackingItemName()) {
-                            if(this.ShowSubDirTip(iItem, false)) {
+                            if(this.ShowSubDirTip(iItem, false, false)) {
                                 if(!QTUtility.IsVista) {
                                     this.subDirIndex = iItem;
                                 }
@@ -6027,7 +6027,7 @@ namespace QTTabBarLib {
 
                     int iItem = listViewWrapper.GetFocusedItem();
                     if(iItem != -1) {
-                        this.ShowSubDirTip(iItem, false);
+                        this.ShowSubDirTip(iItem, true, false);
                         this.subDirTip.PerformClickByKey();
                     }
                 }
@@ -6130,7 +6130,7 @@ namespace QTTabBarLib {
             return hwndShellView;
         }
 
-        private bool ShowSubDirTip(int iItem, bool fSkipForegroundCheck) {
+        private bool ShowSubDirTip(int iItem, bool fByKey, bool fSkipForegroundCheck) {
             string str;
             if((fSkipForegroundCheck || (this.ExplorerHandle == PInvoke.GetForegroundWindow())) && this.TryGetHotTrackPath(iItem, out str)) {
                 bool flag = false;
@@ -6138,7 +6138,7 @@ namespace QTTabBarLib {
                     if(!TryMakeSubDirTipPath(ref str)) {
                         return false;
                     }
-                    Point pnt = listViewWrapper.GetSubDirTipPoint(iItem);
+                    Point pnt = listViewWrapper.GetSubDirTipPoint(fByKey);
 
                     if(this.subDirTip == null) {
                         this.subDirTip = new SubDirTipForm(base.Handle, this.ExplorerHandle, true, listViewWrapper);
@@ -6914,7 +6914,7 @@ namespace QTTabBarLib {
                     if(this.subDirTip != null) {
                         this.subDirTip.HideMenu();
                     }
-                    if(this.ShowSubDirTip(this.itemIndexDROPHILITED, true)) {
+                    if(this.ShowSubDirTip(this.itemIndexDROPHILITED, false, true)) {
                         WindowUtils.BringExplorerToFront(this.ExplorerHandle);
                         this.subDirTip.ShowMenu();
                         return;
