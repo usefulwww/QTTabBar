@@ -22,14 +22,33 @@ using System.Runtime.InteropServices;
 using System.Drawing;
 
 namespace QTTabBarLib.Automation {
+    // This class is for use in AutomationManager.  Never instantiate it
+    // elsewhere.
 
-    class AutomationElementManager : IDisposable {
-        private List<AutomationElement> elems;
+    class AutomationElementFactory : IDisposable {
+        private List<AutomationElement> disposeList;
         private IUIAutomation pAutomation;
 
-        internal AutomationElementManager(IUIAutomation pAutomation) {
-            elems = new List<AutomationElement>();
+        internal AutomationElementFactory(IUIAutomation pAutomation) {
+            disposeList = new List<AutomationElement>();
             this.pAutomation = pAutomation;
+        }
+
+        internal void AddToDisposeList(AutomationElement elem) {
+            disposeList.Add(elem);
+        }
+
+        public IUIAutomationTreeWalker CreateTreeWalker() {
+            IUIAutomationTreeWalker walker;
+            pAutomation.get_ControlViewWalker(out walker);
+            return walker;
+        }
+
+        public void Dispose() {
+            foreach(AutomationElement elem in disposeList) {
+                elem.Dispose();
+            }
+            disposeList.Clear();
         }
 
         public AutomationElement FromHandle(IntPtr hwnd) {
@@ -48,21 +67,6 @@ namespace QTTabBarLib.Automation {
             IUIAutomationElement pElement;
             pAutomation.GetFocusedElement(out pElement);
             return pElement == null ? null : new AutomationElement(pElement, this);
-        }
-
-        internal void AddToDisposeList(AutomationElement elem) {
-            elems.Add(elem);
-        }
-
-        public IUIAutomation GetIUIAutomation() {
-            return pAutomation;
-        }
-
-        public void Dispose() {
-            foreach(AutomationElement elem in elems) {
-                elem.Dispose();
-            }
-            elems.Clear();
         }
     }
 }

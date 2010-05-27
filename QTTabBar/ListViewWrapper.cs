@@ -28,7 +28,7 @@ namespace QTTabBarLib {
     using System.Windows.Forms;
     
     public class ListViewWrapper {
-        private AutomationQueryManager QueryMan;
+        private AutomationManager AutoMan;
         private IntPtr ExplorerHandle;
         private IntPtr ShellContainer;
         private IntPtr hwndEnumResult;
@@ -89,7 +89,7 @@ namespace QTTabBarLib {
         internal ListViewWrapper(IShellBrowser ShellBrowser, IntPtr ExplorerHandle) {
             this.ShellBrowser = ShellBrowser;
             this.ExplorerHandle = ExplorerHandle;
-            QueryMan = new AutomationQueryManager();
+            AutoMan = new AutomationManager();
             if(QTUtility.IsVista) {
                 hwndEnumResult = IntPtr.Zero;
                 PInvoke.EnumChildWindows(ExplorerHandle, new EnumWndProc(this.CallbackEnumChildProc_Container), IntPtr.Zero);
@@ -206,8 +206,8 @@ namespace QTTabBarLib {
                 return -1;
             }
             else {
-                return QueryMan.DoQuery<int>(ElemMan => {
-                    AutomationElement elem = ElemMan.FromKeyboardFocus();
+                return AutoMan.DoQuery<int>(factory => {
+                    AutomationElement elem = factory.FromKeyboardFocus();
                     return elem == null ? -1 : elem.GetItemIndex();
                 });
             }
@@ -221,8 +221,8 @@ namespace QTTabBarLib {
                     return GetLVITEMRECT(ListViewController.Handle, i, false, fvm).ToRectangle();
                 }
                 else {
-                    return QueryMan.DoQuery<Rectangle>(ElemMan => {
-                        AutomationElement elem = ElemMan.FromKeyboardFocus();
+                    return AutoMan.DoQuery<Rectangle>(factory => {
+                        AutomationElement elem = factory.FromKeyboardFocus();
                         return elem == null ? new Rectangle(0, 0, 0, 0) : elem.GetBoundingRect();
                     });
                 }
@@ -242,8 +242,8 @@ namespace QTTabBarLib {
                 return (int)PInvoke.SendMessage(ListViewController.Handle, LVM.GETITEMCOUNT, IntPtr.Zero, IntPtr.Zero);
             }
             else {
-                return QueryMan.DoQuery<int>(ElemMan => {
-                    AutomationElement elem = ElemMan.FromHandle(ListViewController.Handle);
+                return AutoMan.DoQuery<int>(factory => {
+                    AutomationElement elem = factory.FromHandle(ListViewController.Handle);
                     return elem == null ? 0 : elem.GetItemCount();
                 });
             }
@@ -342,8 +342,8 @@ namespace QTTabBarLib {
                 return (int)PInvoke.SendMessage(ListViewController.Handle, LVM.GETSELECTEDCOUNT, IntPtr.Zero, IntPtr.Zero);
             }
             else {
-                return QueryMan.DoQuery<int>(ElemMan => {
-                    AutomationElement elem = ElemMan.FromHandle(ListViewController.Handle);
+                return AutoMan.DoQuery<int>(factory => {
+                    AutomationElement elem = factory.FromHandle(ListViewController.Handle);
                     return elem == null ? 0 : elem.GetSelectedCount();
                 });
             }
@@ -648,8 +648,8 @@ namespace QTTabBarLib {
                 return ((state & LVIS.SELECTED) != 0);
             }
             else {
-                return QueryMan.DoQuery<bool>(ElemMan => {
-                    AutomationElement elem = ListItemElementFromPoint(ElemMan, Control.MousePosition);
+                return AutoMan.DoQuery<bool>(factory => {
+                    AutomationElement elem = ListItemElementFromPoint(factory, Control.MousePosition);
                     return elem == null ? false : elem.IsSelected();
                 });
             }
@@ -680,16 +680,16 @@ namespace QTTabBarLib {
                 if(!ScreenCoords) {
                     PInvoke.ClientToScreen(ListViewController.Handle, ref pt);
                 }
-                return QueryMan.DoQuery<int>(ElemMan => {
-                    AutomationElement elem = ListItemElementFromPoint(ElemMan, pt);
+                return AutoMan.DoQuery<int>(factory => {
+                    AutomationElement elem = ListItemElementFromPoint(factory, pt);
                     return elem == null ? -1 : elem.GetItemIndex();
                 });
             }
         }
 
-        private AutomationElement ListItemElementFromPoint(AutomationElementManager ElemMan, Point pt) {
+        private AutomationElement ListItemElementFromPoint(AutomationElementFactory factory, Point pt) {
             if(PInvoke.WindowFromPoint(pt) != ListViewController.Handle) return null;
-            AutomationElement elem = ElemMan.FromPoint(pt);
+            AutomationElement elem = factory.FromPoint(pt);
             if(elem == null) return null;
             if(elem.GetClassName() == "UIItem") return elem;
             elem = elem.GetParent();
@@ -733,8 +733,8 @@ namespace QTTabBarLib {
                 return (Math.Min(rect.left, rect.right) <= mousePosition.X) && (mousePosition.X <= Math.Max(rect.left, rect.right));
             }
             else {
-                return QueryMan.DoQuery<bool>(ElemMan => {
-                    AutomationElement elem = ElemMan.FromPoint(Control.MousePosition);
+                return AutoMan.DoQuery<bool>(factory => {
+                    AutomationElement elem = factory.FromPoint(Control.MousePosition);
                     return elem == null ? false : elem.GetAutomationId() == "System.ItemNameDisplay";
                 });
             }
@@ -748,8 +748,8 @@ namespace QTTabBarLib {
                 return GetHotItem() == -1;
             }
             else {
-                return QueryMan.DoQuery<bool>(ElemMan => {
-                    AutomationElement elem = ElemMan.FromPoint(Control.MousePosition);
+                return AutoMan.DoQuery<bool>(factory => {
+                    AutomationElement elem = factory.FromPoint(Control.MousePosition);
                     if(elem == null) return false;
                     string className = elem.GetClassName();
                     return className == "UIItemsView" || className == "UIGroupItem";

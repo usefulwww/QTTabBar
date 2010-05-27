@@ -21,12 +21,17 @@ using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace QTTabBarLib.Automation {
-    class AutomationQueryManager : IDisposable {
+    // All interaction with AutomationElements MUST be done in a thread other
+    // than the UI thread.  Use this class to execute code in the Automation 
+    // thread.
+    // http://msdn.microsoft.com/en-us/library/ee671692%28VS.85%29.aspx
+
+    class AutomationManager : IDisposable {
         private static readonly Guid IID_IUIAutomation = new Guid("{30CBE57D-D9D0-452A-AB13-7AC5AC4825EE}");
         private static readonly Guid CLSID_CUIAutomation = new Guid("{FF48DBA4-60EF-4201-AA87-54103EEF594E}");
 
         private static IUIAutomation pAutomation;
-        public delegate T Query<T>(AutomationElementManager manager);
+        public delegate T Query<T>(AutomationElementFactory factory);
 
         private class Worker<T> {
             private T ret;
@@ -37,7 +42,7 @@ namespace QTTabBarLib.Automation {
             }
 
             public void DoWork(object state) {
-                using(AutomationElementManager man = new AutomationElementManager(pAutomation)) {
+                using(AutomationElementFactory man = new AutomationElementFactory(pAutomation)) {
                     ret = query(man);
                 }
                 ((AutoResetEvent)state).Set();
@@ -48,7 +53,7 @@ namespace QTTabBarLib.Automation {
             }
         };
 
-        public AutomationQueryManager() {
+        public AutomationManager() {
             Guid rclsid = CLSID_CUIAutomation;
             Guid riid = IID_IUIAutomation;
             object obj = null;
@@ -57,7 +62,7 @@ namespace QTTabBarLib.Automation {
             pAutomation = obj as IUIAutomation;
         }
 
-        ~AutomationQueryManager() {
+        ~AutomationManager() {
             Dispose();
         }
 
