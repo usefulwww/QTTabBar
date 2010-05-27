@@ -16,6 +16,7 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace QTTabBarLib {
+    using QTTabBarLib.Automation;
     using QTTabBarLib.Interop;
     using System;
     using System.Collections.Generic;
@@ -27,6 +28,7 @@ namespace QTTabBarLib {
     using System.Windows.Forms;
     
     public class ListViewWrapper {
+        private AutomationQueryManager QueryMan;
         private IntPtr ExplorerHandle;
         private IntPtr ShellContainer;
         private IntPtr hwndEnumResult;
@@ -87,6 +89,7 @@ namespace QTTabBarLib {
         internal ListViewWrapper(IShellBrowser ShellBrowser, IntPtr ExplorerHandle) {
             this.ShellBrowser = ShellBrowser;
             this.ExplorerHandle = ExplorerHandle;
+            QueryMan = new AutomationQueryManager();
             if(QTUtility.IsVista) {
                 hwndEnumResult = IntPtr.Zero;
                 PInvoke.EnumChildWindows(ExplorerHandle, new EnumWndProc(this.CallbackEnumChildProc_Container), IntPtr.Zero);
@@ -203,20 +206,10 @@ namespace QTTabBarLib {
                 return -1;
             }
             else {
-                using(AutomationElement elem = AutomationElement.FromKeyboardFocus()) {
+                return QueryMan.DoQuery<int>(ElemMan => {
+                    AutomationElement elem = ElemMan.FromKeyboardFocus();
                     return elem == null ? -1 : elem.GetItemIndex();
-                }
-                
-                /*
-                if(elem != null) {
-                    // I don't like this solution.  TODO find a better one.
-                    StoredListItemElem = elem;
-                    StoredListItemIdx = elem.GetItemIndex();
-                    return StoredListItemIdx;
-                }
-                */
-
-                return -1;
+                });
             }
         }
 
@@ -228,11 +221,10 @@ namespace QTTabBarLib {
                     return GetLVITEMRECT(ListViewController.Handle, i, false, fvm).ToRectangle();
                 }
                 else {
-                    using(AutomationElement elem = AutomationElement.FromKeyboardFocus()) {
-                        if(elem != null) {
-                            return elem.GetBoundingRect();
-                        }
-                    }
+                    return QueryMan.DoQuery<Rectangle>(ElemMan => {
+                        AutomationElement elem = ElemMan.FromKeyboardFocus();
+                        return elem == null ? new Rectangle(0, 0, 0, 0) : elem.GetBoundingRect();
+                    });
                 }
             }
             return new Rectangle(0, 0, 0, 0);
@@ -250,9 +242,10 @@ namespace QTTabBarLib {
                 return (int)PInvoke.SendMessage(ListViewController.Handle, LVM.GETITEMCOUNT, IntPtr.Zero, IntPtr.Zero);
             }
             else {
-                using(AutomationElement elem = AutomationElement.FromHandle(ListViewController.Handle)) {
-                    return elem == null ?  0 : elem.GetItemCount();
-                }
+                return QueryMan.DoQuery<int>(ElemMan => {
+                    AutomationElement elem = ElemMan.FromHandle(ListViewController.Handle);
+                    return elem == null ? 0 : elem.GetItemCount();
+                });
             }
         }
 
@@ -349,9 +342,10 @@ namespace QTTabBarLib {
                 return (int)PInvoke.SendMessage(ListViewController.Handle, LVM.GETSELECTEDCOUNT, IntPtr.Zero, IntPtr.Zero);
             }
             else {
-                using(AutomationElement elem = AutomationElement.FromHandle(ListViewController.Handle)) {
-                    return elem == null ?  0 : elem.GetSelectedCount();
-                }
+                return QueryMan.DoQuery<int>(ElemMan => {
+                    AutomationElement elem = ElemMan.FromHandle(ListViewController.Handle);
+                    return elem == null ? 0 : elem.GetSelectedCount();
+                });
             }
         }
 
@@ -654,12 +648,10 @@ namespace QTTabBarLib {
                 return ((state & LVIS.SELECTED) != 0);
             }
             else {
-                using(AutomationElement elem = AutomationElement.AncestorFromPoint(Control.MousePosition, 2, item => item.GetClassName() == "UIItem")) {
+                return QueryMan.DoQuery<bool>(ElemMan => {
+                    AutomationElement elem = ListItemElementAt(Control.MousePosition, ElemMan);
                     return elem == null ? false : elem.IsSelected();
-                }
-                //AutomationElement elem = ListItemElementAt(Control.MousePosition);
-                //if(elem == null) return false;
-                //return elem.IsSelected();
+                });
             }
         }
 
@@ -688,15 +680,21 @@ namespace QTTabBarLib {
                 if(!ScreenCoords) {
                     PInvoke.ClientToScreen(ListViewController.Handle, ref pt);
                 }
-                using(AutomationElement elem = AutomationElement.AncestorFromPoint(pt, 2, item => item.GetClassName() == "UIItem")) {
+                return QueryMan.DoQuery<int>(ElemMan => {
+                    AutomationElement elem = ListItemElementAt(pt, ElemMan);
                     return elem == null ? -1 : elem.GetItemIndex();
-                }
-
-                //if(elem == null) return -1;
-                //StoredListItemElem = elem;
-                //StoredListItemIdx = elem.GetItemIndex();
-                //return StoredListItemIdx;
+                });
             }
+        }
+
+        private AutomationElement ListItemElementAt(Point pt, AutomationElementManager ElemMan) {
+            if(PInvoke.WindowFromPoint(pt) != ListViewController.Handle) return null;
+            AutomationElement elem = ElemMan.FromPoint(pt);
+            if(elem == null) return null;
+            if(elem.GetClassName() == "UIItem") return elem;
+            elem = elem.GetParent();
+            if(elem.GetClassName() == "UIItem") return elem;
+            return null;
         }
 
         public void Initialize() {
@@ -734,9 +732,10 @@ namespace QTTabBarLib {
                 return (Math.Min(rect.left, rect.right) <= mousePosition.X) && (mousePosition.X <= Math.Max(rect.left, rect.right));
             }
             else {
-                using(AutomationElement elem = AutomationElement.FromPoint(Control.MousePosition)) {
+                return QueryMan.DoQuery<bool>(ElemMan => {
+                    AutomationElement elem = ElemMan.FromPoint(Control.MousePosition);
                     return elem == null ? false : elem.GetAutomationId() == "System.ItemNameDisplay";
-                }
+                });
             }
         }
 
@@ -748,13 +747,13 @@ namespace QTTabBarLib {
                 return GetHotItem() == -1;
             }
             else {
-                using(AutomationElement elem = AutomationElement.FromPoint(Control.MousePosition)) {
+                return QueryMan.DoQuery<bool>(ElemMan => {
+                    AutomationElement elem = ElemMan.FromPoint(Control.MousePosition);
                     if(elem == null) return false;
                     string className = elem.GetClassName();
                     return className == "UIItemsView" || className == "UIGroupItem";
-                }
-            }
-            
+                });
+            }            
         }
 
         /*

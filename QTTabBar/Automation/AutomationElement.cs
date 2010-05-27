@@ -20,16 +20,15 @@ using System;
 using System.Runtime.InteropServices;
 using System.Drawing;
 
-namespace QTTabBarLib {
+namespace QTTabBarLib.Automation {
+
     class AutomationElement : IDisposable {
-        private static readonly Guid IID_IUIAutomation = new Guid("{30CBE57D-D9D0-452A-AB13-7AC5AC4825EE}");
-        private static readonly Guid CLSID_CUIAutomation = new Guid("{FF48DBA4-60EF-4201-AA87-54103EEF594E}");
         private static readonly Guid IID_IUIAutomationRegistrar = new Guid("{8609C4EC-4A1A-4D88-A357-5A66E060E1CF}");
         private static readonly Guid CLSID_CUIAutomationRegistrar = new Guid("{6E29FABF-9977-42D1-8D0E-CA7E61AD87E6}");
         private static readonly Guid ItemCount_Property_GUID = new Guid("{ABBF5C45-5CCC-47b7-BB4E-87CB87BBD162}");
         private static readonly Guid SelectedItemCount_Property_GUID = new Guid("{8FE316D2-0E52-460a-9C1E-48F273D470A3}");
         private static readonly Guid ItemIndex_Property_GUID = new Guid("{92A053DA-2969-4021-BF27-514CFC2E4A69}");
-        
+
         private const int UIAutomationType_Int = 1;
 
         private const int UIA_SelectionItemPatternId = 10010;
@@ -37,25 +36,18 @@ namespace QTTabBarLib {
         private static int UIA_ItemCountPropertyId;
         private static int UIA_SelectedCountPropertyId;
         private static int UIA_ItemIndexPropertyId;
-        private const int UIA_BoundingRectanglePropertyId   = 30001;
-        private const int UIA_NamePropertyId                = 30005;
-        private const int UIA_AutomationIdPropertyId        = 30011;
-        private const int UIA_ClassNamePropertyId           = 30012;
+        private const int UIA_BoundingRectanglePropertyId = 30001;
+        private const int UIA_NamePropertyId = 30005;
+        private const int UIA_AutomationIdPropertyId = 30011;
+        private const int UIA_ClassNamePropertyId = 30012;
 
-        private static IUIAutomation pAutomation;
-        private static int instances = 0;
-        private IUIAutomationElement pElement;
+        AutomationElementManager ElemMan;
+        IUIAutomationElement pElement;
 
         static AutomationElement() {
-            Guid rclsid = CLSID_CUIAutomation;
-            Guid riid = IID_IUIAutomation;
-            object obj = null;
-            PInvoke.CoCreateInstance(ref rclsid, IntPtr.Zero, 1, ref riid, out obj);
-            if(obj == null) return;
-            pAutomation = obj as IUIAutomation;
-            
-            rclsid = CLSID_CUIAutomationRegistrar;
-            riid = IID_IUIAutomationRegistrar;
+            Guid rclsid = CLSID_CUIAutomationRegistrar;
+            Guid riid = IID_IUIAutomationRegistrar;
+            object obj;
             PInvoke.CoCreateInstance(ref rclsid, IntPtr.Zero, 1, ref riid, out obj);
             IUIAutomationRegistrar pRegistrar = obj as IUIAutomationRegistrar;
             try {
@@ -77,68 +69,25 @@ namespace QTTabBarLib {
                     pProgrammaticName = "ItemIndex",
                     type = UIAutomationType_Int
                 };
-                pRegistrar.RegisterProperty(ref propinfo, out UIA_ItemIndexPropertyId);   
+                pRegistrar.RegisterProperty(ref propinfo, out UIA_ItemIndexPropertyId);
             }
             finally {
                 if(pRegistrar != null) Marshal.ReleaseComObject(pRegistrar);
             }
         }
 
-        private AutomationElement(IUIAutomationElement elem) {
-            pElement = elem;
-            lock(typeof(AutomationElement)) {
-                ++instances;
-            }
+        internal AutomationElement(IUIAutomationElement pElement, AutomationElementManager ElemMan) {
+            this.ElemMan = ElemMan;
+            this.pElement = pElement;
+            ElemMan.AddToDisposeList(this);
         }
 
         ~AutomationElement() {
             Dispose();
         }
 
-        public static AutomationElement AncestorFromPoint(Point pt, int maxDepth, Predicate<AutomationElement> pred) {
-            AutomationElement ae = null;
-            IUIAutomationElement elem;
-            IUIAutomationTreeWalker walker;
-            pAutomation.get_ControlViewWalker(out walker);
-            bool cleanExit = false;
-            try {
-                pAutomation.ElementFromPoint(pt, out elem);
-                if(elem == null) {
-                    return null;
-                }
-                ae = new AutomationElement(elem);
-                if(pred(ae)) {
-                    cleanExit = true;
-                    return ae;
-                }
-                for(int i = 1; i < maxDepth; ++i) {
-                    IUIAutomationElement parent;
-                    walker.GetParentElement(elem, out parent);
-                    ae.Dispose();
-                    elem = parent;
-                    ae = new AutomationElement(elem);
-                    if(pred(ae)) {
-                        cleanExit = true;
-                        return ae;
-                    }
-                }
-                return null;
-            }
-            finally {
-                if(ae != null && !cleanExit) {
-                    ae.Dispose();
-                }
-                if(walker != null) {
-                    Marshal.ReleaseComObject(walker);
-                }
-            }
-        }
-
         public void Dispose() {
             if(pElement != null) {
-                lock(typeof(AutomationElement)) {
-                    --instances;
-                }
                 Marshal.ReleaseComObject(pElement);
                 pElement = null;
             }
@@ -147,53 +96,25 @@ namespace QTTabBarLib {
 
 
         public AutomationElement FindMatchingChild(Predicate<AutomationElement> pred) {
-            AutomationElement ae = null;
-            IUIAutomationTreeWalker walker = null;
-            bool cleanExit = false;
-            pAutomation.get_ControlViewWalker(out walker);
+            IUIAutomationTreeWalker walker;
+            ElemMan.GetIUIAutomation().get_ControlViewWalker(out walker);
             try {
                 IUIAutomationElement elem;
                 walker.GetFirstChildElement(pElement, out elem);
                 while(elem != null) {
-                    ae = new AutomationElement(elem);
+                    AutomationElement ae = new AutomationElement(elem, ElemMan);
                     if(pred(ae)) {
-                        cleanExit = true;
                         return ae;
                     }
                     IUIAutomationElement next;
                     walker.GetNextSiblingElement(elem, out next);
-                    ae.Dispose();
-                    ae = null;
                     elem = next;
                 }
                 return null;
             }
             finally {
-                if(ae != null && !cleanExit) {
-                    ae.Dispose();
-                }
-                if(walker != null) {
-                    Marshal.ReleaseComObject(walker);
-                }
+                if(walker != null) Marshal.ReleaseComObject(walker);
             }
-        }
-
-        public static AutomationElement FromHandle(IntPtr hwnd) {
-            IUIAutomationElement elem;
-            pAutomation.ElementFromHandle(hwnd, out elem);
-            return (elem == null) ? null : new AutomationElement(elem);
-        }
-
-        public static AutomationElement FromKeyboardFocus() {
-            IUIAutomationElement elem;
-            pAutomation.GetFocusedElement(out elem);
-            return (elem == null) ? null : new AutomationElement(elem);
-        }
-
-        public static AutomationElement FromPoint(Point pt) {
-            IUIAutomationElement elem;
-            pAutomation.ElementFromPoint(pt, out elem);
-            return (elem == null) ? null : new AutomationElement(elem);
         }
 
         public bool IsSelected() {
@@ -234,20 +155,16 @@ namespace QTTabBarLib {
 
         public AutomationElement GetFirstChild() {
             IUIAutomationTreeWalker walker;
-            pAutomation.get_ControlViewWalker(out walker);
+            ElemMan.GetIUIAutomation().get_ControlViewWalker(out walker);
             try {
                 IUIAutomationElement elem;
                 walker.GetFirstChildElement(pElement, out elem);
-                return (elem == null) ? null : new AutomationElement(elem);
+                return (elem == null) ? null : new AutomationElement(elem, ElemMan);
             }
             finally {
                 if(walker != null) Marshal.ReleaseComObject(walker);
             }
 
-        }
-
-        public static int GetInstanceCount() {
-            return instances;
         }
 
         // Only valid for ItemsView element.
@@ -272,11 +189,11 @@ namespace QTTabBarLib {
 
         public AutomationElement GetNextSibling() {
             IUIAutomationTreeWalker walker;
-            pAutomation.get_ControlViewWalker(out walker);
+            ElemMan.GetIUIAutomation().get_ControlViewWalker(out walker);
             try {
                 IUIAutomationElement elem;
                 walker.GetNextSiblingElement(pElement, out elem);
-                return (elem == null) ? null : new AutomationElement(elem);
+                return (elem == null) ? null : new AutomationElement(elem, ElemMan);
             }
             finally {
                 if(walker != null) Marshal.ReleaseComObject(walker);
@@ -286,11 +203,11 @@ namespace QTTabBarLib {
 
         public AutomationElement GetParent() {
             IUIAutomationTreeWalker walker;
-            pAutomation.get_ControlViewWalker(out walker);
+            ElemMan.GetIUIAutomation().get_ControlViewWalker(out walker);
             try {
                 IUIAutomationElement elem;
                 walker.GetParentElement(pElement, out elem);
-                return (elem == null) ? null : new AutomationElement(elem);
+                return (elem == null) ? null : new AutomationElement(elem, ElemMan);
             }
             finally {
                 if(walker != null) Marshal.ReleaseComObject(walker);
@@ -302,13 +219,6 @@ namespace QTTabBarLib {
             object obj;
             pElement.GetCurrentPropertyValue(UIA_SelectedCountPropertyId, out obj);
             return (int)obj;
-        }
-
-        static void Uninitialize() {
-            if(pAutomation != null) {
-                Marshal.ReleaseComObject(pAutomation);
-                pAutomation = null;
-            }
         }
     }
 }
