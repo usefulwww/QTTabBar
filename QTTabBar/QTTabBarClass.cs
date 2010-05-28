@@ -347,8 +347,9 @@ namespace QTTabBarLib {
             }
             this.NowTabDragging = false;
             if(!this.NavigatedByCode) {
-                // TODO this won't work...
                 this.SaveSelectedItems(this.CurrentTab);
+                
+                // We will deal with this in NavigateComplete on 7.
                 if((!string.IsNullOrEmpty(path) &&
                         this.CurrentTab.TabLocked &&
                         !QTUtility2.IsShellPathButNotFileSystem(this.CurrentTab.CurrentPath)) &&
@@ -809,7 +810,7 @@ namespace QTTabBarLib {
             this.tabControl1.SelectTab(item);
         }
 
-        private void CloneTabButton(QTabItem tab, string optionURL, bool fSelect, int index) {
+        private QTabItem CloneTabButton(QTabItem tab, string optionURL, bool fSelect, int index) {
             this.NowTabCloned = fSelect;
             QTabItem item = tab.Clone();
             if(index < 0) {
@@ -833,6 +834,7 @@ namespace QTTabBarLib {
                 item.RefreshRectangle();
                 this.tabControl1.Refresh();
             }
+            return item;
         }
 
         private List<string> CloseAllUnlocked() {
@@ -2101,6 +2103,16 @@ namespace QTTabBarLib {
                 int hash = -1;
                 bool flag = IsSpecialFolderNeedsToTravel(path);
                 bool flag2 = QTUtility2.IsShellPathButNotFileSystem(path);
+                bool flag3 = QTUtility2.IsShellPathButNotFileSystem(CurrentTab.CurrentPath);
+
+                // Restore the locked tab on 7.  This condition should never be
+                // met on XP/Vista
+                if(!flag2 && !flag3 && !NavigatedByCode && CurrentTab.TabLocked) {
+                    QTabItem item = this.CloneTabButton(this.CurrentTab, null, false, this.tabControl1.SelectedIndex);
+                    item.TabLocked = true;
+                    CurrentTab.TabLocked = false;
+                }
+
                 if(!this.NavigatedByCode && flag) {
                     hash = DateTime.Now.GetHashCode();
                     this.LogEntryDic[hash] = this.GetCurrentLogEntry();
@@ -5214,9 +5226,13 @@ namespace QTTabBarLib {
         }
 
         private bool OpenNewTab(string path, bool blockSelecting) {
+            return OpenNewTab(path, blockSelecting, false);
+        }
+
+        private bool OpenNewTab(string path, bool blockSelecting, bool fForceNew) {
             using(IDLWrapper wrapper = new IDLWrapper(path)) {
                 if(wrapper.Available) {
-                    return this.OpenNewTab(wrapper, blockSelecting, false);
+                    return this.OpenNewTab(wrapper, blockSelecting, fForceNew);
                 }
             }
             return false;
@@ -5462,7 +5478,7 @@ namespace QTTabBarLib {
 
                 case 9:
                     if(!QTUtility.GroupPathsDic.ContainsKey(QTUtility.Action_BarDblClick)) {
-                        this.OpenNewTab(QTUtility.Action_BarDblClick, false);
+                        this.OpenNewTab(QTUtility.Action_BarDblClick, false, true);
                         return;
                     }
                     this.OpenGroup(QTUtility.Action_BarDblClick, false);
