@@ -114,6 +114,9 @@ namespace QTTabBarLib.Automation {
                 }
                 return null;
             }
+            catch(COMException) {
+                return null;
+            }
             finally {
                 if(walker != null) Marshal.ReleaseComObject(walker);
             }
@@ -131,28 +134,46 @@ namespace QTTabBarLib.Automation {
                 selprov.get_CurrentIsSelected(out ret);
                 return ret;
             }
+            catch(COMException) {
+                return false;
+            }
             finally {
                 if(obj != null) Marshal.ReleaseComObject(obj);
             }
         }
 
         public string GetAutomationId() {
-            object obj;
-            pElement.GetCurrentPropertyValue(UIA_AutomationIdPropertyId, out obj);
-            return obj.ToString();
+            try {
+                object obj;
+                pElement.GetCurrentPropertyValue(UIA_AutomationIdPropertyId, out obj);
+                return obj.ToString();
+            }
+            catch(COMException) {
+                return "";
+            }
         }
 
         public Rectangle GetBoundingRect() {
-            object obj;
-            pElement.GetCurrentPropertyValue(UIA_BoundingRectanglePropertyId, out obj);
-            double[] rect = obj as double[];
-            return new Rectangle((int)rect[0], (int)rect[1], (int)rect[2], (int)rect[3]);
+            try {
+                object obj;
+                pElement.GetCurrentPropertyValue(UIA_BoundingRectanglePropertyId, out obj);
+                double[] rect = obj as double[];
+                return new Rectangle((int)rect[0], (int)rect[1], (int)rect[2], (int)rect[3]);
+            }
+            catch(COMException) {
+                return new Rectangle(0, 0, 0, 0);
+            }
         }
 
         public string GetClassName() {
-            object obj;
-            pElement.GetCurrentPropertyValue(UIA_ClassNamePropertyId, out obj);
-            return obj.ToString();
+            try {
+                object obj;
+                pElement.GetCurrentPropertyValue(UIA_ClassNamePropertyId, out obj);
+                return obj.ToString();
+            }
+            catch(COMException) {
+                return "";
+            }
         }
 
         public AutomationElement GetFirstChild() {
@@ -162,6 +183,9 @@ namespace QTTabBarLib.Automation {
                 walker.GetFirstChildElement(pElement, out elem);
                 return (elem == null) ? null : new AutomationElement(elem, factory);
             }
+            catch(COMException) {
+                return null;
+            }
             finally {
                 if(walker != null) Marshal.ReleaseComObject(walker);
             }
@@ -169,22 +193,37 @@ namespace QTTabBarLib.Automation {
 
         // Only valid for ItemsView element.
         public int GetItemCount() {
-            object obj;
-            pElement.GetCurrentPropertyValue(UIA_ItemCountPropertyId, out obj);
-            return (int)obj;
+            try {
+                object obj;
+                pElement.GetCurrentPropertyValue(UIA_ItemCountPropertyId, out obj);
+                return (int)obj;
+            }
+            catch(COMException) {
+                return 0;
+            }
         }
         
         // Only valid for ListItem element.
         public int GetItemIndex() {
-            object obj;
-            pElement.GetCurrentPropertyValue(UIA_ItemIndexPropertyId, out obj);
-            return (int)obj - 1;
+            try {
+                object obj;
+                pElement.GetCurrentPropertyValue(UIA_ItemIndexPropertyId, out obj);
+                return (int)obj - 1;
+            }
+            catch(COMException) {
+                return -1;
+            }
         }
 
         public string GetItemName() {
-            object obj;
-            pElement.GetCurrentPropertyValue(UIA_NamePropertyId, out obj);
-            return obj.ToString();
+            try {
+                object obj;
+                pElement.GetCurrentPropertyValue(UIA_NamePropertyId, out obj);
+                return obj.ToString();
+            }
+            catch(COMException) {
+                return "";
+            }
         }
 
         public AutomationElement GetNextSibling() {
@@ -194,10 +233,12 @@ namespace QTTabBarLib.Automation {
                 walker.GetNextSiblingElement(pElement, out elem);
                 return (elem == null) ? null : new AutomationElement(elem, factory);
             }
+            catch(COMException) {
+                return null;
+            }
             finally {
                 if(walker != null) Marshal.ReleaseComObject(walker);
             }
-
         }
 
         public AutomationElement GetParent() {
@@ -207,6 +248,9 @@ namespace QTTabBarLib.Automation {
                 walker.GetParentElement(pElement, out elem);
                 return (elem == null) ? null : new AutomationElement(elem, factory);
             }
+            catch(COMException) {
+                return null;
+            }
             finally {
                 if(walker != null) Marshal.ReleaseComObject(walker);
             }
@@ -214,9 +258,14 @@ namespace QTTabBarLib.Automation {
 
         // Only valid for ItemsView element.
         public int GetSelectedCount() {
-            object obj;
-            pElement.GetCurrentPropertyValue(UIA_SelectedCountPropertyId, out obj);
-            return (int)obj;
+            try {
+                object obj;
+                pElement.GetCurrentPropertyValue(UIA_SelectedCountPropertyId, out obj);
+                return (int)obj;
+            }
+            catch(COMException) {
+                return 0;
+            }
         }
     }
 }
