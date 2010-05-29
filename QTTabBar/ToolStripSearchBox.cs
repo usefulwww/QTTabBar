@@ -115,7 +115,7 @@ namespace QTTabBarLib {
                     this.tb.Cursor = Cursors.VSplit;
                 }
                 else {
-                    this.tb.Cursor = Cursors.Default;
+                    this.tb.Cursor = Cursors.IBeam;
                 }
                 if((this.fNowDragging && (0x20 <= e.X)) && (e.X <= 0x400)) {
                     int num = 0x400;
