@@ -1014,9 +1014,14 @@ namespace QTTabBarLib {
             this.ExplorerHandle = (IntPtr)base.Explorer.HWND;
             QTUtility.instanceManager.AddButtonBarHandle(this.ExplorerHandle, base.Handle);
             this.dropTargetWrapper = new DropTargetWrapper(this);
-            if(fNoSettings) {
+            QTTabBarClass tabBar = QTUtility.instanceManager.GetTabBar(this.ExplorerHandle);
+
+            // If the TabBar and its PluginManager already exist, that means
+            // the ButtonBar must have been closed when the Explorer window
+            // opened, so we wont' get an initialization message.  Do 
+            // initialization now.
+            if(fNoSettings || (tabBar != null && tabBar.PluginServerInstance != null)) {
                 if(this.pluginManager == null) {
-                    QTTabBarClass tabBar = QTUtility.instanceManager.GetTabBar(this.ExplorerHandle);
                     if(tabBar != null) {
                         this.pluginManager = tabBar.PluginServerInstance;
                         if(this.pluginManager != null) {
