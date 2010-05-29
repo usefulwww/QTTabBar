@@ -1,0 +1,21 @@
+======= 1.5.0.0 Alpha 3 =======
+Bugs Fixed:
+    Explorer process no longer consumes a full CPU core.
+    Doubleclicking the Tab Bar background creates a new tab if the appropriate option is set.
+    Explorer window no longer becomes nonresponsive when new tab created and Activate New Tab is disabled.
+    Doubleclicking column headers no longer results in Up One Directory.
+    Subdirectory Tips launched from tab icons no longer crash Explorer.
+    Options menu no longer disables right-click after closed.
+    Button Bar correctly displays buttons when activated after Tab Bar.
+    Mouse cursor now becomes an IBeam in the Search Box.
+    
+New Features:
+    Tab Locking functionality restored
+        
+======= 1.5.0.0 Alpha 2 =======
+Bugs Fixed:
+    Fixed crashes on 32-bit Windows.
+
+======= 1.5.0.0 Alpha 1 =======
+New Features:
+    First release compatible with Windows 7.
