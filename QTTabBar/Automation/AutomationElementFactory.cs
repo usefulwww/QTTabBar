@@ -52,21 +52,36 @@ namespace QTTabBarLib.Automation {
         }
 
         public AutomationElement FromHandle(IntPtr hwnd) {
-            IUIAutomationElement pElement;
-            pAutomation.ElementFromHandle(hwnd, out pElement);
-            return pElement == null ? null : new AutomationElement(pElement, this);
+            try {
+                IUIAutomationElement pElement;
+                pAutomation.ElementFromHandle(hwnd, out pElement);
+                return pElement == null ? null : new AutomationElement(pElement, this);
+            }
+            catch(COMException) {
+                return null;
+            }
         }
 
         public AutomationElement FromPoint(Point pt) {
-            IUIAutomationElement pElement;
-            pAutomation.ElementFromPoint(pt, out pElement);
-            return pElement == null ? null : new AutomationElement(pElement, this);
+            try {
+                IUIAutomationElement pElement;
+                pAutomation.ElementFromPoint(pt, out pElement);
+                return pElement == null ? null : new AutomationElement(pElement, this);
+            }
+            catch(COMException) {
+                return null;
+            }
         }
 
         public AutomationElement FromKeyboardFocus() {
-            IUIAutomationElement pElement;
-            pAutomation.GetFocusedElement(out pElement);
-            return pElement == null ? null : new AutomationElement(pElement, this);
+            try {
+                IUIAutomationElement pElement;
+                pAutomation.GetFocusedElement(out pElement);
+                return pElement == null ? null : new AutomationElement(pElement, this);
+            }
+            catch(COMException) {
+                return null;
+            }
         }
     }
 }
