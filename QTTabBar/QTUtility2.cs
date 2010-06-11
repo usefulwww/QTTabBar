@@ -276,17 +276,20 @@ namespace QTTabBarLib {
         }
 
         public static IntPtr ReadRegHandle(string valName, RegistryKey rk) {
-            object obj2 = rk.GetValue(valName, 0);
             if(IntPtr.Size == 4) {
+                object obj2 = rk.GetValue(valName, 0);
                 if(obj2 is int) {
                     return (IntPtr)((int)obj2);
                 }
                 return (IntPtr)((uint)obj2);
             }
-            if(obj2 is long) {
-                return (IntPtr)((long)obj2);
+            else {
+                object obj2 = rk.GetValue(valName, 0L);
+                if(obj2 is long) {
+                    return (IntPtr)((long)obj2);
+                }
+                return (IntPtr)((ulong)obj2);
             }
-            return (IntPtr)((ulong)obj2);
         }
 
         public static string SanitizePathString(string path) {
