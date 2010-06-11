@@ -266,7 +266,7 @@ namespace BandObjectLib {
         }
 
         public virtual void ShowDW(bool fShow) {
-            if(this.ReBarHandle != IntPtr.Zero) {
+            if(this.ReBarHandle != IntPtr.Zero && Environment.OSVersion.Version.Major > 5) {
                 if(RebarSubclass == null) {
                     RebarSubclass = new RebarBreakFixer(ReBarHandle, this);
                 }
