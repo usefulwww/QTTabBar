@@ -492,7 +492,7 @@ namespace QTTabBarLib {
                                 try {
                                     bool flag = this.tabControl1.TabCount == 1;
                                     string currentPath = ((QTabItem)this.tabControl1.SelectedTab).CurrentPath;
-                                    if((!Directory.Exists(currentPath) && (currentPath.Length > 3)) && (currentPath.Substring(1, 2) == @":\")) {
+                                    if(!Directory.Exists(currentPath) && currentPath.Length > 3 /* && currentPath.Substring(1, 2) == @":\" */ ) {
                                         if(flag) {
                                             WindowUtils.CloseExplorer(this.ExplorerHandle, 2);
                                         }
