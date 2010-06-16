@@ -1158,6 +1158,7 @@ namespace QTTabBarLib {
                     ConfigValues = new byte[4];
                     LargeButton = true;
                     BarHeight = 0x22;
+                    SearchBoxWidth = 100;
                 }
             }
         }
