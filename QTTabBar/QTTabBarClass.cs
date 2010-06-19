@@ -4290,7 +4290,7 @@ namespace QTTabBarLib {
         }
 
         private bool ListView_DoubleClick(Point pt) {
-            if(!QTUtility.CheckConfig(Settings.NoDblClickUpLevel) && listViewWrapper.IsTrackingBackground()) {
+            if(!QTUtility.CheckConfig(Settings.NoDblClickUpLevel) && listViewWrapper.PointIsBackground(pt, false)) {
                 this.UpOneLevel();
                 return true;
             }
