@@ -134,6 +134,12 @@ namespace QTTabBarLib {
             return true;
         }
 
+        private void CallbackSelChanged() {
+            if(SelectionChanged != null) {
+                SelectionChanged();
+            }
+        }
+
         private bool ContainerController_MessageCaptured(ref System.Windows.Forms.Message msg) {
             if(msg.Msg == WM.PARENTNOTIFY && PInvoke.LoWord((int)msg.WParam) == WM.CREATE) {
                 string name = GetWindowClassName(msg.LParam);
@@ -730,23 +736,6 @@ namespace QTTabBarLib {
             }
         }
 
-        public bool IsTrackingBackground() {
-            if(ListViewController == null || PInvoke.WindowFromPoint(Control.MousePosition) != ListViewController.Handle) {
-                return false;
-            }
-            if(fIsSysListView) {
-                return GetHotItem() == -1;
-            }
-            else {
-                return AutoMan.DoQuery<bool>(factory => {
-                    AutomationElement elem = factory.FromPoint(Control.MousePosition);
-                    if(elem == null) return false;
-                    string className = elem.GetClassName();
-                    return className == "UIItemsView" || className == "UIGroupItem";
-                });
-            }            
-        }
-
         private AutomationElement ListItemElementFromPoint(AutomationElementFactory factory, Point pt) {
             if(PInvoke.WindowFromPoint(pt) != ListViewController.Handle) return null;
             AutomationElement elem = factory.FromPoint(pt);
@@ -898,6 +887,26 @@ namespace QTTabBarLib {
                 PInvoke.WindowFromPoint(Control.MousePosition) == ListViewController.Handle);
         }
 
+        public bool PointIsBackground(Point pt, bool screenCoords) {
+            if(fIsSysListView) {
+                return HitTest(pt, screenCoords) == -1;
+            }
+            else {
+                if(ListViewController == null) {
+                    return false;
+                }
+                if(!screenCoords) {
+                    PInvoke.ClientToScreen(ListViewController.Handle, ref pt);
+                }
+                return AutoMan.DoQuery<bool>(factory => {
+                    AutomationElement elem = factory.FromPoint(pt);
+                    if(elem == null) return false;
+                    string className = elem.GetClassName();
+                    return className == "UIItemsView" || className == "UIGroupItem";
+                });
+            }
+        }
+
         void RecaptureHandles(IntPtr hwndShellView) {
             if(ShellViewController != null) {
                 ShellViewController.ReleaseHandle();
@@ -916,7 +925,7 @@ namespace QTTabBarLib {
             if(hwndEnumResult == IntPtr.Zero) {
                 return;
             }
-
+            
             ListViewController = new NativeWindowController(hwndEnumResult);
             ListViewController.MessageCaptured += new NativeWindowController.MessageEventHandler(ListViewController_MessageCaptured);
 
@@ -937,6 +946,13 @@ namespace QTTabBarLib {
                     }
                 }
                 PInvoke.SendMessage(ListViewController.Handle, LVM.SETEXTENDEDLISTVIEWSTYLE, (IntPtr)mask, (IntPtr)flags);
+            }
+            else {
+                //using(IDLWrapper wrapper = new IDLWrapper(ShellMethods.ShellGetPath(this.ShellBrowser))) {
+                //    if(wrapper.IsFileSystem) {
+                        AutoMan.RegisterSelChangedEvent(ListViewController.Handle, CallbackSelChanged);
+                //    }
+                //}
             }
 
             this.fTrackMouseEvent = false;

@@ -117,13 +117,14 @@ namespace QTTabBarLib {
                 else {
                     this.tb.Cursor = Cursors.IBeam;
                 }
-                if((this.fNowDragging && (0x20 <= e.X)) && (e.X <= 0x400)) {
-                    int num = 0x400;
+                if(this.fNowDragging) {
+                    int min = 32;
+                    int max = 1024;
                     ToolStrip owner = base.Owner;
                     if(((owner != null) && !owner.Disposing) && !(owner is ToolStripOverflow)) {
-                        num = (owner.DisplayRectangle.Width - this.Bounds.X) - 0x18;
+                        max = (owner.DisplayRectangle.Width - this.Bounds.X) - 24;
                     }
-                    base.Width = Math.Min(e.X + 12, num);
+                    base.Width = Math.Max(Math.Min(e.X + 12, max), min);
                 }
             }
             base.OnMouseMove(e);

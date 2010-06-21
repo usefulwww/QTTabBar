@@ -51,8 +51,8 @@ namespace QTTabBarLib.Interop {
         /* NOT DECLARED */ void CreateOrConditionFromArray();
         /* NOT DECLARED */ void CreateOrConditionFromNativeArray();
         /* NOT DECLARED */ void CreateNotCondition();
-        /* NOT DECLARED */ void AddAutomationEventHandler();
-        /* NOT DECLARED */ void RemoveAutomationEventHandler();
+        void AddAutomationEventHandler(int eventId, IUIAutomationElement element, int scope, IntPtr cacheRequest, IUIAutomationEventHandler handler);
+        void RemoveAutomationEventHandler(int eventId, IUIAutomationElement element, IUIAutomationEventHandler handler);
         /* NOT DECLARED */ void AddPropertyChangedEventHandlerNativeArray();
         /* NOT DECLARED */ void AddPropertyChangedEventHandler();
         /* NOT DECLARED */ void RemovePropertyChangedEventHandler();

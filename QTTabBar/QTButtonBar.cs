@@ -1150,6 +1150,7 @@ namespace QTTabBarLib {
                         ImageStripPath = null;
                     }
                     SearchBoxWidth = (int)key.GetValue("SearchBoxWidth", 100);
+                    SearchBoxWidth = Math.Max(Math.Min(SearchBoxWidth, 1024), 32);
                 }
                 else {
                     fNoSettings = true;
@@ -1157,6 +1158,7 @@ namespace QTTabBarLib {
                     ConfigValues = new byte[4];
                     LargeButton = true;
                     BarHeight = 0x22;
+                    SearchBoxWidth = 100;
                 }
             }
         }
@@ -1329,7 +1331,7 @@ namespace QTTabBarLib {
         }
 
         private void searchBox_ResizeComplete(object sender, EventArgs e) {
-            SearchBoxWidth = this.searchBox.TextBox.Width;
+            SearchBoxWidth = this.searchBox.Width;
             using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
                 key.SetValue("SearchBoxWidth", SearchBoxWidth);
             }
@@ -1989,7 +1991,7 @@ namespace QTTabBarLib {
 
                             case 15:
                                 if(this.searchBox != null) {
-                                    this.searchBox.TextBox.Width = SearchBoxWidth;
+                                    this.searchBox.Width = SearchBoxWidth;
                                     this.toolStrip.RaiseOnResize();
                                 }
                                 return;

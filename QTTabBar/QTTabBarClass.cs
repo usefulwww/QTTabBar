@@ -453,68 +453,73 @@ namespace QTTabBarLib {
         private IntPtr CallbackGetMsgProc(int nCode, IntPtr wParam, IntPtr lParam) {
             if(nCode >= 0) {
                 BandObjectLib.MSG msg = (BandObjectLib.MSG)Marshal.PtrToStructure(lParam, typeof(BandObjectLib.MSG));
-                if(!QTUtility.IsVista) {
-                    if(msg.message == WM.CLOSE) {
-                        if(this.iSequential_WM_CLOSE > 0) {
-                            Marshal.StructureToPtr(new BandObjectLib.MSG(), lParam, false);
-                            return PInvoke.CallNextHookEx(this.hHook_Msg, nCode, wParam, lParam);
+                try {
+                    if(!QTUtility.IsVista) {
+                        if(msg.message == WM.CLOSE) {
+                            if(this.iSequential_WM_CLOSE > 0) {
+                                Marshal.StructureToPtr(new BandObjectLib.MSG(), lParam, false);
+                                return PInvoke.CallNextHookEx(this.hHook_Msg, nCode, wParam, lParam);
+                            }
+                            this.iSequential_WM_CLOSE++;
                         }
-                        this.iSequential_WM_CLOSE++;
+                        else {
+                            this.iSequential_WM_CLOSE = 0;
+                        }
                     }
-                    else {
-                        this.iSequential_WM_CLOSE = 0;
-                    }
-                }
-                switch(msg.message) {
+                    switch(msg.message) {
 
-                    case WM.LBUTTONDOWN:
-                    case WM.LBUTTONUP:
-                        if((!QTUtility.IsVista && !QTUtility.CheckConfig(Settings.NoMidClickTree)) && ((((int)((long)msg.wParam)) & 4) != 0)) {
-                            this.HandleLBUTTON_Tree(msg, msg.message == 0x201);
-                        }
-                        break;
+                        case WM.LBUTTONDOWN:
+                        case WM.LBUTTONUP:
+                            if((!QTUtility.IsVista && !QTUtility.CheckConfig(Settings.NoMidClickTree)) && ((((int)((long)msg.wParam)) & 4) != 0)) {
+                                this.HandleLBUTTON_Tree(msg, msg.message == 0x201);
+                            }
+                            break;
 
-                    case WM.MBUTTONUP:
-                        if(!QTUtility.IsVista && !base.Explorer.Busy && !QTUtility.CheckConfig(Settings.NoMidClickTree)) {
-                            this.Handle_MButtonUp_Tree(msg);
-                        }
-                        break;
+                        case WM.MBUTTONUP:
+                            if(!QTUtility.IsVista && !base.Explorer.Busy && !QTUtility.CheckConfig(Settings.NoMidClickTree)) {
+                                this.Handle_MButtonUp_Tree(msg);
+                            }
+                            break;
 
-                    case WM.CLOSE:
-                        if(!QTUtility.IsVista) {
-                            if((msg.hwnd == this.ExplorerHandle) && this.HandleCLOSE(msg.lParam)) {
+                        case WM.CLOSE:
+                            if(!QTUtility.IsVista) {
+                                if((msg.hwnd == this.ExplorerHandle) && this.HandleCLOSE(msg.lParam)) {
+                                    Marshal.StructureToPtr(new BandObjectLib.MSG(), lParam, false);
+                                }
+                                break;
+                            }
+                            if(msg.hwnd == WindowUtils.GetShellTabWindowClass(this.ExplorerHandle)) {
+                                try {
+                                    bool flag = this.tabControl1.TabCount == 1;
+                                    string currentPath = ((QTabItem)this.tabControl1.SelectedTab).CurrentPath;
+                                    if(!Directory.Exists(currentPath) && currentPath.Length > 3 /* && currentPath.Substring(1, 2) == @":\" */ ) {
+                                        if(flag) {
+                                            WindowUtils.CloseExplorer(this.ExplorerHandle, 2);
+                                        }
+                                        else {
+                                            this.CloseTab((QTabItem)this.tabControl1.SelectedTab, true);
+                                        }
+                                    }
+                                }
+                                catch {
+                                }
                                 Marshal.StructureToPtr(new BandObjectLib.MSG(), lParam, false);
                             }
                             break;
-                        }
-                        if(msg.hwnd == WindowUtils.GetShellTabWindowClass(this.ExplorerHandle)) {
-                            try {
-                                bool flag = this.tabControl1.TabCount == 1;
-                                string currentPath = ((QTabItem)this.tabControl1.SelectedTab).CurrentPath;
-                                if((!Directory.Exists(currentPath) && (currentPath.Length > 3)) && (currentPath.Substring(1, 2) == @":\")) {
-                                    if(flag) {
-                                        WindowUtils.CloseExplorer(this.ExplorerHandle, 2);
-                                    }
-                                    else {
-                                        this.CloseTab((QTabItem)this.tabControl1.SelectedTab, true);
-                                    }
+
+                        case WM.COMMAND:
+                            if(!QTUtility.IsVista) {
+                                int num = ((int)((long)msg.wParam)) & 0xffff;
+                                if(num == 0xa021) {
+                                    WindowUtils.CloseExplorer(this.ExplorerHandle, 3);
+                                    Marshal.StructureToPtr(new BandObjectLib.MSG(), lParam, false);
                                 }
                             }
-                            catch {
-                            }
-                            Marshal.StructureToPtr(new BandObjectLib.MSG(), lParam, false);
-                        }
-                        break;
-
-                    case WM.COMMAND:
-                        if(!QTUtility.IsVista) {
-                            int num = ((int)((long)msg.wParam)) & 0xffff;
-                            if(num == 0xa021) {
-                                WindowUtils.CloseExplorer(this.ExplorerHandle, 3);
-                                Marshal.StructureToPtr(new BandObjectLib.MSG(), lParam, false);
-                            }
-                        }
-                        break;
+                            break;
+                    }
+                }
+                catch(Exception ex) {
+                    QTUtility2.MakeErrorLog(ex, String.Format("Message: {0:x4}", msg.message));
                 }
             }
             return PInvoke.CallNextHookEx(this.hHook_Msg, nCode, wParam, lParam);
@@ -528,74 +533,84 @@ namespace QTTabBarLib {
         }
 
         private IntPtr CallbackKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam) {
-            if((nCode >= 0) && !this.NowModalDialogShown) {
+            try {
+                if((nCode >= 0) && !this.NowModalDialogShown) {
 
-                // This seems incredibly janky.  But it's the only way I could 
-                // get it not to overflow...  Casting it right to a uint throws
-                // an exception if the last bit is set.
-                uint flags = (uint)((long)lParam);
+                    // This seems incredibly janky.  But it's the only way I could 
+                    // get it not to overflow...  Casting it right to a uint throws
+                    // an exception if the last bit is set.
+                    uint flags = (uint)((long)lParam);
 
-                if((flags & 0x80000000) == 0) {
-                    if(this.HandleKEYDOWN(wParam, (flags & 0x40000000) == 0x40000000)) {
-                        return new IntPtr(1);
+                    if((flags & 0x80000000) == 0) {
+                        if(this.HandleKEYDOWN(wParam, (flags & 0x40000000) == 0x40000000)) {
+                            return new IntPtr(1);
+                        }
                     }
-                }
-                else {
-                    this.HideThumbnailTooltip(3);
-                    if((!QTUtility.CheckConfig(Settings.NoShowSubDirTips) && QTUtility.CheckConfig(Settings.SubDirTipsWithShift)) && ((this.subDirTip != null) && !this.subDirTip.MenuIsShowing)) {
-                        this.HideSubDirTip(4);
-                    }
-                    if(this.NowTabDragging && (this.DraggingTab != null)) {
-                        this.Cursor = Cursors.Default;
-                    }
-                    switch(((int)wParam)) {
-                        case 0x11:
-                            if(!QTUtility.CheckConfig(Settings.NoTabSwitcher)) {
-                                this.HideTabSwitcher(true);
-                            }
-                            goto Label_0124;
+                    else {
+                        this.HideThumbnailTooltip(3);
+                        if((!QTUtility.CheckConfig(Settings.NoShowSubDirTips) && QTUtility.CheckConfig(Settings.SubDirTipsWithShift)) && ((this.subDirTip != null) && !this.subDirTip.MenuIsShowing)) {
+                            this.HideSubDirTip(4);
+                        }
+                        if(this.NowTabDragging && (this.DraggingTab != null)) {
+                            this.Cursor = Cursors.Default;
+                        }
+                        switch(((int)wParam)) {
+                            case 0x11:
+                                if(!QTUtility.CheckConfig(Settings.NoTabSwitcher)) {
+                                    this.HideTabSwitcher(true);
+                                }
+                                break;
 
-                        case 0x12:
-                            if(QTUtility.CheckConfig(Settings.ShowTabCloseButtons) && QTUtility.CheckConfig(Settings.TabCloseBtnsWithAlt)) {
-                                this.tabControl1.ShowCloseButton(false);
-                            }
-                            goto Label_0124;
+                            case 0x12:
+                                if(QTUtility.CheckConfig(Settings.ShowTabCloseButtons) && QTUtility.CheckConfig(Settings.TabCloseBtnsWithAlt)) {
+                                    this.tabControl1.ShowCloseButton(false);
+                                }
+                                break;
 
-                        case 9:
-                            if((!QTUtility.CheckConfig(Settings.NoTabSwitcher) && (this.tabSwitcher != null)) && this.tabSwitcher.IsShown) {
-                                this.tabControl1.SetPseudoHotIndex(this.tabSwitcher.SelectedIndex);
-                            }
-                            goto Label_0124;
+                            case 9:
+                                if((!QTUtility.CheckConfig(Settings.NoTabSwitcher) && (this.tabSwitcher != null)) && this.tabSwitcher.IsShown) {
+                                    this.tabControl1.SetPseudoHotIndex(this.tabSwitcher.SelectedIndex);
+                                }
+                                break;
+                        }
                     }
                 }
             }
-        Label_0124:
+            catch(Exception ex) {
+                QTUtility2.MakeErrorLog(ex, String.Format("LParam: {0:x4}, WParam: {0:x4}", (long)lParam, (long)wParam));
+            }
+
             return PInvoke.CallNextHookEx(this.hHook_Key, nCode, wParam, lParam);
         }
 
         private IntPtr CallbackMouseProc(int nCode, IntPtr wParam, IntPtr lParam) {
-            if((nCode >= 0) && !this.NowModalDialogShown) {
-                IntPtr ptr = (IntPtr)1;
-                switch(((int)wParam)) {
-                    case WM.MOUSEWHEEL:
-                        if(!this.HandleMOUSEWHEEL(lParam)) {
-                            break;
-                        }
-                        return ptr;
+            try {
+                if((nCode >= 0) && !this.NowModalDialogShown) {
+                    IntPtr ptr = (IntPtr)1;
+                    switch(((int)wParam)) {
+                        case WM.MOUSEWHEEL:
+                            if(!this.HandleMOUSEWHEEL(lParam)) {
+                                break;
+                            }
+                            return ptr;
 
-                    case WM.XBUTTONDOWN:
-                        if(!QTUtility.CheckConfig(Settings.CaptureX1X2)) {
-                            break;
-                        }
-                        return ptr;
+                        case WM.XBUTTONDOWN:
+                            if(!QTUtility.CheckConfig(Settings.CaptureX1X2)) {
+                                break;
+                            }
+                            return ptr;
 
-                    case WM.XBUTTONUP:
-                        if(!QTUtility.CheckConfig(Settings.CaptureX1X2)) {
-                            break;
-                        }
-                        this.HandleXBUTTON();
-                        return ptr;
+                        case WM.XBUTTONUP:
+                            if(!QTUtility.CheckConfig(Settings.CaptureX1X2)) {
+                                break;
+                            }
+                            this.HandleXBUTTON();
+                            return ptr;
+                    }
                 }
+            }
+            catch(Exception ex) {
+                QTUtility2.MakeErrorLog(ex, String.Format("LParam: {0:x4}, WParam: {0:x4}", (long)lParam, (long)wParam));
             }
             return PInvoke.CallNextHookEx(this.hHook_Mouse, nCode, wParam, lParam);
         }
@@ -4275,7 +4290,7 @@ namespace QTTabBarLib {
         }
 
         private bool ListView_DoubleClick(Point pt) {
-            if(!QTUtility.CheckConfig(Settings.NoDblClickUpLevel) && listViewWrapper.IsTrackingBackground()) {
+            if(!QTUtility.CheckConfig(Settings.NoDblClickUpLevel) && listViewWrapper.PointIsBackground(pt, false)) {
                 this.UpOneLevel();
                 return true;
             }
@@ -7548,408 +7563,413 @@ namespace QTTabBarLib {
         }
 
         protected override void WndProc(ref System.Windows.Forms.Message m) {
-            bool flag;
-            switch(m.Msg) {
+            try {
+                bool flag;
+                switch(m.Msg) {
 
-                case WM.APP + 1:
-                    this.NowModalDialogShown = m.WParam != IntPtr.Zero;
-                    return;
-
-                case WM.DROPFILES:
-                    this.HandleFileDrop(m.WParam);
-                    break;
-
-                case WM.DRAWITEM:
-                case WM.MEASUREITEM:
-                case WM.INITMENUPOPUP:
-                    if((this.iContextMenu2 != null) && (m.HWnd == base.Handle)) {
-                        try {
-                            this.iContextMenu2.HandleMenuMsg(m.Msg, m.WParam, m.LParam);
-                        }
-                        catch {
-                        }
+                    case WM.APP + 1:
+                        this.NowModalDialogShown = m.WParam != IntPtr.Zero;
                         return;
-                    }
-                    break;
-            }
-            if(m.Msg != WM.COPYDATA) {
-                base.WndProc(ref m);
-                return;
-            }
-            if(!this.NowModalDialogShown) {
-                COPYDATASTRUCT copydatastruct = (COPYDATASTRUCT)Marshal.PtrToStructure(m.LParam, typeof(COPYDATASTRUCT));
-                int wParam = (int)m.WParam;
-                string str = "null";
-                byte[] destination = null;
-                switch(wParam) {
-                    case 4:
-                    case 0x40:
-                        destination = new byte[copydatastruct.cbData];
-                        Marshal.Copy(copydatastruct.lpData, destination, 0, copydatastruct.cbData);
+
+                    case WM.DROPFILES:
+                        this.HandleFileDrop(m.WParam);
                         break;
 
-                    default:
-                        str = Marshal.PtrToStringAuto(copydatastruct.lpData);
-                        if(str == "null") {
-                            str = string.Empty;
+                    case WM.DRAWITEM:
+                    case WM.MEASUREITEM:
+                    case WM.INITMENUPOPUP:
+                        if((this.iContextMenu2 != null) && (m.HWnd == base.Handle)) {
+                            try {
+                                this.iContextMenu2.HandleMenuMsg(m.Msg, m.WParam, m.LParam);
+                            }
+                            catch {
+                            }
+                            return;
                         }
                         break;
                 }
-                if(wParam <= 0xf00) {
-                    flag = false;
+                if(m.Msg != WM.COPYDATA) {
+                    base.WndProc(ref m);
+                    return;
+                }
+                if(!this.NowModalDialogShown) {
+                    COPYDATASTRUCT copydatastruct = (COPYDATASTRUCT)Marshal.PtrToStructure(m.LParam, typeof(COPYDATASTRUCT));
+                    int wParam = (int)m.WParam;
+                    string str = "null";
+                    byte[] destination = null;
                     switch(wParam) {
-                        case 0:
-                        case 2: {
-                                if(string.IsNullOrEmpty(str)) {
-                                    goto Label_0B07;
-                                }
-                                string[] strArray = str.Trim().Split(QTUtility.SEPARATOR_CHAR);
-                                if(wParam != 2) {
-                                    foreach(string str2 in strArray) {
-                                        this.OpenGroup(str2, false);
-                                    }
-                                    flag = true;
-                                    goto Label_0B07;
-                                }
-                                this.NowOpenedByGroupOpener = true;
-                                new MethodInvoker(this.CallbackFirstNavComp).BeginInvoke(new AsyncCallback(this.AsyncComplete), strArray);
-                                return;
+                        case 4:
+                        case 0x40:
+                            destination = new byte[copydatastruct.cbData];
+                            Marshal.Copy(copydatastruct.lpData, destination, 0, copydatastruct.cbData);
+                            break;
+
+                        default:
+                            str = Marshal.PtrToStringAuto(copydatastruct.lpData);
+                            if(str == "null") {
+                                str = string.Empty;
                             }
+                            break;
+                    }
+                    if(wParam <= 0xf00) {
+                        flag = false;
+                        switch(wParam) {
+                            case 0:
+                            case 2: {
+                                    if(string.IsNullOrEmpty(str)) {
+                                        goto Label_0B07;
+                                    }
+                                    string[] strArray = str.Trim().Split(QTUtility.SEPARATOR_CHAR);
+                                    if(wParam != 2) {
+                                        foreach(string str2 in strArray) {
+                                            this.OpenGroup(str2, false);
+                                        }
+                                        flag = true;
+                                        goto Label_0B07;
+                                    }
+                                    this.NowOpenedByGroupOpener = true;
+                                    new MethodInvoker(this.CallbackFirstNavComp).BeginInvoke(new AsyncCallback(this.AsyncComplete), strArray);
+                                    return;
+                                }
+                            case 1:
+                                goto Label_0B07;
+
+                            case 3:
+                                this.OpenGroup(str, true);
+                                flag = false;
+                                goto Label_0B07;
+
+                            case 4:
+                            case 0x40: {
+                                    bool flag2 = true;
+                                    bool blockSelecting = false;
+                                    if(wParam == 4) {
+                                        switch(((Keys)((int)copydatastruct.dwData))) {
+                                            case Keys.Control:
+                                                flag2 = false;
+                                                break;
+
+                                            case Keys.Shift:
+                                                blockSelecting = true;
+                                                break;
+                                        }
+                                    }
+                                    else {
+                                        flag2 = copydatastruct.dwData == IntPtr.Zero;
+                                    }
+                                    using(IDLWrapper wrapper5 = new IDLWrapper(destination)) {
+                                        if(wrapper5.Available) {
+                                            if(flag2 && (!wrapper5.HasPath || !QTUtility2.TargetIsInNoCapture(IntPtr.Zero, wrapper5.Path))) {
+                                                bool flag4 = this.OpenNewTab(wrapper5, blockSelecting, wParam == 0x40);
+                                                if((wParam == 0x40) && !flag4) {
+                                                    m.Result = (IntPtr)1;
+                                                }
+                                                flag = true;
+                                            }
+                                            else {
+                                                this.OpenNewWindow(wrapper5);
+                                                flag = false;
+                                            }
+                                        }
+                                        goto Label_0B07;
+                                    }
+                                }
+                            case 9:
+                                if(QTUtility.TMPTargetIDL != null) {
+                                    Keys dwData = (Keys)((int)copydatastruct.dwData);
+                                    if(dwData == Keys.Control) {
+                                        using(IDLWrapper wrapper6 = new IDLWrapper(QTUtility.TMPTargetIDL)) {
+                                            this.OpenNewWindow(wrapper6);
+                                            return;
+                                        }
+                                    }
+                                    bool flag5 = (dwData & Keys.Shift) != Keys.None;
+                                    using(IDLWrapper wrapper7 = new IDLWrapper(QTUtility.TMPTargetIDL)) {
+                                        if(wrapper7.HasPath && QTUtility2.TargetIsInNoCapture(IntPtr.Zero, wrapper7.Path)) {
+                                            this.OpenNewWindow(wrapper7);
+                                            return;
+                                        }
+                                        this.OpenNewTab(wrapper7, flag5, false);
+                                    }
+                                    foreach(byte[] buffer2 in QTUtility.TMPIDLList) {
+                                        using(IDLWrapper wrapper8 = new IDLWrapper(buffer2)) {
+                                            this.OpenNewTab(wrapper8, true, false);
+                                            continue;
+                                        }
+                                    }
+                                    if(flag5) {
+                                        WindowUtils.BringExplorerToFront(this.ExplorerHandle);
+                                    }
+                                }
+                                return;
+
+                            case 15: {
+                                    string[] strArray2 = str.Split(QTUtility.SEPARATOR_CHAR);
+                                    if((strArray2.Length == 2) && (strArray2[1].Length > 0)) {
+                                        QTUtility.PathToSelectInCommandLineArg = strArray2[1];
+                                    }
+                                    if(Control.ModifierKeys != Keys.Control) {
+                                        this.OpenNewTab(strArray2[0], false);
+                                        flag = true;
+                                    }
+                                    else {
+                                        using(IDLWrapper wrapper9 = new IDLWrapper(strArray2[0])) {
+                                            this.OpenNewWindow(wrapper9);
+                                        }
+                                        flag = false;
+                                    }
+                                    if(!QTUtility.CheckConfig(Settings.NoNewWndFolderTree)) {
+                                        this.ShowFolderTree(true);
+                                    }
+                                    goto Label_0B07;
+                                }
+                            case 0x10:
+                                if((QTUtility.CheckConfig(Settings.TrayOnClose) && (notifyIcon != null)) && (dicNotifyIcon != null)) {
+                                    Dictionary<IntPtr, int> dictionary = new Dictionary<IntPtr, int>(dicNotifyIcon);
+                                    foreach(IntPtr ptr in dictionary.Keys) {
+                                        QTTabBarClass tabBar = QTUtility.instanceManager.GetTabBar(ptr);
+                                        if((tabBar != null) && (tabBar.CurrentAddress == str)) {
+                                            ShowTaksbarItem(ptr, true);
+                                            return;
+                                        }
+                                    }
+                                }
+                                this.OpenNewTab(str, false);
+                                QTUtility.RegisterPrimaryInstance(this.ExplorerHandle, this);
+                                flag = true;
+                                goto Label_0B07;
+
+                            case 0x11:
+                                this.RefreshTabBar(copydatastruct.dwData != IntPtr.Zero);
+                                return;
+
+                            case 0x12:
+                                this.RefreshPlugins(false);
+                                return;
+
+                            case 80:
+                                this.ReplaceByGroup(str);
+                                return;
+
+                            case 0x20:
+                                using(RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Quizo\QTTabBar", false)) {
+                                    if(key != null) {
+                                        string[] collection = ((string)key.GetValue("TabsOnLastClosedWindow", string.Empty)).Split(QTUtility.SEPARATOR_CHAR);
+                                        if((collection.Length > 0) && (collection[0].Length > 0)) {
+                                            if(copydatastruct.dwData == IntPtr.Zero) {
+                                                QTUtility.TMPPathList = new List<string>(collection);
+                                                using(IDLWrapper wrapper10 = new IDLWrapper(collection[0])) {
+                                                    this.OpenNewWindow(wrapper10);
+                                                    return;
+                                                }
+                                            }
+                                            new MethodInvoker(this.CallbackFirstNavComp).BeginInvoke(new AsyncCallback(this.AsyncComplete_MultiPath), new object[] { collection, 0 });
+                                        }
+                                    }
+                                }
+                                return;
+
+                            case 0x30: {
+                                    contextMenuNotifyIcon = new ContextMenuStripEx(null, false);
+                                    contextMenuNotifyIcon.ImageList = QTUtility.ImageListGlobal;
+                                    contextMenuNotifyIcon.ItemClicked += new ToolStripItemClickedEventHandler(QTTabBarClass.contextMenuNotifyIcon_ItemClicked);
+                                    IntPtr handle = contextMenuNotifyIcon.Handle;
+                                    notifyIcon = new NotifyIcon();
+                                    notifyIcon.Icon = icoNotify;
+                                    notifyIcon.ContextMenuStrip = contextMenuNotifyIcon;
+                                    notifyIcon.MouseDoubleClick += new MouseEventHandler(QTTabBarClass.notifyIcon_MouseDoubleClick);
+                                    hwndNotifyIconParent = this.ExplorerHandle;
+                                    int count = dicNotifyIcon.Count;
+                                    string str4 = count + " window" + ((count > 1) ? "s" : string.Empty);
+                                    if(str4.Length > 0x40) {
+                                        str4 = str4.Substring(0, 60) + "...";
+                                    }
+                                    notifyIcon.Text = str4;
+                                    notifyIcon.Visible = true;
+                                    CreateContextMenuItems_NotifyIcon(IntPtr.Zero, 0);
+                                    m.Result = (IntPtr)1;
+                                    return;
+                                }
+                        }
+                        goto Label_0B07;
+                    }
+                    int num2 = wParam - 0xf00;
+                    Keys modifierKeys = Control.ModifierKeys;
+                    switch(num2) {
                         case 1:
-                            goto Label_0B07;
+                            this.NavigateCurrentTab(true);
+                            return;
+
+                        case 2:
+                            this.NavigateCurrentTab(false);
+                            return;
 
                         case 3:
-                            this.OpenGroup(str, true);
-                            flag = false;
-                            goto Label_0B07;
+                            this.OpenGroup(str, modifierKeys == Keys.Control);
+                            return;
 
-                        case 4:
-                        case 0x40: {
-                                bool flag2 = true;
-                                bool blockSelecting = false;
-                                if(wParam == 4) {
-                                    switch(((Keys)((int)copydatastruct.dwData))) {
-                                        case Keys.Control:
-                                            flag2 = false;
-                                            break;
-
-                                        case Keys.Shift:
-                                            blockSelecting = true;
-                                            break;
-                                    }
+                        case 4: {
+                                if(copydatastruct.dwData == IntPtr.Zero) {
+                                    this.OpenNewTab(str, false);
+                                    return;
                                 }
-                                else {
-                                    flag2 = copydatastruct.dwData == IntPtr.Zero;
-                                }
-                                using(IDLWrapper wrapper5 = new IDLWrapper(destination)) {
-                                    if(wrapper5.Available) {
-                                        if(flag2 && (!wrapper5.HasPath || !QTUtility2.TargetIsInNoCapture(IntPtr.Zero, wrapper5.Path))) {
-                                            bool flag4 = this.OpenNewTab(wrapper5, blockSelecting, wParam == 0x40);
-                                            if((wParam == 0x40) && !flag4) {
-                                                m.Result = (IntPtr)1;
-                                            }
-                                            flag = true;
-                                        }
-                                        else {
-                                            this.OpenNewWindow(wrapper5);
-                                            flag = false;
-                                        }
-                                    }
-                                    goto Label_0B07;
+                                using(IDLWrapper wrapper3 = new IDLWrapper(str)) {
+                                    this.OpenNewWindow(wrapper3);
+                                    return;
                                 }
                             }
+                        case 5:
                         case 9:
-                            if(QTUtility.TMPTargetIDL != null) {
-                                Keys dwData = (Keys)((int)copydatastruct.dwData);
-                                if(dwData == Keys.Control) {
-                                    using(IDLWrapper wrapper6 = new IDLWrapper(QTUtility.TMPTargetIDL)) {
-                                        this.OpenNewWindow(wrapper6);
-                                        return;
-                                    }
+                        case 0xf4:
+                        case 0xf5:
+                        case 0xf6:
+                        case 0xf7:
+                        case 0xf8:
+                        case 0xf9:
+                        case 0xfe:
+                            return;
+
+                        case 6: {
+                                using(IDLWrapper wrapper4 = new IDLWrapper(this.CurrentTab.CurrentIDL)) {
+                                    this.OpenNewWindow(wrapper4);
+                                    return;
                                 }
-                                bool flag5 = (dwData & Keys.Shift) != Keys.None;
-                                using(IDLWrapper wrapper7 = new IDLWrapper(QTUtility.TMPTargetIDL)) {
-                                    if(wrapper7.HasPath && QTUtility2.TargetIsInNoCapture(IntPtr.Zero, wrapper7.Path)) {
-                                        this.OpenNewWindow(wrapper7);
-                                        return;
+                            }
+                        case 7:
+                            this.CloneTabButton(this.CurrentTab, null, true, -1);
+                            return;
+
+                        case 8:
+                            this.CurrentTab.TabLocked = !this.CurrentTab.TabLocked;
+                            return;
+
+                        case 10:
+                            this.ToggleTopMost();
+                            return;
+
+                        case 11:
+                            if(QTUtility.CheckConfig(Settings.NeverCloseWindow)) {
+                                this.CloseTab(this.CurrentTab);
+                                return;
+                            }
+                            this.CloseTab(this.CurrentTab, false);
+                            if(this.tabControl1.TabCount == 0) {
+                                WindowUtils.CloseExplorer(this.ExplorerHandle, 2);
+                            }
+                            return;
+
+                        case 12:
+                            if(this.tabControl1.TabCount > 1) {
+                                foreach(QTabItem item in this.tabControl1.TabPages) {
+                                    if(item != this.CurrentTab) {
+                                        this.CloseTab(item);
                                     }
-                                    this.OpenNewTab(wrapper7, flag5, false);
-                                }
-                                foreach(byte[] buffer2 in QTUtility.TMPIDLList) {
-                                    using(IDLWrapper wrapper8 = new IDLWrapper(buffer2)) {
-                                        this.OpenNewTab(wrapper8, true, false);
-                                        continue;
-                                    }
-                                }
-                                if(flag5) {
-                                    WindowUtils.BringExplorerToFront(this.ExplorerHandle);
                                 }
                             }
                             return;
 
-                        case 15: {
-                                string[] strArray2 = str.Split(QTUtility.SEPARATOR_CHAR);
-                                if((strArray2.Length == 2) && (strArray2[1].Length > 0)) {
-                                    QTUtility.PathToSelectInCommandLineArg = strArray2[1];
-                                }
-                                if(Control.ModifierKeys != Keys.Control) {
-                                    this.OpenNewTab(strArray2[0], false);
-                                    flag = true;
-                                }
-                                else {
-                                    using(IDLWrapper wrapper9 = new IDLWrapper(strArray2[0])) {
-                                        this.OpenNewWindow(wrapper9);
-                                    }
-                                    flag = false;
-                                }
-                                if(!QTUtility.CheckConfig(Settings.NoNewWndFolderTree)) {
-                                    this.ShowFolderTree(true);
-                                }
-                                goto Label_0B07;
-                            }
+                        case 13:
+                            WindowUtils.CloseExplorer(this.ExplorerHandle, 1);
+                            return;
+
+                        case 14:
+                            this.CloseLeftRight(true, -1);
+                            return;
+
+                        case 15:
+                            this.CloseLeftRight(false, -1);
+                            return;
+
                         case 0x10:
-                            if((QTUtility.CheckConfig(Settings.TrayOnClose) && (notifyIcon != null)) && (dicNotifyIcon != null)) {
-                                Dictionary<IntPtr, int> dictionary = new Dictionary<IntPtr, int>(dicNotifyIcon);
-                                foreach(IntPtr ptr in dictionary.Keys) {
-                                    QTTabBarClass tabBar = QTUtility.instanceManager.GetTabBar(ptr);
-                                    if((tabBar != null) && (tabBar.CurrentAddress == str)) {
-                                        ShowTaksbarItem(ptr, true);
-                                        return;
-                                    }
-                                }
-                            }
-                            this.OpenNewTab(str, false);
-                            QTUtility.RegisterPrimaryInstance(this.ExplorerHandle, this);
-                            flag = true;
-                            goto Label_0B07;
+                            this.UpOneLevel();
+                            return;
 
                         case 0x11:
-                            this.RefreshTabBar(copydatastruct.dwData != IntPtr.Zero);
+                            base.Explorer.Refresh();
                             return;
 
                         case 0x12:
-                            this.RefreshPlugins(false);
-                            return;
-
-                        case 80:
-                            this.ReplaceByGroup(str);
-                            return;
-
-                        case 0x20:
-                            using(RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Quizo\QTTabBar", false)) {
-                                if(key != null) {
-                                    string[] collection = ((string)key.GetValue("TabsOnLastClosedWindow", string.Empty)).Split(QTUtility.SEPARATOR_CHAR);
-                                    if((collection.Length > 0) && (collection[0].Length > 0)) {
-                                        if(copydatastruct.dwData == IntPtr.Zero) {
-                                            QTUtility.TMPPathList = new List<string>(collection);
-                                            using(IDLWrapper wrapper10 = new IDLWrapper(collection[0])) {
-                                                this.OpenNewWindow(wrapper10);
-                                                return;
-                                            }
-                                        }
-                                        new MethodInvoker(this.CallbackFirstNavComp).BeginInvoke(new AsyncCallback(this.AsyncComplete_MultiPath), new object[] { collection, 0 });
-                                    }
-                                }
-                            }
+                            this.ShowSearchBar(true);
                             return;
 
                         case 0x30: {
-                                contextMenuNotifyIcon = new ContextMenuStripEx(null, false);
-                                contextMenuNotifyIcon.ImageList = QTUtility.ImageListGlobal;
-                                contextMenuNotifyIcon.ItemClicked += new ToolStripItemClickedEventHandler(QTTabBarClass.contextMenuNotifyIcon_ItemClicked);
-                                IntPtr handle = contextMenuNotifyIcon.Handle;
-                                notifyIcon = new NotifyIcon();
-                                notifyIcon.Icon = icoNotify;
-                                notifyIcon.ContextMenuStrip = contextMenuNotifyIcon;
-                                notifyIcon.MouseDoubleClick += new MouseEventHandler(QTTabBarClass.notifyIcon_MouseDoubleClick);
-                                hwndNotifyIconParent = this.ExplorerHandle;
-                                int count = dicNotifyIcon.Count;
-                                string str4 = count + " window" + ((count > 1) ? "s" : string.Empty);
-                                if(str4.Length > 0x40) {
-                                    str4 = str4.Substring(0, 60) + "...";
+                                if(modifierKeys != Keys.Control) {
+                                    this.OpenNewTab(str, false);
+                                    return;
                                 }
-                                notifyIcon.Text = str4;
-                                notifyIcon.Visible = true;
-                                CreateContextMenuItems_NotifyIcon(IntPtr.Zero, 0);
-                                m.Result = (IntPtr)1;
-                                return;
-                            }
-                    }
-                    goto Label_0B07;
-                }
-                int num2 = wParam - 0xf00;
-                Keys modifierKeys = Control.ModifierKeys;
-                switch(num2) {
-                    case 1:
-                        this.NavigateCurrentTab(true);
-                        return;
-
-                    case 2:
-                        this.NavigateCurrentTab(false);
-                        return;
-
-                    case 3:
-                        this.OpenGroup(str, modifierKeys == Keys.Control);
-                        return;
-
-                    case 4: {
-                            if(copydatastruct.dwData == IntPtr.Zero) {
-                                this.OpenNewTab(str, false);
-                                return;
-                            }
-                            using(IDLWrapper wrapper3 = new IDLWrapper(str)) {
-                                this.OpenNewWindow(wrapper3);
-                                return;
-                            }
-                        }
-                    case 5:
-                    case 9:
-                    case 0xf4:
-                    case 0xf5:
-                    case 0xf6:
-                    case 0xf7:
-                    case 0xf8:
-                    case 0xf9:
-                    case 0xfe:
-                        return;
-
-                    case 6: {
-                            using(IDLWrapper wrapper4 = new IDLWrapper(this.CurrentTab.CurrentIDL)) {
-                                this.OpenNewWindow(wrapper4);
-                                return;
-                            }
-                        }
-                    case 7:
-                        this.CloneTabButton(this.CurrentTab, null, true, -1);
-                        return;
-
-                    case 8:
-                        this.CurrentTab.TabLocked = !this.CurrentTab.TabLocked;
-                        return;
-
-                    case 10:
-                        this.ToggleTopMost();
-                        return;
-
-                    case 11:
-                        if(QTUtility.CheckConfig(Settings.NeverCloseWindow)) {
-                            this.CloseTab(this.CurrentTab);
-                            return;
-                        }
-                        this.CloseTab(this.CurrentTab, false);
-                        if(this.tabControl1.TabCount == 0) {
-                            WindowUtils.CloseExplorer(this.ExplorerHandle, 2);
-                        }
-                        return;
-
-                    case 12:
-                        if(this.tabControl1.TabCount > 1) {
-                            foreach(QTabItem item in this.tabControl1.TabPages) {
-                                if(item != this.CurrentTab) {
-                                    this.CloseTab(item);
+                                using(IDLWrapper wrapper2 = new IDLWrapper(str)) {
+                                    this.OpenNewWindow(wrapper2);
+                                    return;
                                 }
                             }
-                        }
-                        return;
-
-                    case 13:
-                        WindowUtils.CloseExplorer(this.ExplorerHandle, 1);
-                        return;
-
-                    case 14:
-                        this.CloseLeftRight(true, -1);
-                        return;
-
-                    case 15:
-                        this.CloseLeftRight(false, -1);
-                        return;
-
-                    case 0x10:
-                        this.UpOneLevel();
-                        return;
-
-                    case 0x11:
-                        base.Explorer.Refresh();
-                        return;
-
-                    case 0x12:
-                        this.ShowSearchBar(true);
-                        return;
-
-                    case 0x30: {
-                            if(modifierKeys != Keys.Control) {
-                                this.OpenNewTab(str, false);
-                                return;
-                            }
-                            using(IDLWrapper wrapper2 = new IDLWrapper(str)) {
-                                this.OpenNewWindow(wrapper2);
-                                return;
-                            }
-                        }
-                    case 0xf1:
-                    case 0xf2: {
-                            object[] tag = new object[] { str, num2 == 0xf1, (int)copydatastruct.dwData };
-                            if(modifierKeys != Keys.Shift) {
-                                if(modifierKeys == Keys.Control) {
-                                    using(IDLWrapper wrapper = new IDLWrapper(str)) {
-                                        this.OpenNewWindow(wrapper);
-                                        return;
+                        case 0xf1:
+                        case 0xf2: {
+                                object[] tag = new object[] { str, num2 == 0xf1, (int)copydatastruct.dwData };
+                                if(modifierKeys != Keys.Shift) {
+                                    if(modifierKeys == Keys.Control) {
+                                        using(IDLWrapper wrapper = new IDLWrapper(str)) {
+                                            this.OpenNewWindow(wrapper);
+                                            return;
+                                        }
                                     }
+                                    this.NavigateToHistory(tag);
+                                    return;
                                 }
+                                this.CloneTabButton(this.CurrentTab, null, true, -1);
                                 this.NavigateToHistory(tag);
                                 return;
                             }
-                            this.CloneTabButton(this.CurrentTab, null, true, -1);
-                            this.NavigateToHistory(tag);
+                        case 0xf3:
+                            this.NavigateBranches(this.CurrentTab, (int)copydatastruct.dwData);
                             return;
-                        }
-                    case 0xf3:
-                        this.NavigateBranches(this.CurrentTab, (int)copydatastruct.dwData);
-                        return;
 
-                    case 250:
-                        this.HideThumbnailTooltip(9);
-                        this.HideSubDirTip(9);
-                        return;
-
-                    case 0xfb:
-                        if(Directory.Exists(str)) {
-                            this.OpenNewTab(str, false);
-                        }
-                        return;
-
-                    case 0xfc:
-                        if(!(copydatastruct.dwData == ((IntPtr)1))) {
-                            this.contextMenuSys.Show(Control.MousePosition);
+                        case 250:
+                            this.HideThumbnailTooltip(9);
+                            this.HideSubDirTip(9);
                             return;
+
+                        case 0xfb:
+                            if(Directory.Exists(str)) {
+                                this.OpenNewTab(str, false);
+                            }
+                            return;
+
+                        case 0xfc:
+                            if(!(copydatastruct.dwData == ((IntPtr)1))) {
+                                this.contextMenuSys.Show(Control.MousePosition);
+                                return;
+                            }
+                            this.contextMenuSys.Show(base.PointToScreen(Point.Empty));
+                            return;
+
+                        case 0xfd:
+                            this.OnMouseDoubleClick(new MouseEventArgs(MouseButtons.Left, 0, 0, 0, 0));
+                            return;
+
+                        case 0xff:
+                            this.SyncButtonBarCurrent(0x3f);
+                            return;
+
+                        default:
+                            return;
+                    }
+                }
+                return;
+            Label_0B07:
+                if(flag) {
+                    bool flag6 = QTUtility.IsVista && PInvoke.IsIconic(this.ExplorerHandle);
+                    this.RestoreFromTray();
+                    WindowUtils.BringExplorerToFront(this.ExplorerHandle);
+                    if(flag6) {
+                        foreach(QTabItem item2 in this.tabControl1.TabPages) {
+                            item2.RefreshRectangle();
                         }
-                        this.contextMenuSys.Show(base.PointToScreen(Point.Empty));
-                        return;
-
-                    case 0xfd:
-                        this.OnMouseDoubleClick(new MouseEventArgs(MouseButtons.Left, 0, 0, 0, 0));
-                        return;
-
-                    case 0xff:
-                        this.SyncButtonBarCurrent(0x3f);
-                        return;
-
-                    default:
-                        return;
+                        this.tabControl1.Refresh();
+                    }
                 }
             }
-            return;
-        Label_0B07:
-            if(flag) {
-                bool flag6 = QTUtility.IsVista && PInvoke.IsIconic(this.ExplorerHandle);
-                this.RestoreFromTray();
-                WindowUtils.BringExplorerToFront(this.ExplorerHandle);
-                if(flag6) {
-                    foreach(QTabItem item2 in this.tabControl1.TabPages) {
-                        item2.RefreshRectangle();
-                    }
-                    this.tabControl1.Refresh();
-                }
+            catch(Exception ex) {
+                QTUtility2.MakeErrorLog(ex, String.Format("Message: {0:x4}", m.Msg));
             }
         }
 

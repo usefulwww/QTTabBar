@@ -17,6 +17,7 @@
 
 using QTTabBarLib.Interop;
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -29,10 +30,19 @@ namespace QTTabBarLib.Automation {
     class AutomationManager : IDisposable {
         private static readonly Guid IID_IUIAutomation = new Guid("{30CBE57D-D9D0-452A-AB13-7AC5AC4825EE}");
         private static readonly Guid CLSID_CUIAutomation = new Guid("{FF48DBA4-60EF-4201-AA87-54103EEF594E}");
+        private const int TreeScope_Element = 1;
+        private const int TreeScope_Descendants = 4;
+        private const int UIA_Selection_InvalidatedEventId = 20013;
+        private const int UIA_SelectionItem_ElementAddedToSelectionEventId = 20010;
+        private const int UIA_SelectionItem_ElementRemovedFromSelectionEventId = 20011;
+        private const int UIA_SelectionItem_ElementSelectedEventId = 20012;
 
+        private EventHandler handler = null;
+        private IntPtr hwndListView;
         private static IUIAutomation pAutomation;
         public delegate T Query<T>(AutomationElementFactory factory);
-
+        public delegate void SelChangeCallback();
+        
         private class Worker<T> {
             private T ret;
             private Query<T> query;
@@ -42,10 +52,14 @@ namespace QTTabBarLib.Automation {
             }
 
             public void DoWork(object state) {
-                using(AutomationElementFactory man = new AutomationElementFactory(pAutomation)) {
-                    ret = query(man);
+                try {
+                    using(AutomationElementFactory factory = new AutomationElementFactory(pAutomation)) {
+                        ret = query(factory);
+                    }
                 }
-                ((AutoResetEvent)state).Set();
+                finally {
+                    ((AutoResetEvent)state).Set();
+                }
             }
 
             public T GetReturn() {
@@ -53,6 +67,32 @@ namespace QTTabBarLib.Automation {
             }
         };
 
+        private class EventHandler : IUIAutomationEventHandler {
+            private AutomationManager parent;
+            private SelChangeCallback callback;
+            private IntPtr hwnd;
+            private int threadId;
+
+            public EventHandler(AutomationManager parent, int threadId, IntPtr hwnd, SelChangeCallback callback) {
+                this.hwnd = hwnd;
+                this.parent = parent;
+                this.callback = callback;
+                this.threadId = threadId;
+            }
+
+            public int HandleAutomationEvent(IUIAutomationElement sender, int eventId) {
+                if(PInvoke.GetCurrentThreadId() == threadId && parent.handler == this) {
+                    callback();
+                }
+                Marshal.ReleaseComObject(sender);
+                return 0;
+            }
+
+            public IntPtr GetHwnd() {
+                return hwnd;
+            }
+        }
+        
         public AutomationManager() {
             Guid rclsid = CLSID_CUIAutomation;
             Guid riid = IID_IUIAutomation;
@@ -64,6 +104,38 @@ namespace QTTabBarLib.Automation {
 
         ~AutomationManager() {
             Dispose();
+        }
+
+        private void RegisterSelChangedEventAT(object state) {
+            IUIAutomationElement elem = null;
+            try {
+                pAutomation.ElementFromHandle(handler.GetHwnd(), out elem);
+                if(elem != null) {
+                    pAutomation.AddAutomationEventHandler(UIA_Selection_InvalidatedEventId,
+                            elem, TreeScope_Element, IntPtr.Zero, handler);
+                    pAutomation.AddAutomationEventHandler(UIA_SelectionItem_ElementAddedToSelectionEventId,
+                            elem, TreeScope_Descendants, IntPtr.Zero, handler);
+                    pAutomation.AddAutomationEventHandler(UIA_SelectionItem_ElementRemovedFromSelectionEventId,
+                            elem, TreeScope_Descendants, IntPtr.Zero, handler);
+                    pAutomation.AddAutomationEventHandler(UIA_SelectionItem_ElementSelectedEventId,
+                            elem, TreeScope_Descendants, IntPtr.Zero, handler);
+                }
+            }
+            catch(Exception ex) {
+            }
+            finally {
+                if(elem != null) {
+                    Marshal.ReleaseComObject(elem);
+                }
+                ((AutoResetEvent)state).Set();
+            }
+        }
+
+        public void RegisterSelChangedEvent(IntPtr hwnd, SelChangeCallback callback) {
+            WaitHandle handle = new AutoResetEvent(false);
+            handler = new EventHandler(this, PInvoke.GetCurrentThreadId(), hwnd, callback);
+            //ThreadPool.QueueUserWorkItem(new WaitCallback(RegisterSelChangedEventAT), handle);
+            //handle.WaitOne();
         }
 
         public void Dispose() {

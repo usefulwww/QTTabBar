@@ -95,13 +95,15 @@ namespace QTTabBarLib {
         }
 
         public static void MakeErrorLog(Exception ex, string optional, bool fCritical) {
-            if(QTUtility.NowDebugging || fCritical) {
+            // TODO Make a release-acceptable version of this code
+
+            //if(QTUtility.NowDebugging || fCritical) {
                 try {
                     string path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\QTTabBarException.log";
                     bool flag = File.Exists(path);
                     using(StreamWriter writer = new StreamWriter(path, true)) {
                         if(!flag) {
-                            writer.WriteLine("This file was created by QTTabBar for debugging. Sorry for inconvenients. You can delete this without any harm.");
+                            writer.WriteLine("This file was created by QTTabBar for debugging. Sorry for inconvenience. You can delete this without any harm.");
                             writer.WriteLine("--------------");
                             writer.WriteLine();
                         }
@@ -119,7 +121,7 @@ namespace QTTabBarLib {
                 }
                 catch {
                 }
-            }
+            //}
         }
 
         public static string MakeKeyString(Keys key) {

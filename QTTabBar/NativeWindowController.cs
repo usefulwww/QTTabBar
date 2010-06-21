@@ -30,7 +30,16 @@ namespace QTTabBarLib {
         }
 
         protected override void WndProc(ref Message m) {
-            if((this.MessageCaptured == null) || !this.MessageCaptured(ref m)) {
+            bool consumed = false;
+            if(this.MessageCaptured != null) {
+                try {
+                    consumed = this.MessageCaptured(ref m);
+                }
+                catch(Exception ex) {
+                    QTUtility2.MakeErrorLog(ex, String.Format("Message: {0:x4}", m.Msg));
+                }
+            }
+            if(!consumed) {
                 base.WndProc(ref m);
             }
         }
