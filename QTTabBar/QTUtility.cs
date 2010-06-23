@@ -408,7 +408,7 @@ namespace QTTabBarLib {
 
         public static string GetImageKey(string path, string ext) {
             if(!string.IsNullOrEmpty(path)) {
-                if(path.StartsWith(@"\\")) {
+                if(QTUtility2.IsNetworkPath(path)) {
                     if(ext != null) {
                         ext = ext.ToLower();
                         if(ext.Length == 0) {
@@ -919,12 +919,12 @@ namespace QTTabBarLib {
             }
             if(!string.IsNullOrEmpty(ext)) {
                 ext = ext.ToLower();
-                if(ExtHasIcon(ext) && !path.StartsWith(@"\\")) {
+                if(ExtHasIcon(ext) && !QTUtility2.IsNetworkPath(path)) {
                     return new ImageReservationKey(path, 2);
                 }
                 return new ImageReservationKey(ext, 1);
             }
-            if(path.StartsWith(@"\\")) {
+            if(QTUtility2.IsNetworkPath(path)) {
                 if(IsNetworkRootFolder(path)) {
                     return new ImageReservationKey(path, 4);
                 }

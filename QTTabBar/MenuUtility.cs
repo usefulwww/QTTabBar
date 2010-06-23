@@ -249,7 +249,7 @@ namespace QTTabBarLib {
             if(QTUtility.ExecutedPathsList.Count > 0) {
                 for(int i = QTUtility.ExecutedPathsList.Count - 1; i >= 0; i--) {
                     string path = QTUtility.ExecutedPathsList[i];
-                    if(path.StartsWith(@"\\") || File.Exists(path)) {
+                    if(QTUtility2.IsNetworkPath(path) || File.Exists(path)) {
                         bool flag;
                         QMenuItem item = new QMenuItem(QTUtility2.MakeNameEllipsis(Path.GetFileName(path), out flag), MenuGenre.RecentFile);
                         item.Path = item.ToolTipText = path;

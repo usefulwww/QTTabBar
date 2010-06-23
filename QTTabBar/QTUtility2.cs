@@ -65,6 +65,23 @@ namespace QTTabBarLib {
             QTUtility.TMPTargetIDL = null;
         }
 
+        public static bool IsNetworkPath(string path) {
+            if(path.StartsWith(@"\\")) {
+                return true;
+            }
+            try {
+                if(Path.IsPathRooted(path)) {
+                    DriveInfo drive = new DriveInfo(Path.GetPathRoot(path));
+                    if(drive.DriveType == DriveType.Network) {
+                        return true;
+                    }
+                }
+            }
+            catch {
+            }
+            return false;
+        }
+
         public static bool IsShellPathButNotFileSystem(string path) {
             path = path.ToLower();
             return ((!path.StartsWith("http://") && !path.StartsWith("ftp://")) && !Path.IsPathRooted(path));
@@ -237,7 +254,20 @@ namespace QTTabBarLib {
                 return false;
             }
             path = path.ToLower();
-            if(((path.StartsWith("::") || path.StartsWith(@"\\")) || (path.StartsWith("http://") || path.StartsWith("ftp://"))) || (path.Contains("???") || Directory.Exists(path))) {
+            if(path.StartsWith("::") || path.StartsWith(@"\\") || path.StartsWith("http://") || path.StartsWith("ftp://") || path.Contains("???")) {
+                return true;
+            }
+            if(Path.IsPathRooted(path)) {
+                DriveInfo drive = new DriveInfo(Path.GetPathRoot(path));
+                switch(drive.DriveType) {
+                    case DriveType.Unknown:
+                    case DriveType.NoRootDirectory:
+                        return false;
+                    case DriveType.Network:
+                        return true;
+                }
+            }
+            if(Directory.Exists(path)) {
                 return true;
             }
             if(File.Exists(path)) {
