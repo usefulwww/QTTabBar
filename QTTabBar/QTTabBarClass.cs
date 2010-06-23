@@ -2794,7 +2794,7 @@ namespace QTTabBarLib {
                     if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
                         if(QTUtility.CheckConfig(Settings.SubDirTipsWithShift)) {
                             if(listViewWrapper.MouseIsOverListView()) {
-                                listViewWrapper.FireHotTrack();
+                                RefreshSubDirTip(listViewWrapper.GetHotItem(), false);
                             }
                         }
                         else if(this.subDirTip != null && this.subDirTip.IsShowing && !this.subDirTip.MenuIsShowing) {
@@ -3886,7 +3886,7 @@ namespace QTTabBarLib {
 
             listViewWrapper = new ListViewWrapper(ShellBrowser, ExplorerHandle);
             listViewWrapper.SVDestroy       += ListView_SVDestroy;
-            listViewWrapper.SVMouseActivate += ListView_SVMouseActivate;
+            listViewWrapper.MouseActivate += ListView_MouseActivate;
             listViewWrapper.ItemInserted    += ListView_ItemInserted;
             listViewWrapper.ItemDeleted     += ListView_ItemDeleted;
             listViewWrapper.ItemActivated   += ListView_ItemActivated;
@@ -3903,6 +3903,7 @@ namespace QTTabBarLib {
             listViewWrapper.EndLabelEdit    += ListView_EndLabelEdit;
             listViewWrapper.BeginScroll     += ListView_BeginScroll;
             listViewWrapper.MouseLeave      += ListView_MouseLeave;
+            listViewWrapper.AfterPaint      += ListView_AfterPaint;
             
         }
 
@@ -4095,9 +4096,10 @@ namespace QTTabBarLib {
             return false;
         }
 
-        private bool ListView_SVMouseActivate(ref int result) {
-            // The purpose of this is probably to prevent accidentally
+        private bool ListView_MouseActivate(ref int result) {
+            // The purpose of this is to prevent accidentally
             // renaming an item when clicking out of a SubDirTip menu.
+            bool ret = false;
             if((subDirTip != null && subDirTip.MenuIsShowing) || (subDirTip_Tab != null && subDirTip_Tab.MenuIsShowing)) {
                 if(listViewWrapper.GetSelectedCount() == 1 && listViewWrapper.HotItemIsSelected()) {
                     result = 2;
@@ -4106,10 +4108,11 @@ namespace QTTabBarLib {
                     }
                     HideSubDirTip_Tab_Menu();
                     listViewWrapper.SetFocus();
-                    return true;
-                }
+                    ret = true;
+                }                
             }
-            return false;
+            RefreshSubDirTip(listViewWrapper.GetHotItem(), true);
+            return ret;
         }
 
         private bool ListView_ItemInserted() { 
@@ -4202,6 +4205,11 @@ namespace QTTabBarLib {
             return false;
         }
 
+        private bool ListView_AfterPaint() {
+            RefreshSubDirTip(listViewWrapper.GetHotItem(), true);
+            return false;
+        }
+
         private bool ListView_HotTrack(int iItem) { 
             if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews) || !QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
 
@@ -4232,26 +4240,7 @@ namespace QTTabBarLib {
                     this.timer_HoverThumbnail.Enabled = false;
                     this.timer_HoverThumbnail.Enabled = true;
                 }
-                if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
-                    if(!QTUtility.CheckConfig(Settings.SubDirTipsWithShift) ^ (modifierKeys == Keys.Shift)) {
-                        if((this.subDirIndex == iItem) && (QTUtility.IsVista || (iItem != -1))) {
-                            return false;
-                        }
-                        if(QTUtility.IsVista) {
-                            this.subDirIndex = iItem;
-                        }
-                        if(iItem > -1 && listViewWrapper.IsTrackingItemName()) {
-                            if(this.ShowSubDirTip(iItem, false, false)) {
-                                if(!QTUtility.IsVista) {
-                                    this.subDirIndex = iItem;
-                                }
-                                return false;
-                            }
-                        }
-                    }
-                    this.HideSubDirTip(2);
-                    this.subDirIndex = -1;
-                }
+                RefreshSubDirTip(iItem, false);
             }
             return false;
         }
@@ -5715,6 +5704,30 @@ namespace QTTabBarLib {
             }
         }
 
+        private void RefreshSubDirTip(int iItem, bool force) {
+            if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
+                if(!QTUtility.CheckConfig(Settings.SubDirTipsWithShift) ^ (Control.ModifierKeys == Keys.Shift)) {
+                    if(subDirTip != null && subDirTip.MouseIsOnThis()) {
+                        return;
+                    }
+                    if(!force && this.subDirIndex == iItem && (QTUtility.IsVista || (iItem != -1))) {
+                        return;
+                    }
+                    if(QTUtility.IsVista) {
+                        this.subDirIndex = iItem;
+                    }
+                    if(iItem > -1 && this.ShowSubDirTip(iItem, false, false)) {
+                        if(!QTUtility.IsVista) {
+                            this.subDirIndex = iItem;
+                        }
+                        return;
+                    }
+                }
+                this.HideSubDirTip(2);
+                this.subDirIndex = -1;
+            }
+        }
+
         private void RefreshTabBar(bool fRebarBGCanceled) {
             base.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -6170,7 +6183,6 @@ namespace QTTabBarLib {
                         return false;
                     }
                     Point pnt = listViewWrapper.GetSubDirTipPoint(fByKey);
-
                     if(this.subDirTip == null) {
                         this.subDirTip = new SubDirTipForm(base.Handle, this.ExplorerHandle, true, listViewWrapper);
                         this.subDirTip.MenuItemClicked += new ToolStripItemClickedEventHandler(this.subDirTip_MenuItemClicked);

@@ -218,6 +218,8 @@ namespace QTTabBarLib.Interop {
         public static extern uint RegisterClipboardFormat(string lpszFormat);
         [DllImport("ole32.dll", CharSet = CharSet.Unicode)]
         public static extern int RegisterDragDrop(IntPtr hwnd, _IDropTarget pDropTarget);
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern uint RegisterWindowMessage(string lpString);
         [DllImport("advapi32.dll", CharSet = CharSet.Unicode)]
         public static extern int RegOpenKeyEx(IntPtr hKey, string lpSubKey, int ulOptions, uint samDesired, out IntPtr phkResult);
         [DllImport("advapi32.dll", CharSet = CharSet.Unicode)]

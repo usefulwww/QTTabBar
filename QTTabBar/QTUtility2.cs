@@ -66,7 +66,10 @@ namespace QTTabBarLib {
         }
 
         public static bool IsNetworkPath(string path) {
-            if(path.StartsWith(@"\\")) {
+            if(path.StartsWith("::")) {
+                return false;
+            }
+            else if(path.StartsWith(@"\\")) {
                 return true;
             }
             try {

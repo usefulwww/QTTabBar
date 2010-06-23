@@ -45,9 +45,11 @@ namespace QTTabBarLib {
         private List<int> lstColumnFMT;
         private bool fListViewHasFocus;
         private IShellBrowser ShellBrowser;
+        private static readonly Int32 WM_AFTERPAINT = (Int32)PInvoke.RegisterWindowMessage("QTTabBar_AfterPaint");
+
 
         internal delegate bool SVDestroyHandler();
-        internal delegate bool SVMouseActivateHandler(ref int result);
+        internal delegate bool MouseActivateHandler(ref int result);
         internal delegate bool ItemInsertedHandler();
         internal delegate bool ItemDeletedHandler();
         internal delegate bool ItemActivatedHandler(Keys modKeys);
@@ -64,9 +66,10 @@ namespace QTTabBarLib {
         internal delegate bool EndLabelEditHandler(LVITEM item);
         internal delegate bool BeginScrollHandler();
         internal delegate bool MouseLeaveHandler();
+        internal delegate bool AfterPaintHandler();
 
         internal event SVDestroyHandler SVDestroy;                // OK
-        internal event SVMouseActivateHandler SVMouseActivate;    // OK
+        internal event MouseActivateHandler MouseActivate;    // OK
         internal event ItemInsertedHandler ItemInserted;          // TODO
         internal event ItemDeletedHandler ItemDeleted;            // TODO
         internal event ItemActivatedHandler ItemActivated;        // OK
@@ -83,6 +86,7 @@ namespace QTTabBarLib {
         internal event EndLabelEditHandler EndLabelEdit;          // SysListView Only
         internal event BeginScrollHandler BeginScroll;            // TODO
         internal event MouseLeaveHandler MouseLeave;              // SysListView Only
+        internal event AfterPaintHandler AfterPaint;              // OK
 
         internal ListViewWrapper(IShellBrowser ShellBrowser, IntPtr ExplorerHandle) {
             this.ShellBrowser = ShellBrowser;
@@ -142,10 +146,6 @@ namespace QTTabBarLib {
                 }
             }
             return false;
-        }
-
-        public void FireHotTrack() {
-            // TODO
         }
 
         public void ScrollHorizontal(int amount) {
@@ -744,10 +744,23 @@ namespace QTTabBarLib {
         private bool ListViewController_MessageCaptured(ref System.Windows.Forms.Message msg) {
 
             // First block is for both SysListView and ItemsView
+            if(msg.Msg == WM_AFTERPAINT) {
+                if(AfterPaint != null) {
+                    AfterPaint();
+                }
+                return true;
+            }
+
             switch(msg.Msg) {
                 case WM.DESTROY:
                     ListViewController.ReleaseHandle();
                     ListViewController = null;
+                    break;
+
+                case WM.PAINT:
+                    // It's very dangerous to do automation-related things
+                    // during WM_PAINT.  So, use PostMessage to do it later.
+                    PInvoke.PostMessage(ListViewController.Handle, (uint)WM_AFTERPAINT, IntPtr.Zero, IntPtr.Zero);
                     break;
 
                 case WM.MOUSEMOVE:
@@ -789,6 +802,15 @@ namespace QTTabBarLib {
             }
 
             switch(msg.Msg) {
+                case WM.MOUSEACTIVATE:
+                    if(MouseActivate != null) {
+                        int res = (int)msg.Result;
+                        bool ret = MouseActivate(ref res);
+                        msg.Result = (IntPtr)res;
+                        return ret;
+                    }
+                    break;
+
                 case WM.LBUTTONDOWN:
                     // The ItemsView's window class doesn't have the CS_DBLCLKS
                     // class style, which means we won't be receiving the
@@ -975,9 +997,9 @@ namespace QTTabBarLib {
                     break;
 
                 case WM.MOUSEACTIVATE:
-                    if(SVMouseActivate != null) {
+                    if(MouseActivate != null) {
                         int res = (int)msg.Result;
-                        bool ret = SVMouseActivate(ref res);
+                        bool ret = MouseActivate(ref res);
                         msg.Result = (IntPtr)res;
                         return ret;
                     }

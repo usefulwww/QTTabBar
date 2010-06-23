@@ -1028,7 +1028,8 @@ namespace QTTabBarLib {
 
         public void ShowSubDirTip(string path, byte[] idl, Point pnt) {
             this.lblSubDirBtn.SetPressed(false);
-            if(PInvoke.WindowFromPoint(new Point(pnt.X, pnt.Y + 2)) == listViewWrapper.GetListViewHandle()) {
+            IntPtr hwnd = PInvoke.WindowFromPoint(new Point(pnt.X, pnt.Y + 2));
+            if(hwnd == lblSubDirBtn.Handle || hwnd == listViewWrapper.GetListViewHandle()) {
                 this.isShowing = true;
                 this.currentDir = this.contextMenuSubDir.Path = path;
                 this.currentIDL = idl;
