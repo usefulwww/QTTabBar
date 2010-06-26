@@ -251,7 +251,7 @@ namespace QTTabBarLib {
                 if(QTUtility.CheckConfig(Settings.RestoreLockedTabs)) {
                     this.RestoreTabsOnInitialize(1, openingPath);
                 }
-                else if(QTUtility.CheckConfig(Settings.RestoreClosed)) {
+                else if(QTUtility.CheckConfig(Settings.RestoreTabs)) {
                     this.RestoreTabsOnInitialize(0, openingPath);
                 }
             }

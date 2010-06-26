@@ -33,7 +33,7 @@ namespace QTTabBarLib {
         NeverCloseWindow    = 8 * 00 + 1, // 0x02,
         FixedWidthTabs      = 8 * 00 + 2, // 0x04,
         ShowTooltips        = 8 * 00 + 3, // 0x08,
-        RestoreClosed       = 8 * 00 + 4, // 0x10,
+        RestoreTabs         = 8 * 00 + 4, // 0x10,
         CloseWhenGroup      = 8 * 00 + 5, // 0x20,
         DontOpenSame        = 8 * 00 + 6, // 0x40,
         ActivateNewTab      = 8 * 00 + 7, // 0x80,
@@ -585,7 +585,7 @@ namespace QTTabBarLib {
             dictionary[0x12] = !CheckConfig(Settings.CtrlWheelChangeView);
             dictionary[0x13] = CheckConfig(Settings.NeverCloseWindow);
             dictionary[20] = CheckConfig(Settings.NeverCloseWndLocked);
-            dictionary[0x15] = CheckConfig(Settings.RestoreClosed);
+            dictionary[0x15] = CheckConfig(Settings.RestoreTabs);
             dictionary[0x16] = CheckConfig(Settings.RestoreLockedTabs);
             dictionary[0x17] = CheckConfig(Settings.UseTabSkin);
             dictionary[0x18] = CheckConfig(Settings.FolderIcon);
@@ -1096,7 +1096,7 @@ namespace QTTabBarLib {
             SetConfigAt(Settings.CtrlWheelChangeView, !((bool)dictionary2[0x12]));
             SetConfigAt(Settings.NeverCloseWindow, (bool)dictionary2[0x13]);
             SetConfigAt(Settings.NeverCloseWndLocked, (bool)dictionary2[20]);
-            SetConfigAt(Settings.RestoreClosed, (bool)dictionary2[0x15]);
+            SetConfigAt(Settings.RestoreTabs, (bool)dictionary2[0x15]);
             SetConfigAt(Settings.RestoreLockedTabs, (bool)dictionary2[0x16]);
             SetConfigAt(Settings.UseTabSkin, (bool)dictionary2[0x17]);
             SetConfigAt(Settings.FolderIcon, (bool)dictionary2[0x18]);

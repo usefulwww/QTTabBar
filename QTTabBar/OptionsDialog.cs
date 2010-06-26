@@ -3684,7 +3684,7 @@ namespace QTTabBarLib {
                 QTUtility.SetConfigAt(Settings.CloseWhenGroup, true);
             }
             if(this.chbRestoreClosed.Checked) {
-                QTUtility.SetConfigAt(Settings.RestoreClosed, true);
+                QTUtility.SetConfigAt(Settings.RestoreTabs, true);
             }
             if(this.chbShowTooltip.Checked) {
                 QTUtility.SetConfigAt(Settings.ShowTooltips, true);
