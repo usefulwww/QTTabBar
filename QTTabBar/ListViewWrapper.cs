@@ -94,7 +94,7 @@ namespace QTTabBarLib {
             AutoMan = new AutomationManager();
             if(QTUtility.IsVista) {
                 hwndEnumResult = IntPtr.Zero;
-                PInvoke.EnumChildWindows(ExplorerHandle, new EnumWndProc(this.CallbackEnumChildProc_Container), IntPtr.Zero);
+                PInvoke.EnumChildWindows(ExplorerHandle, CallbackEnumChildProc_Container, IntPtr.Zero);
                 ShellContainer = hwndEnumResult;
             }
             else {
@@ -109,6 +109,14 @@ namespace QTTabBarLib {
 
         private bool CallbackEnumChildProc_Container(IntPtr hwnd, IntPtr lParam) {
             if(GetWindowClassName(hwnd) == "ShellTabWindowClass") {
+                hwndEnumResult = hwnd;
+                return false;
+            }
+            return true;
+        }
+
+        private bool CallbackEnumChildProc_Edit(IntPtr hwnd, IntPtr lParam) {
+            if(GetWindowClassName(hwnd) == "Edit") {
                 hwndEnumResult = hwnd;
                 return false;
             }
@@ -183,8 +191,9 @@ namespace QTTabBarLib {
                 return PInvoke.SendMessage(ListViewController.Handle, LVM.GETEDITCONTROL, IntPtr.Zero, IntPtr.Zero);
             }
             else {
-                // Not supported.
-                return IntPtr.Zero;
+                hwndEnumResult = IntPtr.Zero;
+                PInvoke.EnumChildWindows(ListViewController.Handle, CallbackEnumChildProc_Edit, IntPtr.Zero);
+                return hwndEnumResult;
             }
         }
 
@@ -699,7 +708,7 @@ namespace QTTabBarLib {
             }
 
             hwndEnumResult = IntPtr.Zero;
-            PInvoke.EnumChildWindows(ExplorerHandle, new EnumWndProc(this.CallbackEnumChildProc_ShellView), IntPtr.Zero);
+            PInvoke.EnumChildWindows(ExplorerHandle, CallbackEnumChildProc_ShellView, IntPtr.Zero);
             if(hwndEnumResult != IntPtr.Zero) {
                 RecaptureHandles(hwndEnumResult);
             }
@@ -937,7 +946,7 @@ namespace QTTabBarLib {
             ShellViewController.MessageCaptured += new NativeWindowController.MessageEventHandler(ShellViewController_MessageCaptured);
 
             hwndEnumResult = IntPtr.Zero;
-            PInvoke.EnumChildWindows(hwndShellView, new EnumWndProc(this.CallbackEnumChildProc_ListView), IntPtr.Zero);
+            PInvoke.EnumChildWindows(hwndShellView, CallbackEnumChildProc_ListView, IntPtr.Zero);
             if(hwndEnumResult == IntPtr.Zero) {
                 return;
             }
