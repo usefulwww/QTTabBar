@@ -16,14 +16,11 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
-using System.Drawing;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-
 using QTPlugin;
 using QTPlugin.Interop;
-
 
 namespace QuizoPlugins {
     [Plugin(PluginType.Interactive, Author = "Quizo", Name = "Change Folder View Mode", Version = "1.0.0.0", Description = "Button to change folder viewmode for XP.")]
@@ -49,13 +46,13 @@ namespace QuizoPlugins {
                 // this plugin has 2 language resources in assemly, but usually there's no need to do like this.
                 // it only has to have a resource of your own language.
 
-                if(System.Globalization.CultureInfo.CurrentCulture.Parent.Name == "ja")
+                if(CultureInfo.CurrentCulture.Parent.Name == "ja")
                     this.ResStrs = Resource.viewModes_Ja.Split(new char[] { ';' });
                 else
                     this.ResStrs = Resource.viewModes.Split(new char[] { ';' });
             }
 
-            this.pluginServer.NavigationComplete += new PluginEventHandler(pluginServer_NavigationComplete);
+            this.pluginServer.NavigationComplete += pluginServer_NavigationComplete;
         }
 
         public void Close(EndCode code) {
@@ -101,7 +98,7 @@ namespace QuizoPlugins {
                 this.button = new ToolStripButton();
                 this.button.Text =
                 this.button.ToolTipText = this.ResStrs[6];
-                this.button.MouseDown += new MouseEventHandler(button_MouseDown);
+                this.button.MouseDown += button_MouseDown;
             }
 
             switch(displayStyle) {
@@ -131,7 +128,7 @@ namespace QuizoPlugins {
             if(e.Button == MouseButtons.Left) {
                 if(this.fvmw == null) {
                     this.fvmw = new FolderViewModeWindow(this.ResStrs);
-                    this.fvmw.ViewModeChanged += new EventHandler(this.fvmw_ViewModeChanged);
+                    this.fvmw.ViewModeChanged += this.fvmw_ViewModeChanged;
                 }
 
                 this.fvmw.ShowWindow(Control.MousePosition, this.GetCurrentViewMode());

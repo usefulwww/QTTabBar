@@ -15,12 +15,11 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using System;
-    using System.ComponentModel;
-    using System.Drawing;
-    using System.Windows.Forms;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
 
+namespace QTTabBarLib {
     internal sealed class CreateNewGroupForm : Form {
         private Button buttonCancel;
         private Button buttonOK;
@@ -62,10 +61,6 @@ namespace QTTabBarLib {
             }
         }
 
-        protected override void Dispose(bool disposing) {
-            base.Dispose(disposing);
-        }
-
         private void InitializeComponent() {
             this.buttonOK = new Button();
             this.buttonCancel = new Button();
@@ -79,7 +74,7 @@ namespace QTTabBarLib {
             this.buttonOK.Size = new Size(0x4b, 0x17);
             this.buttonOK.TabIndex = 0;
             this.buttonOK.Text = "OK";
-            this.buttonOK.Click += new EventHandler(this.buttonOK_Click);
+            this.buttonOK.Click += this.buttonOK_Click;
             this.buttonCancel.DialogResult = DialogResult.Cancel;
             this.buttonCancel.Location = new Point(220, 0x42);
             this.buttonCancel.Size = new Size(0x4b, 0x17);
@@ -91,7 +86,7 @@ namespace QTTabBarLib {
             this.textBox1.Location = new Point(0x7d, 15);
             this.textBox1.Size = new Size(170, 20);
             this.textBox1.TabIndex = 2;
-            this.textBox1.TextChanged += new EventHandler(this.textBox1_TextChanged);
+            this.textBox1.TextChanged += this.textBox1_TextChanged;
             this.checkBox1.AutoSize = true;
             this.checkBox1.Location = new Point(12, 70);
             this.checkBox1.Size = new Size(90, 0x1c);

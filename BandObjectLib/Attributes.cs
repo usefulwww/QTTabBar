@@ -16,8 +16,6 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Runtime.InteropServices;
-using System.Reflection;
 
 namespace BandObjectLib {
 
@@ -37,7 +35,7 @@ namespace BandObjectLib {
     /// Specifies Style of the band object, its Name(displayed in explorer menu) and HelpText(displayed in status bar when menu command selected).
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    public class BandObjectAttribute : System.Attribute {
+    public class BandObjectAttribute : Attribute {
         public BandObjectAttribute() { }
 
         public BandObjectAttribute(string name, BandObjectStyle style) {

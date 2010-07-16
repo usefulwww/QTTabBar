@@ -16,9 +16,8 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Windows.Forms;
 using System.Drawing;
-
+using System.Windows.Forms;
 using QTPlugin;
 using QTPlugin.Interop;
 
@@ -83,7 +82,7 @@ namespace QuizoPlugins {
             if(this.timer == null) {
                 this.timer = new Timer();
                 this.timer.Interval = 1000;
-                this.timer.Tick += new EventHandler(timer_Tick);
+                this.timer.Tick += timer_Tick;
             }
 
             this.timer.Start();

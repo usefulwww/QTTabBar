@@ -15,16 +15,15 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using Microsoft.Win32;
-    using System;
-    using System.Diagnostics;
-    using System.IO;
-    using System.Net;
-    using System.Runtime.InteropServices;
-    using System.Text;
-    using System.Windows.Forms;
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Net;
+using System.Text;
+using System.Windows.Forms;
+using Microsoft.Win32;
 
+namespace QTTabBarLib {
     internal static class UpdateChecker {
         private static bool fCheckDone;
         private const int INTERVAL_CHECK_DAY = 5;
@@ -52,7 +51,7 @@ namespace QTTabBarLib {
         private static int CheckInternal(out string msg) {
             HttpStatusCode statusCode;
             msg = null;
-            string str = null;
+            string str;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Resources_String.SiteURL + "/files/latestversion.txt");
             request.Timeout = 0x1388;
             try {
@@ -117,9 +116,9 @@ namespace QTTabBarLib {
         private static bool DayHasCome() {
             using(RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Quizo\QTTabBar")) {
                 if(key != null) {
-                    long ticks = QTUtility2.GetRegistryValueSafe<long>(key, "LastChecked", -1L);
+                    long ticks = QTUtility2.GetRegistryValueSafe(key, "LastChecked", -1L);
                     if((DateTime.MinValue.Ticks < ticks) && (ticks < DateTime.MaxValue.Ticks)) {
-                        TimeSpan span = (TimeSpan)(DateTime.Now - new DateTime(ticks));
+                        TimeSpan span = (DateTime.Now - new DateTime(ticks));
                         return (span.Days > 5);
                     }
                 }

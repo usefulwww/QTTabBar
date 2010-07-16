@@ -15,11 +15,10 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
 using System.Drawing;
-
+using System.Globalization;
+using System.Media;
+using System.Windows.Forms;
 using QTPlugin;
 using QTPlugin.Interop;
 
@@ -44,8 +43,8 @@ namespace QuizoPlugins {
                 this.ResStr = new string[] { StringResources.ButtonNames[0] };
             }
 
-            this.pluginServer.SelectionChanged += new PluginEventHandler(pluginServer_SelectionChanged);
-            this.pluginServer.NavigationComplete += new PluginEventHandler(pluginServer_NavigationComplete);
+            this.pluginServer.SelectionChanged += pluginServer_SelectionChanged;
+            this.pluginServer.NavigationComplete += pluginServer_NavigationComplete;
         }
 
         public bool QueryShortcutKeys(out string[] actions) {
@@ -138,8 +137,8 @@ namespace QuizoPlugins {
                 this.ResStr = new string[] { StringResources.ButtonNames[1] };
             }
 
-            this.pluginServer.NavigationComplete += new PluginEventHandler(pluginServer_NavigationComplete);
-            this.pluginServer.SelectionChanged += new PluginEventHandler(pluginServer_SelectionChanged);
+            this.pluginServer.NavigationComplete += pluginServer_NavigationComplete;
+            this.pluginServer.SelectionChanged += pluginServer_SelectionChanged;
         }
 
         public bool QueryShortcutKeys(out string[] actions) {
@@ -278,7 +277,7 @@ namespace QuizoPlugins {
             if(fFilesInClipboard)
                 FileOps.FileOperation(FileOpActions.Paste, this.pluginServer.ExplorerHandle, null);
             else
-                System.Media.SystemSounds.Beep.Play();
+                SystemSounds.Beep.Play();
         }
 
         public bool ShowTextLabel {
@@ -314,8 +313,8 @@ namespace QuizoPlugins {
                 this.ResStr = new string[] { StringResources.ButtonNames[3] };
             }
 
-            this.pluginServer.NavigationComplete += new PluginEventHandler(pluginServer_NavigationComplete);
-            this.pluginServer.SelectionChanged += new PluginEventHandler(pluginServer_SelectionChanged);
+            this.pluginServer.NavigationComplete += pluginServer_NavigationComplete;
+            this.pluginServer.SelectionChanged += pluginServer_SelectionChanged;
         }
 
         public bool QueryShortcutKeys(out string[] actions) {
@@ -407,8 +406,8 @@ namespace QuizoPlugins {
                 this.ResStr = new string[] { StringResources.ButtonNames[4] };
             }
 
-            this.pluginServer.SelectionChanged += new PluginEventHandler(pluginServer_SelectionChanged);
-            this.pluginServer.NavigationComplete += new PluginEventHandler(pluginServer_NavigationComplete);
+            this.pluginServer.SelectionChanged += pluginServer_SelectionChanged;
+            this.pluginServer.NavigationComplete += pluginServer_NavigationComplete;
         }
 
         public bool QueryShortcutKeys(out string[] actions) {
@@ -501,8 +500,8 @@ namespace QuizoPlugins {
                 this.ResStr = new string[] { StringResources.ButtonNames[5] };
             }
 
-            this.pluginServer.SelectionChanged += new PluginEventHandler(pluginServer_SelectionChanged);
-            this.pluginServer.NavigationComplete += new PluginEventHandler(pluginServer_NavigationComplete);
+            this.pluginServer.SelectionChanged += pluginServer_SelectionChanged;
+            this.pluginServer.NavigationComplete += pluginServer_NavigationComplete;
         }
 
         public bool QueryShortcutKeys(out string[] actions) {
@@ -669,8 +668,8 @@ namespace QuizoPlugins {
                 this.ResStr = new string[] { StringResources.ButtonNames[7] };
             }
 
-            this.pluginServer.SelectionChanged += new PluginEventHandler(pluginServer_SelectionChanged);
-            this.pluginServer.NavigationComplete += new PluginEventHandler(pluginServer_NavigationComplete);
+            this.pluginServer.SelectionChanged += pluginServer_SelectionChanged;
+            this.pluginServer.NavigationComplete += pluginServer_NavigationComplete;
         }
 
         public bool QueryShortcutKeys(out string[] actions) {
@@ -685,7 +684,7 @@ namespace QuizoPlugins {
 
         public void OnShortcutKeyPressed(int index) {
             if(!FileOps.MoveSelectedToParent(this.pluginServer))
-                System.Media.SystemSounds.Beep.Play();
+                SystemSounds.Beep.Play();
         }
 
         public void OnMenuItemClick(MenuType menuType, string menuText, ITab tab) {
@@ -714,7 +713,7 @@ namespace QuizoPlugins {
 
         public void OnButtonClick() {
             if(!FileOps.MoveSelectedToParent(this.pluginServer))
-                System.Media.SystemSounds.Beep.Play();
+                SystemSounds.Beep.Play();
         }
 
         public bool ShowTextLabel {
@@ -840,10 +839,10 @@ namespace QuizoPlugins {
     }
 
 
-    class StringResources {
+    static class StringResources {
         public static string[] ButtonNames;
         static StringResources() {
-            if(System.Globalization.CultureInfo.CurrentCulture.Parent.Name == "ja") {
+            if(CultureInfo.CurrentCulture.Parent.Name == "ja") {
                 ButtonNames = Resource.str_ja.Split(new char[] { ';' });
             }
             else {

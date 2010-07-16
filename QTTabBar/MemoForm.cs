@@ -15,11 +15,11 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using System;
-    using System.Collections.Generic;
-    using System.Drawing;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
 
+namespace QTTabBarLib {
     public sealed class MemoForm {
         [Serializable]
         public sealed class MemoStore {

@@ -15,159 +15,159 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using Microsoft.Win32;
-    using QTPlugin;
-    using QTTabBarLib.Interop;
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Diagnostics;
-    using System.Drawing;
-    using System.IO;
-    using System.Media;
-    using System.Runtime.InteropServices;
-    using System.Windows.Forms;
-    using System.Windows.Forms.VisualStyles;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
+using System.Media;
+using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
+using Microsoft.Win32;
+using QTPlugin;
+using QTTabBarLib.Interop;
+using ContentAlignment = System.Drawing.ContentAlignment;
 
+namespace QTTabBarLib {
     internal sealed class OptionsDialog : Form {
         private static int[] arrSpecialFolderCSIDLs;
         private static string[] arrSpecialFolderDipNms;
-        private System.Windows.Forms.Button btnActTxtClr;
-        private System.Windows.Forms.Button btnAdd_NoCapture;
-        private System.Windows.Forms.Button btnAddImgExt;
-        private System.Windows.Forms.Button btnAddSep_app;
-        private System.Windows.Forms.Button btnAddSep_Grp;
-        private System.Windows.Forms.Button btnAddSpcFol_Grp;
-        private System.Windows.Forms.Button btnAddSpcFol_NoCapture;
-        private System.Windows.Forms.Button btnAddTextExt;
-        private System.Windows.Forms.Button btnAddToken_Arg;
-        private System.Windows.Forms.Button btnAddToken_Wrk;
-        private System.Windows.Forms.Button btnAddVFolder_app;
-        private System.Windows.Forms.Button btnAlternate_Default;
-        private System.Windows.Forms.Button btnAlternateColor;
-        private System.Windows.Forms.Button btnAlternateColor_Text;
-        private System.Windows.Forms.Button btnApply;
-        private System.Windows.Forms.Button btnBFD_app;
-        private System.Windows.Forms.Button btnBrowseAction_BarDblClck;
-        private System.Windows.Forms.Button btnBrowsePlugin;
-        private System.Windows.Forms.Button btnBrowsePluginLang;
-        private System.Windows.Forms.Button btnCancel;
-        private System.Windows.Forms.Button btnCheckUpdates;
-        private System.Windows.Forms.Button btnClearRecentFile;
-        private System.Windows.Forms.Button btnCopyKeys;
-        private System.Windows.Forms.Button btnDefaultImgExt;
-        private System.Windows.Forms.Button btnDefaultTextExt;
-        private System.Windows.Forms.Button btnDefTxtClr;
-        private System.Windows.Forms.Button btnDelImgExt;
-        private System.Windows.Forms.Button btnDelTextExt;
-        private System.Windows.Forms.Button btnDown_app;
-        private System.Windows.Forms.Button btnDown_Grp;
-        private System.Windows.Forms.Button btnExportSettings;
-        private System.Windows.Forms.Button btnHiliteClsc;
-        private System.Windows.Forms.Button btnHistoryClear;
-        private System.Windows.Forms.Button btnInactTxtClr;
-        private System.Windows.Forms.Button btnLangBrowse;
-        private System.Windows.Forms.Button btnMinus_app;
-        private System.Windows.Forms.Button btnMinus_Grp;
-        private System.Windows.Forms.Button btnOFD_app;
-        private System.Windows.Forms.Button btnOFD_NoCapture;
-        private System.Windows.Forms.Button btnOK;
-        private System.Windows.Forms.Button btnPayPal;
-        private System.Windows.Forms.Button btnPlus_app;
-        private System.Windows.Forms.Button btnPlus_Grp;
-        private System.Windows.Forms.Button btnPreviewFont;
-        private System.Windows.Forms.Button btnPreviewFontDefault;
-        private System.Windows.Forms.Button btnRebarImage;
-        private System.Windows.Forms.Button btnRemove_NoCapture;
-        private System.Windows.Forms.Button btnShadowAct;
-        private System.Windows.Forms.Button btnShadowIna;
-        private System.Windows.Forms.Button btnStartUpGrp;
-        private System.Windows.Forms.Button btnTabFont;
-        private System.Windows.Forms.Button btnTabImage;
-        private System.Windows.Forms.Button btnToolBarBGClr;
-        private System.Windows.Forms.Button btnUp_app;
-        private System.Windows.Forms.Button btnUp_Grp;
+        private Button btnActTxtClr;
+        private Button btnAdd_NoCapture;
+        private Button btnAddImgExt;
+        private Button btnAddSep_app;
+        private Button btnAddSep_Grp;
+        private Button btnAddSpcFol_Grp;
+        private Button btnAddSpcFol_NoCapture;
+        private Button btnAddTextExt;
+        private Button btnAddToken_Arg;
+        private Button btnAddToken_Wrk;
+        private Button btnAddVFolder_app;
+        private Button btnAlternate_Default;
+        private Button btnAlternateColor;
+        private Button btnAlternateColor_Text;
+        private Button btnApply;
+        private Button btnBFD_app;
+        private Button btnBrowseAction_BarDblClck;
+        private Button btnBrowsePlugin;
+        private Button btnBrowsePluginLang;
+        private Button btnCancel;
+        private Button btnCheckUpdates;
+        private Button btnClearRecentFile;
+        private Button btnCopyKeys;
+        private Button btnDefaultImgExt;
+        private Button btnDefaultTextExt;
+        private Button btnDefTxtClr;
+        private Button btnDelImgExt;
+        private Button btnDelTextExt;
+        private Button btnDown_app;
+        private Button btnDown_Grp;
+        private Button btnExportSettings;
+        private Button btnHiliteClsc;
+        private Button btnHistoryClear;
+        private Button btnInactTxtClr;
+        private Button btnLangBrowse;
+        private Button btnMinus_app;
+        private Button btnMinus_Grp;
+        private Button btnOFD_app;
+        private Button btnOFD_NoCapture;
+        private Button btnOK;
+        private Button btnPayPal;
+        private Button btnPlus_app;
+        private Button btnPlus_Grp;
+        private Button btnPreviewFont;
+        private Button btnPreviewFontDefault;
+        private Button btnRebarImage;
+        private Button btnRemove_NoCapture;
+        private Button btnShadowAct;
+        private Button btnShadowIna;
+        private Button btnStartUpGrp;
+        private Button btnTabFont;
+        private Button btnTabImage;
+        private Button btnToolBarBGClr;
+        private Button btnUp_app;
+        private Button btnUp_Grp;
         private FormMethodInvoker callBack;
-        private System.Windows.Forms.CheckBox chbActivateNew;
-        private System.Windows.Forms.CheckBox chbAlternateColor;
-        private System.Windows.Forms.CheckBox chbAutoSubText;
-        private System.Windows.Forms.CheckBox chbAutoUpdate;
-        private System.Windows.Forms.CheckBox chbBlockProcess;
-        private System.Windows.Forms.CheckBox chbBoldActv;
-        private System.Windows.Forms.CheckBox chbBSUpOneLvl;
-        private System.Windows.Forms.CheckBox chbCloseWhenGroup;
-        private System.Windows.Forms.CheckBox chbCursorLoop;
-        private System.Windows.Forms.CheckBox chbDD;
-        private System.Windows.Forms.CheckBox chbDontOpenSame;
-        private System.Windows.Forms.CheckBox chbDriveLetter;
-        private System.Windows.Forms.CheckBox chbF2Selection;
-        private System.Windows.Forms.CheckBox chbFolderIcon;
-        private System.Windows.Forms.CheckBox chbFoldrTree;
-        private System.Windows.Forms.CheckBox chbGridLine;
-        private System.Windows.Forms.CheckBox chbGroupKey;
-        private System.Windows.Forms.CheckBox chbHideMenu;
-        private System.Windows.Forms.CheckBox chbHolizontalScroll;
-        private System.Windows.Forms.CheckBox chbNavBtn;
-        private System.Windows.Forms.CheckBox chbNCADblClck;
-        private System.Windows.Forms.CheckBox chbNeverCloseWindow;
-        private System.Windows.Forms.CheckBox chbNeverCloseWndLocked;
-        private System.Windows.Forms.CheckBox chbNoFulRowSelect;
-        private System.Windows.Forms.CheckBox chbNoHistory;
-        private System.Windows.Forms.CheckBox chbNoTabFromOuteside;
-        private System.Windows.Forms.CheckBox chbPlaySound;
-        private System.Windows.Forms.CheckBox chbPreviewInfo;
-        private System.Windows.Forms.CheckBox chbPreviewMode;
-        private System.Windows.Forms.CheckBox chbRebarBGImage;
-        private System.Windows.Forms.CheckBox chbRemoveOnSeparate;
-        private System.Windows.Forms.CheckBox chbRestoreClosed;
-        private System.Windows.Forms.CheckBox chbRestoreLocked;
-        private System.Windows.Forms.CheckBox chbSaveExecuted;
-        private System.Windows.Forms.CheckBox chbSelectWithoutExt;
-        private System.Windows.Forms.CheckBox chbSendToTray;
-        private System.Windows.Forms.CheckBox chbSendToTrayOnMinimize;
-        private System.Windows.Forms.CheckBox chbShowPreview;
-        private System.Windows.Forms.CheckBox chbShowTooltip;
-        private System.Windows.Forms.CheckBox chbSubDirTip;
-        private System.Windows.Forms.CheckBox chbSubDirTipMode;
-        private System.Windows.Forms.CheckBox chbSubDirTipModeFile;
-        private System.Windows.Forms.CheckBox chbSubDirTipModeHidden;
-        private System.Windows.Forms.CheckBox chbSubDirTipModeSystem;
-        private System.Windows.Forms.CheckBox chbSubDirTipOnTab;
-        private System.Windows.Forms.CheckBox chbSubDirTipPreview;
-        private System.Windows.Forms.CheckBox chbTabCloseBtnAlt;
-        private System.Windows.Forms.CheckBox chbTabCloseBtnHover;
-        private System.Windows.Forms.CheckBox chbTabCloseButton;
-        private System.Windows.Forms.CheckBox chbTabSwitcher;
-        private System.Windows.Forms.CheckBox chbTabTitleShadow;
-        private System.Windows.Forms.CheckBox chbToolbarBGClr;
-        private System.Windows.Forms.CheckBox chbTreeShftWhlTab;
-        private System.Windows.Forms.CheckBox chbUserAppKey;
-        private System.Windows.Forms.CheckBox chbUseTabSkin;
-        private System.Windows.Forms.CheckBox chbWhlChangeView;
-        private System.Windows.Forms.CheckBox chbWhlClick;
-        private System.Windows.Forms.CheckBox chbWndRestrAlpha;
-        private System.Windows.Forms.CheckBox chbWndUnresizable;
-        private System.Windows.Forms.CheckBox chbX1X2;
+        private CheckBox chbActivateNew;
+        private CheckBox chbAlternateColor;
+        private CheckBox chbAutoSubText;
+        private CheckBox chbAutoUpdate;
+        private CheckBox chbBlockProcess;
+        private CheckBox chbBoldActv;
+        private CheckBox chbBSUpOneLvl;
+        private CheckBox chbCloseWhenGroup;
+        private CheckBox chbCursorLoop;
+        private CheckBox chbDD;
+        private CheckBox chbDontOpenSame;
+        private CheckBox chbDriveLetter;
+        private CheckBox chbF2Selection;
+        private CheckBox chbFolderIcon;
+        private CheckBox chbFoldrTree;
+        private CheckBox chbGridLine;
+        private CheckBox chbGroupKey;
+        private CheckBox chbHideMenu;
+        private CheckBox chbHolizontalScroll;
+        private CheckBox chbNavBtn;
+        private CheckBox chbNCADblClck;
+        private CheckBox chbNeverCloseWindow;
+        private CheckBox chbNeverCloseWndLocked;
+        private CheckBox chbNoFulRowSelect;
+        private CheckBox chbNoHistory;
+        private CheckBox chbNoTabFromOuteside;
+        private CheckBox chbPlaySound;
+        private CheckBox chbPreviewInfo;
+        private CheckBox chbPreviewMode;
+        private CheckBox chbRebarBGImage;
+        private CheckBox chbRemoveOnSeparate;
+        private CheckBox chbRestoreClosed;
+        private CheckBox chbRestoreLocked;
+        private CheckBox chbSaveExecuted;
+        private CheckBox chbSelectWithoutExt;
+        private CheckBox chbSendToTray;
+        private CheckBox chbSendToTrayOnMinimize;
+        private CheckBox chbShowPreview;
+        private CheckBox chbShowTooltip;
+        private CheckBox chbSubDirTip;
+        private CheckBox chbSubDirTipMode;
+        private CheckBox chbSubDirTipModeFile;
+        private CheckBox chbSubDirTipModeHidden;
+        private CheckBox chbSubDirTipModeSystem;
+        private CheckBox chbSubDirTipOnTab;
+        private CheckBox chbSubDirTipPreview;
+        private CheckBox chbTabCloseBtnAlt;
+        private CheckBox chbTabCloseBtnHover;
+        private CheckBox chbTabCloseButton;
+        private CheckBox chbTabSwitcher;
+        private CheckBox chbTabTitleShadow;
+        private CheckBox chbToolbarBGClr;
+        private CheckBox chbTreeShftWhlTab;
+        private CheckBox chbUserAppKey;
+        private CheckBox chbUseTabSkin;
+        private CheckBox chbWhlChangeView;
+        private CheckBox chbWhlClick;
+        private CheckBox chbWndRestrAlpha;
+        private CheckBox chbWndUnresizable;
+        private CheckBox chbX1X2;
         private ColumnHeader clmKeys_Action;
         private ColumnHeader clmKeys_Key;
         private ColumnHeader clmnHeader_NoCapture;
-        private System.Windows.Forms.ComboBox cmbActvClose;
-        private System.Windows.Forms.ComboBox cmbBGDblClick;
-        private System.Windows.Forms.ComboBox cmbImgExts;
-        private System.Windows.Forms.ComboBox cmbMenuRenderer;
-        private System.Windows.Forms.ComboBox cmbMultiRow;
-        private System.Windows.Forms.ComboBox cmbNavBtn;
-        private System.Windows.Forms.ComboBox cmbNewTabLoc;
-        private System.Windows.Forms.ComboBox cmbRebarBGImageMode;
-        private System.Windows.Forms.ComboBox cmbSpclFol_Grp;
-        private System.Windows.Forms.ComboBox cmbSpclFol_NoCapture;
-        private System.Windows.Forms.ComboBox cmbTabDblClck;
-        private System.Windows.Forms.ComboBox cmbTabSizeMode;
-        private System.Windows.Forms.ComboBox cmbTabTextAlignment;
-        private System.Windows.Forms.ComboBox cmbTabWhlClck;
-        private System.Windows.Forms.ComboBox cmbTextExts;
-        private System.Windows.Forms.ComboBox cmbWhlClick;
+        private ComboBox cmbActvClose;
+        private ComboBox cmbBGDblClick;
+        private ComboBox cmbImgExts;
+        private ComboBox cmbMenuRenderer;
+        private ComboBox cmbMultiRow;
+        private ComboBox cmbNavBtn;
+        private ComboBox cmbNewTabLoc;
+        private ComboBox cmbRebarBGImageMode;
+        private ComboBox cmbSpclFol_Grp;
+        private ComboBox cmbSpclFol_NoCapture;
+        private ComboBox cmbTabDblClck;
+        private ComboBox cmbTabSizeMode;
+        private ComboBox cmbTabTextAlignment;
+        private ComboBox cmbTabWhlClck;
+        private ComboBox cmbTextExts;
+        private ComboBox cmbWhlClick;
         private ContextMenuStrip cmsAddToken;
         private static bool fInitialized;
         private bool fNowListViewItemEditing;
@@ -206,7 +206,7 @@ namespace QTTabBarLib {
         private Label lblUserApps_Path;
         private Label lblUserApps_Working;
         private LinkLabel lblVer;
-        private System.Windows.Forms.ListView listView_NoCapture;
+        private ListView listView_NoCapture;
         private ListViewEx listViewKeyboard;
         private List<PluginAssembly> lstPluginAssembliesUserAdded = new List<PluginAssembly>();
         private const int MAX_PATH = 260;
@@ -240,24 +240,24 @@ namespace QTTabBarLib {
         private TabPage tabPage8_Keys;
         private TabPage tabPage9_Misc;
         private TabPage tabPageA_Path;
-        private System.Windows.Forms.TextBox tbArgs;
-        private System.Windows.Forms.TextBox tbGroupKey;
-        private System.Windows.Forms.TextBox tbPath;
-        private System.Windows.Forms.TextBox tbRebarImagePath;
-        private System.Windows.Forms.TextBox tbTabImagePath;
-        private System.Windows.Forms.TextBox tbUserAppKey;
-        private System.Windows.Forms.TextBox tbWorking;
+        private TextBox tbArgs;
+        private TextBox tbGroupKey;
+        private TextBox tbPath;
+        private TextBox tbRebarImagePath;
+        private TextBox tbTabImagePath;
+        private TextBox tbUserAppKey;
+        private TextBox tbWorking;
         private const string TEXT_EXT_DEFVAL_IMG = "(Image & movie file)";
         private const string TEXT_EXT_DEFVAL_TXT = "(Text file)";
         private const string TEXT_ONW_DEFVAL = "Enter path";
         private const string TEXT_SEPDISPLAY = "----------- Separator -----------";
-        private System.Windows.Forms.TextBox textBoxAction_BarDblClck;
-        private System.Windows.Forms.TextBox textBoxLang;
-        private System.Windows.Forms.TextBox textBoxPluginLang;
+        private TextBox textBoxAction_BarDblClck;
+        private TextBox textBoxLang;
+        private TextBox textBoxPluginLang;
         private TreeNode tnGroupsRoot;
         private TreeNode tnRoot_UserApps;
-        private System.Windows.Forms.TreeView treeViewGroup;
-        private System.Windows.Forms.TreeView treeViewUserApps;
+        private TreeView treeViewGroup;
+        private TreeView treeViewUserApps;
 
         public OptionsDialog(PluginManager pluginManager, FormMethodInvoker callBack) {
             InitializeStaticFields();
@@ -625,7 +625,7 @@ namespace QTTabBarLib {
         private void btnAlternateColor_Click(object sender, EventArgs e) {
             if(sender == this.btnAlternate_Default) {
                 QTUtility.ShellViewRowCOLORREF_Background = 0xfaf5f1;
-                System.Drawing.Color windowText = SystemColors.WindowText;
+                Color windowText = SystemColors.WindowText;
                 QTUtility.ShellViewRowCOLORREF_Text = QTUtility2.MakeCOLORREF(windowText);
                 this.btnAlternateColor.BackColor = QTUtility2.MakeColor(QTUtility.ShellViewRowCOLORREF_Background);
                 this.btnAlternateColor_Text.ForeColor = windowText;
@@ -789,7 +789,7 @@ namespace QTTabBarLib {
         }
 
         private void btnDelPreiviewExt_Click(object sender, EventArgs e) {
-            System.Windows.Forms.ComboBox box = (sender == this.btnDelTextExt) ? this.cmbTextExts : this.cmbImgExts;
+            ComboBox box = (sender == this.btnDelTextExt) ? this.cmbTextExts : this.cmbImgExts;
             int selectedIndex = box.SelectedIndex;
             if(selectedIndex > 0) {
                 box.Items.RemoveAt(selectedIndex);
@@ -1053,9 +1053,9 @@ namespace QTTabBarLib {
 
         private void btnShadowClrs_Click(object sender, EventArgs e) {
             using(ColorDialogEx ex = new ColorDialogEx()) {
-                ex.Color = ((System.Windows.Forms.Button)sender).ForeColor;
+                ex.Color = ((Button)sender).ForeColor;
                 if(DialogResult.OK == ex.ShowDialog()) {
-                    ((System.Windows.Forms.Button)sender).ForeColor = ex.Color;
+                    ((Button)sender).ForeColor = ex.Color;
                 }
             }
         }
@@ -1389,7 +1389,7 @@ namespace QTTabBarLib {
                 this.EnterExtension(sender == this.cmbTextExts);
             }
             else {
-                System.Windows.Forms.ComboBox box = (System.Windows.Forms.ComboBox)sender;
+                ComboBox box = (ComboBox)sender;
                 if((box.SelectedIndex == 0) && (box.Text == ((sender == this.cmbTextExts) ? "(Text file)" : "(Image & movie file)"))) {
                     box.Text = string.Empty;
                 }
@@ -1472,8 +1472,8 @@ namespace QTTabBarLib {
                         }
                         continue;
                     }
-                    for(int j = 0; j < plugin.PluginInformation.ShortcutKeyActions.Length; j++) {
-                        ListViewItem item3 = new ListViewItem(new string[] { plugin.PluginInformation.ShortcutKeyActions[j], " - " });
+                    foreach(string action in plugin.PluginInformation.ShortcutKeyActions) {
+                        ListViewItem item3 = new ListViewItem(new string[] { action, " - " });
                         item3.Checked = false;
                         item3.Group = group2;
                         item3.Tag = 0;
@@ -1504,7 +1504,7 @@ namespace QTTabBarLib {
         private static string CreateUniqueName(string strInitialName, TreeNode tnSelf, TreeNode tnParent) {
             int num = 1;
             string b = strInitialName;
-            bool flag = false;
+            bool flag;
             do {
                 flag = false;
                 foreach(TreeNode node in tnParent.Nodes) {
@@ -1601,7 +1601,7 @@ namespace QTTabBarLib {
         }
 
         private void EnterExtension(bool fText) {
-            System.Windows.Forms.ComboBox box = fText ? this.cmbTextExts : this.cmbImgExts;
+            ComboBox box = fText ? this.cmbTextExts : this.cmbImgExts;
             string str = fText ? "(Text file)" : "(Image & movie file)";
             int index = fText ? this.iComboBoxTextPreview : this.iConboBoxImagPreview;
             if(box.Text.Length > 0) {
@@ -1634,9 +1634,9 @@ namespace QTTabBarLib {
         }
 
         private void InitializeComponent() {
-            this.btnOK = new System.Windows.Forms.Button();
-            this.btnApply = new System.Windows.Forms.Button();
-            this.btnCancel = new System.Windows.Forms.Button();
+            this.btnOK = new Button();
+            this.btnApply = new Button();
+            this.btnCancel = new Button();
             this.lblVer = new LinkLabel();
             this.tabControl1 = new TabControl();
             this.tabPage1_Gnrl = new TabPage();
@@ -1649,28 +1649,28 @@ namespace QTTabBarLib {
             this.tabPage8_Keys = new TabPage();
             this.tabPage9_Misc = new TabPage();
             this.tabPageA_Path = new TabPage();
-            this.chbActivateNew = new System.Windows.Forms.CheckBox();
-            this.chbDontOpenSame = new System.Windows.Forms.CheckBox();
-            this.chbCloseWhenGroup = new System.Windows.Forms.CheckBox();
-            this.chbShowTooltip = new System.Windows.Forms.CheckBox();
-            this.chbX1X2 = new System.Windows.Forms.CheckBox();
-            this.chbNavBtn = new System.Windows.Forms.CheckBox();
-            this.chbNoHistory = new System.Windows.Forms.CheckBox();
-            this.chbSaveExecuted = new System.Windows.Forms.CheckBox();
-            this.chbDD = new System.Windows.Forms.CheckBox();
-            this.chbAutoUpdate = new System.Windows.Forms.CheckBox();
-            this.chbPlaySound = new System.Windows.Forms.CheckBox();
-            this.cmbNavBtn = new System.Windows.Forms.ComboBox();
-            this.btnHistoryClear = new System.Windows.Forms.Button();
-            this.btnClearRecentFile = new System.Windows.Forms.Button();
+            this.chbActivateNew = new CheckBox();
+            this.chbDontOpenSame = new CheckBox();
+            this.chbCloseWhenGroup = new CheckBox();
+            this.chbShowTooltip = new CheckBox();
+            this.chbX1X2 = new CheckBox();
+            this.chbNavBtn = new CheckBox();
+            this.chbNoHistory = new CheckBox();
+            this.chbSaveExecuted = new CheckBox();
+            this.chbDD = new CheckBox();
+            this.chbAutoUpdate = new CheckBox();
+            this.chbPlaySound = new CheckBox();
+            this.cmbNavBtn = new ComboBox();
+            this.btnHistoryClear = new Button();
+            this.btnClearRecentFile = new Button();
             this.nudMaxUndo = new NumericUpDown();
             this.nudMaxRecentFile = new NumericUpDown();
             this.lblLang = new Label();
             this.lblNetworkTimeOut = new Label();
-            this.textBoxLang = new System.Windows.Forms.TextBox();
-            this.btnLangBrowse = new System.Windows.Forms.Button();
-            this.btnCheckUpdates = new System.Windows.Forms.Button();
-            this.btnExportSettings = new System.Windows.Forms.Button();
+            this.textBoxLang = new TextBox();
+            this.btnLangBrowse = new Button();
+            this.btnCheckUpdates = new Button();
+            this.btnExportSettings = new Button();
             this.nudNetworkTimeOut = new NumericUpDown();
             this.lblNewTabLoc = new Label();
             this.lblActvClose = new Label();
@@ -1679,46 +1679,46 @@ namespace QTTabBarLib {
             this.lblTabWhlClk = new Label();
             this.lblAction_BarDblClick = new Label();
             this.lblMultiRows = new Label();
-            this.cmbNewTabLoc = new System.Windows.Forms.ComboBox();
-            this.cmbActvClose = new System.Windows.Forms.ComboBox();
-            this.cmbTabDblClck = new System.Windows.Forms.ComboBox();
-            this.cmbBGDblClick = new System.Windows.Forms.ComboBox();
-            this.cmbTabWhlClck = new System.Windows.Forms.ComboBox();
-            this.cmbMultiRow = new System.Windows.Forms.ComboBox();
-            this.textBoxAction_BarDblClck = new System.Windows.Forms.TextBox();
-            this.btnBrowseAction_BarDblClck = new System.Windows.Forms.Button();
-            this.chbAutoSubText = new System.Windows.Forms.CheckBox();
-            this.chbTabCloseButton = new System.Windows.Forms.CheckBox();
-            this.chbTabCloseBtnAlt = new System.Windows.Forms.CheckBox();
-            this.chbTabCloseBtnHover = new System.Windows.Forms.CheckBox();
-            this.chbSubDirTipOnTab = new System.Windows.Forms.CheckBox();
-            this.chbTreeShftWhlTab = new System.Windows.Forms.CheckBox();
-            this.chbTabSwitcher = new System.Windows.Forms.CheckBox();
-            this.chbRemoveOnSeparate = new System.Windows.Forms.CheckBox();
-            this.chbDriveLetter = new System.Windows.Forms.CheckBox();
-            this.chbWhlClick = new System.Windows.Forms.CheckBox();
-            this.chbNCADblClck = new System.Windows.Forms.CheckBox();
-            this.chbBlockProcess = new System.Windows.Forms.CheckBox();
-            this.chbFoldrTree = new System.Windows.Forms.CheckBox();
-            this.chbWndUnresizable = new System.Windows.Forms.CheckBox();
-            this.chbWndRestrAlpha = new System.Windows.Forms.CheckBox();
-            this.chbNoTabFromOuteside = new System.Windows.Forms.CheckBox();
-            this.chbHolizontalScroll = new System.Windows.Forms.CheckBox();
-            this.chbWhlChangeView = new System.Windows.Forms.CheckBox();
-            this.chbNeverCloseWindow = new System.Windows.Forms.CheckBox();
-            this.chbNeverCloseWndLocked = new System.Windows.Forms.CheckBox();
-            this.chbRestoreClosed = new System.Windows.Forms.CheckBox();
-            this.chbRestoreLocked = new System.Windows.Forms.CheckBox();
-            this.chbSendToTray = new System.Windows.Forms.CheckBox();
-            this.chbSendToTrayOnMinimize = new System.Windows.Forms.CheckBox();
-            this.cmbWhlClick = new System.Windows.Forms.ComboBox();
+            this.cmbNewTabLoc = new ComboBox();
+            this.cmbActvClose = new ComboBox();
+            this.cmbTabDblClck = new ComboBox();
+            this.cmbBGDblClick = new ComboBox();
+            this.cmbTabWhlClck = new ComboBox();
+            this.cmbMultiRow = new ComboBox();
+            this.textBoxAction_BarDblClck = new TextBox();
+            this.btnBrowseAction_BarDblClck = new Button();
+            this.chbAutoSubText = new CheckBox();
+            this.chbTabCloseButton = new CheckBox();
+            this.chbTabCloseBtnAlt = new CheckBox();
+            this.chbTabCloseBtnHover = new CheckBox();
+            this.chbSubDirTipOnTab = new CheckBox();
+            this.chbTreeShftWhlTab = new CheckBox();
+            this.chbTabSwitcher = new CheckBox();
+            this.chbRemoveOnSeparate = new CheckBox();
+            this.chbDriveLetter = new CheckBox();
+            this.chbWhlClick = new CheckBox();
+            this.chbNCADblClck = new CheckBox();
+            this.chbBlockProcess = new CheckBox();
+            this.chbFoldrTree = new CheckBox();
+            this.chbWndUnresizable = new CheckBox();
+            this.chbWndRestrAlpha = new CheckBox();
+            this.chbNoTabFromOuteside = new CheckBox();
+            this.chbHolizontalScroll = new CheckBox();
+            this.chbWhlChangeView = new CheckBox();
+            this.chbNeverCloseWindow = new CheckBox();
+            this.chbNeverCloseWndLocked = new CheckBox();
+            this.chbRestoreClosed = new CheckBox();
+            this.chbRestoreLocked = new CheckBox();
+            this.chbSendToTray = new CheckBox();
+            this.chbSendToTrayOnMinimize = new CheckBox();
+            this.cmbWhlClick = new ComboBox();
             this.lblSep = new Label();
-            this.chbUseTabSkin = new System.Windows.Forms.CheckBox();
-            this.chbToolbarBGClr = new System.Windows.Forms.CheckBox();
-            this.chbFolderIcon = new System.Windows.Forms.CheckBox();
-            this.chbBoldActv = new System.Windows.Forms.CheckBox();
-            this.chbRebarBGImage = new System.Windows.Forms.CheckBox();
-            this.chbTabTitleShadow = new System.Windows.Forms.CheckBox();
+            this.chbUseTabSkin = new CheckBox();
+            this.chbToolbarBGClr = new CheckBox();
+            this.chbFolderIcon = new CheckBox();
+            this.chbBoldActv = new CheckBox();
+            this.chbRebarBGImage = new CheckBox();
+            this.chbTabTitleShadow = new CheckBox();
             this.propertyGrid1 = new PropertyGrid();
             this.nudTabWidth = new NumericUpDown();
             this.nudTabHeight = new NumericUpDown();
@@ -1734,106 +1734,106 @@ namespace QTTabBarLib {
             this.lblMenuRenderer = new Label();
             this.lblTabTextAlignment = new Label();
             this.lblTabTxtClr = new Label();
-            this.cmbTabSizeMode = new System.Windows.Forms.ComboBox();
-            this.cmbTabTextAlignment = new System.Windows.Forms.ComboBox();
-            this.cmbRebarBGImageMode = new System.Windows.Forms.ComboBox();
-            this.cmbMenuRenderer = new System.Windows.Forms.ComboBox();
-            this.btnHiliteClsc = new System.Windows.Forms.Button();
-            this.btnTabFont = new System.Windows.Forms.Button();
-            this.btnActTxtClr = new System.Windows.Forms.Button();
-            this.btnInactTxtClr = new System.Windows.Forms.Button();
-            this.btnDefTxtClr = new System.Windows.Forms.Button();
-            this.btnToolBarBGClr = new System.Windows.Forms.Button();
-            this.btnRebarImage = new System.Windows.Forms.Button();
-            this.btnShadowAct = new System.Windows.Forms.Button();
-            this.btnShadowIna = new System.Windows.Forms.Button();
-            this.btnTabImage = new System.Windows.Forms.Button();
-            this.tbRebarImagePath = new System.Windows.Forms.TextBox();
-            this.tbTabImagePath = new System.Windows.Forms.TextBox();
-            this.treeViewGroup = new System.Windows.Forms.TreeView();
-            this.btnUp_Grp = new System.Windows.Forms.Button();
-            this.btnDown_Grp = new System.Windows.Forms.Button();
-            this.btnMinus_Grp = new System.Windows.Forms.Button();
-            this.btnPlus_Grp = new System.Windows.Forms.Button();
-            this.btnStartUpGrp = new System.Windows.Forms.Button();
-            this.btnAddSep_Grp = new System.Windows.Forms.Button();
-            this.cmbSpclFol_Grp = new System.Windows.Forms.ComboBox();
-            this.btnAddSpcFol_Grp = new System.Windows.Forms.Button();
+            this.cmbTabSizeMode = new ComboBox();
+            this.cmbTabTextAlignment = new ComboBox();
+            this.cmbRebarBGImageMode = new ComboBox();
+            this.cmbMenuRenderer = new ComboBox();
+            this.btnHiliteClsc = new Button();
+            this.btnTabFont = new Button();
+            this.btnActTxtClr = new Button();
+            this.btnInactTxtClr = new Button();
+            this.btnDefTxtClr = new Button();
+            this.btnToolBarBGClr = new Button();
+            this.btnRebarImage = new Button();
+            this.btnShadowAct = new Button();
+            this.btnShadowIna = new Button();
+            this.btnTabImage = new Button();
+            this.tbRebarImagePath = new TextBox();
+            this.tbTabImagePath = new TextBox();
+            this.treeViewGroup = new TreeView();
+            this.btnUp_Grp = new Button();
+            this.btnDown_Grp = new Button();
+            this.btnMinus_Grp = new Button();
+            this.btnPlus_Grp = new Button();
+            this.btnStartUpGrp = new Button();
+            this.btnAddSep_Grp = new Button();
+            this.cmbSpclFol_Grp = new ComboBox();
+            this.btnAddSpcFol_Grp = new Button();
             this.lblGroupKey = new Label();
-            this.tbGroupKey = new System.Windows.Forms.TextBox();
-            this.chbGroupKey = new System.Windows.Forms.CheckBox();
-            this.treeViewUserApps = new System.Windows.Forms.TreeView();
-            this.btnUp_app = new System.Windows.Forms.Button();
-            this.btnDown_app = new System.Windows.Forms.Button();
-            this.btnAddSep_app = new System.Windows.Forms.Button();
-            this.btnAddVFolder_app = new System.Windows.Forms.Button();
-            this.btnPlus_app = new System.Windows.Forms.Button();
-            this.btnMinus_app = new System.Windows.Forms.Button();
+            this.tbGroupKey = new TextBox();
+            this.chbGroupKey = new CheckBox();
+            this.treeViewUserApps = new TreeView();
+            this.btnUp_app = new Button();
+            this.btnDown_app = new Button();
+            this.btnAddSep_app = new Button();
+            this.btnAddVFolder_app = new Button();
+            this.btnPlus_app = new Button();
+            this.btnMinus_app = new Button();
             this.lblUserApps_Path = new Label();
             this.lblUserApps_Args = new Label();
             this.lblUserApps_Working = new Label();
-            this.tbPath = new System.Windows.Forms.TextBox();
-            this.tbArgs = new System.Windows.Forms.TextBox();
-            this.tbWorking = new System.Windows.Forms.TextBox();
-            this.tbUserAppKey = new System.Windows.Forms.TextBox();
-            this.chbUserAppKey = new System.Windows.Forms.CheckBox();
+            this.tbPath = new TextBox();
+            this.tbArgs = new TextBox();
+            this.tbWorking = new TextBox();
+            this.tbUserAppKey = new TextBox();
+            this.chbUserAppKey = new CheckBox();
             this.lblUserApps_Key = new Label();
-            this.btnOFD_app = new System.Windows.Forms.Button();
-            this.btnBFD_app = new System.Windows.Forms.Button();
-            this.btnAddToken_Arg = new System.Windows.Forms.Button();
-            this.btnAddToken_Wrk = new System.Windows.Forms.Button();
+            this.btnOFD_app = new Button();
+            this.btnBFD_app = new Button();
+            this.btnAddToken_Arg = new Button();
+            this.btnAddToken_Wrk = new Button();
             this.cmsAddToken = new ContextMenuStrip();
-            this.chbHideMenu = new System.Windows.Forms.CheckBox();
-            this.chbBSUpOneLvl = new System.Windows.Forms.CheckBox();
-            this.chbNoFulRowSelect = new System.Windows.Forms.CheckBox();
-            this.chbGridLine = new System.Windows.Forms.CheckBox();
-            this.chbAlternateColor = new System.Windows.Forms.CheckBox();
-            this.chbShowPreview = new System.Windows.Forms.CheckBox();
-            this.chbPreviewMode = new System.Windows.Forms.CheckBox();
-            this.chbPreviewInfo = new System.Windows.Forms.CheckBox();
-            this.chbSubDirTip = new System.Windows.Forms.CheckBox();
-            this.chbSubDirTipMode = new System.Windows.Forms.CheckBox();
-            this.chbSubDirTipModeHidden = new System.Windows.Forms.CheckBox();
-            this.chbSubDirTipModeSystem = new System.Windows.Forms.CheckBox();
-            this.chbSubDirTipModeFile = new System.Windows.Forms.CheckBox();
-            this.chbSubDirTipPreview = new System.Windows.Forms.CheckBox();
-            this.chbSelectWithoutExt = new System.Windows.Forms.CheckBox();
-            this.chbF2Selection = new System.Windows.Forms.CheckBox();
-            this.chbCursorLoop = new System.Windows.Forms.CheckBox();
-            this.btnAlternateColor = new System.Windows.Forms.Button();
-            this.btnAlternateColor_Text = new System.Windows.Forms.Button();
-            this.btnAlternate_Default = new System.Windows.Forms.Button();
-            this.btnAddTextExt = new System.Windows.Forms.Button();
-            this.btnDelTextExt = new System.Windows.Forms.Button();
-            this.btnDefaultTextExt = new System.Windows.Forms.Button();
-            this.btnAddImgExt = new System.Windows.Forms.Button();
-            this.btnDelImgExt = new System.Windows.Forms.Button();
-            this.btnDefaultImgExt = new System.Windows.Forms.Button();
-            this.btnPreviewFont = new System.Windows.Forms.Button();
-            this.btnPreviewFontDefault = new System.Windows.Forms.Button();
-            this.btnPayPal = new System.Windows.Forms.Button();
+            this.chbHideMenu = new CheckBox();
+            this.chbBSUpOneLvl = new CheckBox();
+            this.chbNoFulRowSelect = new CheckBox();
+            this.chbGridLine = new CheckBox();
+            this.chbAlternateColor = new CheckBox();
+            this.chbShowPreview = new CheckBox();
+            this.chbPreviewMode = new CheckBox();
+            this.chbPreviewInfo = new CheckBox();
+            this.chbSubDirTip = new CheckBox();
+            this.chbSubDirTipMode = new CheckBox();
+            this.chbSubDirTipModeHidden = new CheckBox();
+            this.chbSubDirTipModeSystem = new CheckBox();
+            this.chbSubDirTipModeFile = new CheckBox();
+            this.chbSubDirTipPreview = new CheckBox();
+            this.chbSelectWithoutExt = new CheckBox();
+            this.chbF2Selection = new CheckBox();
+            this.chbCursorLoop = new CheckBox();
+            this.btnAlternateColor = new Button();
+            this.btnAlternateColor_Text = new Button();
+            this.btnAlternate_Default = new Button();
+            this.btnAddTextExt = new Button();
+            this.btnDelTextExt = new Button();
+            this.btnDefaultTextExt = new Button();
+            this.btnAddImgExt = new Button();
+            this.btnDelImgExt = new Button();
+            this.btnDefaultImgExt = new Button();
+            this.btnPreviewFont = new Button();
+            this.btnPreviewFontDefault = new Button();
+            this.btnPayPal = new Button();
             this.nudPreviewMaxHeight = new NumericUpDown();
             this.nudPreviewMaxWidth = new NumericUpDown();
             this.lblPreviewHeight = new Label();
             this.lblPreviewWidth = new Label();
-            this.cmbTextExts = new System.Windows.Forms.ComboBox();
-            this.cmbImgExts = new System.Windows.Forms.ComboBox();
+            this.cmbTextExts = new ComboBox();
+            this.cmbImgExts = new ComboBox();
             this.pluginView = new PluginView();
-            this.btnBrowsePlugin = new System.Windows.Forms.Button();
+            this.btnBrowsePlugin = new Button();
             this.lblPluginLang = new Label();
-            this.textBoxPluginLang = new System.Windows.Forms.TextBox();
-            this.btnBrowsePluginLang = new System.Windows.Forms.Button();
+            this.textBoxPluginLang = new TextBox();
+            this.btnBrowsePluginLang = new Button();
             this.listViewKeyboard = new ListViewEx();
             this.clmKeys_Action = new ColumnHeader();
             this.clmKeys_Key = new ColumnHeader();
-            this.btnCopyKeys = new System.Windows.Forms.Button();
-            this.listView_NoCapture = new System.Windows.Forms.ListView();
-            this.btnOFD_NoCapture = new System.Windows.Forms.Button();
-            this.btnAdd_NoCapture = new System.Windows.Forms.Button();
-            this.btnRemove_NoCapture = new System.Windows.Forms.Button();
+            this.btnCopyKeys = new Button();
+            this.listView_NoCapture = new ListView();
+            this.btnOFD_NoCapture = new Button();
+            this.btnAdd_NoCapture = new Button();
+            this.btnRemove_NoCapture = new Button();
             this.clmnHeader_NoCapture = new ColumnHeader();
-            this.cmbSpclFol_NoCapture = new System.Windows.Forms.ComboBox();
-            this.btnAddSpcFol_NoCapture = new System.Windows.Forms.Button();
+            this.cmbSpclFol_NoCapture = new ComboBox();
+            this.btnAddSpcFol_NoCapture = new Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1_Gnrl.SuspendLayout();
             this.tabPage2_Tabs.SuspendLayout();
@@ -1859,24 +1859,24 @@ namespace QTTabBarLib {
             this.btnOK.Location = new Point(0xf1, 0x246);
             this.btnOK.Size = new Size(0x58, 0x17);
             this.btnOK.TabIndex = 4;
-            this.btnOK.Click += new EventHandler(this.buttonOK_Click);
+            this.btnOK.Click += this.buttonOK_Click;
             this.btnApply.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
             this.btnApply.Location = new Point(0x1ad, 0x246);
             this.btnApply.Size = new Size(0x58, 0x17);
             this.btnApply.TabIndex = 6;
-            this.btnApply.Click += new EventHandler(this.buttonApply_Click);
+            this.btnApply.Click += this.buttonApply_Click;
             this.btnCancel.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
             this.btnCancel.Location = new Point(0x14f, 0x246);
             this.btnCancel.Size = new Size(0x58, 0x17);
             this.btnCancel.TabIndex = 5;
-            this.btnCancel.Click += new EventHandler(this.btnCancel_Click);
+            this.btnCancel.Click += this.btnCancel_Click;
             this.lblVer.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
             this.lblVer.AutoSize = true;
-            this.lblVer.LinkColor = System.Drawing.Color.Blue;
-            this.lblVer.ActiveLinkColor = System.Drawing.Color.Red;
-            this.lblVer.VisitedLinkColor = System.Drawing.Color.Purple;
+            this.lblVer.LinkColor = Color.Blue;
+            this.lblVer.ActiveLinkColor = Color.Red;
+            this.lblVer.VisitedLinkColor = Color.Purple;
             this.lblVer.Location = new Point(12, 0x24b);
-            this.lblVer.Click += new EventHandler(this.lblVer_Click);
+            this.lblVer.Click += this.lblVer_Click;
             this.tabControl1.Controls.Add(this.tabPage1_Gnrl);
             this.tabControl1.Controls.Add(this.tabPage2_Tabs);
             this.tabControl1.Controls.Add(this.tabPage3_Wndw);
@@ -1894,7 +1894,7 @@ namespace QTTabBarLib {
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new Size(0x207, 0x238);
             this.tabControl1.TabIndex = 0;
-            this.tabControl1.SelectedIndexChanged += new EventHandler(this.tabControl1_SelectedIndexChanged);
+            this.tabControl1.SelectedIndexChanged += this.tabControl1_SelectedIndexChanged;
             this.tabPage1_Gnrl.Controls.Add(this.chbActivateNew);
             this.tabPage1_Gnrl.Controls.Add(this.chbDontOpenSame);
             this.tabPage1_Gnrl.Controls.Add(this.chbCloseWhenGroup);
@@ -1927,7 +1927,7 @@ namespace QTTabBarLib {
             this.btnCheckUpdates.Anchor = AnchorStyles.Left | AnchorStyles.Top;
             this.btnCheckUpdates.Location = new Point(0x12a, 0x1f1);
             this.btnCheckUpdates.TabIndex = 20;
-            this.btnCheckUpdates.Click += new EventHandler(this.btnCheckUpdates_Click);
+            this.btnCheckUpdates.Click += this.btnCheckUpdates_Click;
             this.chbAutoUpdate.AutoSize = true;
             this.chbAutoUpdate.Location = new Point(0x1b, 0x1f3);
             this.chbAutoUpdate.TabIndex = 0x13;
@@ -1935,7 +1935,7 @@ namespace QTTabBarLib {
             this.btnExportSettings.Anchor = AnchorStyles.Left | AnchorStyles.Top;
             this.btnExportSettings.Location = new Point(0x1b, 0x1c7);
             this.btnExportSettings.TabIndex = 0x12;
-            this.btnExportSettings.Click += new EventHandler(this.btnExportSettings_Click);
+            this.btnExportSettings.Click += this.btnExportSettings_Click;
             this.lblNetworkTimeOut.AutoSize = true;
             this.lblNetworkTimeOut.Anchor = AnchorStyles.Left | AnchorStyles.Top;
             this.lblNetworkTimeOut.Location = new Point(0x1b, 0x1a5);
@@ -1956,13 +1956,13 @@ namespace QTTabBarLib {
             this.btnLangBrowse.Size = new Size(0x22, 0x19);
             this.btnLangBrowse.TabIndex = 0x10;
             this.btnLangBrowse.Text = "...";
-            this.btnLangBrowse.Click += new EventHandler(this.btnLangBrowse_Click);
+            this.btnLangBrowse.Click += this.btnLangBrowse_Click;
             this.textBoxLang.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top;
             this.textBoxLang.Location = new Point(0x2d, 0x178);
             this.textBoxLang.Size = new Size(0x174, 0x15);
             this.textBoxLang.MaxLength = 260;
             this.textBoxLang.TabIndex = 15;
-            this.textBoxLang.KeyPress += new KeyPressEventHandler(this.textBoxesPath_KeyPress);
+            this.textBoxLang.KeyPress += this.textBoxesPath_KeyPress;
             this.lblLang.Anchor = AnchorStyles.Left | AnchorStyles.Top;
             this.lblLang.AutoSize = true;
             this.lblLang.Location = new Point(0x1b, 0x160);
@@ -1976,7 +1976,7 @@ namespace QTTabBarLib {
             this.btnClearRecentFile.Size = new Size(100, 0x17);
             this.btnClearRecentFile.TabIndex = 12;
             this.btnClearRecentFile.Text = "Clear";
-            this.btnClearRecentFile.Click += new EventHandler(this.btnClearRecentFile_Click);
+            this.btnClearRecentFile.Click += this.btnClearRecentFile_Click;
             this.nudMaxRecentFile.Location = new Point(0x12a, 0xd8);
             int[] numArray4 = new int[4];
             numArray4[0] = 0x40;
@@ -1998,7 +1998,7 @@ namespace QTTabBarLib {
             this.btnHistoryClear.Size = new Size(100, 0x17);
             this.btnHistoryClear.TabIndex = 9;
             this.btnHistoryClear.Text = "Clear";
-            this.btnHistoryClear.Click += new EventHandler(this.buttonHistoryClear_Click);
+            this.btnHistoryClear.Click += this.buttonHistoryClear_Click;
             this.nudMaxUndo.Location = new Point(0x12a, 0xbc);
             int[] numArray7 = new int[4];
             numArray7[0] = 0x40;
@@ -2022,7 +2022,7 @@ namespace QTTabBarLib {
             this.chbNavBtn.AutoSize = true;
             this.chbNavBtn.Location = new Point(0x1b, 0xa1);
             this.chbNavBtn.TabIndex = 5;
-            this.chbNavBtn.CheckedChanged += new EventHandler(this.chbNavBtn_CheckedChanged);
+            this.chbNavBtn.CheckedChanged += this.chbNavBtn_CheckedChanged;
             this.chbX1X2.AutoSize = true;
             this.chbX1X2.Location = new Point(0x1b, 0x85);
             this.chbX1X2.TabIndex = 4;
@@ -2086,19 +2086,19 @@ namespace QTTabBarLib {
             this.chbFolderIcon.AutoSize = true;
             this.chbFolderIcon.Location = new Point(0x1b, 0x182);
             this.chbFolderIcon.TabIndex = 12;
-            this.chbFolderIcon.CheckedChanged += new EventHandler(this.chbFolderIcon_CheckedChanged);
+            this.chbFolderIcon.CheckedChanged += this.chbFolderIcon_CheckedChanged;
             this.chbTabCloseBtnHover.AutoSize = true;
             this.chbTabCloseBtnHover.Location = new Point(0x36, 0x16a);
             this.chbTabCloseBtnHover.TabIndex = 11;
-            this.chbTabCloseBtnHover.CheckedChanged += new EventHandler(this.chbTabCloseBtns_CheckedChanged);
+            this.chbTabCloseBtnHover.CheckedChanged += this.chbTabCloseBtns_CheckedChanged;
             this.chbTabCloseBtnAlt.AutoSize = true;
             this.chbTabCloseBtnAlt.Location = new Point(0x36, 0x156);
             this.chbTabCloseBtnAlt.TabIndex = 10;
-            this.chbTabCloseBtnAlt.CheckedChanged += new EventHandler(this.chbTabCloseBtns_CheckedChanged);
+            this.chbTabCloseBtnAlt.CheckedChanged += this.chbTabCloseBtns_CheckedChanged;
             this.chbTabCloseButton.AutoSize = true;
             this.chbTabCloseButton.Location = new Point(0x1b, 0x142);
             this.chbTabCloseButton.TabIndex = 9;
-            this.chbTabCloseButton.CheckedChanged += new EventHandler(this.chbTabCloseButton_CheckedChanged);
+            this.chbTabCloseButton.CheckedChanged += this.chbTabCloseButton_CheckedChanged;
             this.chbAutoSubText.AutoSize = true;
             this.chbAutoSubText.Location = new Point(0x1b, 0x12a);
             this.chbAutoSubText.TabIndex = 8;
@@ -2112,7 +2112,7 @@ namespace QTTabBarLib {
             this.btnBrowseAction_BarDblClck.Size = new Size(0x22, 0x19);
             this.btnBrowseAction_BarDblClck.TabIndex = 6;
             this.btnBrowseAction_BarDblClck.Text = "...";
-            this.btnBrowseAction_BarDblClck.Click += new EventHandler(this.btnBrowseAction_Click);
+            this.btnBrowseAction_BarDblClck.Click += this.btnBrowseAction_Click;
             this.textBoxAction_BarDblClck.Location = new Point(0x97, 0xd7);
             this.textBoxAction_BarDblClck.Size = new Size(0x107, 0x15);
             this.textBoxAction_BarDblClck.MaxLength = 260;
@@ -2123,7 +2123,7 @@ namespace QTTabBarLib {
             this.cmbBGDblClick.Location = new Point(0x11d, 0xb1);
             this.cmbBGDblClick.Size = new Size(0xa8, 0x15);
             this.cmbBGDblClick.TabIndex = 4;
-            this.cmbBGDblClick.SelectedIndexChanged += new EventHandler(this.comboBoxes_SelectedIndexChanged);
+            this.cmbBGDblClick.SelectedIndexChanged += this.comboBoxes_SelectedIndexChanged;
             this.lblBGDblClik.AutoSize = true;
             this.lblBGDblClik.Location = new Point(0x19, 0xb5);
             this.cmbTabWhlClck.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -2189,15 +2189,15 @@ namespace QTTabBarLib {
             this.chbRestoreLocked.AutoSize = true;
             this.chbRestoreLocked.Location = new Point(0x1b, 0x17b);
             this.chbRestoreLocked.TabIndex = 11;
-            this.chbRestoreLocked.CheckedChanged += new EventHandler(this.chbsCloseWindow_CheckedChanged);
+            this.chbRestoreLocked.CheckedChanged += this.chbsCloseWindow_CheckedChanged;
             this.chbRestoreClosed.AutoSize = true;
             this.chbRestoreClosed.Location = new Point(0x1b, 0x15f);
             this.chbRestoreClosed.TabIndex = 10;
-            this.chbRestoreClosed.CheckedChanged += new EventHandler(this.chbsCloseWindow_CheckedChanged);
+            this.chbRestoreClosed.CheckedChanged += this.chbsCloseWindow_CheckedChanged;
             this.chbNeverCloseWndLocked.AutoSize = true;
             this.chbNeverCloseWndLocked.Location = new Point(0x1b, 0x143);
             this.chbNeverCloseWndLocked.TabIndex = 9;
-            this.chbNeverCloseWndLocked.CheckedChanged += new EventHandler(this.chbsCloseWindow_CheckedChanged);
+            this.chbNeverCloseWndLocked.CheckedChanged += this.chbsCloseWindow_CheckedChanged;
             this.chbNeverCloseWindow.AutoSize = true;
             this.chbNeverCloseWindow.Location = new Point(0x1b, 0x127);
             this.chbNeverCloseWindow.TabIndex = 8;
@@ -2228,7 +2228,7 @@ namespace QTTabBarLib {
             this.chbWhlClick.AutoSize = true;
             this.chbWhlClick.Location = new Point(0x1b, 0x15);
             this.chbWhlClick.TabIndex = 0;
-            this.chbWhlClick.CheckedChanged += new EventHandler(this.chbMMButton_CheckedChanged);
+            this.chbWhlClick.CheckedChanged += this.chbMMButton_CheckedChanged;
             this.tabPage4_View.Controls.Add(this.chbUseTabSkin);
             this.tabPage4_View.Controls.Add(this.chbBoldActv);
             this.tabPage4_View.Controls.Add(this.chbToolbarBGClr);
@@ -2283,53 +2283,53 @@ namespace QTTabBarLib {
             this.btnRebarImage.Size = new Size(0x22, 0x19);
             this.btnRebarImage.TabIndex = 0x17;
             this.btnRebarImage.Text = "...";
-            this.btnRebarImage.Click += new EventHandler(this.btnRebarImage_Click);
+            this.btnRebarImage.Click += this.btnRebarImage_Click;
             this.tbRebarImagePath.Location = new Point(0xdf, 0x1a7);
             this.tbRebarImagePath.Size = new Size(0xd5, 0x15);
             this.tbRebarImagePath.MaxLength = 260;
             this.tbRebarImagePath.TabIndex = 0x16;
-            this.tbRebarImagePath.KeyPress += new KeyPressEventHandler(this.textBoxesPath_KeyPress);
+            this.tbRebarImagePath.KeyPress += this.textBoxesPath_KeyPress;
             this.chbRebarBGImage.AutoSize = true;
             this.chbRebarBGImage.Location = new Point(0x10, 0x1a9);
             this.chbRebarBGImage.TabIndex = 0x15;
-            this.chbRebarBGImage.CheckedChanged += new EventHandler(this.chbRebarBGImage_CheckedChanged);
+            this.chbRebarBGImage.CheckedChanged += this.chbRebarBGImage_CheckedChanged;
             this.btnToolBarBGClr.Location = new Point(0xdf, 0x18b);
             this.btnToolBarBGClr.Size = new Size(180, 0x17);
             this.btnToolBarBGClr.TabIndex = 20;
-            this.btnToolBarBGClr.Click += new EventHandler(this.buttonToolBarBGClr_Click);
+            this.btnToolBarBGClr.Click += this.buttonToolBarBGClr_Click;
             this.chbToolbarBGClr.AutoSize = true;
             this.chbToolbarBGClr.Location = new Point(0x10, 400);
             this.chbToolbarBGClr.TabIndex = 0x13;
-            this.chbToolbarBGClr.CheckedChanged += new EventHandler(this.chbToolbarBGClr_CheckedChanged);
+            this.chbToolbarBGClr.CheckedChanged += this.chbToolbarBGClr_CheckedChanged;
             this.btnShadowIna.AutoSize = true;
             this.btnShadowIna.Location = new Point(0x107, 0x160);
             this.btnShadowIna.Size = new Size(100, 0x17);
             this.btnShadowIna.TabIndex = 0x12;
-            this.btnShadowIna.Click += new EventHandler(this.btnShadowClrs_Click);
+            this.btnShadowIna.Click += this.btnShadowClrs_Click;
             this.btnShadowAct.AutoSize = true;
             this.btnShadowAct.Location = new Point(0x99, 0x160);
             this.btnShadowAct.Size = new Size(100, 0x17);
             this.btnShadowAct.TabIndex = 0x11;
-            this.btnShadowAct.Click += new EventHandler(this.btnShadowClrs_Click);
+            this.btnShadowAct.Click += this.btnShadowClrs_Click;
             this.chbTabTitleShadow.AutoSize = true;
             this.chbTabTitleShadow.Location = new Point(0x10, 0x165);
             this.chbTabTitleShadow.TabIndex = 0x10;
-            this.chbTabTitleShadow.CheckedChanged += new EventHandler(this.chbTabTitleShadow_CheckedChanged);
+            this.chbTabTitleShadow.CheckedChanged += this.chbTabTitleShadow_CheckedChanged;
             this.btnDefTxtClr.AutoSize = true;
             this.btnDefTxtClr.Location = new Point(0x175, 0x13f);
             this.btnDefTxtClr.Size = new Size(100, 0x17);
             this.btnDefTxtClr.TabIndex = 15;
-            this.btnDefTxtClr.Click += new EventHandler(this.buttonRstClr_Click);
+            this.btnDefTxtClr.Click += this.buttonRstClr_Click;
             this.btnInactTxtClr.AutoSize = true;
             this.btnInactTxtClr.Location = new Point(0x107, 0x13f);
             this.btnInactTxtClr.Size = new Size(100, 0x17);
             this.btnInactTxtClr.TabIndex = 14;
-            this.btnInactTxtClr.Click += new EventHandler(this.buttonInactClr_Click);
+            this.btnInactTxtClr.Click += this.buttonInactClr_Click;
             this.btnActTxtClr.AutoSize = true;
             this.btnActTxtClr.Location = new Point(0x99, 0x13f);
             this.btnActTxtClr.Size = new Size(100, 0x17);
             this.btnActTxtClr.TabIndex = 13;
-            this.btnActTxtClr.Click += new EventHandler(this.buttonActClr_Click);
+            this.btnActTxtClr.Click += this.buttonActClr_Click;
             this.lblTabTxtClr.AutoSize = true;
             this.lblTabTxtClr.Location = new Point(13, 0x144);
             this.chbBoldActv.AutoSize = true;
@@ -2338,7 +2338,7 @@ namespace QTTabBarLib {
             this.btnTabFont.Location = new Point(0x99, 0x11c);
             this.btnTabFont.Size = new Size(100, 0x19);
             this.btnTabFont.TabIndex = 11;
-            this.btnTabFont.Click += new EventHandler(this.btnFont_Click);
+            this.btnTabFont.Click += this.btnFont_Click;
             this.lblTabFont.AutoSize = true;
             this.lblTabFont.Location = new Point(13, 290);
             this.cmbTabTextAlignment.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -2360,10 +2360,10 @@ namespace QTTabBarLib {
             int[] numArray12 = new int[4];
             numArray12[0] = 0x19;
             this.nudTabWidthMin.Value = new decimal(numArray12);
-            this.nudTabWidthMin.ValueChanged += new EventHandler(this.numericUpDownMax_ValueChanged);
+            this.nudTabWidthMin.ValueChanged += this.numericUpDownMax_ValueChanged;
             this.lblTabWMin.Location = new Point(0xfc, 0xdf);
             this.lblTabWMin.Size = new Size(0x4c, 0x15);
-            this.lblTabWMin.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblTabWMin.TextAlign = ContentAlignment.MiddleRight;
             this.nudTabWidthMax.Location = new Point(0x152, 0xc5);
             int[] numArray13 = new int[4];
             numArray13[0] = 0x200;
@@ -2377,10 +2377,10 @@ namespace QTTabBarLib {
             int[] numArray15 = new int[4];
             numArray15[0] = 0x19;
             this.nudTabWidthMax.Value = new decimal(numArray15);
-            this.nudTabWidthMax.ValueChanged += new EventHandler(this.numericUpDownMax_ValueChanged);
+            this.nudTabWidthMax.ValueChanged += this.numericUpDownMax_ValueChanged;
             this.lblTabWMax.Location = new Point(0xfc, 0xc5);
             this.lblTabWMax.Size = new Size(0x4c, 0x15);
-            this.lblTabWMax.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblTabWMax.TextAlign = ContentAlignment.MiddleRight;
             this.nudTabWidth.Location = new Point(0x152, 0xab);
             int[] numArray16 = new int[4];
             numArray16[0] = 0x200;
@@ -2396,12 +2396,12 @@ namespace QTTabBarLib {
             this.nudTabWidth.Value = new decimal(numArray18);
             this.lblTabWFix.Location = new Point(0x102, 0xab);
             this.lblTabWFix.Size = new Size(70, 0x15);
-            this.lblTabWFix.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblTabWFix.TextAlign = ContentAlignment.MiddleRight;
             this.cmbTabSizeMode.DropDownStyle = ComboBoxStyle.DropDownList;
             this.cmbTabSizeMode.Location = new Point(0x99, 170);
             this.cmbTabSizeMode.Size = new Size(100, 0x15);
             this.cmbTabSizeMode.TabIndex = 6;
-            this.cmbTabSizeMode.SelectedIndexChanged += new EventHandler(this.comboBoxes_SelectedIndexChanged);
+            this.cmbTabSizeMode.SelectedIndexChanged += this.comboBoxes_SelectedIndexChanged;
             this.nudTabHeight.Location = new Point(0x99, 140);
             int[] numArray19 = new int[4];
             numArray19[0] = 50;
@@ -2433,21 +2433,21 @@ namespace QTTabBarLib {
             this.btnHiliteClsc.Location = new Point(0x1a3, 0x26);
             this.btnHiliteClsc.Size = new Size(0x4b, 0x17);
             this.btnHiliteClsc.TabIndex = 4;
-            this.btnHiliteClsc.Click += new EventHandler(this.buttonHL_Click);
+            this.btnHiliteClsc.Click += this.buttonHL_Click;
             this.btnTabImage.Location = new Point(440, 11);
             this.btnTabImage.Size = new Size(0x22, 0x19);
             this.btnTabImage.TabIndex = 2;
             this.btnTabImage.Text = "...";
-            this.btnTabImage.Click += new EventHandler(this.btnTabImage_Click);
+            this.btnTabImage.Click += this.btnTabImage_Click;
             this.tbTabImagePath.Location = new Point(0xdf, 12);
             this.tbTabImagePath.Size = new Size(0xd5, 0x15);
             this.tbTabImagePath.MaxLength = 260;
             this.tbTabImagePath.TabIndex = 1;
-            this.tbTabImagePath.KeyPress += new KeyPressEventHandler(this.textBoxesPath_KeyPress);
+            this.tbTabImagePath.KeyPress += this.textBoxesPath_KeyPress;
             this.chbUseTabSkin.AutoSize = true;
             this.chbUseTabSkin.Location = new Point(15, 14);
             this.chbUseTabSkin.TabIndex = 0;
-            this.chbUseTabSkin.CheckedChanged += new EventHandler(this.chbDrawMode_CheckedChanged);
+            this.chbUseTabSkin.CheckedChanged += this.chbDrawMode_CheckedChanged;
             this.tabPage5_Grps.Controls.Add(this.btnUp_Grp);
             this.tabPage5_Grps.Controls.Add(this.btnDown_Grp);
             this.tabPage5_Grps.Controls.Add(this.btnAddSep_Grp);
@@ -2475,41 +2475,41 @@ namespace QTTabBarLib {
             this.treeViewGroup.ShowNodeToolTips = true;
             this.treeViewGroup.Size = new Size(0x1ed, 0x156);
             this.treeViewGroup.TabIndex = 6;
-            this.treeViewGroup.AfterSelect += new TreeViewEventHandler(this.treeViewGroup_AfterSelect);
-            this.treeViewGroup.BeforeLabelEdit += new NodeLabelEditEventHandler(this.treeViewGroup_BeforeLabelEdit);
-            this.treeViewGroup.AfterLabelEdit += new NodeLabelEditEventHandler(this.treeViewGroup_AfterLabelEdit);
-            this.treeViewGroup.KeyDown += new KeyEventHandler(this.treeViewGroup_KeyDown);
+            this.treeViewGroup.AfterSelect += this.treeViewGroup_AfterSelect;
+            this.treeViewGroup.BeforeLabelEdit += this.treeViewGroup_BeforeLabelEdit;
+            this.treeViewGroup.AfterLabelEdit += this.treeViewGroup_AfterLabelEdit;
+            this.treeViewGroup.KeyDown += this.treeViewGroup_KeyDown;
             this.btnUp_Grp.Enabled = false;
             this.btnUp_Grp.Location = new Point(5, 0x10);
             this.btnUp_Grp.Size = new Size(50, 0x17);
             this.btnUp_Grp.TabIndex = 0;
-            this.btnUp_Grp.Click += new EventHandler(this.UpDownButtons_Click);
+            this.btnUp_Grp.Click += this.UpDownButtons_Click;
             this.btnDown_Grp.Enabled = false;
             this.btnDown_Grp.Location = new Point(0x3d, 0x10);
             this.btnDown_Grp.Size = new Size(50, 0x17);
             this.btnDown_Grp.TabIndex = 1;
-            this.btnDown_Grp.Click += new EventHandler(this.UpDownButtons_Click);
+            this.btnDown_Grp.Click += this.UpDownButtons_Click;
             this.btnAddSep_Grp.Location = new Point(0x75, 0x10);
             this.btnAddSep_Grp.Size = new Size(120, 0x17);
             this.btnAddSep_Grp.TabIndex = 2;
-            this.btnAddSep_Grp.Click += new EventHandler(this.btnAddSep_Click);
+            this.btnAddSep_Grp.Click += this.btnAddSep_Click;
             this.btnStartUpGrp.Anchor = AnchorStyles.Right | AnchorStyles.Top;
             this.btnStartUpGrp.Location = new Point(0x150, 0x10);
             this.btnStartUpGrp.Size = new Size(100, 0x17);
             this.btnStartUpGrp.TabIndex = 3;
-            this.btnStartUpGrp.Click += new EventHandler(this.btnStartUpGrp_Click);
+            this.btnStartUpGrp.Click += this.btnStartUpGrp_Click;
             this.btnPlus_Grp.Anchor = AnchorStyles.Right | AnchorStyles.Top;
             this.btnPlus_Grp.Location = new Point(0x1ba, 0x10);
             this.btnPlus_Grp.Size = new Size(0x19, 0x17);
             this.btnPlus_Grp.TabIndex = 4;
             this.btnPlus_Grp.Text = "+";
-            this.btnPlus_Grp.Click += new EventHandler(this.btnPlus_Click);
+            this.btnPlus_Grp.Click += this.btnPlus_Click;
             this.btnMinus_Grp.Anchor = AnchorStyles.Right | AnchorStyles.Top;
             this.btnMinus_Grp.Location = new Point(0x1d9, 0x10);
             this.btnMinus_Grp.Size = new Size(0x19, 0x17);
             this.btnMinus_Grp.TabIndex = 5;
             this.btnMinus_Grp.Text = "-";
-            this.btnMinus_Grp.Click += new EventHandler(this.btnMinus_Click);
+            this.btnMinus_Grp.Click += this.btnMinus_Click;
             this.cmbSpclFol_Grp.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
             this.cmbSpclFol_Grp.Enabled = false;
             this.cmbSpclFol_Grp.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -2522,7 +2522,7 @@ namespace QTTabBarLib {
             this.btnAddSpcFol_Grp.Size = new Size(0x19, 0x17);
             this.btnAddSpcFol_Grp.TabIndex = 8;
             this.btnAddSpcFol_Grp.Text = "+";
-            this.btnAddSpcFol_Grp.Click += new EventHandler(this.btnAddSpcFol_Grp_Click);
+            this.btnAddSpcFol_Grp.Click += this.btnAddSpcFol_Grp_Click;
             this.lblGroupKey.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
             this.lblGroupKey.AutoSize = true;
             this.lblGroupKey.Location = new Point(6, 0x1ac);
@@ -2532,15 +2532,15 @@ namespace QTTabBarLib {
             this.chbGroupKey.Enabled = false;
             this.chbGroupKey.Location = new Point(0x6b, 420);
             this.chbGroupKey.TabIndex = 9;
-            this.chbGroupKey.CheckedChanged += new EventHandler(this.chbGroupKey_CheckedChanged);
+            this.chbGroupKey.CheckedChanged += this.chbGroupKey_CheckedChanged;
             this.tbGroupKey.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom;
             this.tbGroupKey.Enabled = false;
             this.tbGroupKey.Location = new Point(0x7f, 0x1a9);
             this.tbGroupKey.Size = new Size(340, 0x15);
             this.tbGroupKey.TextAlign = HorizontalAlignment.Center;
             this.tbGroupKey.TabIndex = 10;
-            this.tbGroupKey.PreviewKeyDown += new PreviewKeyDownEventHandler(this.tbGroupKey_PreviewKeyDown);
-            this.tbGroupKey.KeyPress += new KeyPressEventHandler(this.tbGroupKey_KeyPress);
+            this.tbGroupKey.PreviewKeyDown += this.tbGroupKey_PreviewKeyDown;
+            this.tbGroupKey.KeyPress += this.tbGroupKey_KeyPress;
             this.tabPage6_Apps.Controls.Add(this.treeViewUserApps);
             this.tabPage6_Apps.Controls.Add(this.btnUp_app);
             this.tabPage6_Apps.Controls.Add(this.btnDown_app);
@@ -2575,44 +2575,44 @@ namespace QTTabBarLib {
             this.treeViewUserApps.Location = new Point(5, 0x2d);
             this.treeViewUserApps.Size = new Size(0x1ed, 0x12e);
             this.treeViewUserApps.TabIndex = 6;
-            this.treeViewUserApps.AfterLabelEdit += new NodeLabelEditEventHandler(this.treeViewUserApps_AfterLabelEdit);
-            this.treeViewUserApps.AfterSelect += new TreeViewEventHandler(this.treeViewUserApps_AfterSelect);
-            this.treeViewUserApps.BeforeLabelEdit += new NodeLabelEditEventHandler(this.treeViewUserApps_BeforeLabelEdit);
-            this.treeViewUserApps.KeyDown += new KeyEventHandler(this.treeViewUserApps_KeyDown);
+            this.treeViewUserApps.AfterLabelEdit += this.treeViewUserApps_AfterLabelEdit;
+            this.treeViewUserApps.AfterSelect += this.treeViewUserApps_AfterSelect;
+            this.treeViewUserApps.BeforeLabelEdit += this.treeViewUserApps_BeforeLabelEdit;
+            this.treeViewUserApps.KeyDown += this.treeViewUserApps_KeyDown;
             this.btnUp_app.Enabled = false;
             this.btnUp_app.Location = new Point(5, 0x10);
             this.btnUp_app.Size = new Size(50, 0x17);
             this.btnUp_app.TabIndex = 0;
-            this.btnUp_app.Click += new EventHandler(this.btnUpDown_app_Click);
+            this.btnUp_app.Click += this.btnUpDown_app_Click;
             this.btnDown_app.Enabled = false;
             this.btnDown_app.Location = new Point(0x3d, 0x10);
             this.btnDown_app.Size = new Size(50, 0x17);
             this.btnDown_app.TabIndex = 1;
-            this.btnDown_app.Click += new EventHandler(this.btnUpDown_app_Click);
+            this.btnDown_app.Click += this.btnUpDown_app_Click;
             this.btnAddSep_app.Location = new Point(0x75, 0x10);
             this.btnAddSep_app.Size = new Size(120, 0x17);
             this.btnAddSep_app.TabIndex = 2;
-            this.btnAddSep_app.Click += new EventHandler(this.btnAddSep_app_Click);
+            this.btnAddSep_app.Click += this.btnAddSep_app_Click;
             this.btnAddVFolder_app.Anchor = AnchorStyles.Right | AnchorStyles.Top;
             this.btnAddVFolder_app.Location = new Point(0x182, 0x10);
             this.btnAddVFolder_app.Size = new Size(50, 0x18);
             this.btnAddVFolder_app.TabIndex = 3;
             this.btnAddVFolder_app.Text = "+";
             this.btnAddVFolder_app.TextImageRelation = TextImageRelation.ImageBeforeText;
-            this.btnAddVFolder_app.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
-            this.btnAddVFolder_app.Click += new EventHandler(this.btnAddVirtualFolder_app_Click);
+            this.btnAddVFolder_app.ImageAlign = ContentAlignment.TopLeft;
+            this.btnAddVFolder_app.Click += this.btnAddVirtualFolder_app_Click;
             this.btnPlus_app.Anchor = AnchorStyles.Right | AnchorStyles.Top;
             this.btnPlus_app.Location = new Point(0x1ba, 0x10);
             this.btnPlus_app.Size = new Size(0x19, 0x17);
             this.btnPlus_app.TabIndex = 4;
             this.btnPlus_app.Text = "+";
-            this.btnPlus_app.Click += new EventHandler(this.btnPlus_app_Click);
+            this.btnPlus_app.Click += this.btnPlus_app_Click;
             this.btnMinus_app.Anchor = AnchorStyles.Right | AnchorStyles.Top;
             this.btnMinus_app.Location = new Point(0x1d9, 0x10);
             this.btnMinus_app.Size = new Size(0x19, 0x17);
             this.btnMinus_app.TabIndex = 5;
             this.btnMinus_app.Text = "-";
-            this.btnMinus_app.Click += new EventHandler(this.btnMinus_app_Click);
+            this.btnMinus_app.Click += this.btnMinus_app_Click;
             this.lblUserApps_Path.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
             this.lblUserApps_Path.AutoSize = true;
             this.lblUserApps_Path.Location = new Point(6, 0x164);
@@ -2635,37 +2635,37 @@ namespace QTTabBarLib {
             this.tbPath.Size = new Size(0x149, 0x15);
             this.tbPath.MaxLength = 260;
             this.tbPath.TabIndex = 7;
-            this.tbPath.TextChanged += new EventHandler(this.tbsUserApps_TextChanged);
-            this.tbPath.KeyPress += new KeyPressEventHandler(this.textBoxesPath_KeyPress);
+            this.tbPath.TextChanged += this.tbsUserApps_TextChanged;
+            this.tbPath.KeyPress += this.textBoxesPath_KeyPress;
             this.tbArgs.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom;
             this.tbArgs.Enabled = false;
             this.tbArgs.Location = new Point(0x6b, 0x179);
             this.tbArgs.Size = new Size(360, 0x15);
             this.tbArgs.MaxLength = 260;
             this.tbArgs.TabIndex = 10;
-            this.tbArgs.TextChanged += new EventHandler(this.tbsUserApps_TextChanged);
+            this.tbArgs.TextChanged += this.tbsUserApps_TextChanged;
             this.tbWorking.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom;
             this.tbWorking.Enabled = false;
             this.tbWorking.Location = new Point(0x6b, 0x191);
             this.tbWorking.Size = new Size(360, 0x15);
             this.tbWorking.MaxLength = 260;
             this.tbWorking.TabIndex = 12;
-            this.tbWorking.TextChanged += new EventHandler(this.tbsUserApps_TextChanged);
-            this.tbWorking.KeyPress += new KeyPressEventHandler(this.textBoxesPath_KeyPress);
+            this.tbWorking.TextChanged += this.tbsUserApps_TextChanged;
+            this.tbWorking.KeyPress += this.textBoxesPath_KeyPress;
             this.chbUserAppKey.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
             this.chbUserAppKey.AutoSize = true;
             this.chbUserAppKey.Enabled = false;
             this.chbUserAppKey.Location = new Point(0x6b, 420);
             this.chbUserAppKey.TabIndex = 14;
-            this.chbUserAppKey.CheckedChanged += new EventHandler(this.chbUserAppKey_CheckedChanged);
+            this.chbUserAppKey.CheckedChanged += this.chbUserAppKey_CheckedChanged;
             this.tbUserAppKey.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom;
             this.tbUserAppKey.Enabled = false;
             this.tbUserAppKey.Location = new Point(0x7f, 0x1a9);
             this.tbUserAppKey.Size = new Size(340, 0x15);
             this.tbUserAppKey.TextAlign = HorizontalAlignment.Center;
             this.tbUserAppKey.TabIndex = 15;
-            this.tbUserAppKey.PreviewKeyDown += new PreviewKeyDownEventHandler(this.tbUserAppKey_PreviewKeyDown);
-            this.tbUserAppKey.KeyPress += new KeyPressEventHandler(this.tbUserAppKey_KeyPress);
+            this.tbUserAppKey.PreviewKeyDown += this.tbUserAppKey_PreviewKeyDown;
+            this.tbUserAppKey.KeyPress += this.tbUserAppKey_KeyPress;
             this.btnOFD_app.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
             this.btnOFD_app.Enabled = false;
             this.btnOFD_app.Location = new Point(0x1ba, 0x161);
@@ -2673,7 +2673,7 @@ namespace QTTabBarLib {
             this.btnOFD_app.TabIndex = 8;
             this.btnOFD_app.Text = "...";
             this.btnOFD_app.UseVisualStyleBackColor = true;
-            this.btnOFD_app.Click += new EventHandler(this.btnOFD_app_Click);
+            this.btnOFD_app.Click += this.btnOFD_app_Click;
             this.btnBFD_app.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
             this.btnBFD_app.Enabled = false;
             this.btnBFD_app.Location = new Point(0x1d9, 0x161);
@@ -2681,7 +2681,7 @@ namespace QTTabBarLib {
             this.btnBFD_app.TabIndex = 9;
             this.btnBFD_app.Text = ".";
             this.btnBFD_app.UseVisualStyleBackColor = true;
-            this.btnBFD_app.Click += new EventHandler(this.btnBFD_app_Click);
+            this.btnBFD_app.Click += this.btnBFD_app_Click;
             this.btnAddToken_Arg.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
             this.btnAddToken_Arg.Location = new Point(0x1d9, 0x179);
             this.btnAddToken_Arg.Enabled = false;
@@ -2689,7 +2689,7 @@ namespace QTTabBarLib {
             this.btnAddToken_Arg.TabIndex = 11;
             this.btnAddToken_Arg.Text = "%";
             this.btnAddToken_Arg.UseVisualStyleBackColor = true;
-            this.btnAddToken_Arg.Click += new EventHandler(this.btnAddToken_Arg_Click);
+            this.btnAddToken_Arg.Click += this.btnAddToken_Arg_Click;
             this.btnAddToken_Wrk.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
             this.btnAddToken_Wrk.Enabled = false;
             this.btnAddToken_Wrk.Location = new Point(0x1d9, 0x191);
@@ -2697,9 +2697,9 @@ namespace QTTabBarLib {
             this.btnAddToken_Wrk.TabIndex = 13;
             this.btnAddToken_Wrk.Text = "%";
             this.btnAddToken_Wrk.UseVisualStyleBackColor = true;
-            this.btnAddToken_Wrk.Click += new EventHandler(this.btnAddToken_Wrk_Click);
+            this.btnAddToken_Wrk.Click += this.btnAddToken_Wrk_Click;
             this.cmsAddToken.ShowImageMargin = false;
-            this.cmsAddToken.ItemClicked += new ToolStripItemClickedEventHandler(this.cmsAddToken_ItemClicked);
+            this.cmsAddToken.ItemClicked += this.cmsAddToken_ItemClicked;
             this.tabPage9_Misc.Controls.Add(this.chbHideMenu);
             this.tabPage9_Misc.Controls.Add(this.chbBSUpOneLvl);
             this.tabPage9_Misc.Controls.Add(this.chbNoFulRowSelect);
@@ -2748,7 +2748,7 @@ namespace QTTabBarLib {
             this.btnPayPal.Cursor = Cursors.Hand;
             this.btnPayPal.TabIndex = 0x20;
             this.btnPayPal.UseVisualStyleBackColor = false;
-            this.btnPayPal.Click += new EventHandler(this.btnPayPal_Click);
+            this.btnPayPal.Click += this.btnPayPal_Click;
             this.chbCursorLoop.AutoSize = true;
             this.chbCursorLoop.Location = new Point(0x1b, 0x1e1);
             this.chbCursorLoop.TabIndex = 0x1f;
@@ -2776,55 +2776,55 @@ namespace QTTabBarLib {
             this.chbSubDirTip.AutoSize = true;
             this.chbSubDirTip.Location = new Point(0x1b, 330);
             this.chbSubDirTip.TabIndex = 0x17;
-            this.chbSubDirTip.CheckedChanged += new EventHandler(this.chbSubDirTip_CheckedChanged);
+            this.chbSubDirTip.CheckedChanged += this.chbSubDirTip_CheckedChanged;
             this.btnPreviewFontDefault.Location = new Point(0x191, 0x127);
             this.btnPreviewFontDefault.Size = new Size(100, 0x17);
             this.btnPreviewFontDefault.TabIndex = 0x16;
-            this.btnPreviewFontDefault.Click += new EventHandler(this.btnPreviewFont_Click);
+            this.btnPreviewFontDefault.Click += this.btnPreviewFont_Click;
             this.btnPreviewFont.Location = new Point(0x123, 0x127);
             this.btnPreviewFont.Size = new Size(100, 0x17);
             this.btnPreviewFont.TabIndex = 0x15;
-            this.btnPreviewFont.Click += new EventHandler(this.btnPreviewFont_Click);
+            this.btnPreviewFont.Click += this.btnPreviewFont_Click;
             this.btnDefaultTextExt.Location = new Point(0x191, 0x10d);
             this.btnDefaultTextExt.Size = new Size(100, 0x17);
             this.btnDefaultTextExt.TabIndex = 20;
-            this.btnDefaultTextExt.Click += new EventHandler(this.btnDefaultTextExt_Click);
+            this.btnDefaultTextExt.Click += this.btnDefaultTextExt_Click;
             this.btnDelTextExt.Location = new Point(0x123, 0x10d);
             this.btnDelTextExt.Size = new Size(100, 0x17);
             this.btnDelTextExt.TabIndex = 0x13;
-            this.btnDelTextExt.Click += new EventHandler(this.btnDelPreiviewExt_Click);
+            this.btnDelTextExt.Click += this.btnDelPreiviewExt_Click;
             this.btnAddTextExt.Location = new Point(0xb5, 0x10d);
             this.btnAddTextExt.Size = new Size(100, 0x17);
             this.btnAddTextExt.TabIndex = 0x12;
-            this.btnAddTextExt.Click += new EventHandler(this.btnAddPreviewExt_Click);
+            this.btnAddTextExt.Click += this.btnAddPreviewExt_Click;
             this.cmbTextExts.Location = new Point(0x2d, 0x10d);
             this.cmbTextExts.Size = new Size(130, 0x17);
             this.cmbTextExts.TabIndex = 0x11;
-            this.cmbTextExts.SelectedIndexChanged += new EventHandler(this.comboBoxes_SelectedIndexChanged);
-            this.cmbTextExts.KeyPress += new KeyPressEventHandler(this.comboBoxPreviewExts_KeyPress);
+            this.cmbTextExts.SelectedIndexChanged += this.comboBoxes_SelectedIndexChanged;
+            this.cmbTextExts.KeyPress += this.comboBoxPreviewExts_KeyPress;
             this.btnDefaultImgExt.Location = new Point(0x191, 0xf3);
             this.btnDefaultImgExt.Size = new Size(100, 0x17);
             this.btnDefaultImgExt.TabIndex = 0x10;
-            this.btnDefaultImgExt.Click += new EventHandler(this.btnDefaultImgExt_Click);
+            this.btnDefaultImgExt.Click += this.btnDefaultImgExt_Click;
             this.btnDelImgExt.Location = new Point(0x123, 0xf3);
             this.btnDelImgExt.Size = new Size(100, 0x17);
             this.btnDelImgExt.TabIndex = 15;
-            this.btnDelImgExt.Click += new EventHandler(this.btnDelPreiviewExt_Click);
+            this.btnDelImgExt.Click += this.btnDelPreiviewExt_Click;
             this.btnAddImgExt.Location = new Point(0xb5, 0xf3);
             this.btnAddImgExt.Size = new Size(100, 0x17);
             this.btnAddImgExt.TabIndex = 14;
-            this.btnAddImgExt.Click += new EventHandler(this.btnAddPreviewExt_Click);
+            this.btnAddImgExt.Click += this.btnAddPreviewExt_Click;
             this.cmbImgExts.Location = new Point(0x2d, 0xf3);
             this.cmbImgExts.Size = new Size(130, 0x17);
             this.cmbImgExts.TabIndex = 13;
-            this.cmbImgExts.SelectedIndexChanged += new EventHandler(this.comboBoxes_SelectedIndexChanged);
-            this.cmbImgExts.KeyPress += new KeyPressEventHandler(this.comboBoxPreviewExts_KeyPress);
+            this.cmbImgExts.SelectedIndexChanged += this.comboBoxes_SelectedIndexChanged;
+            this.cmbImgExts.KeyPress += this.comboBoxPreviewExts_KeyPress;
             this.lblPreviewWidth.Location = new Point(0x129, 0xbf);
             this.lblPreviewWidth.Size = new Size(0x62, 0x15);
-            this.lblPreviewWidth.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblPreviewWidth.TextAlign = ContentAlignment.MiddleRight;
             this.lblPreviewHeight.Location = new Point(0x129, 0xd9);
             this.lblPreviewHeight.Size = new Size(0x62, 0x15);
-            this.lblPreviewHeight.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblPreviewHeight.TextAlign = ContentAlignment.MiddleRight;
             this.nudPreviewMaxWidth.Location = new Point(0x191, 0xbf);
             int[] numArray22 = new int[4];
             numArray22[0] = 0x780;
@@ -2860,26 +2860,26 @@ namespace QTTabBarLib {
             this.chbShowPreview.AutoSize = true;
             this.chbShowPreview.Location = new Point(0x1b, 170);
             this.chbShowPreview.TabIndex = 8;
-            this.chbShowPreview.CheckedChanged += new EventHandler(this.chbShowPreviewTooltip_CheckedChanged);
+            this.chbShowPreview.CheckedChanged += this.chbShowPreviewTooltip_CheckedChanged;
             this.btnAlternate_Default.Enabled = false;
             this.btnAlternate_Default.Location = new Point(0x191, 0x87);
             this.btnAlternate_Default.Size = new Size(100, 0x17);
             this.btnAlternate_Default.TabIndex = 7;
-            this.btnAlternate_Default.Click += new EventHandler(this.btnAlternateColor_Click);
+            this.btnAlternate_Default.Click += this.btnAlternateColor_Click;
             this.btnAlternateColor_Text.Enabled = false;
             this.btnAlternateColor_Text.Location = new Point(0x123, 0x87);
             this.btnAlternateColor_Text.Size = new Size(100, 0x17);
             this.btnAlternateColor_Text.TabIndex = 6;
-            this.btnAlternateColor_Text.Click += new EventHandler(this.btnAlternateColor_Click);
+            this.btnAlternateColor_Text.Click += this.btnAlternateColor_Click;
             this.btnAlternateColor.Enabled = false;
             this.btnAlternateColor.Location = new Point(0xb5, 0x87);
             this.btnAlternateColor.Size = new Size(100, 0x17);
             this.btnAlternateColor.TabIndex = 5;
-            this.btnAlternateColor.Click += new EventHandler(this.btnAlternateColor_Click);
+            this.btnAlternateColor.Click += this.btnAlternateColor_Click;
             this.chbAlternateColor.AutoSize = true;
             this.chbAlternateColor.Location = new Point(0x1b, 0x70);
             this.chbAlternateColor.TabIndex = 4;
-            this.chbAlternateColor.CheckedChanged += new EventHandler(this.chbAlternateColor_CheckedChanged);
+            this.chbAlternateColor.CheckedChanged += this.chbAlternateColor_CheckedChanged;
             this.chbGridLine.AutoSize = true;
             this.chbGridLine.Location = new Point(0x1b, 0x58);
             this.chbGridLine.TabIndex = 3;
@@ -2906,7 +2906,7 @@ namespace QTTabBarLib {
             this.btnBrowsePlugin.Location = new Point(5, 0x10);
             this.btnBrowsePlugin.TabIndex = 0;
             this.btnBrowsePlugin.UseVisualStyleBackColor = true;
-            this.btnBrowsePlugin.Click += new EventHandler(this.btnBrowsePlugin_Click);
+            this.btnBrowsePlugin.Click += this.btnBrowsePlugin_Click;
             this.pluginView.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Top;
             this.pluginView.ColumnCount = 1;
             this.pluginView.ColumnStyles.Add(new ColumnStyle());
@@ -2921,13 +2921,13 @@ namespace QTTabBarLib {
             this.textBoxPluginLang.Size = new Size(0x174, 0x15);
             this.textBoxPluginLang.MaxLength = 260;
             this.textBoxPluginLang.TabIndex = 2;
-            this.textBoxPluginLang.KeyPress += new KeyPressEventHandler(this.textBoxesPath_KeyPress);
+            this.textBoxPluginLang.KeyPress += this.textBoxesPath_KeyPress;
             this.btnBrowsePluginLang.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
             this.btnBrowsePluginLang.Location = new Point(0x1a7, 0x1a9);
             this.btnBrowsePluginLang.Size = new Size(0x22, 0x19);
             this.btnBrowsePluginLang.TabIndex = 3;
             this.btnBrowsePluginLang.Text = "...";
-            this.btnBrowsePluginLang.Click += new EventHandler(this.btnBrowsePluginLang_Click);
+            this.btnBrowsePluginLang.Click += this.btnBrowsePluginLang_Click;
             this.tabPage8_Keys.Controls.Add(this.btnCopyKeys);
             this.tabPage8_Keys.Controls.Add(this.listViewKeyboard);
             this.tabPage8_Keys.Location = new Point(4, 0x16);
@@ -2940,7 +2940,7 @@ namespace QTTabBarLib {
             this.btnCopyKeys.AutoSize = true;
             this.btnCopyKeys.TabIndex = 0;
             this.btnCopyKeys.UseVisualStyleBackColor = true;
-            this.btnCopyKeys.Click += new EventHandler(this.btnCopyKeys_Click);
+            this.btnCopyKeys.Click += this.btnCopyKeys_Click;
             this.listViewKeyboard.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Top;
             this.listViewKeyboard.CheckBoxes = true;
             this.listViewKeyboard.Columns.AddRange(new ColumnHeader[] { this.clmKeys_Action, this.clmKeys_Key });
@@ -2954,8 +2954,8 @@ namespace QTTabBarLib {
             this.listViewKeyboard.TabIndex = 1;
             this.listViewKeyboard.UseCompatibleStateImageBehavior = false;
             this.listViewKeyboard.View = View.Details;
-            this.listViewKeyboard.PreviewKeyDown += new PreviewKeyDownEventHandler(this.listViewKeyboard_PreviewKeyDown);
-            this.listViewKeyboard.KeyPress += new KeyPressEventHandler(this.listViewKeyboard_KeyPress);
+            this.listViewKeyboard.PreviewKeyDown += this.listViewKeyboard_PreviewKeyDown;
+            this.listViewKeyboard.KeyPress += this.listViewKeyboard_KeyPress;
             this.clmKeys_Action.Text = "Action";
             this.clmKeys_Action.Width = 0x15c;
             this.clmKeys_Key.Text = "Key";
@@ -2983,11 +2983,11 @@ namespace QTTabBarLib {
             this.listView_NoCapture.TabIndex = 8;
             this.listView_NoCapture.UseCompatibleStateImageBehavior = false;
             this.listView_NoCapture.View = View.Details;
-            this.listView_NoCapture.ItemActivate += new EventHandler(this.listView_NoCapture_ItemActivate);
-            this.listView_NoCapture.SelectedIndexChanged += new EventHandler(this.listView_NoCapture_SelectedIndexChanged);
-            this.listView_NoCapture.KeyDown += new KeyEventHandler(this.listView_NoCapture_KeyDown);
-            this.listView_NoCapture.BeforeLabelEdit += new LabelEditEventHandler(this.listView_NoCapture_BeforeLabelEdit);
-            this.listView_NoCapture.AfterLabelEdit += new LabelEditEventHandler(this.listView_NoCapture_AfterLabelEdit);
+            this.listView_NoCapture.ItemActivate += this.listView_NoCapture_ItemActivate;
+            this.listView_NoCapture.SelectedIndexChanged += this.listView_NoCapture_SelectedIndexChanged;
+            this.listView_NoCapture.KeyDown += this.listView_NoCapture_KeyDown;
+            this.listView_NoCapture.BeforeLabelEdit += this.listView_NoCapture_BeforeLabelEdit;
+            this.listView_NoCapture.AfterLabelEdit += this.listView_NoCapture_AfterLabelEdit;
             this.clmnHeader_NoCapture.Width = 0x1d8;
             this.btnOFD_NoCapture.Anchor = AnchorStyles.Right | AnchorStyles.Top;
             this.btnOFD_NoCapture.Location = new Point(0x19b, 0x10);
@@ -2995,14 +2995,14 @@ namespace QTTabBarLib {
             this.btnOFD_NoCapture.TabIndex = 0;
             this.btnOFD_NoCapture.Text = "...";
             this.btnOFD_NoCapture.UseVisualStyleBackColor = true;
-            this.btnOFD_NoCapture.Click += new EventHandler(this.btnOFD_NoCapture_Click);
+            this.btnOFD_NoCapture.Click += this.btnOFD_NoCapture_Click;
             this.btnAdd_NoCapture.Anchor = AnchorStyles.Right | AnchorStyles.Top;
             this.btnAdd_NoCapture.Location = new Point(0x1ba, 0x10);
             this.btnAdd_NoCapture.Size = new Size(0x19, 0x17);
             this.btnAdd_NoCapture.TabIndex = 1;
             this.btnAdd_NoCapture.Text = "+";
             this.btnAdd_NoCapture.UseVisualStyleBackColor = true;
-            this.btnAdd_NoCapture.Click += new EventHandler(this.btnAdd_NoCapture_Click);
+            this.btnAdd_NoCapture.Click += this.btnAdd_NoCapture_Click;
             this.btnRemove_NoCapture.Anchor = AnchorStyles.Right | AnchorStyles.Top;
             this.btnRemove_NoCapture.Enabled = false;
             this.btnRemove_NoCapture.Location = new Point(0x1d9, 0x10);
@@ -3010,7 +3010,7 @@ namespace QTTabBarLib {
             this.btnRemove_NoCapture.TabIndex = 2;
             this.btnRemove_NoCapture.Text = "-";
             this.btnRemove_NoCapture.UseVisualStyleBackColor = true;
-            this.btnRemove_NoCapture.Click += new EventHandler(this.btnRemove_NoCapture_Click);
+            this.btnRemove_NoCapture.Click += this.btnRemove_NoCapture_Click;
             this.cmbSpclFol_NoCapture.Anchor = AnchorStyles.Left | AnchorStyles.Top;
             this.cmbSpclFol_NoCapture.DropDownStyle = ComboBoxStyle.DropDownList;
             this.cmbSpclFol_NoCapture.Location = new Point(5, 0xd4);
@@ -3021,7 +3021,7 @@ namespace QTTabBarLib {
             this.btnAddSpcFol_NoCapture.Size = new Size(0x19, 0x17);
             this.btnAddSpcFol_NoCapture.Text = "+";
             this.btnAddSpcFol_NoCapture.TabIndex = 4;
-            this.btnAddSpcFol_NoCapture.Click += new EventHandler(this.btnAddSpcFol_NoCapture_Click);
+            this.btnAddSpcFol_NoCapture.Click += this.btnAddSpcFol_NoCapture_Click;
             base.AutoScaleDimensions = new SizeF(6f, 13f);
             base.AutoScaleMode = AutoScaleMode.Font;
             base.ClientSize = new Size(0x211, 0x269);
@@ -3035,7 +3035,7 @@ namespace QTTabBarLib {
             base.ShowIcon = false;
             base.StartPosition = FormStartPosition.CenterParent;
             this.Text = "QTTabBar Options";
-            base.FormClosing += new FormClosingEventHandler(this.OptionsDialog_FormClosing);
+            base.FormClosing += this.OptionsDialog_FormClosing;
             this.tabControl1.ResumeLayout(false);
             this.tabPage1_Gnrl.ResumeLayout(false);
             this.tabPage1_Gnrl.PerformLayout();
@@ -3074,11 +3074,11 @@ namespace QTTabBarLib {
             this.pluginView.SuspendLayout();
             this.CreatePluginViewItem(PluginManager.PluginAssemblies.ToArray(), false);
             this.pluginView.ResumeLayout();
-            this.pluginView.PluginRemoved += new PluginOptionEventHandler(this.pluginView_PluginRemoved);
-            this.pluginView.PluginOptionRequired += new PluginOptionEventHandler(this.pluginView_PluginOptionRequired);
-            this.pluginView.PluginAboutRequired += new PluginOptionEventHandler(this.pluginView_PluginAboutRequired);
-            this.pluginView.QueryPluginInfoHasOption += new PluginInfoHasOption(this.pluginView_QueryPluginInfoHasOption);
-            this.pluginView.DragDropEx += new EventHandler(this.pluginView_DragDropEx);
+            this.pluginView.PluginRemoved += this.pluginView_PluginRemoved;
+            this.pluginView.PluginOptionRequired += this.pluginView_PluginOptionRequired;
+            this.pluginView.PluginAboutRequired += this.pluginView_PluginAboutRequired;
+            this.pluginView.QueryPluginInfoHasOption += this.pluginView_QueryPluginInfoHasOption;
+            this.pluginView.DragDropEx += this.pluginView_DragDropEx;
         }
 
         private static void InitializeStaticFields() {
@@ -3230,7 +3230,7 @@ namespace QTTabBarLib {
                 bool flag2 = false;
                 int index = -1;
                 if(!flag) {
-                    index = Array.IndexOf<string>(arrSpecialFolderDipNms, e.Label);
+                    index = Array.IndexOf(arrSpecialFolderDipNms, e.Label);
                     flag2 = index != -1;
                 }
                 if((e.Label.Length > 0) && (flag || flag2)) {
@@ -3333,7 +3333,7 @@ namespace QTTabBarLib {
                         bounds = base.RestoreBounds;
                     }
                     int[] array = new int[] { bounds.Left, bounds.Top, bounds.Width, bounds.Height };
-                    QTUtility2.WriteRegBinary<int>(array, "OptionWindowBounds", key);
+                    QTUtility2.WriteRegBinary(array, "OptionWindowBounds", key);
                 }
             }
             if(this.callBack != null) {
@@ -3424,7 +3424,7 @@ namespace QTTabBarLib {
                 if((keyData == (Keys.Control | Keys.Tab)) || (keyData == (Keys.Control | Keys.Shift | Keys.Tab))) {
                     return true;
                 }
-                if((flag || flag2) || flag3) {
+                if(flag || flag2) {
                     if((((keyData & Keys.Up) == Keys.Up) || ((keyData & Keys.Down) == Keys.Down)) || (((keyData & Keys.Left) == Keys.Left) || ((keyData & Keys.Right) == Keys.Right))) {
                         return true;
                     }
@@ -3436,8 +3436,8 @@ namespace QTTabBarLib {
             if((base.ActiveControl == this.tbUserAppKey) || (base.ActiveControl == this.tbGroupKey)) {
                 return ((keyData != Keys.Tab) && (keyData != (Keys.Shift | Keys.Tab)));
             }
-            if((keyData == Keys.Return) && (base.ActiveControl is System.Windows.Forms.Button)) {
-                ((System.Windows.Forms.Button)base.ActiveControl).PerformClick();
+            if((keyData == Keys.Return) && (base.ActiveControl is Button)) {
+                ((Button)base.ActiveControl).PerformClick();
                 return true;
             }
             if((keyData != Keys.Escape) && (keyData != Keys.Return)) {
@@ -3589,7 +3589,7 @@ namespace QTTabBarLib {
             }
             rkUser.DeleteValue("ShortcutKeys_Group", false);
             if(list.Count > 0) {
-                QTUtility2.WriteRegBinary<PluginKey>(list.ToArray(), "ShortcutKeys_Group", rkUser);
+                QTUtility2.WriteRegBinary(list.ToArray(), "ShortcutKeys_Group", rkUser);
             }
         }
 
@@ -3645,8 +3645,8 @@ namespace QTTabBarLib {
                         string[] shortcutKeyActions = pluginInformation.ShortcutKeyActions;
                         if((shortcutKeyActions != null) && (shortcutKeyActions.Length > 0)) {
                             ListViewGroup group2 = this.listViewKeyboard.Groups.Add(pluginInformation.PluginID, pluginInformation.Name + " (" + strArray[1] + ")");
-                            for(int i = 0; i < shortcutKeyActions.Length; i++) {
-                                ListViewItem item2 = new ListViewItem(new string[] { shortcutKeyActions[i], " - " });
+                            foreach(string action in shortcutKeyActions) {
+                                ListViewItem item2 = new ListViewItem(new string[] { action, " - " });
                                 item2.Checked = false;
                                 item2.Group = group2;
                                 item2.Tag = 0;
@@ -3992,24 +3992,24 @@ namespace QTTabBarLib {
             List<int> list3 = new List<int>();
             foreach(PluginKey key in list2) {
                 QTUtility.dicPluginShortcutKeys[key.PluginID] = key.Keys;
-                for(int j = 0; j < key.Keys.Length; j++) {
-                    list3.Add(key.Keys[j]);
+                foreach(int k in key.Keys) {
+                    list3.Add(k);
                 }
             }
             QTUtility.PluginShortcutKeysCache = list3.ToArray();
             using(RegistryKey key2 = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar\Plugins")) {
-                QTUtility2.WriteRegBinary<PluginKey>(list2.ToArray(), "ShortcutKeys", key2);
+                QTUtility2.WriteRegBinary(list2.ToArray(), "ShortcutKeys", key2);
             }
         }
 
         private static void SaveUserAppsRegistry(TreeNode tn, RegistryKey rk, ref int separatorIndex, bool fRoot) {
             if(tn.Text == "----------- Separator -----------") {
                 string[] array = new string[] { string.Empty, string.Empty, string.Empty, string.Empty };
-                string regValueName = "Separator" + ((int)separatorIndex++);
+                string regValueName = "Separator" + (separatorIndex++);
                 if(fRoot) {
                     QTUtility.UserAppsDic[regValueName] = array;
                 }
-                QTUtility2.WriteRegBinary<string>(array, regValueName, rk);
+                QTUtility2.WriteRegBinary(array, regValueName, rk);
             }
             else if(tn.Text.Length > 0) {
                 MenuItemArguments tag = (MenuItemArguments)tn.Tag;
@@ -4021,7 +4021,7 @@ namespace QTTabBarLib {
                     if(fRoot) {
                         QTUtility.UserAppsDic[tn.Text] = strArray2;
                     }
-                    QTUtility2.WriteRegBinary<string>(strArray2, tn.Text, rk);
+                    QTUtility2.WriteRegBinary(strArray2, tn.Text, rk);
                 }
             }
         }
@@ -4045,7 +4045,7 @@ namespace QTTabBarLib {
             QTUtility.UserAppsDic.Clear();
             QTUtility.dicUserAppShortcutKeys.Clear();
             int separatorIndex = 1;
-            bool flag = false;
+            bool flag;
             using(RegistryKey key = rkUser.OpenSubKey("UserApps", false)) {
                 flag = key != null;
             }
@@ -4683,7 +4683,7 @@ namespace QTTabBarLib {
                     key.SetValue("PreviewMaxWidth", QTUtility.PreviewMaxWidth);
                     key.SetValue("PreviewMaxHeight", QTUtility.PreviewMaxHeight);
                     key.SetValue("Action_BarDblClick", QTUtility.Action_BarDblClick);
-                    if((tabFont != null) && !tabFont.Equals(Control.DefaultFont)) {
+                    if((tabFont != null) && !tabFont.Equals(DefaultFont)) {
                         key.SetValue("TabFont", tabFont.Name);
                         key.SetValue("TabFontSize", tabFont.SizeInPoints.ToString());
                         QTUtility.TabFont = tabFont;
@@ -4701,18 +4701,18 @@ namespace QTTabBarLib {
                     string str = string.Empty;
                     string str2 = string.Empty;
                     if(strsTextExts != null) {
-                        for(int i = 0; i < strsTextExts.Length; i++) {
-                            QTUtility.PreviewExtsList_Txt.Add(strsTextExts[i]);
-                            str = str + strsTextExts[i] + ";";
+                        foreach(string ext in strsTextExts) {
+                            QTUtility.PreviewExtsList_Txt.Add(ext);
+                            str = str + ext + ";";
                         }
                         if(str.Length > 0) {
                             str = str.TrimEnd(QTUtility.SEPARATOR_CHAR);
                         }
                     }
                     if(strsImgExts != null) {
-                        for(int j = 0; j < strsImgExts.Length; j++) {
-                            QTUtility.PreviewExtsList_Img.Add(strsImgExts[j]);
-                            str2 = str2 + strsImgExts[j] + ";";
+                        foreach(string ext in strsImgExts) {
+                            QTUtility.PreviewExtsList_Img.Add(ext);
+                            str2 = str2 + ext + ";";
                         }
                         if(str2.Length > 0) {
                             str2 = str2.TrimEnd(QTUtility.SEPARATOR_CHAR);
@@ -4736,7 +4736,7 @@ namespace QTTabBarLib {
                         }
                     }
                     key.SetValue("ToolbarBGImage", QTUtility.Path_RebarImage);
-                    QTUtility2.WriteRegBinary<int>(QTUtility.ShortcutKeys, "ShortcutKeys", key);
+                    QTUtility2.WriteRegBinary(QTUtility.ShortcutKeys, "ShortcutKeys", key);
                 }
             }
         }
@@ -4749,7 +4749,7 @@ namespace QTTabBarLib {
             }
         }
 
-        private sealed class ListViewEx : System.Windows.Forms.ListView {
+        private sealed class ListViewEx : ListView {
             private StringFormat sfCenter = new StringFormat(StringFormatFlags.NoWrap);
             private StringFormat sfLeft = new StringFormat(StringFormatFlags.NoWrap);
             private VisualStyleRenderer vsrChecked;
@@ -4781,7 +4781,7 @@ namespace QTTabBarLib {
                 if(e.ColumnIndex == 0) {
                     int y = ((e.Bounds.Height - 0x10) / 2) + e.Bounds.Y;
                     Rectangle bounds = new Rectangle(e.Bounds.X + 2, y, 0x10, 0x10);
-                    RectangleF layoutRectangle = new RectangleF((float)(e.Bounds.X + 20), (float)e.Bounds.Y, (float)(e.Bounds.Width - 20), (float)e.Bounds.Height);
+                    RectangleF layoutRectangle = new RectangleF((e.Bounds.X + 20), e.Bounds.Y, (e.Bounds.Width - 20), e.Bounds.Height);
                     if(VisualStyleRenderer.IsSupported) {
                         if(this.vsrChecked == null) {
                             this.vsrChecked = new VisualStyleRenderer(VisualStyleElement.Button.CheckBox.CheckedNormal);

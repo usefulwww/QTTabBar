@@ -15,12 +15,10 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib.Interop {
-    using System;
-    using System.Runtime.CompilerServices;
-    using System.Runtime.InteropServices;
-    using System.Security;
+using System.Runtime.InteropServices;
+using System.Security;
 
+namespace QTTabBarLib.Interop {
     [ComImport, ClassInterface(ClassInterfaceType.None), SuppressUnmanagedCodeSecurity, Guid("50EF4544-AC9F-4A8E-B21B-8A26180DB13F")]
     internal class LocalThumbnailCache {
     }

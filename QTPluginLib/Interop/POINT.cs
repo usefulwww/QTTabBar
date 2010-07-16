@@ -15,11 +15,10 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTPlugin.Interop {
-    using System;
-    using System.Drawing;
-    using System.Runtime.InteropServices;
+using System.Drawing;
+using System.Runtime.InteropServices;
 
+namespace QTPlugin.Interop {
     [StructLayout(LayoutKind.Sequential)]
     public struct POINT {
         public int x;

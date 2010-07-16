@@ -1,4 +1,4 @@
-﻿//    This file is part of QTTabBar, a shell extension for Microsoft
+//    This file is part of QTTabBar, a shell extension for Microsoft
 //    Windows Explorer.
 //    Copyright (C) 2007-2010  Quizo, Paul Accisano
 //
@@ -15,18 +15,16 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Windows.Forms;
+using QTTabBarLib.Automation;
+using QTTabBarLib.Interop;
+
 namespace QTTabBarLib {
-    using QTTabBarLib.Automation;
-    using QTTabBarLib.Interop;
-    using System;
-    using System.Collections.Generic;
-    using System.Drawing;
-    using System.Drawing.Drawing2D;
-    using System.Drawing.Imaging;
-    using System.Runtime.InteropServices;
-    using System.Text;
-    using System.Windows.Forms;
-    
     public class ListViewWrapper {
         private AutomationManager AutoMan;
         private IntPtr ExplorerHandle;
@@ -102,7 +100,7 @@ namespace QTTabBarLib {
             }
             if(ShellContainer != IntPtr.Zero) {
                 ContainerController = new NativeWindowController(ShellContainer);
-                ContainerController.MessageCaptured += new NativeWindowController.MessageEventHandler(ContainerController_MessageCaptured);
+                ContainerController.MessageCaptured += ContainerController_MessageCaptured;
             }
             Initialize();
         }
@@ -146,7 +144,7 @@ namespace QTTabBarLib {
             return true;
         }
 
-        private bool ContainerController_MessageCaptured(ref System.Windows.Forms.Message msg) {
+        private bool ContainerController_MessageCaptured(ref Message msg) {
             if(msg.Msg == WM.PARENTNOTIFY && PInvoke.LoWord((int)msg.WParam) == WM.CREATE) {
                 string name = GetWindowClassName(msg.LParam);
                 if(name == "SHELLDLL_DefView") {
@@ -157,7 +155,7 @@ namespace QTTabBarLib {
         }
 
         public void ScrollHorizontal(int amount) {
-            if(ListViewController.Handle != null) {
+            if(ListViewController != null) {
                 if(fIsSysListView) {
                     PInvoke.SendMessage(ListViewController.Handle, LVM.SCROLL, (IntPtr)(-amount), IntPtr.Zero);
                 }
@@ -213,7 +211,7 @@ namespace QTTabBarLib {
                 return -1;
             }
             else {
-                return AutoMan.DoQuery<int>(factory => {
+                return AutoMan.DoQuery(factory => {
                     AutomationElement elem = factory.FromKeyboardFocus();
                     return elem == null ? -1 : elem.GetItemIndex();
                 });
@@ -228,7 +226,7 @@ namespace QTTabBarLib {
                     return GetLVITEMRECT(ListViewController.Handle, i, false, fvm).ToRectangle();
                 }
                 else {
-                    return AutoMan.DoQuery<Rectangle>(factory => {
+                    return AutoMan.DoQuery(factory => {
                         AutomationElement elem = factory.FromKeyboardFocus();
                         return elem == null ? new Rectangle(0, 0, 0, 0) : elem.GetBoundingRect();
                     });
@@ -249,7 +247,7 @@ namespace QTTabBarLib {
                 return (int)PInvoke.SendMessage(ListViewController.Handle, LVM.GETITEMCOUNT, IntPtr.Zero, IntPtr.Zero);
             }
             else {
-                return AutoMan.DoQuery<int>(factory => {
+                return AutoMan.DoQuery(factory => {
                     AutomationElement elem = factory.FromHandle(ListViewController.Handle);
                     return elem == null ? 0 : elem.GetItemCount();
                 });
@@ -262,7 +260,6 @@ namespace QTTabBarLib {
         }
 
         private RECT GetLVITEMRECT(IntPtr hwnd, int iItem, bool fSubDirTip, int fvm) {
-            RECT rect;
             int code;
             bool flag = false;
             bool flag2 = false;
@@ -300,7 +297,7 @@ namespace QTTabBarLib {
                 code = (fvm == FVM.DETAILS) ? LVIR.LABEL : LVIR.BOUNDS;
             }
 
-            rect = new RECT();
+            RECT rect = new RECT();
             rect.left = code;
             IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(rect));
             Marshal.StructureToPtr(rect, ptr, false);
@@ -322,12 +319,11 @@ namespace QTTabBarLib {
             }
             if(flag2) {
                 LVITEM structure = new LVITEM();
-                IntPtr zero = IntPtr.Zero;
                 structure.pszText = Marshal.AllocHGlobal(520);
                 structure.cchTextMax = 260;
                 structure.iItem = iItem;
                 structure.mask = 1;
-                zero = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
+                IntPtr zero = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
                 Marshal.StructureToPtr(structure, zero, false);
                 PInvoke.SendMessage(hwnd, LVM.GETITEM, IntPtr.Zero, zero);
                 int num4 = (int)PInvoke.SendMessage(hwnd, LVM.GETSTRINGWIDTH, IntPtr.Zero, structure.pszText);
@@ -349,7 +345,7 @@ namespace QTTabBarLib {
                 return (int)PInvoke.SendMessage(ListViewController.Handle, LVM.GETSELECTEDCOUNT, IntPtr.Zero, IntPtr.Zero);
             }
             else {
-                return AutoMan.DoQuery<int>(factory => {
+                return AutoMan.DoQuery(factory => {
                     AutomationElement elem = factory.FromHandle(ListViewController.Handle);
                     return elem == null ? 0 : elem.GetSelectedCount();
                 });
@@ -364,7 +360,7 @@ namespace QTTabBarLib {
                 return new Point(rect.right - 16, rect.bottom - 16);
             }
             else {
-                return AutoMan.DoQuery<Point>(factory => {
+                return AutoMan.DoQuery(factory => {
                     AutomationElement elem = fByKey ?
                         factory.FromKeyboardFocus() :
                         ListItemElementFromPoint(factory, Control.MousePosition);
@@ -433,7 +429,7 @@ namespace QTTabBarLib {
             return lpClassName.ToString();
         }
 
-        private bool HandleLVCUSTOMDRAW(ref System.Windows.Forms.Message msg) {
+        private bool HandleLVCUSTOMDRAW(ref Message msg) {
             // TODO this needs to be cleaned
             if(QTUtility.CheckConfig(Settings.AlternateRowColors) && (GetCurrentViewMode() == FVM.DETAILS)) {
                 NMLVCUSTOMDRAW structure = (NMLVCUSTOMDRAW)Marshal.PtrToStructure(msg.LParam, typeof(NMLVCUSTOMDRAW));
@@ -515,7 +511,7 @@ namespace QTTabBarLib {
                                 if(!QTUtility.IsVista && ((structure.iSubItem == 0) || flag6)) {
                                     flag4 = (iListViewItemState & 8) == 8;
                                     if((iListViewItemState != 0) && (((iListViewItemState == 1) && fListViewHasFocus) || (iListViewItemState != 1))) {
-                                        int width = 0;
+                                        int width;
                                         if(flag6) {
                                             width = rc.Width;
                                         }
@@ -658,7 +654,7 @@ namespace QTTabBarLib {
                 return ((state & LVIS.SELECTED) != 0);
             }
             else {
-                return AutoMan.DoQuery<bool>(factory => {
+                return AutoMan.DoQuery(factory => {
                     AutomationElement elem = ListItemElementFromPoint(factory, Control.MousePosition);
                     return elem == null ? false : elem.IsSelected();
                 });
@@ -690,7 +686,7 @@ namespace QTTabBarLib {
                 if(!ScreenCoords) {
                     PInvoke.ClientToScreen(ListViewController.Handle, ref pt);
                 }
-                return AutoMan.DoQuery<int>(factory => {
+                return AutoMan.DoQuery(factory => {
                     AutomationElement elem = ListItemElementFromPoint(factory, pt);
                     return elem == null ? -1 : elem.GetItemIndex();
                 });
@@ -732,7 +728,7 @@ namespace QTTabBarLib {
                 return (Math.Min(rect.left, rect.right) <= mousePosition.X) && (mousePosition.X <= Math.Max(rect.left, rect.right));
             }
             else {
-                return AutoMan.DoQuery<bool>(factory => {
+                return AutoMan.DoQuery(factory => {
                     AutomationElement elem = factory.FromPoint(Control.MousePosition);
                     return elem == null ? false : elem.GetAutomationId() == "System.ItemNameDisplay";
                 });
@@ -750,7 +746,7 @@ namespace QTTabBarLib {
             return null;
         }
 
-        private bool ListViewController_MessageCaptured(ref System.Windows.Forms.Message msg) {
+        private bool ListViewController_MessageCaptured(ref Message msg) {
 
             // First block is for both SysListView and ItemsView
             if(msg.Msg == WM_AFTERPAINT) {
@@ -923,7 +919,7 @@ namespace QTTabBarLib {
                 if(!screenCoords) {
                     PInvoke.ClientToScreen(ListViewController.Handle, ref pt);
                 }
-                return AutoMan.DoQuery<bool>(factory => {
+                return AutoMan.DoQuery(factory => {
                     AutomationElement elem = factory.FromPoint(pt);
                     if(elem == null) return false;
                     string className = elem.GetClassName();
@@ -943,7 +939,7 @@ namespace QTTabBarLib {
             }
 
             ShellViewController = new NativeWindowController(hwndShellView);
-            ShellViewController.MessageCaptured += new NativeWindowController.MessageEventHandler(ShellViewController_MessageCaptured);
+            ShellViewController.MessageCaptured += ShellViewController_MessageCaptured;
 
             hwndEnumResult = IntPtr.Zero;
             PInvoke.EnumChildWindows(hwndShellView, CallbackEnumChildProc_ListView, IntPtr.Zero);
@@ -952,7 +948,7 @@ namespace QTTabBarLib {
             }
 
             ListViewController = new NativeWindowController(hwndEnumResult);
-            ListViewController.MessageCaptured += new NativeWindowController.MessageEventHandler(ListViewController_MessageCaptured);
+            ListViewController.MessageCaptured += ListViewController_MessageCaptured;
 
             if(fIsSysListView) {
                 uint mask = LVS_EX.GRIDLINES | LVS_EX.FULLROWSELECT;
@@ -993,7 +989,7 @@ namespace QTTabBarLib {
             }
         }
 
-        private bool ShellViewController_MessageCaptured(ref System.Windows.Forms.Message msg) {
+        private bool ShellViewController_MessageCaptured(ref Message msg) {
             IntPtr ptr;
             switch(msg.Msg) {
                 // The ShellView is destroyed and recreated when Explorer is refreshed.

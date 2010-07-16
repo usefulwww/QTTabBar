@@ -15,15 +15,13 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using QTPlugin;
-    using QTTabBarLib.Interop;
-    using System;
-    using System.Collections.Generic;
-    using System.Runtime.CompilerServices;
-    using System.Runtime.InteropServices;
-    using System.Windows.Forms;
+using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
+using QTPlugin;
+using QTTabBarLib.Interop;
 
+namespace QTTabBarLib {
     internal sealed class QTabItem : QTabItemBase {
         private byte[] currentIDL;
         private string currentPath;
@@ -91,7 +89,7 @@ namespace QTTabBarLib {
                                     str2 = strArray[j];
                                     bool flag3 = false;
                                     foreach(QTabItem item4 in list2) {
-                                        if((item4 == item3) || !(item4.CurrentPath != item3.CurrentPath)) {
+                                        if((item4 == item3) || item4.CurrentPath == item3.CurrentPath) {
                                             continue;
                                         }
                                         string[] strArray2 = item4.CurrentPath.Split(separator);
@@ -139,11 +137,7 @@ namespace QTTabBarLib {
             }
         }
 
-        public QTabItem Clone() {
-            return this.Clone(false);
-        }
-
-        public QTabItem Clone(bool fAll) {
+        public QTabItem Clone(bool fAll = false) {
             QTabItem item = new QTabItem(base.Text, this.currentPath, base.Owner);
             item.TabBounds = base.TabBounds;
             item.Comment = base.Comment;
@@ -199,12 +193,12 @@ namespace QTTabBarLib {
             return -1;
         }
 
-        public LogData[] GetLogs(bool fBack) {
+        public IEnumerable<LogData> GetLogs(bool fBack) {
             List<LogData> list = new List<LogData>(fBack ? this.stckHistoryBackward : this.stckHistoryForward);
             if(fBack && (list.Count > 0)) {
                 list.RemoveAt(0);
             }
-            return list.ToArray();
+            return list;
         }
 
         public Address[] GetSelectedItemsAt(string path, out string focused) {

@@ -18,13 +18,14 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using QTPlugin.Interop;
 
 namespace QuizoPlugins {
     internal delegate bool EnumWndProc(IntPtr hwnd, IntPtr lParam);
 
     internal static class PInvoke_QTWM {
         [DllImport("user32.dll")]
-        internal static extern bool GetWindowRect(IntPtr hWnd, out QTPlugin.Interop.RECT pRect);
+        internal static extern bool GetWindowRect(IntPtr hWnd, out RECT pRect);
 
         [DllImport("user32.dll")]
         internal static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);

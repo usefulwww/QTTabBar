@@ -15,11 +15,10 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using System;
-    using System.Globalization;
-    using System.Text;
+using System.Globalization;
+using System.Text;
 
+namespace QTTabBarLib {
     internal static class TxtEnc {
         private const int CD_JPN_EUC = 2;
         private const int CD_JPN_ISO2022 = 0;
@@ -644,7 +643,7 @@ namespace QTTabBarLib {
                     }
                     return new UTF8Encoding(false);
                 }
-                if(double.TryParse(srcCodec, NumberStyles.Any, (IFormatProvider)NumberFormatInfo.InvariantInfo, out num8)) {
+                if(double.TryParse(srcCodec, NumberStyles.Any, NumberFormatInfo.InvariantInfo, out num8)) {
                     return Encoding.GetEncoding(int.Parse(srcCodec));
                 }
                 return Encoding.GetEncoding(srcCodec);

@@ -16,14 +16,7 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using System.Runtime.InteropServices;
-using Microsoft.Win32;
-
-using QTPlugin;
-using QTPlugin.Interop;
 
 namespace QuizoPlugins {
     sealed class MigemoWrapper : IDisposable {

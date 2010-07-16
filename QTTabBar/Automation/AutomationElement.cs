@@ -1,4 +1,4 @@
-﻿//    This file is part of QTTabBar, a shell extension for Microsoft
+//    This file is part of QTTabBar, a shell extension for Microsoft
 //    Windows Explorer.
 //    Copyright (C) 2007-2010  Quizo, Paul Accisano
 //
@@ -15,10 +15,10 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-using QTTabBarLib.Interop;
 using System;
-using System.Runtime.InteropServices;
 using System.Drawing;
+using System.Runtime.InteropServices;
+using QTTabBarLib.Interop;
 
 namespace QTTabBarLib.Automation {
     // This class is for use in AutomationManager.  Never instantiate it
@@ -53,9 +53,11 @@ namespace QTTabBarLib.Automation {
             object obj;
             PInvoke.CoCreateInstance(ref rclsid, IntPtr.Zero, 1, ref riid, out obj);
             IUIAutomationRegistrar pRegistrar = obj as IUIAutomationRegistrar;
+            if(pRegistrar == null) {
+                return;
+            }
             try {
-                UIAutomationPropertyInfo propinfo;
-                propinfo = new UIAutomationPropertyInfo {
+                UIAutomationPropertyInfo propinfo = new UIAutomationPropertyInfo {
                     guid = ItemCount_Property_GUID,
                     pProgrammaticName = "ItemCount",
                     type = UIAutomationType_Int
@@ -75,7 +77,7 @@ namespace QTTabBarLib.Automation {
                 pRegistrar.RegisterProperty(ref propinfo, out UIA_ItemIndexPropertyId);
             }
             finally {
-                if(pRegistrar != null) Marshal.ReleaseComObject(pRegistrar);
+                Marshal.ReleaseComObject(pRegistrar);
             }
         }
 
@@ -158,7 +160,9 @@ namespace QTTabBarLib.Automation {
                 object obj;
                 pElement.GetCurrentPropertyValue(UIA_BoundingRectanglePropertyId, out obj);
                 double[] rect = obj as double[];
-                return new Rectangle((int)rect[0], (int)rect[1], (int)rect[2], (int)rect[3]);
+                return rect == null ?
+                    new Rectangle(0, 0, 0, 0) :
+                    new Rectangle((int)rect[0], (int)rect[1], (int)rect[2], (int)rect[3]);
             }
             catch(COMException) {
                 return new Rectangle(0, 0, 0, 0);

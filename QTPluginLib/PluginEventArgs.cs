@@ -15,11 +15,11 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTPlugin {
-    using System;
+using System;
 
+namespace QTPlugin {
     public sealed class PluginEventArgs : EventArgs {
-        private QTPlugin.Address address;
+        private Address address;
         private int index;
         private ExplorerWindowActions windowAction;
 
@@ -27,12 +27,12 @@ namespace QTPlugin {
             this.windowAction = windowAction;
         }
 
-        public PluginEventArgs(int index, QTPlugin.Address address) {
+        public PluginEventArgs(int index, Address address) {
             this.index = index;
             this.address = address;
         }
 
-        public QTPlugin.Address Address {
+        public Address Address {
             get {
                 return this.address;
             }

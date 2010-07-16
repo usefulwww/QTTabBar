@@ -17,9 +17,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Text;
+using System.Globalization;
 using System.Windows.Forms;
 using QTPlugin.Interop;
 
@@ -33,7 +32,7 @@ namespace QuizoPlugins {
             InitializeComponent();
 
 
-            if(System.Globalization.CultureInfo.CurrentCulture.Parent.Name == "ja") {
+            if(CultureInfo.CurrentCulture.Parent.Name == "ja") {
                 string[] strs = Resource.ResStrs_Options_ja.Split(new char[] { ';' });
 
                 this.chbInitialSize.Text = strs[0];
@@ -117,7 +116,7 @@ namespace QuizoPlugins {
                 this.comboBox2.Items.Add(name);
             }
 
-            if(this.startingPreset != null && this.startingPreset.Length > 0) {
+            if(!string.IsNullOrEmpty(this.startingPreset)) {
                 int indexStartingPreset = this.comboBox2.Items.IndexOf(this.startingPreset);
                 if(indexStartingPreset != -1) {
                     this.comboBox2.SelectedIndex = indexStartingPreset;

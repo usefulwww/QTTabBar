@@ -16,11 +16,10 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
 using QTPlugin;
 using QTPlugin.Interop;
-using System.Runtime.InteropServices;
 
 namespace QuizoPlugins {
     [Plugin(PluginType.Background, Author = "Quizo", Name = "Show StatusBar", Version = "0.9.0.0", Description = "ShowStatusBar")]

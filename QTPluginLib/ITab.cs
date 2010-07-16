@@ -16,18 +16,16 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace QTPlugin {
-    using System;
-
     public interface ITab {
-        bool Browse(QTPlugin.Address address);
+        bool Browse(Address address);
         bool Browse(bool fBack);
         void Clone(int index, bool fSelect);
         bool Close();
-        QTPlugin.Address[] GetBraches();
-        QTPlugin.Address[] GetHistory(bool fBack);
+        Address[] GetBraches();
+        Address[] GetHistory(bool fBack);
         bool Insert(int index);
 
-        QTPlugin.Address Address { get; }
+        Address Address { get; }
 
         int Index { get; }
 

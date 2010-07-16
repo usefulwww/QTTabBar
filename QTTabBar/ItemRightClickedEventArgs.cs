@@ -15,18 +15,17 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using System;
-    using System.Drawing;
-    using System.Windows.Forms;
+using System.Drawing;
+using System.Windows.Forms;
 
+namespace QTTabBarLib {
     internal sealed class ItemRightClickedEventArgs {
         private ToolStripItem clickedItem;
         private int hresult;
         private bool isKey;
-        private System.Drawing.Point pnt;
+        private Point pnt;
 
-        public ItemRightClickedEventArgs(ToolStripItem clickedItem, bool fKey, System.Drawing.Point pnt) {
+        public ItemRightClickedEventArgs(ToolStripItem clickedItem, bool fKey, Point pnt) {
             this.clickedItem = clickedItem;
             this.isKey = fKey;
             this.pnt = pnt;
@@ -53,7 +52,7 @@ namespace QTTabBarLib {
             }
         }
 
-        public System.Drawing.Point Point {
+        public Point Point {
             get {
                 return this.pnt;
             }

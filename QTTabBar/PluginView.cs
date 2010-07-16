@@ -15,18 +15,14 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using QTTabBarLib.Interop;
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Drawing;
-    using System.Runtime.CompilerServices;
-    using System.Text;
-    using System.Threading;
-    using System.Windows.Forms;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Text;
+using System.Windows.Forms;
+using QTTabBarLib.Interop;
 
+namespace QTTabBarLib {
     internal sealed class PluginView : TableLayoutPanel {
         public static string BTN_DISABLE = "Disable";
         public static string BTN_ENABLE = "Enable";
@@ -50,7 +46,7 @@ namespace QTTabBarLib {
 
         public event PluginOptionEventHandler PluginRemoved;
 
-        public event QTTabBarLib.PluginInfoHasOption QueryPluginInfoHasOption;
+        public event PluginInfoHasOption QueryPluginInfoHasOption;
 
         public PluginView() {
             base.AutoScroll = true;
@@ -61,18 +57,18 @@ namespace QTTabBarLib {
             base.RowCount = 1;
             base.RowStyles.Add(new RowStyle());
             base.BorderStyle = BorderStyle.FixedSingle;
-            base.VisibleChanged += new EventHandler(this.PluginView_VisibleChanged);
+            base.VisibleChanged += this.PluginView_VisibleChanged;
         }
 
         public void AddPluginViewItem(PluginInformation pi, PluginAssembly pa) {
             base.SuspendLayout();
             PluginViewItem control = new PluginViewItem(pi, pa);
-            control.MouseDown += new MouseEventHandler(this.pvi_MouseDown);
-            control.MouseUp += new MouseEventHandler(this.pvi_MouseUp);
-            control.DoubleClick += new EventHandler(this.pvi_DoubleClick);
-            control.OptionButtonClick += new EventHandler(this.pvi_OptionButtonClick);
-            control.DisableButtonClick += new EventHandler(this.pvi_DisableButtonClick);
-            control.RemoveButtonClick += new EventHandler(this.pvi_RemoveButtonClick);
+            control.MouseDown += this.pvi_MouseDown;
+            control.MouseUp += this.pvi_MouseUp;
+            control.DoubleClick += this.pvi_DoubleClick;
+            control.OptionButtonClick += this.pvi_OptionButtonClick;
+            control.DisableButtonClick += this.pvi_DisableButtonClick;
+            control.RemoveButtonClick += this.pvi_RemoveButtonClick;
             int count = base.Controls.Count;
             base.RowStyles.Insert(count, new RowStyle(SizeType.Absolute, 55f));
             base.Controls.Add(control, 0, count);
@@ -119,7 +115,7 @@ namespace QTTabBarLib {
             this.contextMenuStripPlugin.Items.AddRange(new ToolStripItem[] { this.tsmiOption, this.tsmiPluginAbout, this.tss, this.tsmiUninstall, this.tsmiDisable });
             this.contextMenuStripPlugin.ShowImageMargin = false;
             this.contextMenuStripPlugin.Size = new Size(120, 0x62);
-            this.contextMenuStripPlugin.ItemClicked += new ToolStripItemClickedEventHandler(this.contextMenuStripPlugin_ItemClicked);
+            this.contextMenuStripPlugin.ItemClicked += this.contextMenuStripPlugin_ItemClicked;
             this.contextMenuStripPlugin.ResumeLayout(false);
         }
 
@@ -146,7 +142,7 @@ namespace QTTabBarLib {
 
         private void PluginView_VisibleChanged(object sender, EventArgs e) {
             if(base.Visible) {
-                base.VisibleChanged -= new EventHandler(this.PluginView_VisibleChanged);
+                base.VisibleChanged -= this.PluginView_VisibleChanged;
                 PInvoke.DragAcceptFiles(base.Handle, true);
             }
         }
@@ -235,7 +231,7 @@ namespace QTTabBarLib {
                 List<PluginViewItem> list = new List<PluginViewItem>();
                 foreach(Control control in base.Controls) {
                     PluginViewItem item = control as PluginViewItem;
-                    if((item != null) && (Array.IndexOf<PluginInformation>(pis, item.PluginInfo) != -1)) {
+                    if((item != null) && (Array.IndexOf(pis, item.PluginInfo) != -1)) {
                         list.Add(item);
                     }
                 }

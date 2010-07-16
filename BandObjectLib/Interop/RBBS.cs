@@ -1,4 +1,4 @@
-﻿//    This file is part of QTTabBar, a shell extension for Microsoft
+//    This file is part of QTTabBar, a shell extension for Microsoft
 //    Windows Explorer.
 //    Copyright (C) 2007-2010  Quizo, Paul Accisano
 //
@@ -15,10 +15,8 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-
 namespace BandObjectLib {
-    class RBBS {
+    static class RBBS {
         public const int BREAK =           0x0001;  // break to new line
         public const int FIXEDSIZE =       0x0002;  // band can't be sized
         public const int CHILDEDGE =       0x0004;  // edge around top & bottom of child window

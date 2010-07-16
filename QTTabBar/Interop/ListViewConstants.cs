@@ -1,4 +1,4 @@
-﻿//    This file is part of QTTabBar, a shell extension for Microsoft
+//    This file is part of QTTabBar, a shell extension for Microsoft
 //    Windows Explorer.
 //    Copyright =C 2007-2010  Quizo, Paul Accisano
 //
@@ -15,11 +15,8 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-
 namespace QTTabBarLib.Interop {
-    
-    class LVM {
+    static class LVM {
         public const int FIRST                  = 0x1000;
         public const int GETBKCOLOR             = FIRST + 0;
         public const int SETBKCOLOR             = FIRST + 1;
@@ -162,7 +159,7 @@ namespace QTTabBarLib.Interop {
         public const int GETBKIMAGE             = GETBKIMAGEW;
     };
 
-    class LVS_EX {
+    static class LVS_EX {
         public const int GRIDLINES              = 0x00000001;
         public const int SUBITEMIMAGES          = 0x00000002;
         public const int CHECKBOXES             = 0x00000004;
@@ -195,7 +192,7 @@ namespace QTTabBarLib.Interop {
         public const uint COLUMNOVERFLOW        = 0x80000000;
     };
 
-    class LVN {
+    static class LVN {
         public const int FIRST                  = -100;
         public const int ITEMCHANGING           = FIRST - 0;
         public const int ITEMCHANGED            = FIRST - 1;
@@ -239,7 +236,7 @@ namespace QTTabBarLib.Interop {
         public const int GETEMPTYMARKUP         = FIRST - 87;
     };
 
-    class LVIS {
+    static class LVIS {
         public const int FOCUSED            = 0x0001;
         public const int SELECTED           = 0x0002;
         public const int CUT                = 0x0004;
@@ -250,14 +247,14 @@ namespace QTTabBarLib.Interop {
         public const int STATEIMAGEMASK     = 0xF000;
     }
 
-    class LVIR {
+    static class LVIR {
         public const int BOUNDS         = 0;
         public const int ICON           = 1;
         public const int LABEL          = 2;
         public const int SELECTBOUNDS   = 3;
     }
 
-    class CDDS {
+    static class CDDS {
         public const int PREPAINT       = 1;
         public const int POSTPAINT      = 2;
         public const int PREERASE       = 3;
@@ -270,7 +267,7 @@ namespace QTTabBarLib.Interop {
         public const int SUBITEM        = 0x20000;
     }
 
-    class CDRF {
+    static class CDRF {
         public const int DODEFAULT          = 0x000;
         public const int NEWFONT            = 0x002;
         public const int SKIPDEFAULT        = 0x004;

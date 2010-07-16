@@ -15,11 +15,10 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using System;
-    using System.IO;
-    using System.Runtime.InteropServices;
+using System;
+using System.Runtime.InteropServices;
 
+namespace QTTabBarLib {
     [StructLayout(LayoutKind.Sequential)]
     internal struct LogData : IEquatable<LogData> {
         public string Path;

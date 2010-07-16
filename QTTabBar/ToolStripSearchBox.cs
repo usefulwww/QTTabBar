@@ -15,13 +15,12 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using System;
-    using System.ComponentModel;
-    using System.Drawing;
-    using System.Runtime.CompilerServices;
-    using System.Windows.Forms;
+using System;
+using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Forms;
 
+namespace QTTabBarLib {
     internal sealed class ToolStripSearchBox : ToolStripControlHost {
         private bool fLocked;
         private bool fNowDragging;
@@ -30,7 +29,7 @@ namespace QTTabBarLib {
         private const int MAXWIDTH = 0x400;
         private const int MINWIDTH = 0x20;
         private string strDefText;
-        private System.Windows.Forms.TextBox tb;
+        private TextBox tb;
         private const int TBSIZE_LARGE = 0x18;
         private const int TBSIZE_SMALL = 0x12;
 
@@ -42,13 +41,13 @@ namespace QTTabBarLib {
             : base(CreateControlInstance(fLarge, strDefText, tbWidth)) {
             base.AutoSize = false;
             this.Padding = fLarge ? new Padding(4, 0, 4, 0) : new Padding(2, 0, 2, 0);
-            this.tb = (System.Windows.Forms.TextBox)base.Control;
+            this.tb = (TextBox)base.Control;
             this.strDefText = strDefText;
             this.fLocked = fLocked;
         }
 
         private static Control CreateControlInstance(bool fLarge, string strDefText, int tbWidth) {
-            System.Windows.Forms.TextBox box = new System.Windows.Forms.TextBox();
+            TextBox box = new TextBox();
             box.AutoSize = !QTUtility.IsVista;
             box.ForeColor = SystemColors.GrayText;
             box.Text = strDefText;
@@ -163,7 +162,7 @@ namespace QTTabBarLib {
             }
         }
 
-        public System.Windows.Forms.TextBox TextBox {
+        public TextBox TextBox {
             get {
                 return this.tb;
             }

@@ -16,8 +16,6 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace QTTabBarLib {
-    using System;
-
     internal enum MenuGenre {
         Navigation,
         Branch,

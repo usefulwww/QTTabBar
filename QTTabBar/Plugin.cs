@@ -15,17 +15,17 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using QTPlugin;
-    using System;
+using System;
+using QTPlugin;
 
+namespace QTTabBarLib {
     internal sealed class Plugin {
         private bool fBackgroundButtonIsEnabled;
         private bool fBackgroundButtonIsSupported;
         private IPluginClient pluginClient;
-        private QTTabBarLib.PluginInformation pluginInfo;
+        private PluginInformation pluginInfo;
 
-        public Plugin(IPluginClient pluginClient, QTTabBarLib.PluginInformation pluginInfo) {
+        public Plugin(IPluginClient pluginClient, PluginInformation pluginInfo) {
             this.pluginClient = pluginClient;
             this.pluginInfo = pluginInfo;
             this.fBackgroundButtonIsSupported = ((pluginInfo.PluginType == PluginType.Background) && ((pluginClient is IBarButton) || (pluginClient is IBarCustomItem))) || ((pluginInfo.PluginType == PluginType.BackgroundMultiple) && (pluginClient is IBarMultipleCustomItems));
@@ -67,7 +67,7 @@ namespace QTTabBarLib {
             }
         }
 
-        public QTTabBarLib.PluginInformation PluginInformation {
+        public PluginInformation PluginInformation {
             get {
                 return this.pluginInfo;
             }

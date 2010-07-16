@@ -15,22 +15,18 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QuizoPlugins {
-    using System;
-    using System.CodeDom.Compiler;
-    using System.ComponentModel;
-    using System.Diagnostics;
-    using System.Globalization;
-    using System.Resources;
-    using System.Runtime.CompilerServices;
+using System.CodeDom.Compiler;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Globalization;
+using System.Resources;
+using System.Runtime.CompilerServices;
 
+namespace QuizoPlugins {
     [CompilerGenerated, DebuggerNonUserCode, GeneratedCode("System.Resources.Tools.StronglyTypedResourceBuilder", "2.0.0.0")]
     internal class Resource {
         private static CultureInfo resourceCulture;
-        private static System.Resources.ResourceManager resourceMan;
-
-        internal Resource() {
-        }
+        private static ResourceManager resourceMan;
 
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         internal static CultureInfo Culture {
@@ -43,10 +39,10 @@ namespace QuizoPlugins {
         }
 
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        internal static System.Resources.ResourceManager ResourceManager {
+        internal static ResourceManager ResourceManager {
             get {
-                if(object.ReferenceEquals(resourceMan, null)) {
-                    System.Resources.ResourceManager manager = new System.Resources.ResourceManager("QuizoPlugins.Resource", typeof(Resource).Assembly);
+                if(ReferenceEquals(resourceMan, null)) {
+                    ResourceManager manager = new ResourceManager("QuizoPlugins.Resource", typeof(Resource).Assembly);
                     resourceMan = manager;
                 }
                 return resourceMan;

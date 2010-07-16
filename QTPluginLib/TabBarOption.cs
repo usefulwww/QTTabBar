@@ -15,12 +15,10 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTPlugin {
-    using System;
-    using System.Collections.Generic;
-    using System.Drawing;
-    using System.Runtime.InteropServices;
+using System.Collections.Generic;
+using System.Drawing;
 
+namespace QTPlugin {
     public class TabBarOption {
         private Dictionary<int, object> dic;
 

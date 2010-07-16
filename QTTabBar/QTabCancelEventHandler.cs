@@ -16,8 +16,5 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace QTTabBarLib {
-    using System;
-    using System.Runtime.CompilerServices;
-
     internal delegate void QTabCancelEventHandler(object sender, QTabCancelEventArgs e);
 }

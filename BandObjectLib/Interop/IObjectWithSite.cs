@@ -15,11 +15,11 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace BandObjectLib {
-    using System;
-    using System.Runtime.InteropServices;
-    using System.Security;
+using System;
+using System.Runtime.InteropServices;
+using System.Security;
 
+namespace BandObjectLib {
     [ComImport, SuppressUnmanagedCodeSecurity, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("FC4801A3-2BA9-11CF-A229-00AA003D7352")]
     internal interface IObjectWithSite {
         void SetSite([In, MarshalAs(UnmanagedType.IUnknown)] object pUnkSite);

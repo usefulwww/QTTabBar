@@ -15,10 +15,10 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib.Interop {
-    using System;
-    using System.Runtime.InteropServices;
+using System;
+using System.Runtime.InteropServices;
 
+namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     internal struct NMTTDISPINFO {
         public NMHDR hdr;

@@ -15,23 +15,19 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using System;
-    using System.CodeDom.Compiler;
-    using System.ComponentModel;
-    using System.Diagnostics;
-    using System.Drawing;
-    using System.Globalization;
-    using System.Resources;
-    using System.Runtime.CompilerServices;
+using System.CodeDom.Compiler;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Drawing;
+using System.Globalization;
+using System.Resources;
+using System.Runtime.CompilerServices;
 
+namespace QTTabBarLib {
     [GeneratedCode("System.Resources.Tools.StronglyTypedResourceBuilder", "2.0.0.0"), DebuggerNonUserCode, CompilerGenerated]
     internal class Resources_String {
         private static CultureInfo resourceCulture;
-        private static System.Resources.ResourceManager resourceMan;
-
-        internal Resources_String() {
-        }
+        private static ResourceManager resourceMan;
 
         internal static string ButtonBar_BtnName {
             get {
@@ -92,10 +88,10 @@ namespace QTTabBarLib {
         }
 
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        internal static System.Resources.ResourceManager ResourceManager {
+        internal static ResourceManager ResourceManager {
             get {
-                if(object.ReferenceEquals(resourceMan, null)) {
-                    System.Resources.ResourceManager manager = new System.Resources.ResourceManager("QTTabBarLib.Resources_String", typeof(Resources_String).Assembly);
+                if(ReferenceEquals(resourceMan, null)) {
+                    ResourceManager manager = new ResourceManager("QTTabBarLib.Resources_String", typeof(Resources_String).Assembly);
                     resourceMan = manager;
                 }
                 return resourceMan;

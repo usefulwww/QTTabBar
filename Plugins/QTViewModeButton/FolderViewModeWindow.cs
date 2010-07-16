@@ -16,14 +16,12 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
-using System.Runtime.InteropServices;
-
-using QTPlugin;
 using QTPlugin.Interop;
+using ContentAlignment = System.Drawing.ContentAlignment;
 
 namespace QuizoPlugins {
     internal sealed partial class FolderViewModeWindow : Form {
@@ -49,7 +47,7 @@ namespace QuizoPlugins {
             this.labelDETAIL.Text = resLabels[5];
 
             Rectangle rct = new Rectangle(4, 4, 16, 16);
-            System.Drawing.Imaging.PixelFormat pf = System.Drawing.Imaging.PixelFormat.Format32bppArgb;
+            PixelFormat pf = PixelFormat.Format32bppArgb;
             this.labelTHUMBSTRIP.Image2 = Resource.imgFilm.Clone(rct, pf);
             this.labelTHUMBNAIL.Image2 = Resource.imgThumb.Clone(rct, pf);
             this.labelTILE.Image2 = Resource.imgTiles.Clone(rct, pf);
@@ -64,10 +62,8 @@ namespace QuizoPlugins {
             this.labelLIST.Tag = FOLDERVIEWMODE.FVM_LIST;
             this.labelDETAIL.Tag = FOLDERVIEWMODE.FVM_DETAILS;
 
-            this.trackBar1.LostFocus += new EventHandler(trackBar1_LostFocus);
-            this.trackBar1.KeyDown += new KeyEventHandler(trackBar1_KeyDown);
-
-            IntPtr p = this.trackBar1.Handle;
+            this.trackBar1.LostFocus += trackBar1_LostFocus;
+            this.trackBar1.KeyDown += trackBar1_KeyDown;
         }
 
 
@@ -75,7 +71,7 @@ namespace QuizoPlugins {
             const uint SWP_NOACTIVATE = 0x0010;
             const int SW_SHOWNOACTIVATE = 4;
 
-            this.trackBar1.Value = FolderViewModeWindow.ModeToInt(fvmCurrentMode);
+            this.trackBar1.Value = ModeToInt(fvmCurrentMode);
 
             // set the slider of trackbar under mouse position
             RECT rct = this.GetThumbRect();
@@ -230,7 +226,7 @@ namespace QuizoPlugins {
         private void labelButtons_Click(object sender, EventArgs e) {
             FOLDERVIEWMODE mode = (FOLDERVIEWMODE)((LabelEx)sender).Tag;
 
-            this.trackBar1.Value = FolderViewModeWindow.ModeToInt(mode);
+            this.trackBar1.Value = ModeToInt(mode);
         }
     }
 
@@ -243,7 +239,7 @@ namespace QuizoPlugins {
             this.Size = new Size(107, 28);
             this.Padding = new Padding(24, 0, 4, 0);
             this.Margin = Padding.Empty;
-            this.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.TextAlign = ContentAlignment.MiddleLeft;
         }
 
         protected override void Dispose(bool disposing) {
@@ -273,7 +269,7 @@ namespace QuizoPlugins {
 
         protected override void OnPaintBackground(PaintEventArgs e) {
             if(this.fMouseOn) {
-                MouseButtons mb = Control.MouseButtons;
+                MouseButtons mb = MouseButtons;
 
                 if(VisualStyleRenderer.IsSupported) {
                     if(vsrNormal == null)
@@ -319,9 +315,9 @@ namespace QuizoPlugins {
                 }
                 args.Handled = true;
             }
-            if(((Control.ModifierKeys & (Keys.Alt | Keys.Shift)) == Keys.None) && (Control.MouseButtons == MouseButtons.None)) {
+            if(((ModifierKeys & (Keys.Alt | Keys.Shift)) == Keys.None) && (MouseButtons == MouseButtons.None)) {
                 this.cumulativeWheelData += e.Delta;
-                int num3 = (int)(((float)this.cumulativeWheelData) / 120f);
+                int num3 = (int)((this.cumulativeWheelData) / 120f);
                 if(num3 != 0) {
                     if(num3 > 0) {
                         this.Value = Math.Min(num3 + this.Value, this.Maximum);

@@ -15,11 +15,11 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTPlugin {
-    using QTPlugin.Interop;
-    using System;
-    using System.Text.RegularExpressions;
+using System;
+using System.Text.RegularExpressions;
+using QTPlugin.Interop;
 
+namespace QTPlugin {
     public interface IFilterCore : IPluginClient {
         bool IsMatch(IShellFolder shellFolder, IntPtr pIDLChild, Regex reQurey);
     }

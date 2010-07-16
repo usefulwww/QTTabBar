@@ -15,11 +15,11 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib.Interop {
-    using System;
-    using System.Drawing;
-    using System.Runtime.InteropServices;
+using System;
+using System.Drawing;
+using System.Runtime.InteropServices;
 
+namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
     internal struct RECT {
         public int left;
@@ -28,7 +28,7 @@ namespace QTTabBarLib.Interop {
         public int bottom;
         public int Width {
             get {
-                return Math.Abs((int)(this.right - this.left));
+                return Math.Abs((this.right - this.left));
             }
         }
         public int Height {
@@ -37,7 +37,7 @@ namespace QTTabBarLib.Interop {
             }
         }
         public Rectangle ToRectangle() {
-            return new Rectangle(this.left, this.top, Math.Abs((int)(this.right - this.left)), this.bottom - this.top);
+            return new Rectangle(this.left, this.top, Math.Abs((this.right - this.left)), this.bottom - this.top);
         }
     }
 }

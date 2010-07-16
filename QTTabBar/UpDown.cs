@@ -15,15 +15,14 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using QTTabBarLib.Interop;
-    using System;
-    using System.Drawing;
-    using System.Runtime.CompilerServices;
-    using System.Runtime.InteropServices;
-    using System.Windows.Forms;
-    using System.Windows.Forms.VisualStyles;
+using System;
+using System.Drawing;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
+using QTTabBarLib.Interop;
 
+namespace QTTabBarLib {
     internal sealed class UpDown : Control {
         private NativeUpDown nativeUpDown;
 
@@ -44,7 +43,7 @@ namespace QTTabBarLib {
 
         protected override void WndProc(ref Message m) {
             if(((this.nativeUpDown != null) && (m.Msg == WM.NOTIFY)) && (this.ValueChanged != null)) {
-                QTTabBarLib.Interop.NMHDR nmhdr = (QTTabBarLib.Interop.NMHDR)Marshal.PtrToStructure(m.LParam, typeof(QTTabBarLib.Interop.NMHDR));
+                NMHDR nmhdr = (NMHDR)Marshal.PtrToStructure(m.LParam, typeof(NMHDR));
                 if((nmhdr.code == -722) && (nmhdr.hwndFrom == this.nativeUpDown.Handle)) {
                     NMUPDOWN nmupdown = (NMUPDOWN)Marshal.PtrToStructure(m.LParam, typeof(NMUPDOWN));
                     this.ValueChanged(this, new QEventArgs((nmupdown.iDelta < 0) ? ArrowDirection.Right : ArrowDirection.Left));
@@ -65,7 +64,7 @@ namespace QTTabBarLib {
             private VisualStyleRenderer rendererUp_Pressed;
             private int stateDown;
             private int stateUP;
-            private QTTabBarLib.Interop.TRACKMOUSEEVENT TME;
+            private TRACKMOUSEEVENT TME;
 
             public NativeUpDown(UpDown OwnerControl) {
                 CreateParams cp = new CreateParams();
@@ -77,7 +76,7 @@ namespace QTTabBarLib {
                 cp.Style = 0x50000040;
                 this.CreateHandle(cp);
                 this.fTrackMouseEvent = true;
-                this.TME = new QTTabBarLib.Interop.TRACKMOUSEEVENT();
+                this.TME = new TRACKMOUSEEVENT();
                 this.TME.cbSize = Marshal.SizeOf(this.TME);
                 this.TME.dwFlags = 2;
                 this.TME.hwndTrack = base.Handle;

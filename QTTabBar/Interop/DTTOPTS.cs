@@ -15,11 +15,11 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib.Interop {
-    using System;
-    using System.Drawing;
-    using System.Runtime.InteropServices;
+using System;
+using System.Drawing;
+using System.Runtime.InteropServices;
 
+namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
     internal struct DTTOPTS {
         public int dwSize;

@@ -15,12 +15,12 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using System;
-    using System.Drawing;
-    using System.Drawing.Imaging;
-    using System.Windows.Forms;
+using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Windows.Forms;
 
+namespace QTTabBarLib {
     internal sealed class VistaMenuRenderer : ToolStripSystemRenderer {
         private static Bitmap bmpCheck = Resources_Image.imgVistaMenu_Check;
         private static Bitmap bmpLB = Resources_Image.imgVistaMenu_LB;

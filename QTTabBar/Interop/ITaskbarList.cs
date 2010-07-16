@@ -15,11 +15,11 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib.Interop {
-    using System;
-    using System.Runtime.InteropServices;
-    using System.Security;
+using System;
+using System.Runtime.InteropServices;
+using System.Security;
 
+namespace QTTabBarLib.Interop {
     [ComImport, Guid("56FDF342-FD6D-11d0-958A-006097C9A090"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown), SuppressUnmanagedCodeSecurity]
     internal interface ITaskbarList {
         [PreserveSig]

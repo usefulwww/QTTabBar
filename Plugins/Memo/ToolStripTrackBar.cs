@@ -15,12 +15,11 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QuizoPlugins {
-    using System;
-    using System.Drawing;
-    using System.Runtime.CompilerServices;
-    using System.Windows.Forms;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
 
+namespace QuizoPlugins {
     internal sealed class ToolStripTrackBar : ToolStripControlHost {
         private bool blockColorChange;
         private bool fSuppressEvent;
@@ -56,7 +55,7 @@ namespace QuizoPlugins {
         protected override void OnSubscribeControlEvents(Control control) {
             base.OnSubscribeControlEvents(control);
             TrackBar bar = (TrackBar)control;
-            bar.ValueChanged += new EventHandler(this.OnValueChange);
+            bar.ValueChanged += this.OnValueChange;
         }
 
         private void OnValueChange(object sender, EventArgs e) {

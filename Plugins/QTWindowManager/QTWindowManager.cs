@@ -18,14 +18,12 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Runtime.InteropServices;
+using System.Globalization;
+using System.Text;
 using System.Windows.Forms;
 using Microsoft.Win32;
-
 using QTPlugin;
 using QTPlugin.Interop;
-using System.Text;
-
 
 namespace QuizoPlugins {
     [Plugin(PluginType.Background, Author = "Quizo", Name = "QT Window Manager", Version = "1.1.0.0", Description = "Window manager")]
@@ -55,7 +53,7 @@ namespace QuizoPlugins {
         private const string CN_CabinetWClass = "CabinetWClass";
         private const string CN_Explorer = "";
 
-        private bool fFillAllScreen = false;
+        private bool fFillAllScreen;
         private int windowColumnLength = 2;
         private int windowRowLength = 3;
 
@@ -71,7 +69,7 @@ namespace QuizoPlugins {
             this.pluginServer = pluginServer;
 
             if(!pluginServer.TryGetLocalizedStrings(this, RES_COUNT, out this.ResStrs)) {
-                if(System.Globalization.CultureInfo.CurrentCulture.Parent.Name == "ja")
+                if(CultureInfo.CurrentCulture.Parent.Name == "ja")
                     this.ResStrs = Resource.ResStrs_ja.Split(new char[] { ';' });
                 else
                     this.ResStrs = Resource.ResStrs.Split(new char[] { ';' });
@@ -274,7 +272,7 @@ namespace QuizoPlugins {
                         }
                     }
 
-                    if(this.startingPreset != null && this.startingPreset.Length > 0) {
+                    if(!string.IsNullOrEmpty(this.startingPreset)) {
                         if(!this.dicPresets.ContainsKey(this.startingPreset))
                             this.startingPreset = String.Empty;
                     }
@@ -305,7 +303,7 @@ namespace QuizoPlugins {
                         }
                     }
 
-                    if(this.startingPreset != null && this.startingPreset.Length > 0) {
+                    if(!string.IsNullOrEmpty(this.startingPreset)) {
                         if(this.dicPresets.ContainsKey(this.startingPreset)) {
                             rkPluginQTWM.SetValue("StartingPreset", this.startingPreset);
                         }
@@ -341,7 +339,7 @@ namespace QuizoPlugins {
                         if(!String.IsNullOrEmpty(this.startingPreset) && this.dicPresets.ContainsKey(this.startingPreset)) {
                             Rectangle rctPreset = this.dicPresets[this.startingPreset];
                             PInvoke_QTWM.SetWindowPos(hwnd, IntPtr.Zero, rctPreset.X, rctPreset.Y, rctPreset.Width, rctPreset.Height, SWP_NOZORDER);
-                            QTWindowManager.RemoveMAXIMIZE(hwnd);
+                            RemoveMAXIMIZE(hwnd);
                         }
                         return;
                     }
@@ -357,7 +355,7 @@ namespace QuizoPlugins {
                         this.sizeInitial.Height,
                         uFlags);
 
-                    QTWindowManager.RemoveMAXIMIZE(hwnd);
+                    RemoveMAXIMIZE(hwnd);
                 }
             }
         }
@@ -504,7 +502,7 @@ namespace QuizoPlugins {
             if(h > 150 && w > 122) {
                 PInvoke_QTWM.SetWindowPos(hwnd, IntPtr.Zero, x, y, w, h, uFlags);
 
-                QTWindowManager.RemoveMAXIMIZE(hwnd);
+                RemoveMAXIMIZE(hwnd);
             }
         }
 
@@ -544,7 +542,7 @@ namespace QuizoPlugins {
 
             PInvoke_QTWM.SetWindowPos(hwnd, IntPtr.Zero, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 
-            QTWindowManager.RemoveMAXIMIZE(hwnd);
+            RemoveMAXIMIZE(hwnd);
         }
 
         internal static void RemoveMAXIMIZE(IntPtr hwnd) {
@@ -605,7 +603,7 @@ namespace QuizoPlugins {
                 //    uFlags |= SWP_NOSIZE;
 
                 PInvoke_QTWM.SetWindowPos(hwnd, IntPtr.Zero, rct.X, rct.Y, rct.Width, rct.Height, uFlags);
-                QTWindowManager.RemoveMAXIMIZE(hwnd);
+                RemoveMAXIMIZE(hwnd);
             }
         }
 
@@ -620,9 +618,7 @@ namespace QuizoPlugins {
                             this.ConfigValues = sw.ConfigValues;
                             this.ResizeDelta = sw.ResizeDelta;
                             this.dicPresets = sw.Presets;
-                            this.startingPreset = sw.StartingPreset;
-                            if(this.startingPreset == null)
-                                this.startingPreset = String.Empty;
+                            this.startingPreset = sw.StartingPreset ?? String.Empty;
 
                             this.SaveSettings();
                         }
@@ -649,7 +645,6 @@ namespace QuizoPlugins {
 
                     List<IntPtr> lstFillingHWNDs = new List<IntPtr>();
                     Queue<IntPtr> qHwnds = new Queue<IntPtr>(hwnds);
-                    List<RECT> lstRECTs = new List<RECT>();
 
                     this.dicTiledRectangle = new Dictionary<IntPtr, RECT>();
 
@@ -733,7 +728,7 @@ namespace QuizoPlugins {
             this.lstExploererHwnd = new List<IntPtr>();
 
             PInvoke_QTWM.EnumWindows(
-                new EnumWndProc(this.EnumExplorerCallback),
+                this.EnumExplorerCallback,
                 fExcludeCurrent ? this.pluginServer.ExplorerHandle : IntPtr.Zero);
 
             return this.lstExploererHwnd;

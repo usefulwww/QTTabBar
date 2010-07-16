@@ -15,26 +15,22 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTPlugin {
-    using System;
+using System;
 
+namespace QTPlugin {
     [AttributeUsage(AttributeTargets.Class)]
     public sealed class PluginAttribute : Attribute {
         public string Author;
         public string Description;
         public string Name;
-        public QTPlugin.PluginType PluginType;
+        public PluginType PluginType;
         public string Version;
 
-        public PluginAttribute(QTPlugin.PluginType pluginType) {
+        public PluginAttribute(PluginType pluginType) {
             this.PluginType = pluginType;
         }
 
-        public PluginAttribute(QTPlugin.PluginType pluginType, Type tProvider)
-            : this(pluginType, tProvider, -1) {
-        }
-
-        public PluginAttribute(QTPlugin.PluginType pluginType, Type tProvider, int iKey) {
+        public PluginAttribute(PluginType pluginType, Type tProvider, int iKey = -1) {
             this.PluginType = pluginType;
             if(tProvider.IsSubclassOf(typeof(LocalizedStringProvider))) {
                 try {
@@ -57,7 +53,7 @@ namespace QTPlugin {
             }
         }
 
-        public PluginAttribute(QTPlugin.PluginType pluginType, string name, string author, string version, string description) {
+        public PluginAttribute(PluginType pluginType, string name, string author, string version, string description) {
             this.PluginType = pluginType;
             this.Name = name;
             this.Author = author;

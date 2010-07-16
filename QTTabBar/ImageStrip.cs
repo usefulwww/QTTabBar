@@ -15,13 +15,12 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using System;
-    using System.Collections.Generic;
-    using System.Drawing;
-    using System.Drawing.Imaging;
-    using System.Reflection;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 
+namespace QTTabBarLib {
     internal sealed class ImageStrip : IDisposable {
         private List<Bitmap> lstImages = new List<Bitmap>();
         private Size size;

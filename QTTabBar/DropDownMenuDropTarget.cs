@@ -15,20 +15,18 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using BandObjectLib;
-    using QTTabBarLib.Interop;
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.Specialized;
-    using System.ComponentModel;
-    using System.Drawing;
-    using System.IO;
-    using System.Reflection;
-    using System.Runtime.CompilerServices;
-    using System.Runtime.InteropServices;
-    using System.Windows.Forms;
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Drawing;
+using System.IO;
+using System.Reflection;
+using System.Windows.Forms;
+using BandObjectLib;
+using QTTabBarLib.Interop;
 
+namespace QTTabBarLib {
     internal sealed class DropDownMenuDropTarget : DropDownMenuReorderable {
         private Bitmap bmpInsertL;
         private Bitmap bmpInsertR;
@@ -66,7 +64,7 @@ namespace QTTabBarLib {
             this.iItemDragOverRegion = -1;
             this.fIsRootMenu = isRoot;
             this.hwndDialogParent = hwndDialogParent;
-            base.HandleCreated += new EventHandler(this.DropDownMenuDropTarget_HandleCreated);
+            base.HandleCreated += this.DropDownMenuDropTarget_HandleCreated;
         }
 
         private void BeginScrollTimer(ToolStripItem item, Point pntClient) {
@@ -75,7 +73,7 @@ namespace QTTabBarLib {
             if(base.CanScroll && ((y < ((height * 0.5) + 11.0)) || ((base.Height - (height + 11)) < y))) {
                 if(this.timerScroll == null) {
                     this.timerScroll = new Timer();
-                    this.timerScroll.Tick += new EventHandler(this.timerScroll_Tick);
+                    this.timerScroll.Tick += this.timerScroll_Tick;
                 }
                 else if(this.timerScroll.Enabled) {
                     return;
@@ -237,11 +235,11 @@ namespace QTTabBarLib {
 
         private void DropDownMenuDropTarget_HandleCreated(object sender, EventArgs e) {
             this.dropTargetWrapper = new DropTargetWrapper(this);
-            this.dropTargetWrapper.DragFileEnter += new DropTargetWrapper.DragFileEnterEventHandler(this.dropTargetWrapper_DragFileEnter);
-            this.dropTargetWrapper.DragFileOver += new DragEventHandler(this.dropTargetWrapper_DragFileOver);
-            this.dropTargetWrapper.DragFileLeave += new EventHandler(this.dropTargetWrapper_DragFileLeave);
-            this.dropTargetWrapper.DragFileDrop += new DropTargetWrapper.DragFileDropEventHandler(this.dropTargetWrapper_DragFileDrop);
-            this.dropTargetWrapper.DragDropEnd += new EventHandler(this.dropTargetWrapper_DragDropEnd);
+            this.dropTargetWrapper.DragFileEnter += this.dropTargetWrapper_DragFileEnter;
+            this.dropTargetWrapper.DragFileOver += this.dropTargetWrapper_DragFileOver;
+            this.dropTargetWrapper.DragFileLeave += this.dropTargetWrapper_DragFileLeave;
+            this.dropTargetWrapper.DragFileDrop += this.dropTargetWrapper_DragFileDrop;
+            this.dropTargetWrapper.DragDropEnd += this.dropTargetWrapper_DragDropEnd;
             try {
                 this.miUnselect = typeof(ToolStripItem).GetMethod("Unselect", BindingFlags.NonPublic | BindingFlags.Instance);
             }
@@ -280,7 +278,7 @@ namespace QTTabBarLib {
             return -1;
         }
 
-        private DragDropEffects dropTargetWrapper_DragFileEnter(IntPtr hDrop, BandObjectLib.POINT pnt, int grfKeyState) {
+        private DragDropEffects dropTargetWrapper_DragFileEnter(IntPtr hDrop, POINT pnt, int grfKeyState) {
             this.fRespondModKeysTemp = base.fRespondModKeys;
             this.fEnableShiftKeyTemp = base.fEnableShiftKey;
             base.fRespondModKeys = false;
@@ -342,7 +340,7 @@ namespace QTTabBarLib {
                             iSourceState = this.MakeDragOverRetval();
                             if((!flag4 && item2.HasDropDownItems) && !item2.DropDown.Visible) {
                                 this.OnMouseLeave(EventArgs.Empty);
-                                this.OnMouseMove(new MouseEventArgs(Control.MouseButtons, 0, point.X, point.Y, 0));
+                                this.OnMouseMove(new MouseEventArgs(MouseButtons, 0, point.X, point.Y, 0));
                             }
                         }
                         else if(flag4) {
@@ -373,7 +371,7 @@ namespace QTTabBarLib {
                             this.strTargetPath = item2.TargetPath;
                             iSourceState = this.MakeDragOverRetval();
                             this.OnMouseLeave(EventArgs.Empty);
-                            this.OnMouseMove(new MouseEventArgs(Control.MouseButtons, 0, point.X, point.Y, 0));
+                            this.OnMouseMove(new MouseEventArgs(MouseButtons, 0, point.X, point.Y, 0));
                         }
                     }
                 }
@@ -504,7 +502,7 @@ namespace QTTabBarLib {
             }
             catch {
             }
-            if(((((base.OwnerItem == null) || (base.OwnerItem.Owner == null)) || !base.OwnerItem.Owner.RectangleToScreen(base.OwnerItem.Bounds).Contains(Control.MousePosition)) && (!this.fIsRootMenu || this.fShownByKey)) && (((this.DisplayedItems.Count > 0) && !this.IsKeyTargetItem(this.DisplayedItems[0])) && fContainsFileDropList)) {
+            if(((((base.OwnerItem == null) || (base.OwnerItem.Owner == null)) || !base.OwnerItem.Owner.RectangleToScreen(base.OwnerItem.Bounds).Contains(MousePosition)) && (!this.fIsRootMenu || this.fShownByKey)) && (((this.DisplayedItems.Count > 0) && !this.IsKeyTargetItem(this.DisplayedItems[0])) && fContainsFileDropList)) {
                 this.fKeyTargetIsThis = true;
                 this.itemKeyInsertionMarkPrev = this.DisplayedItems[0];
             }
@@ -524,15 +522,15 @@ namespace QTTabBarLib {
                             e.Graphics.DrawLine(pen, 3, bounds.Top, bounds.Right - 2, bounds.Top);
                             e.Graphics.DrawLine(pen2, 3, bounds.Top - 3, 3, bounds.Top + 2);
                             e.Graphics.DrawLine(pen2, 4, bounds.Top - 2, 4, bounds.Top + 1);
-                            e.Graphics.DrawLine(pen2, (int)(bounds.Right - 2), (int)(bounds.Top - 3), (int)(bounds.Right - 2), (int)(bounds.Top + 2));
-                            e.Graphics.DrawLine(pen2, (int)(bounds.Right - 3), (int)(bounds.Top - 2), (int)(bounds.Right - 3), (int)(bounds.Top + 1));
+                            e.Graphics.DrawLine(pen2, (bounds.Right - 2), (bounds.Top - 3), (bounds.Right - 2), (bounds.Top + 2));
+                            e.Graphics.DrawLine(pen2, (bounds.Right - 3), (bounds.Top - 2), (bounds.Right - 3), (bounds.Top + 1));
                         }
                         else {
                             e.Graphics.DrawLine(pen, 3, bounds.Bottom, bounds.Right - 2, bounds.Bottom);
                             e.Graphics.DrawLine(pen2, 3, bounds.Bottom - 3, 3, bounds.Bottom + 2);
                             e.Graphics.DrawLine(pen2, 4, bounds.Bottom - 2, 4, bounds.Bottom + 1);
-                            e.Graphics.DrawLine(pen2, (int)(bounds.Right - 2), (int)(bounds.Bottom - 3), (int)(bounds.Right - 2), (int)(bounds.Bottom + 2));
-                            e.Graphics.DrawLine(pen2, (int)(bounds.Right - 3), (int)(bounds.Bottom - 2), (int)(bounds.Right - 3), (int)(bounds.Bottom + 1));
+                            e.Graphics.DrawLine(pen2, (bounds.Right - 2), (bounds.Bottom - 3), (bounds.Right - 2), (bounds.Bottom + 2));
+                            e.Graphics.DrawLine(pen2, (bounds.Right - 3), (bounds.Bottom - 2), (bounds.Right - 3), (bounds.Bottom + 1));
                         }
                     }
                     return;
@@ -666,10 +664,8 @@ namespace QTTabBarLib {
                 return false;
             }
             if(strExtExecutable == null) {
-                strExtExecutable = Environment.GetEnvironmentVariable("PATHEXT");
-                if(strExtExecutable == null) {
-                    strExtExecutable = ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC";
-                }
+                strExtExecutable = Environment.GetEnvironmentVariable("PATHEXT") ??
+                        ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC";
             }
             if(!string.Equals(".lnk", extension, StringComparison.OrdinalIgnoreCase)) {
                 return (strExtExecutable.IndexOf(extension, StringComparison.OrdinalIgnoreCase) != -1);

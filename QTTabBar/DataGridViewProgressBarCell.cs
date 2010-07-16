@@ -15,12 +15,11 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using System;
-    using System.Drawing;
-    using System.Windows.Forms;
-    using System.Windows.Forms.VisualStyles;
+using System.Drawing;
+using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 
+namespace QTTabBarLib {
     internal sealed class DataGridViewProgressBarCell : DataGridViewTextBoxCell {
         private HashCalcStatus calcStatus;
         private bool fNowCalculating;
@@ -73,7 +72,7 @@ namespace QTTabBarLib {
                 return;
             }
             Rectangle bounds = rect;
-            double num = ((double)this.progressValue) / ((double)this.lFileSize);
+            double num = (this.progressValue) / ((double)this.lFileSize);
             bounds.Width = (int)(bounds.Width * num);
             if(VisualStyleRenderer.IsSupported) {
                 try {

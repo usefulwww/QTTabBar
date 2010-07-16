@@ -15,13 +15,12 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using System;
-    using System.Drawing;
-    using System.Windows.Forms;
+using System.Drawing;
+using System.Windows.Forms;
 
+namespace QTTabBarLib {
     internal sealed class MenuItemEx : MenuItem {
-        private System.Drawing.Image img;
+        private Image img;
         private const int MARGIN_Y = 8;
 
         public MenuItemEx(string text)
@@ -35,9 +34,9 @@ namespace QTTabBarLib {
             int num2 = (e.Bounds.Height - 0x10) / 2;
             e.Graphics.FillRectangle(flag ? SystemBrushes.Highlight : SystemBrushes.Menu, e.Bounds);
             if(this.img != null) {
-                e.Graphics.DrawImage(this.img, (RectangleF)new Rectangle(2, num + num2, 0x10, 0x10), new RectangleF(0f, 0f, 16f, 16f), GraphicsUnit.Pixel);
+                e.Graphics.DrawImage(this.img, new Rectangle(2, num + num2, 0x10, 0x10), new RectangleF(0f, 0f, 16f, 16f), GraphicsUnit.Pixel);
             }
-            e.Graphics.DrawString(base.Text, SystemFonts.MenuFont, flag ? SystemBrushes.HighlightText : SystemBrushes.MenuText, new PointF(24f, (float)(4 + num)));
+            e.Graphics.DrawString(base.Text, SystemFonts.MenuFont, flag ? SystemBrushes.HighlightText : SystemBrushes.MenuText, new PointF(24f, (4 + num)));
         }
 
         protected override void OnMeasureItem(MeasureItemEventArgs e) {
@@ -46,7 +45,7 @@ namespace QTTabBarLib {
             e.ItemWidth = ((int)ef.Width) + 0x1a;
         }
 
-        public System.Drawing.Image Image {
+        public Image Image {
             set {
                 this.img = value;
             }

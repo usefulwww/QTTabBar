@@ -17,9 +17,10 @@
 
 using System;
 using System.Drawing;
+using System.Globalization;
+using System.Runtime.InteropServices;
 using QTPlugin;
 using QTPlugin.Interop;
-using System.Runtime.InteropServices;
 
 namespace QuizoPlugins {
     [Plugin(PluginType.Background, Author = "Quizo", Name = "FolderTreeButton", Version = "1.0.0.0", Description = "Show folder tree for XP")]
@@ -43,7 +44,7 @@ namespace QuizoPlugins {
             this.shellBrowser = shellBrowser;
 
             if(!pluginServer.TryGetLocalizedStrings(this, 3, out this.ResStrs)) {
-                if(System.Globalization.CultureInfo.CurrentCulture.Parent.Name == "ja")
+                if(CultureInfo.CurrentCulture.Parent.Name == "ja")
                     this.ResStrs = Resource.strQTFolderButton_ja.Split(new char[] { ';' });
                 else
                     this.ResStrs = Resource.strQTFolderButton.Split(new char[] { ';' });

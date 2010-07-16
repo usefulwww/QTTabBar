@@ -15,18 +15,13 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using Microsoft.Win32;
-    using QTPlugin;
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Runtime.CompilerServices;
-    using System.Runtime.InteropServices;
-    using System.Threading;
-    using System.Windows.Forms;
+using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
+using Microsoft.Win32;
+using QTPlugin;
 
+namespace QTTabBarLib {
     internal sealed class PluginManager {
         public Dictionary<string, string> dicFullNamesMenuRegistered_Sys = new Dictionary<string, string>();
         public Dictionary<string, string> dicFullNamesMenuRegistered_Tab = new Dictionary<string, string>();
@@ -38,9 +33,9 @@ namespace QTTabBarLib {
         private int iClosingCount;
         private int iRefCount;
         private static List<string> lstPluginButtonsOrder = new List<string>();
-        private static QTPlugin.IEncodingDetector plgEncodingDetector;
-        private QTPlugin.IFilterCore plgFilterCore;
-        private QTPlugin.IFilter plgIFilter;
+        private static IEncodingDetector plgEncodingDetector;
+        private IFilterCore plgFilterCore;
+        private IFilter plgIFilter;
         private QTTabBarClass.PluginServer pluginServer;
 
         public PluginManager(QTTabBarClass tabBar) {
@@ -101,7 +96,7 @@ namespace QTTabBarLib {
         }
 
         public static void HandlePluginException(Exception ex, IntPtr hwnd, string pluginID, string strCase) {
-            MessageForm.Show(hwnd, "Error : " + strCase + "\r\nPlugin : \"" + pluginID + "\"\r\nErrorType : " + ex.ToString(), "Plugin Error", MessageBoxIcon.Hand, 0x7530);
+            MessageForm.Show(hwnd, "Error : " + strCase + "\r\nPlugin : \"" + pluginID + "\"\r\nErrorType : " + ex, "Plugin Error", MessageBoxIcon.Hand, 0x7530);
         }
 
         public int IncrementBackgroundMultiple(PluginInformation pi) {
@@ -130,7 +125,7 @@ namespace QTTabBarLib {
                                 if(pa.PluginInfosExist) {
                                     if(flag) {
                                         foreach(PluginInformation information in pa.PluginInformations) {
-                                            if(Array.IndexOf<string>(array, information.PluginID) != -1) {
+                                            if(Array.IndexOf(array, information.PluginID) != -1) {
                                                 information.Enabled = true;
                                                 pa.Enabled = true;
                                                 if(information.PluginType == PluginType.Static) {
@@ -162,8 +157,8 @@ namespace QTTabBarLib {
                         foreach(PluginKey key3 in keyArray) {
                             if(key3.Keys != null) {
                                 QTUtility.dicPluginShortcutKeys[key3.PluginID] = key3.Keys;
-                                for(int i = 0; i < key3.Keys.Length; i++) {
-                                    list.Add(key3.Keys[i]);
+                                foreach(int iKey in key3.Keys) {
+                                    list.Add(iKey);
                                 }
                             }
                         }
@@ -231,10 +226,10 @@ namespace QTTabBarLib {
                     Plugin plugin = this.Load(information, null);
                     if(plugin != null) {
                         if(this.plgIFilter == null) {
-                            this.plgIFilter = plugin.Instance as QTPlugin.IFilter;
+                            this.plgIFilter = plugin.Instance as IFilter;
                         }
                         if(this.plgFilterCore == null) {
-                            this.plgFilterCore = plugin.Instance as QTPlugin.IFilterCore;
+                            this.plgFilterCore = plugin.Instance as IFilterCore;
                         }
                     }
                     else {
@@ -253,7 +248,7 @@ namespace QTTabBarLib {
             if((plugin != null) && (plugin.Instance != null)) {
                 dicStaticPluginInstances[pi.PluginID] = plugin;
                 if((plgEncodingDetector == null) || fForce) {
-                    QTPlugin.IEncodingDetector instance = plugin.Instance as QTPlugin.IEncodingDetector;
+                    IEncodingDetector instance = plugin.Instance as IEncodingDetector;
                     if(instance != null) {
                         try {
                             instance.Open(null, null);
@@ -340,10 +335,10 @@ namespace QTTabBarLib {
                         Plugin plugin = this.Load(information, pa);
                         if(plugin != null) {
                             if(this.plgIFilter == null) {
-                                this.plgIFilter = plugin.Instance as QTPlugin.IFilter;
+                                this.plgIFilter = plugin.Instance as IFilter;
                             }
                             if(this.plgFilterCore == null) {
-                                this.plgFilterCore = plugin.Instance as QTPlugin.IFilterCore;
+                                this.plgFilterCore = plugin.Instance as IFilterCore;
                             }
                         }
                         else {
@@ -423,7 +418,7 @@ namespace QTTabBarLib {
         public static void SaveButtonOrder() {
             using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar\Plugins")) {
                 if(key != null) {
-                    QTUtility2.WriteRegBinary<string>(lstPluginButtonsOrder.ToArray(), "Buttons_Order", key);
+                    QTUtility2.WriteRegBinary(lstPluginButtonsOrder.ToArray(), "Buttons_Order", key);
                 }
             }
         }
@@ -434,7 +429,7 @@ namespace QTTabBarLib {
                 list.Add(new PluginKey(str, QTUtility.dicPluginShortcutKeys[str]));
             }
             using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar\Plugins")) {
-                QTUtility2.WriteRegBinary<PluginKey>(list.ToArray(), "ShortcutKeys", key);
+                QTUtility2.WriteRegBinary(list.ToArray(), "ShortcutKeys", key);
             }
         }
 
@@ -463,8 +458,8 @@ namespace QTTabBarLib {
                 List<int> list = new List<int>();
                 foreach(int[] numArray in QTUtility.dicPluginShortcutKeys.Values) {
                     if(numArray != null) {
-                        for(int i = 0; i < numArray.Length; i++) {
-                            list.Add(numArray[i]);
+                        foreach(int num in numArray) {
+                            list.Add(num);
                         }
                     }
                 }
@@ -498,19 +493,19 @@ namespace QTTabBarLib {
             }
         }
 
-        public static QTPlugin.IEncodingDetector IEncodingDetector {
+        public static IEncodingDetector IEncodingDetector {
             get {
                 return plgEncodingDetector;
             }
         }
 
-        public QTPlugin.IFilter IFilter {
+        public IFilter IFilter {
             get {
                 return this.plgIFilter;
             }
         }
 
-        public QTPlugin.IFilterCore IFilterCore {
+        public IFilterCore IFilterCore {
             get {
                 return this.plgFilterCore;
             }
@@ -526,7 +521,7 @@ namespace QTTabBarLib {
             get {
                 //return new <get_PluginInformations>d__0(-2);
 
-                foreach(PluginAssembly pa in PluginManager.dicPluginAssemblies.Values) {
+                foreach(PluginAssembly pa in dicPluginAssemblies.Values) {
                     foreach(PluginInformation info in pa.PluginInformations) {
                         yield return info;
                     }
@@ -534,7 +529,7 @@ namespace QTTabBarLib {
             }
         }
 
-        public List<Plugin> Plugins {
+        public IEnumerable<Plugin> Plugins {
             get {
                 return new List<Plugin>(this.dicPluginInstances.Values);
             }

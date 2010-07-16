@@ -1,4 +1,4 @@
-﻿//    This file is part of QTTabBar, a shell extension for Microsoft
+//    This file is part of QTTabBar, a shell extension for Microsoft
 //    Windows Explorer.
 //    Copyright (C) 2007-2010  Quizo, Paul Accisano
 //
@@ -15,10 +15,10 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-using QTTabBarLib.Interop;
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
+using QTTabBarLib.Interop;
 
 namespace QTTabBarLib.Automation {
     // All interaction with AutomationElements MUST be done in a thread other
@@ -31,7 +31,7 @@ namespace QTTabBarLib.Automation {
         private static readonly Guid CLSID_CUIAutomation = new Guid("{FF48DBA4-60EF-4201-AA87-54103EEF594E}");
 
         private static IUIAutomation pAutomation;
-        public delegate T Query<T>(AutomationElementFactory factory);
+        public delegate T Query<out T>(AutomationElementFactory factory);
 
         private class Worker<T> {
             private T ret;
@@ -56,7 +56,7 @@ namespace QTTabBarLib.Automation {
         public AutomationManager() {
             Guid rclsid = CLSID_CUIAutomation;
             Guid riid = IID_IUIAutomation;
-            object obj = null;
+            object obj;
             PInvoke.CoCreateInstance(ref rclsid, IntPtr.Zero, 1, ref riid, out obj);
             if(obj == null) return;
             pAutomation = obj as IUIAutomation;
@@ -77,7 +77,7 @@ namespace QTTabBarLib.Automation {
         public T DoQuery<T>(Query<T> query) {
             WaitHandle handle = new AutoResetEvent(false);
             Worker<T> worker = new Worker<T>(query);
-            ThreadPool.QueueUserWorkItem(new WaitCallback(worker.DoWork), handle);
+            ThreadPool.QueueUserWorkItem(worker.DoWork, handle);
             handle.WaitOne();
             return worker.GetReturn();
         }

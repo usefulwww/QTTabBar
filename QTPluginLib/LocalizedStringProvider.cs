@@ -16,12 +16,7 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace QTPlugin {
-    using System;
-
     public abstract class LocalizedStringProvider {
-        protected LocalizedStringProvider() {
-        }
-
         public abstract void SetKey(int iKey);
 
         public abstract string Author { get; }

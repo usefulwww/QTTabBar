@@ -16,15 +16,10 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace QTTabBarLib {
-    using System;
-
     internal abstract class MC {
         public const int TAB_FIRST = 0;
         public const int TAB_OPEN_IDL = 4;
         public const int TAB_OPEN_IDLS = 9;
         public const int TAB_REPLACEBYGROUP = 80;
-
-        protected MC() {
-        }
     }
 }

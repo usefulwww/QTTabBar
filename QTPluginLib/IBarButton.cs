@@ -15,10 +15,9 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTPlugin {
-    using System;
-    using System.Drawing;
+using System.Drawing;
 
+namespace QTPlugin {
     public interface IBarButton : IPluginClient {
         Image GetImage(bool fLarge);
         void InitializeItem();

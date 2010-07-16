@@ -15,9 +15,9 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace BandObjectLib {
-    using System;
+using System;
 
+namespace BandObjectLib {
     [Flags]
     public enum DBIM : uint {
         ACTUAL = 8,

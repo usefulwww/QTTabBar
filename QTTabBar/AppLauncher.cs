@@ -15,17 +15,17 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using QTPlugin;
-    using QTTabBarLib.Interop;
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.IO;
-    using System.Runtime.InteropServices;
-    using System.Text.RegularExpressions;
-    using System.Windows.Forms;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
+using QTPlugin;
+using QTTabBarLib.Interop;
 
+namespace QTTabBarLib {
     internal sealed class AppLauncher {
         public int iSelDirsCount;
         public int iSelFileCount;

@@ -15,20 +15,19 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib.Interop {
-    using BandObjectLib;
-    using QTTabBarLib;
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Drawing;
-    using System.IO;
-    using System.Media;
-    using System.Runtime.InteropServices;
-    using System.Runtime.InteropServices.ComTypes;
-    using System.Text;
-    using System.Windows.Forms;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
+using System.Media;
+using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
+using System.Text;
+using System.Windows.Forms;
+using BandObjectLib;
 
+namespace QTTabBarLib.Interop {
     internal static class ShellMethods {
         public static bool ClipboardContainsFileDropList(IntPtr hwnd) {
             if((hwnd != IntPtr.Zero) && PInvoke.OpenClipboard(hwnd)) {
@@ -125,7 +124,7 @@ namespace QTTabBarLib.Interop {
 
         public static DragDropEffects DoDragDrop(string path, Control control) {
             DragDropEffects none;
-            if((path == null) || (path.Length == 0)) {
+            if(string.IsNullOrEmpty(path)) {
                 return DragDropEffects.None;
             }
             IShellFolder ppv = null;
@@ -149,11 +148,9 @@ namespace QTTabBarLib.Interop {
             finally {
                 if(obj2 != null) {
                     Marshal.ReleaseComObject(obj2);
-                    obj2 = null;
                 }
                 if(ppv != null) {
                     Marshal.ReleaseComObject(ppv);
-                    ppv = null;
                 }
                 if(zero != IntPtr.Zero) {
                     PInvoke.CoTaskMemFree(zero);
@@ -222,11 +219,9 @@ namespace QTTabBarLib.Interop {
             finally {
                 if(obj2 != null) {
                     Marshal.ReleaseComObject(obj2);
-                    obj2 = null;
                 }
                 if(ppv != null) {
                     Marshal.ReleaseComObject(ppv);
-                    ppv = null;
                 }
                 foreach(IntPtr ptr6 in list) {
                     if(ptr6 != IntPtr.Zero) {
@@ -448,7 +443,7 @@ namespace QTTabBarLib.Interop {
                         Guid riid = ExplorerGUIDs.IID_IQueryInfo;
                         IntPtr[] apidl = new IntPtr[] { ptr };
                         uint rgfReserved = 0;
-                        object obj2 = null;
+                        object obj2;
                         if(ppv.GetUIObjectOf(IntPtr.Zero, 1, apidl, ref riid, ref rgfReserved, out obj2) == 0) {
                             string str;
                             o = obj2 as IQueryInfo;
@@ -585,7 +580,7 @@ namespace QTTabBarLib.Interop {
                 IntPtr[] apidl = list2.ToArray();
                 uint rgfReserved = 0;
                 Guid riid = ExplorerGUIDs.IID_IContextMenu;
-                object obj2 = null;
+                object obj2;
                 ppv.GetUIObjectOf(IntPtr.Zero, (uint)apidl.Length, apidl, ref riid, ref rgfReserved, out obj2);
                 if(pIContextMenu2 != null) {
                     Marshal.ReleaseComObject(pIContextMenu2);
@@ -644,7 +639,7 @@ namespace QTTabBarLib.Interop {
                 IntPtr[] apidl = new IntPtr[] { ptr };
                 uint rgfReserved = 0;
                 Guid riid = ExplorerGUIDs.IID_IContextMenu;
-                object obj2 = null;
+                object obj2;
                 ppv.GetUIObjectOf(IntPtr.Zero, (uint)apidl.Length, apidl, ref riid, ref rgfReserved, out obj2);
                 if(pIContextMenu2 != null) {
                     Marshal.ReleaseComObject(pIContextMenu2);
@@ -727,7 +722,6 @@ namespace QTTabBarLib.Interop {
             finally {
                 if(ppv != null) {
                     Marshal.ReleaseComObject(ppv);
-                    ppv = null;
                 }
             }
             return num5;

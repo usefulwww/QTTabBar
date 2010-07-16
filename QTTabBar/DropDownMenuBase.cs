@@ -15,17 +15,16 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using QTTabBarLib.Interop;
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Drawing;
-    using System.Reflection;
-    using System.Runtime.CompilerServices;
-    using System.Runtime.InteropServices;
-    using System.Windows.Forms;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+using QTTabBarLib.Interop;
 
+namespace QTTabBarLib {
     internal class DropDownMenuBase : ToolStripDropDownMenu {
         private bool fChangeImageSelected;
         protected bool fEnableShiftKey;
@@ -91,7 +90,7 @@ namespace QTTabBarLib {
         }
 
         public static void ExitMenuMode() {
-            System.Type type = System.Type.GetType("System.Windows.Forms.ToolStripManager+ModalMenuFilter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
+            Type type = Type.GetType("System.Windows.Forms.ToolStripManager+ModalMenuFilter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
             if(type != null) {
                 type.GetMethod("ExitMenuMode", BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, null);
             }
@@ -129,7 +128,7 @@ namespace QTTabBarLib {
         }
 
         private static bool IsCursorOnTheEdgeOfScreen(out AnchorStyles dir, out int marginFar) {
-            Point mousePosition = Control.MousePosition;
+            Point mousePosition = MousePosition;
             Rectangle workingArea = Screen.FromPoint(mousePosition).WorkingArea;
             dir = AnchorStyles.None;
             marginFar = workingArea.Right - mousePosition.X;
@@ -256,7 +255,7 @@ namespace QTTabBarLib {
                         if(this.Items[num2].Enabled) {
                             QMenuItem item4 = this.Items[num2] as QMenuItem;
                             if(((item4 != null) && (item4.Genre != MenuGenre.Application)) && (item4.Target == MenuTarget.Folder)) {
-                                switch(Control.ModifierKeys) {
+                                switch(ModifierKeys) {
                                     case Keys.Control:
                                         item4.ImageKey = "control";
                                         goto Label_0254;
@@ -377,7 +376,7 @@ namespace QTTabBarLib {
                                     continue;
                                 }
                                 if(item4.Enabled) {
-                                    Keys modifierKeys = Control.ModifierKeys;
+                                    Keys modifierKeys = ModifierKeys;
                                     if(modifierKeys == Keys.Control) {
                                         item4.ImageKey = "control";
                                     }
@@ -423,15 +422,15 @@ namespace QTTabBarLib {
                         return;
 
                     case WM.COPYDATA: {
-                            QTTabBarLib.Interop.COPYDATASTRUCT copydatastruct = (QTTabBarLib.Interop.COPYDATASTRUCT)Marshal.PtrToStructure(m.LParam, typeof(QTTabBarLib.Interop.COPYDATASTRUCT));
-                            ownerItem = base.GetItemAt(base.PointToClient(Control.MousePosition)) as QMenuItem;
+                            COPYDATASTRUCT copydatastruct = (COPYDATASTRUCT)Marshal.PtrToStructure(m.LParam, typeof(COPYDATASTRUCT));
+                            ownerItem = base.GetItemAt(base.PointToClient(MousePosition)) as QMenuItem;
                             if(!(copydatastruct.dwData == IntPtr.Zero)) {
                                 goto Label_04B6;
                             }
                             if(ownerItem == null) {
                                 goto Label_0462;
                             }
-                            Keys keys3 = Control.ModifierKeys;
+                            Keys keys3 = ModifierKeys;
                             if((wParam == 0x11) && ((keys3 & Keys.Shift) != Keys.Shift)) {
                                 ownerItem.ImageKey = "control";
                             }
@@ -456,7 +455,7 @@ namespace QTTabBarLib {
                                 continue;
                             }
                             if(item2.Enabled) {
-                                Keys keys = Control.ModifierKeys;
+                                Keys keys = ModifierKeys;
                                 if((wParam == 0x11) && ((keys & Keys.Shift) != Keys.Shift)) {
                                     item2.ImageKey = "control";
                                 }
@@ -484,7 +483,7 @@ namespace QTTabBarLib {
                             }
                         }
                     }
-                    else if((wParam == 13) && ((this.fEnableShiftKey && (Control.ModifierKeys == Keys.Shift)) || (Control.ModifierKeys == Keys.Control))) {
+                    else if((wParam == 13) && ((this.fEnableShiftKey && (ModifierKeys == Keys.Shift)) || (ModifierKeys == Keys.Control))) {
                         foreach(ToolStripItem item3 in this.Items) {
                             if(item3.Selected) {
                                 if(item3.Enabled) {
@@ -507,7 +506,7 @@ namespace QTTabBarLib {
                 goto Label_07C2;
             Label_04B6:
                 if(ownerItem != null) {
-                    Keys keys4 = Control.ModifierKeys;
+                    Keys keys4 = ModifierKeys;
                     if(keys4 == Keys.Control) {
                         ownerItem.ImageKey = "control";
                     }
@@ -595,9 +594,7 @@ namespace QTTabBarLib {
                 goto Label_07C2;
             Label_072E:
                 this.ResetImageKeys();
-                if(this.lastMouseActiveItem != null) {
-                    this.lastMouseActiveItem = null;
-                }
+                this.lastMouseActiveItem = null;
             }
             catch(Exception exception) {
                 QTUtility2.MakeErrorLog(exception, "MSG:" + m.Msg.ToString("X") + ", WPARAM:" + m.WParam.ToString("X") + ", LPARAM:" + m.LParam.ToString("X"));

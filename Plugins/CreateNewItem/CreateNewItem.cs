@@ -15,13 +15,12 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
+using System;
+using System.IO;
+using System.Media;
+using System.Runtime.InteropServices;
 using QTPlugin;
 using QTPlugin.Interop;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Runtime.InteropServices;
-using System.Text;
 
 namespace QuizoPlugins {
     [Plugin(PluginType.Background, Author = "Quizo", Name = "CreateNewItemButton", Version = "0.9.0.0", Description = "Create New Item by shortcut key.")]
@@ -76,7 +75,7 @@ namespace QuizoPlugins {
                 string path = this.pluginServer.SelectedTab.Address.Path;
 
                 if(String.IsNullOrEmpty(path) || !Directory.Exists(path)) {
-                    System.Media.SystemSounds.Hand.Play();
+                    SystemSounds.Hand.Play();
                     return;
                 }
 
@@ -125,7 +124,7 @@ namespace QuizoPlugins {
                     Marshal.FreeCoTaskMem(pIDL);
             }
 
-            System.Media.SystemSounds.Hand.Play();
+            SystemSounds.Hand.Play();
         }
 
         #endregion

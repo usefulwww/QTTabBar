@@ -15,18 +15,18 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using Microsoft.Win32;
-    using QTTabBarLib.Interop;
-    using System;
-    using System.Drawing;
-    using System.IO;
-    using System.Media;
-    using System.Runtime.InteropServices;
-    using System.Runtime.Serialization.Formatters.Binary;
-    using System.Text;
-    using System.Windows.Forms;
+using System;
+using System.Drawing;
+using System.IO;
+using System.Media;
+using System.Runtime.InteropServices;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
+using System.Windows.Forms;
+using Microsoft.Win32;
+using QTTabBarLib.Interop;
 
+namespace QTTabBarLib {
     internal static class QTUtility2 {
         private const int THRESHOLD_ELLIPSIS = 40;
 
@@ -102,19 +102,15 @@ namespace QTTabBarLib {
             return (IntPtr)((x & 0xffff) | ((y & 0xffff) << 0x10));
         }
 
-        public static System.Drawing.Color MakeColor(int colorref) {
-            return System.Drawing.Color.FromArgb(colorref & 0xff, (colorref >> 8) & 0xff, (colorref >> 0x10) & 0xff);
+        public static Color MakeColor(int colorref) {
+            return Color.FromArgb(colorref & 0xff, (colorref >> 8) & 0xff, (colorref >> 0x10) & 0xff);
         }
 
-        public static int MakeCOLORREF(System.Drawing.Color clr) {
+        public static int MakeCOLORREF(Color clr) {
             return ((clr.R | (clr.G << 8)) | (clr.B << 0x10));
         }
 
-        public static void MakeErrorLog(Exception ex, string optional) {
-            MakeErrorLog(ex, optional, false);
-        }
-
-        public static void MakeErrorLog(Exception ex, string optional, bool fCritical) {
+        public static void MakeErrorLog(Exception ex, string optional, bool fCritical = false) {
             // TODO Make a release-acceptable version of this code
 
             //if(QTUtility.NowDebugging || fCritical) {
@@ -128,8 +124,8 @@ namespace QTTabBarLib {
                             writer.WriteLine();
                         }
                         writer.WriteLine(DateTime.Now.ToString());
-                        writer.WriteLine("OS ver: " + Environment.OSVersion.Version.ToString());
-                        writer.WriteLine("QT ver: " + QTUtility2.MakeVersionString());
+                        writer.WriteLine("OS ver: " + Environment.OSVersion.Version);
+                        writer.WriteLine("QT ver: " + MakeVersionString());
                         writer.WriteLine((ex == null) ? "Exception : N/A" : ex.ToString());
                         if(!string.IsNullOrEmpty(optional)) {
                             writer.WriteLine("Optional information : " + optional);
@@ -158,12 +154,12 @@ namespace QTTabBarLib {
             if((key & Keys.Alt) == Keys.Alt) {
                 str = str + "Alt + ";
             }
-            return (str + ((key & Keys.KeyCode)).ToString());
+            return (str + ((key & Keys.KeyCode)));
         }
 
-        public static System.Drawing.Color MakeModColor(System.Drawing.Color clr) {
+        public static Color MakeModColor(Color clr) {
             float num = 0.875f;
-            return System.Drawing.Color.FromArgb(((int)((0xff - clr.R) * num)) + clr.R, ((int)((0xff - clr.G) * num)) + clr.G, ((int)((0xff - clr.B) * num)) + clr.B);
+            return Color.FromArgb(((int)((0xff - clr.R) * num)) + clr.R, ((int)((0xff - clr.G) * num)) + clr.G, ((int)((0xff - clr.B) * num)) + clr.B);
         }
 
         public static string MakeNameEllipsis(string name, out bool fTruncated) {
@@ -294,7 +290,7 @@ namespace QTTabBarLib {
         }
 
         public static T[] ReadRegBinary<T>(string regValueName, RegistryKey rkUserApps) {
-            byte[] buffer = null;
+            byte[] buffer;
             try {
                 buffer = (byte[])rkUserApps.GetValue(regValueName, null);
             }
@@ -333,19 +329,19 @@ namespace QTTabBarLib {
             }
             path = path.Trim();
             StringBuilder builder = new StringBuilder(path.Length);
-            for(int i = 0; i < path.Length; i++) {
-                if(IsValidPathChar(path[i]) && (path[i] > '\x001f')) {
-                    builder.Append(path[i]);
+            foreach(char ch in path) {
+                if(IsValidPathChar(ch) && (ch > '\x001f')) {
+                    builder.Append(ch);
                 }
             }
             return builder.ToString();
         }
 
         public static IntPtr SendCOPYDATASTRUCT(IntPtr hWnd, IntPtr wParam, string strMsg, IntPtr dwData) {
-            if((strMsg == null) || (strMsg.Length == 0)) {
+            if(string.IsNullOrEmpty(strMsg)) {
                 strMsg = "null";
             }
-            QTTabBarLib.Interop.COPYDATASTRUCT structure = new QTTabBarLib.Interop.COPYDATASTRUCT();
+            COPYDATASTRUCT structure = new COPYDATASTRUCT();
             IntPtr hglobal = Marshal.StringToHGlobalUni(strMsg);
             structure.lpData = hglobal;
             structure.cbData = (strMsg.Length + 1) * 2;
@@ -363,8 +359,8 @@ namespace QTTabBarLib {
                 path = ShellMethods.GetPath(pIDL);
             }
             if(!string.IsNullOrEmpty(path)) {
-                for(int i = 0; i < QTUtility.NoCapturePathsList.Count; i++) {
-                    if(string.Equals(path, QTUtility.NoCapturePathsList[i], StringComparison.OrdinalIgnoreCase)) {
+                foreach(string path2 in QTUtility.NoCapturePathsList) {
+                    if(string.Equals(path, path2, StringComparison.OrdinalIgnoreCase)) {
                         return true;
                     }
                 }

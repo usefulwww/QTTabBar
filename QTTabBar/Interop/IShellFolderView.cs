@@ -15,12 +15,12 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib.Interop {
-    using BandObjectLib;
-    using System;
-    using System.Runtime.InteropServices;
-    using System.Security;
+using System;
+using System.Runtime.InteropServices;
+using System.Security;
+using BandObjectLib;
 
+namespace QTTabBarLib.Interop {
     [ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("37A378C0-F82D-11CE-AE65-08002B2E1262"), SuppressUnmanagedCodeSecurity]
     internal interface IShellFolderView {
         [PreserveSig]

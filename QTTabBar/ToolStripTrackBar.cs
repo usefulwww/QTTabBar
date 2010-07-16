@@ -15,12 +15,11 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using System;
-    using System.Drawing;
-    using System.Runtime.CompilerServices;
-    using System.Windows.Forms;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
 
+namespace QTTabBarLib {
     internal sealed class ToolStripTrackBar : ToolStripControlHost {
         private bool fSuppressEvent;
 
@@ -41,7 +40,7 @@ namespace QTTabBarLib {
         protected override void OnSubscribeControlEvents(Control control) {
             base.OnSubscribeControlEvents(control);
             TrackBar bar = (TrackBar)control;
-            bar.ValueChanged += new EventHandler(this.OnValueChange);
+            bar.ValueChanged += this.OnValueChange;
         }
 
         private void OnValueChange(object sender, EventArgs e) {

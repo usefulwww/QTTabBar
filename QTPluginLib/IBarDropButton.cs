@@ -15,11 +15,10 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTPlugin {
-    using System;
-    using System.Windows.Forms;
+using System.Windows.Forms;
 
-    public interface IBarDropButton : IBarButton, IPluginClient {
+namespace QTPlugin {
+    public interface IBarDropButton : IBarButton {
         void OnDropDownItemClick(ToolStripItem item, MouseButtons mouseButton);
         void OnDropDownOpening(ToolStripDropDownMenu menu);
 

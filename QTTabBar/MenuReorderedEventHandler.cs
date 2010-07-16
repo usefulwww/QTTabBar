@@ -15,10 +15,8 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using System;
-    using System.Runtime.CompilerServices;
-    using System.Windows.Forms;
+using System.Windows.Forms;
 
+namespace QTTabBarLib {
     internal delegate void MenuReorderedEventHandler(object sender, ToolStripItemClickedEventArgs e);
 }

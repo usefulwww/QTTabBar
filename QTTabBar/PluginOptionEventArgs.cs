@@ -15,18 +15,17 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
+using System.ComponentModel;
+
 namespace QTTabBarLib {
-    using System;
-    using System.ComponentModel;
-
     internal sealed class PluginOptionEventArgs : CancelEventArgs {
-        private QTTabBarLib.PluginViewItem pvi;
+        private PluginViewItem pvi;
 
-        public PluginOptionEventArgs(QTTabBarLib.PluginViewItem pvi) {
+        public PluginOptionEventArgs(PluginViewItem pvi) {
             this.pvi = pvi;
         }
 
-        public QTTabBarLib.PluginViewItem PluginViewItem {
+        public PluginViewItem PluginViewItem {
             get {
                 return this.pvi;
             }

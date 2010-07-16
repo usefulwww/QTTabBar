@@ -15,16 +15,16 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using Microsoft.Win32;
-    using QTTabBarLib.Interop;
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Net.NetworkInformation;
-    using System.Runtime.InteropServices;
-    using System.Windows.Forms;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net.NetworkInformation;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+using Microsoft.Win32;
+using QTTabBarLib.Interop;
 
+namespace QTTabBarLib {
     internal sealed class IDLWrapper : IDisposable {
         private uint attributes;
         private static Dictionary<string, byte[]> dicCacheIDLs;
@@ -110,20 +110,12 @@ namespace QTTabBarLib {
             }
         }
 
-        public IDLWrapper(byte[] idl)
-            : this(idl, true) {
-        }
-
         public IDLWrapper(IntPtr pIDL) {
             this.attributes = 0xfffffff0;
             this.pIDL = pIDL;
         }
 
-        public IDLWrapper(string path)
-            : this(path, false) {
-        }
-
-        public IDLWrapper(byte[] idl, bool fValidate) {
+        public IDLWrapper(byte[] idl, bool fValidate = true) {
             this.attributes = 0xfffffff0;
             this.idl = idl;
             if(this.idl != null) {
@@ -135,7 +127,7 @@ namespace QTTabBarLib {
             }
         }
 
-        public IDLWrapper(string path, bool fMsgModal) {
+        public IDLWrapper(string path, bool fMsgModal = false) {
             this.attributes = 0xfffffff0;
             if(!string.IsNullOrEmpty(path)) {
                 this.path = path;
@@ -329,7 +321,7 @@ namespace QTTabBarLib {
                 return false;
             }
             if(path.Length > 2) {
-                string hostNameOrAddress = string.Empty;
+                string hostNameOrAddress;
                 if(path.StartsWith("http://") || path.StartsWith("ftp://")) {
                     int startIndex = path.StartsWith("http://") ? 7 : 6;
                     int index = path.IndexOf("/", startIndex);

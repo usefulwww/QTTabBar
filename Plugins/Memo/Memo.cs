@@ -15,16 +15,15 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QuizoPlugins {
-    using Microsoft.Win32;
-    using QTPlugin;
-    using QTPlugin.Interop;
-    using System;
-    using System.Globalization;
-    using System.IO;
-    using System.Runtime.InteropServices;
-    using System.Windows.Forms;
+using System;
+using System.Globalization;
+using System.IO;
+using System.Windows.Forms;
+using Microsoft.Win32;
+using QTPlugin;
+using QTPlugin.Interop;
 
+namespace QuizoPlugins {
     [Plugin(PluginType.Background, Author = "Quizo", Name = "Folder Memo", Version = "1.0.0.0", Description = "Memo for folder.")]
     public class Memo : IPluginClient {
         internal static byte[] ConfigValues = new byte[4];
@@ -94,8 +93,8 @@ namespace QuizoPlugins {
                 }
             }
             this.pluginServer.RegisterMenu(this, MenuType.Tab, ResStrs[0], true);
-            this.pluginServer.NavigationComplete += new PluginEventHandler(this.pluginServer_NavigationComplete);
-            this.pluginServer.ExplorerStateChanged += new PluginEventHandler(this.pluginServer_ExplorerStateChanged);
+            this.pluginServer.NavigationComplete += this.pluginServer_NavigationComplete;
+            this.pluginServer.ExplorerStateChanged += this.pluginServer_ExplorerStateChanged;
         }
 
         internal void OpenDirectory(string path) {

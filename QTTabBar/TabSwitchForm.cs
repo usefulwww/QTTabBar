@@ -15,17 +15,16 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using QTTabBarLib.Interop;
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Drawing;
-    using System.Runtime.CompilerServices;
-    using System.Runtime.InteropServices;
-    using System.Windows.Forms;
-    using System.Windows.Forms.VisualStyles;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
+using QTTabBarLib.Interop;
 
+namespace QTTabBarLib {
     internal sealed class TabSwitchForm : Form {
         private IContainer components;
         private Dictionary<int, Rectangle> dicItemRcts = new Dictionary<int, Rectangle>();
@@ -40,7 +39,7 @@ namespace QTTabBarLib {
         private const int MAXITEM = 11;
         private static int menuHeight;
         private int selectedIndex;
-        private System.Windows.Forms.ToolTip toolTipSwitcher;
+        private ToolTip toolTipSwitcher;
 
         public event ItemCheckEventHandler Switched;
 
@@ -103,7 +102,7 @@ namespace QTTabBarLib {
                 this.DrawText(g, this.lstPaths[num14].strDisplay, rectangle3, false, flag2, StringAlignment.Near);
                 this.dicItemRcts[num14] = rectangle4;
                 if(num14 == this.iHoveredIndex) {
-                    DrawSelection(g, rectangle4, Control.MouseButtons == MouseButtons.Left);
+                    DrawSelection(g, rectangle4, MouseButtons == MouseButtons.Left);
                 }
                 num4 += menuHeight;
             }
@@ -141,7 +140,7 @@ namespace QTTabBarLib {
                 this.DrawText(g, this.lstPaths[num16].strDisplay, rectangle11, false, flag4, StringAlignment.Near);
                 this.dicItemRcts[num16] = rectangle12;
                 if(num16 == this.iHoveredIndex) {
-                    DrawSelection(g, rectangle12, Control.MouseButtons == MouseButtons.Left);
+                    DrawSelection(g, rectangle12, MouseButtons == MouseButtons.Left);
                 }
                 num4 += menuHeight;
             }
@@ -205,8 +204,8 @@ namespace QTTabBarLib {
         }
 
         private static void DrawTextOnGlass(IntPtr hDC, string text, Font font, Rectangle rct, int iGlowSize, StringAlignment horizontalAlign) {
-            QTTabBarLib.Interop.RECT rect = new QTTabBarLib.Interop.RECT();
-            QTTabBarLib.Interop.RECT pRect = new QTTabBarLib.Interop.RECT();
+            RECT rect = new RECT();
+            RECT pRect = new RECT();
             rect.left = rct.Left;
             rect.right = rct.Right + (4 * iGlowSize);
             rect.top = rct.Top;
@@ -232,8 +231,8 @@ namespace QTTabBarLib {
             IntPtr ptr = PInvoke.CreateCompatibleDC(hDC);
             if(ptr != IntPtr.Zero) {
                 IntPtr ptr5;
-                QTTabBarLib.Interop.BITMAPINFO pbmi = new QTTabBarLib.Interop.BITMAPINFO();
-                pbmi.bmiHeader.biSize = Marshal.SizeOf(typeof(QTTabBarLib.Interop.BITMAPINFOHEADER));
+                BITMAPINFO pbmi = new BITMAPINFO();
+                pbmi.bmiHeader.biSize = Marshal.SizeOf(typeof(BITMAPINFOHEADER));
                 pbmi.bmiHeader.biWidth = rect.Width;
                 pbmi.bmiHeader.biHeight = -rect.Height;
                 pbmi.bmiHeader.biPlanes = 1;
@@ -305,7 +304,7 @@ namespace QTTabBarLib {
 
         private void InitializeComponent() {
             this.components = new Container();
-            this.toolTipSwitcher = new System.Windows.Forms.ToolTip(this.components);
+            this.toolTipSwitcher = new ToolTip(this.components);
             base.SuspendLayout();
             this.toolTipSwitcher.ShowAlways = true;
             base.AutoScaleDimensions = new SizeF(6f, 13f);
@@ -368,7 +367,7 @@ namespace QTTabBarLib {
         private void SetCompositionState() {
             if(QTUtility.IsVista) {
                 if((0 <= PInvoke.DwmIsCompositionEnabled(out this.fCompositionEnabled)) && this.fCompositionEnabled) {
-                    QTTabBarLib.Interop.MARGINS pMarInset = new QTTabBarLib.Interop.MARGINS();
+                    MARGINS pMarInset = new MARGINS();
                     pMarInset.cxLeftWidth = -1;
                     if(0 <= PInvoke.DwmExtendFrameIntoClientArea(base.Handle, ref pMarInset)) {
                         base.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
@@ -385,7 +384,7 @@ namespace QTTabBarLib {
         }
 
         public void ShowSwitcher(IntPtr hwndExplr, int indexCurrent, List<PathData> lstPaths) {
-            QTTabBarLib.Interop.RECT rect;
+            RECT rect;
             this.initialSelectedIndex = this.selectedIndex = indexCurrent;
             this.lstPaths = lstPaths;
             menuHeight = SystemInformation.MenuHeight;
@@ -444,7 +443,7 @@ namespace QTTabBarLib {
 
                 case WM.MOUSEACTIVATE:
                     if((QTUtility2.GET_Y_LPARAM(m.LParam) == 0x201) && (this.iHoveredIndex != -1)) {
-                        Point point = base.PointToClient(Control.MousePosition);
+                        Point point = base.PointToClient(MousePosition);
                         Dictionary<int, Rectangle> dictionary = new Dictionary<int, Rectangle>(this.dicItemRcts);
                         foreach(int num in dictionary.Keys) {
                             if(num == this.iHoveredIndex) {
@@ -483,9 +482,9 @@ namespace QTTabBarLib {
             base.WndProc(ref m);
         }
 
-        protected override System.Windows.Forms.CreateParams CreateParams {
+        protected override CreateParams CreateParams {
             get {
-                System.Windows.Forms.CreateParams createParams = base.CreateParams;
+                CreateParams createParams = base.CreateParams;
                 if(!QTUtility.IsVista) {
                     createParams.ClassStyle |= 0x20000;
                 }

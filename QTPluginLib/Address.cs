@@ -15,11 +15,11 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTPlugin {
-    using QTPlugin.Interop;
-    using System;
-    using System.Runtime.InteropServices;
+using System;
+using System.Runtime.InteropServices;
+using QTPlugin.Interop;
 
+namespace QTPlugin {
     [StructLayout(LayoutKind.Sequential)]
     public struct Address {
         public byte[] ITEMIDLIST;

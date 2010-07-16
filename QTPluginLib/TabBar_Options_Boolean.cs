@@ -16,8 +16,6 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace QTPlugin {
-    using System;
-
     public enum TabBar_Options_Boolean {
         ActivateNew,
         ReuseTab,

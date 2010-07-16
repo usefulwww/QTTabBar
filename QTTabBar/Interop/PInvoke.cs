@@ -15,17 +15,16 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib.Interop {
-    using BandObjectLib;
-    using QTTabBarLib;
-    using System;
-    using System.Drawing;
-    using System.Runtime.InteropServices;
-    using System.Runtime.InteropServices.ComTypes;
-    using System.Security;
-    using System.Text;
-    using System.Windows.Forms;
+using System;
+using System.Drawing;
+using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
+using System.Security;
+using System.Text;
+using System.Windows.Forms;
+using BandObjectLib;
 
+namespace QTTabBarLib.Interop {
     [SuppressUnmanagedCodeSecurity]
     internal static class PInvoke {
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
@@ -45,11 +44,11 @@ namespace QTTabBarLib.Interop {
         [DllImport("gdi32.dll")]
         public static extern IntPtr CreateCompatibleDC(IntPtr hDC);
         [DllImport("gdi32.dll")]
-        public static extern IntPtr CreateDIBSection(IntPtr hDC, ref QTTabBarLib.Interop.BITMAPINFO pbmi, uint iUsage, out IntPtr ppvBits, IntPtr hSection, uint dwOffset);
+        public static extern IntPtr CreateDIBSection(IntPtr hDC, ref BITMAPINFO pbmi, uint iUsage, out IntPtr ppvBits, IntPtr hSection, uint dwOffset);
         [DllImport("gdi32.dll", CharSet = CharSet.Unicode)]
-        public static extern IntPtr CreateFontIndirect(ref QTTabBarLib.Interop.LOGFONT lplf);
+        public static extern IntPtr CreateFontIndirect(ref LOGFONT lplf);
         [DllImport("user32.dll")]
-        public static extern IntPtr CreateIconIndirect(ref QTTabBarLib.Interop.ICONINFO piconinfo);
+        public static extern IntPtr CreateIconIndirect(ref ICONINFO piconinfo);
         [DllImport("gdi32.dll")]
         public static extern bool DeleteDC(IntPtr hDC);
         [DllImport("gdi32.dll")]
@@ -63,11 +62,11 @@ namespace QTTabBarLib.Interop {
         [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
         public static extern uint DragQueryFile(IntPtr hDrop, uint iFile, StringBuilder lpszFile, int cch);
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        public static extern int DrawTextExW(IntPtr hdc, IntPtr lpchText, int cchText, ref QTTabBarLib.Interop.RECT lprc, int dwDTFormat, IntPtr lpDTParams);
+        public static extern int DrawTextExW(IntPtr hdc, IntPtr lpchText, int cchText, ref RECT lprc, int dwDTFormat, IntPtr lpDTParams);
         [DllImport("UxTheme.dll", CharSet = CharSet.Unicode)]
-        public static extern int DrawThemeTextEx(IntPtr hTheme, IntPtr hdc, int iPartId, int iStateId, string text, int iCharCount, TextFormatFlags dwFlags, ref QTTabBarLib.Interop.RECT pRect, ref DTTOPTS pOptions);
+        public static extern int DrawThemeTextEx(IntPtr hTheme, IntPtr hdc, int iPartId, int iStateId, string text, int iCharCount, TextFormatFlags dwFlags, ref RECT pRect, ref DTTOPTS pOptions);
         [DllImport("dwmapi.dll")]
-        public static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref QTTabBarLib.Interop.MARGINS pMarInset);
+        public static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref MARGINS pMarInset);
         [DllImport("dwmapi.dll")]
         public static extern int DwmIsCompositionEnabled(out bool pfEnabled);
         [DllImport("user32.dll")]
@@ -103,7 +102,7 @@ namespace QTTabBarLib.Interop {
         [DllImport("user32.dll")]
         public static extern uint GetMenuItemID(IntPtr hMenu, int nPos);
         [DllImport("gdi32.dll", CharSet = CharSet.Unicode)]
-        public static extern int GetObject(IntPtr hgdiobj, int cbBuffer, out QTTabBarLib.Interop.LOGFONT lpvObject);
+        public static extern int GetObject(IntPtr hgdiobj, int cbBuffer, out LOGFONT lpvObject);
         [DllImport("user32.dll")]
         private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
         public static IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex) {
@@ -116,7 +115,7 @@ namespace QTTabBarLib.Interop {
         [DllImport("user32.dll", EntryPoint = "GetWindowLongPtr")]
         private static extern IntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
         [DllImport("user32.dll")]
-        public static extern bool GetWindowRect(IntPtr hWnd, out QTTabBarLib.Interop.RECT pRect);
+        public static extern bool GetWindowRect(IntPtr hWnd, out RECT pRect);
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
         [DllImport("user32.dll")]
@@ -154,8 +153,8 @@ namespace QTTabBarLib.Interop {
         public static extern bool IsWindowVisible(IntPtr hWnd);
         [DllImport("user32.dll")]
         public static extern bool IsZoomed(IntPtr hWnd);
-        public static QTTabBarLib.Interop.RECT ListView_GetItemRect(IntPtr hwnd, int iItem, int iSubItem, int code) {
-            QTTabBarLib.Interop.RECT structure = new QTTabBarLib.Interop.RECT();
+        public static RECT ListView_GetItemRect(IntPtr hwnd, int iItem, int iSubItem, int code) {
+            RECT structure = new RECT();
             structure.left = code;
             structure.top = iSubItem;
             IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
@@ -166,13 +165,13 @@ namespace QTTabBarLib.Interop {
             else {
                 SendMessage(hwnd, 0x1038, (IntPtr)iItem, ptr);
             }
-            structure = (QTTabBarLib.Interop.RECT)Marshal.PtrToStructure(ptr, typeof(QTTabBarLib.Interop.RECT));
+            structure = (RECT)Marshal.PtrToStructure(ptr, typeof(RECT));
             Marshal.FreeHGlobal(ptr);
             return structure;
         }
 
         public static int ListView_HitTest(IntPtr hwnd, IntPtr lParam) {
-            QTTabBarLib.Interop.LVHITTESTINFO structure = new QTTabBarLib.Interop.LVHITTESTINFO();
+            LVHITTESTINFO structure = new LVHITTESTINFO();
             structure.pt.x = QTUtility2.GET_X_LPARAM(lParam);
             structure.pt.y = QTUtility2.GET_Y_LPARAM(lParam);
             IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
@@ -187,7 +186,7 @@ namespace QTTabBarLib.Interop {
         }
 
         [DllImport("user32.dll")]
-        public static extern int MapWindowPoints(IntPtr hWndFrom, IntPtr hWndTo, ref QTTabBarLib.Interop.RECT lpPoints, int cPoints);
+        public static extern int MapWindowPoints(IntPtr hWndFrom, IntPtr hWndTo, ref RECT lpPoints, int cPoints);
         [DllImport("user32.dll")]
         public static extern int MapWindowPoints(IntPtr hWndFrom, IntPtr hWndTo, ref Point lpPoints, int cPoints);
         [DllImport("user32.dll")]
@@ -195,7 +194,7 @@ namespace QTTabBarLib.Interop {
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         public static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
         [DllImport("user32.dll")]
-        public static extern bool PtInRect(ref QTTabBarLib.Interop.RECT lprc, BandObjectLib.POINT pt);
+        public static extern bool PtInRect(ref RECT lprc, POINT pt);
         public static IntPtr Ptr_OP_AND(IntPtr ptr, uint ui) {
             if(IntPtr.Size == 8) {
                 return (IntPtr)(((long)ptr) & ui);
@@ -270,13 +269,13 @@ namespace QTTabBarLib.Interop {
         [DllImport("user32.dll")]
         public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
         [DllImport("user32.dll")]
-        public static extern IntPtr SetWindowsHookEx(int idHook, QTTabBarLib.Interop.HookProc lpfn, IntPtr hInstance, int dwThreadId);
+        public static extern IntPtr SetWindowsHookEx(int idHook, HookProc lpfn, IntPtr hInstance, int dwThreadId);
         [DllImport("user32.dll")]
         public static extern bool ScreenToClient(IntPtr hwnd, ref Point lpPoint);
         [DllImport("shell32.dll")]
         public static extern int SHBindToParent(IntPtr pidl, [MarshalAs(UnmanagedType.LPStruct)] Guid riid, out IShellFolder ppv, out IntPtr ppidlLast);
         [DllImport("shell32.dll")]
-        public static extern int SHCreateShellItem(IntPtr pidlParent, IShellFolder psfParent, IntPtr pidl, out QTTabBarLib.Interop.IShellItem ppsi);
+        public static extern int SHCreateShellItem(IntPtr pidlParent, IShellFolder psfParent, IntPtr pidl, out IShellItem ppsi);
         [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
         public static extern bool ShellExecuteEx(ref SHELLEXECUTEINFO lpExecInfo);
         public static int SHFileOperation(ref SHFILEOPSTRUCT lpFileOp) {
@@ -328,11 +327,11 @@ namespace QTTabBarLib.Interop {
         [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
         public static extern int StrRetToBuf(ref STRRET pstr, IntPtr pidl, StringBuilder pszBuf, int cchBuf);
         [DllImport("user32.dll")]
-        public static extern bool TrackMouseEvent(ref QTTabBarLib.Interop.TRACKMOUSEEVENT lpEventTrack);
+        public static extern bool TrackMouseEvent(ref TRACKMOUSEEVENT lpEventTrack);
         [DllImport("user32.dll")]
         public static extern uint TrackPopupMenu(IntPtr hMenu, uint uFlags, int x, int y, int nReserved, IntPtr hWnd, IntPtr prcRect);
         [DllImport("user32.dll")]
-        public static extern bool TranslateMessage(ref BandObjectLib.MSG lpMsg);
+        public static extern bool TranslateMessage(ref MSG lpMsg);
         [DllImport("user32.dll")]
         public static extern bool UnhookWindowsHookEx(IntPtr hhk);
         [DllImport("user32.dll")]

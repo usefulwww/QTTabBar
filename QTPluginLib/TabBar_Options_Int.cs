@@ -16,8 +16,6 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace QTPlugin {
-    using System;
-
     public enum TabBar_Options_Int {
         ActiveTabOnClose = 0x10003,
         BarDoubleClicked = 0x10005,

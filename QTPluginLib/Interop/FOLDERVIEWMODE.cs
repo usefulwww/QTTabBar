@@ -16,8 +16,6 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace QTPlugin.Interop {
-    using System;
-
     public enum FOLDERVIEWMODE {
         FVM_DETAILS = 4,
         FVM_ICON = 1,

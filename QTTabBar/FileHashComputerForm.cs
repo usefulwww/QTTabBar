@@ -15,22 +15,20 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using Microsoft.Win32;
-    using QTTabBarLib.Interop;
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Drawing;
-    using System.IO;
-    using System.Media;
-    using System.Runtime.CompilerServices;
-    using System.Runtime.Remoting.Messaging;
-    using System.Security.Cryptography;
-    using System.Text;
-    using System.Windows.Forms;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.IO;
+using System.Media;
+using System.Runtime.Remoting.Messaging;
+using System.Security.Cryptography;
+using System.Text;
+using System.Windows.Forms;
+using Microsoft.Win32;
+using QTTabBarLib.Interop;
 
+namespace QTTabBarLib {
     internal sealed class FileHashComputerForm : Form {
         private Button btnClear;
         private Button btnClose;
@@ -43,12 +41,12 @@ namespace QTTabBarLib {
         private DataGridViewImageColumn clmn1_Icon;
         private DataGridViewTextBoxColumn clmn2_Path;
         private DataGridViewProgressBarColumn clmn3_Hash;
-        private static System.Drawing.Color clrNew = System.Drawing.Color.FromArgb(0xff, 0xea, 0xff);
+        private static Color clrNew = Color.FromArgb(0xff, 0xea, 0xff);
         private int cMatched_Prv;
         private ComboBox cmbHashType;
         private static int colorIndex;
         private static int colorIndexModTimeDiffers = 1;
-        private static System.Drawing.Color[] colors = new System.Drawing.Color[] { System.Drawing.Color.FromArgb(0xd1, 0xff, 0xff), System.Drawing.Color.FromArgb(0xd1, 0xff, 0xd1), System.Drawing.Color.FromArgb(0xff, 0xff, 0xd1), System.Drawing.Color.FromArgb(0xff, 0xd1, 0xd1), System.Drawing.Color.FromArgb(0xff, 0xd1, 0xff), System.Drawing.Color.FromArgb(0xd1, 0xd1, 0xff), System.Drawing.Color.FromArgb(0xd1, 0xff, 0xe8), System.Drawing.Color.FromArgb(0xe8, 0xff, 0xd1) };
+        private static Color[] colors = new Color[] { Color.FromArgb(0xd1, 0xff, 0xff), Color.FromArgb(0xd1, 0xff, 0xd1), Color.FromArgb(0xff, 0xff, 0xd1), Color.FromArgb(0xff, 0xd1, 0xd1), Color.FromArgb(0xff, 0xd1, 0xff), Color.FromArgb(0xd1, 0xd1, 0xff), Color.FromArgb(0xd1, 0xff, 0xe8), Color.FromArgb(0xe8, 0xff, 0xd1) };
         private DataGridView dgvHash;
         private Dictionary<string, List<DataGridViewRow>> dicResult = new Dictionary<string, List<DataGridViewRow>>();
         private volatile bool fCancellationPending;
@@ -128,7 +126,7 @@ namespace QTTabBarLib {
 
         private void buttonRefresh_Click(object sender, EventArgs e) {
             List<string> list = new List<string>();
-            foreach(DataGridViewRow row in (IEnumerable)this.dgvHash.Rows) {
+            foreach(DataGridViewRow row in this.dgvHash.Rows) {
                 if(!list.Contains(row.Cells[1].ToolTipText)) {
                     list.Add(row.Cells[1].ToolTipText);
                 }
@@ -140,7 +138,7 @@ namespace QTTabBarLib {
         private void checkBoxFullPath_CheckedChanged(object sender, EventArgs e) {
             bool flag = this.chbFullPath.Checked;
             this.dgvHash.SuspendLayout();
-            foreach(DataGridViewRow row in (IEnumerable)this.dgvHash.Rows) {
+            foreach(DataGridViewRow row in this.dgvHash.Rows) {
                 row.Cells[1].Value = flag ? row.Cells[1].ToolTipText : Path.GetFileName(row.Cells[1].ToolTipText);
             }
             this.dgvHash.ResumeLayout();
@@ -152,8 +150,8 @@ namespace QTTabBarLib {
         }
 
         private void ClearNewColor() {
-            foreach(DataGridViewRow row in (IEnumerable)this.dgvHash.Rows) {
-                row.Cells[0].Style.BackColor = System.Drawing.Color.Empty;
+            foreach(DataGridViewRow row in this.dgvHash.Rows) {
+                row.Cells[0].Style.BackColor = Color.Empty;
             }
         }
 
@@ -176,7 +174,7 @@ namespace QTTabBarLib {
             else if(this.qPendings.Count > 0) {
                 PathRowPairs pairs = this.qPendings.Dequeue();
                 this.iThreadsCounter++;
-                new HashInvoker(this.ComputeHashCore).BeginInvoke(pairs.Paths.ToArray(), pairs.Rows.ToArray(), this.cmbHashType.SelectedIndex, new AsyncCallback(this.AsyncComplete), null);
+                new HashInvoker(this.ComputeHashCore).BeginInvoke(pairs.Paths.ToArray(), pairs.Rows.ToArray(), this.cmbHashType.SelectedIndex, this.AsyncComplete, null);
             }
             else {
                 this.SetButtonsEnabled(true);
@@ -222,7 +220,7 @@ namespace QTTabBarLib {
                 try {
                     byte[] buffer;
                     DataGridViewProgressBarCell cell = (DataGridViewProgressBarCell)rows[i].Cells[2];
-                    using(FileHashStream stream = new FileHashStream(paths[i], new ReportProgressCallback(this.ReportCallbackAsync), cell)) {
+                    using(FileHashStream stream = new FileHashStream(paths[i], this.ReportCallbackAsync, cell)) {
                         using(HashAlgorithm algorithm = this.CreateHashAlgorithm(iHashType)) {
                             buffer = algorithm.ComputeHash(stream);
                         }
@@ -299,7 +297,7 @@ namespace QTTabBarLib {
                     this.dgvHash.ResumeLayout();
                     this.dicResult.Clear();
                     this.cMatched_Prv = this.cErr_Prv = 0;
-                    foreach(DataGridViewRow row3 in (IEnumerable)this.dgvHash.Rows) {
+                    foreach(DataGridViewRow row3 in this.dgvHash.Rows) {
                         string toolTipText = row3.Cells[2].ToolTipText;
                         if(toolTipText == VALUE_ERROR) {
                             this.cErr_Prv++;
@@ -327,9 +325,9 @@ namespace QTTabBarLib {
 
         private void dataGridView1_MouseDown(object sender, MouseEventArgs e) {
             if((this.dgvHash.HitTest(e.X, e.Y).RowIndex == -1) && (this.dgvHash.Columns[0].HeaderCell.Size.Height < e.Y)) {
-                foreach(DataGridViewRow row in (IEnumerable)this.dgvHash.Rows) {
+                foreach(DataGridViewRow row in this.dgvHash.Rows) {
                     row.Selected = false;
-                    row.Cells[0].Style.BackColor = System.Drawing.Color.Empty;
+                    row.Cells[0].Style.BackColor = Color.Empty;
                 }
             }
         }
@@ -391,10 +389,10 @@ namespace QTTabBarLib {
             this.dgvHash.RowHeadersVisible = false;
             this.dgvHash.RowTemplate.Height = 0x15;
             this.dgvHash.Size = new Size(0x1bf, 0x6c);
-            this.dgvHash.MouseDown += new MouseEventHandler(this.dataGridView1_MouseDown);
-            this.dgvHash.KeyDown += new KeyEventHandler(this.dataGridView1_KeyDown);
-            this.dgvHash.CellStateChanged += new DataGridViewCellStateChangedEventHandler(this.dataGridView1_CellStateChanged);
-            this.dgvHash.CellMouseDoubleClick += new DataGridViewCellMouseEventHandler(this.dataGridView1_CellMouseDoubleClick);
+            this.dgvHash.MouseDown += this.dataGridView1_MouseDown;
+            this.dgvHash.KeyDown += this.dataGridView1_KeyDown;
+            this.dgvHash.CellStateChanged += this.dataGridView1_CellStateChanged;
+            this.dgvHash.CellMouseDoubleClick += this.dataGridView1_CellMouseDoubleClick;
             this.clmn1_Icon.ReadOnly = true;
             this.clmn1_Icon.Resizable = DataGridViewTriState.False;
             this.clmn1_Icon.Width = 0x12;
@@ -417,24 +415,24 @@ namespace QTTabBarLib {
             this.panel1.Dock = DockStyle.Bottom;
             this.panel1.Location = new Point(0, 0x6c);
             this.panel1.Size = new Size(0x1bf, 0x5d);
-            this.panel1.Paint += new PaintEventHandler(this.panel1_Paint);
+            this.panel1.Paint += this.panel1_Paint;
             this.btnClose.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
             this.btnClose.Location = new Point(0x171, 0x43);
             this.btnClose.Size = new Size(0x4b, 0x17);
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
-            this.btnClose.Click += new EventHandler(this.buttonClose_Click);
+            this.btnClose.Click += this.buttonClose_Click;
             this.btnClear.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
             this.btnClear.Location = new Point(0x120, 0x43);
             this.btnClear.Size = new Size(0x4b, 0x17);
             this.btnClear.Text = "Clear";
             this.btnClear.UseVisualStyleBackColor = true;
-            this.btnClear.Click += new EventHandler(this.buttonClear_Click);
+            this.btnClear.Click += this.buttonClear_Click;
             this.btnRefresh.Location = new Point(0x89, 8);
             this.btnRefresh.Size = new Size(0x4b, 0x15);
             this.btnRefresh.Text = "Refresh";
             this.btnRefresh.UseVisualStyleBackColor = true;
-            this.btnRefresh.Click += new EventHandler(this.buttonRefresh_Click);
+            this.btnRefresh.Click += this.buttonRefresh_Click;
             this.cmbHashType.DropDownStyle = ComboBoxStyle.DropDownList;
             this.cmbHashType.Items.AddRange(new object[] { "MD5", "SHA-1", "SHA-256", "SHA-384", "SHA-512" });
             this.cmbHashType.Location = new Point(12, 8);
@@ -444,7 +442,7 @@ namespace QTTabBarLib {
             this.chbTopMost.Size = new Size(0x4b, 0x17);
             this.chbTopMost.Text = "Always on top";
             this.chbTopMost.UseVisualStyleBackColor = true;
-            this.chbTopMost.CheckedChanged += new EventHandler(this.checkBoxTopMost_CheckedChanged);
+            this.chbTopMost.CheckedChanged += this.checkBoxTopMost_CheckedChanged;
             this.chbShowResult.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
             this.chbShowResult.AutoSize = true;
             this.chbShowResult.Location = new Point(0xd7, 0x29);
@@ -463,7 +461,7 @@ namespace QTTabBarLib {
             this.chbFullPath.Size = new Size(0x5e, 0x11);
             this.chbFullPath.Text = "Full path";
             this.chbFullPath.UseVisualStyleBackColor = true;
-            this.chbFullPath.CheckedChanged += new EventHandler(this.checkBoxFullPath_CheckedChanged);
+            this.chbFullPath.CheckedChanged += this.checkBoxFullPath_CheckedChanged;
             base.AutoScaleDimensions = new SizeF(6f, 13f);
             base.AutoScaleMode = AutoScaleMode.Font;
             base.ClientSize = new Size(0x1bf, 0xab);
@@ -476,7 +474,7 @@ namespace QTTabBarLib {
             base.ShowInTaskbar = false;
             base.StartPosition = FormStartPosition.Manual;
             this.Text = "Hash";
-            base.FormClosing += new FormClosingEventHandler(this.MD5Form_FormClosing);
+            base.FormClosing += this.MD5Form_FormClosing;
             ((ISupportInitialize)this.dgvHash).EndInit();
             this.panel1.ResumeLayout(false);
             base.ResumeLayout(false);
@@ -602,7 +600,7 @@ namespace QTTabBarLib {
                             List<DataGridViewRow> list4 = new List<DataGridViewRow>();
                             int rowIndex = -1;
                             bool flag2 = false;
-                            foreach(DataGridViewRow row in (IEnumerable)this.dgvHash.Rows) {
+                            foreach(DataGridViewRow row in this.dgvHash.Rows) {
                                 if(!flag2 && string.Equals(row.Cells[1].ToolTipText, str, StringComparison.OrdinalIgnoreCase)) {
                                     if((row.Tag != null) && (lastWriteTime != ((RowProperties)row.Tag).modTime)) {
                                         list3.Add(row);
@@ -667,7 +665,7 @@ namespace QTTabBarLib {
                         }
                         else {
                             this.iThreadsCounter++;
-                            new HashInvoker(this.ComputeHashCore).BeginInvoke(list.ToArray(), rows.ToArray(), this.cmbHashType.SelectedIndex, new AsyncCallback(this.AsyncComplete), null);
+                            new HashInvoker(this.ComputeHashCore).BeginInvoke(list.ToArray(), rows.ToArray(), this.cmbHashType.SelectedIndex, this.AsyncComplete, null);
                         }
                     }
                     this.dgvHash.ResumeLayout();
@@ -680,7 +678,7 @@ namespace QTTabBarLib {
             }
         }
 
-        protected override void WndProc(ref System.Windows.Forms.Message m) {
+        protected override void WndProc(ref Message m) {
             if(m.Msg == WM.DROPFILES) {
                 this.AddDropped(m.WParam);
             }
@@ -694,7 +692,7 @@ namespace QTTabBarLib {
         }
 
         private sealed class FileHashStream : Stream {
-            private FileHashComputerForm.ReportProgressCallback callbackCancelAsync;
+            private ReportProgressCallback callbackCancelAsync;
             private DataGridViewProgressBarCell cell;
             private bool fAborted;
             private bool fEnoughSize;
@@ -703,7 +701,7 @@ namespace QTTabBarLib {
             private long lCounter;
             private const long MIN_REPORTSIZE = 0x200000L;
 
-            public FileHashStream(string path, FileHashComputerForm.ReportProgressCallback callbackCancelAsync, DataGridViewProgressBarCell cell) {
+            public FileHashStream(string path, ReportProgressCallback callbackCancelAsync, DataGridViewProgressBarCell cell) {
                 this.fs = new FileStream(path, FileMode.Open, FileAccess.Read);
                 long length = this.fs.Length;
                 this.fEnoughSize = length > 0x200000L;

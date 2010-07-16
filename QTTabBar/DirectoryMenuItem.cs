@@ -15,19 +15,19 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using System;
+using System;
 
+namespace QTTabBarLib {
     internal sealed class DirectoryMenuItem : QMenuItem {
         private DateTime dtDirMod;
-        private QTTabBarLib.EventPack ep;
+        private EventPack ep;
         public bool OnceOpened;
 
         public DirectoryMenuItem(string text)
             : base(text, MenuTarget.Folder, MenuGenre.Application) {
         }
 
-        public QTTabBarLib.EventPack EventPack {
+        public EventPack EventPack {
             get {
                 return this.ep;
             }

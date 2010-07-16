@@ -15,12 +15,12 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib.Interop {
-    using System;
-    using System.Drawing;
-    using System.Runtime.InteropServices;
-    using System.Security;
+using System;
+using System.Drawing;
+using System.Runtime.InteropServices;
+using System.Security;
 
+namespace QTTabBarLib.Interop {
     [ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), SuppressUnmanagedCodeSecurity, Guid("091162a4-bc96-411f-aae8-c5122cd03363")]
     internal interface ISharedBitmap {
         [PreserveSig]

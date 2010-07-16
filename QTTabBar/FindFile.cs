@@ -15,11 +15,11 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using System;
-    using System.Runtime.InteropServices;
-    using System.Security;
+using System;
+using System.Runtime.InteropServices;
+using System.Security;
 
+namespace QTTabBarLib {
     internal sealed class FindFile : IDisposable {
         private const int ERROR_NO_MORE_FILES = 0x12;
         private const int FILE_ATTRIBUTE_DIRECTORY = 0x10;

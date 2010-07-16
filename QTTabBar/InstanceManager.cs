@@ -15,16 +15,13 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using QTTabBarLib.Interop;
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Runtime.CompilerServices;
-    using System.Runtime.InteropServices;
-    using System.Threading;
+using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Threading;
+using QTTabBarLib.Interop;
 
+namespace QTTabBarLib {
     internal sealed class InstanceManager {
         private Dictionary<IntPtr, IntPtr> dicBtnBarHandle = new Dictionary<IntPtr, IntPtr>();
         private ReaderWriterLock rwLockBtnBar = new ReaderWriterLock();
@@ -106,7 +103,6 @@ namespace QTTabBarLib {
         }
 
         public bool NextInstanceExists() {
-            bool flag;
             try {
                 this.rwLockTabBar.AcquireWriterLock(-1);
                 while(this.sdInstancePair.Count > 0) {
@@ -117,12 +113,11 @@ namespace QTTabBarLib {
                     }
                     this.sdInstancePair.Pop();
                 }
-                flag = false;
             }
             finally {
                 this.rwLockTabBar.ReleaseWriterLock();
             }
-            return flag;
+            return false;
         }
 
         public void PushInstance(IntPtr hwndExplr, QTTabBarClass tabBar) {
@@ -176,7 +171,6 @@ namespace QTTabBarLib {
         }
 
         public bool TryGetButtonBarHandle(IntPtr hwndExplr, out IntPtr hwndButtonBar) {
-            bool flag;
             try {
                 IntPtr ptr;
                 this.rwLockBtnBar.AcquireReaderLock(-1);
@@ -185,12 +179,11 @@ namespace QTTabBarLib {
                     return true;
                 }
                 hwndButtonBar = IntPtr.Zero;
-                flag = false;
             }
             finally {
                 this.rwLockBtnBar.ReleaseReaderLock();
             }
-            return flag;
+            return false;
         }
 
         public IntPtr CurrentHandle {

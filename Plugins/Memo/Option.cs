@@ -15,17 +15,14 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QuizoPlugins {
-    using System;
-    using System.ComponentModel;
-    using System.Drawing;
-    using System.Windows.Forms;
+using System.Drawing;
+using System.Windows.Forms;
 
+namespace QuizoPlugins {
     public class Option : Form {
         private Button buttonCancel;
         private Button buttonOK;
         private ComboBox comboBoxMode;
-        private IContainer components;
 
         public Option() {
             this.InitializeComponent();
@@ -36,13 +33,6 @@ namespace QuizoPlugins {
             else {
                 this.comboBoxMode.SelectedIndex = 0;
             }
-        }
-
-        protected override void Dispose(bool disposing) {
-            if(disposing && (this.components != null)) {
-                this.components.Dispose();
-            }
-            base.Dispose(disposing);
         }
 
         private void InitializeComponent() {

@@ -15,13 +15,12 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using QTTabBarLib.Interop;
-    using System;
-    using System.Reflection;
-    using System.Runtime.CompilerServices;
-    using System.Windows.Forms;
+using System;
+using System.Reflection;
+using System.Windows.Forms;
+using QTTabBarLib.Interop;
 
+namespace QTTabBarLib {
     internal sealed class ToolStripEx : ToolStrip {
         private bool fMA;
 
@@ -32,9 +31,9 @@ namespace QTTabBarLib {
                 BindingFlags bindingAttr = BindingFlags.NonPublic | BindingFlags.Instance;
                 try {
                     typeof(ToolStrip).GetMethod("UpdateToolTip", bindingAttr).Invoke(this, new object[1]);
-                    System.Type type = System.Type.GetType("System.Windows.Forms.MouseHoverTimer, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
+                    Type type = Type.GetType("System.Windows.Forms.MouseHoverTimer, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
                     PropertyInfo property = typeof(ToolStrip).GetProperty("MouseHoverTimer", bindingAttr);
-                    type.GetMethod("Cancel", System.Type.EmptyTypes).Invoke(property.GetValue(this, null), null);
+                    type.GetMethod("Cancel", Type.EmptyTypes).Invoke(property.GetValue(this, null), null);
                 }
                 catch(Exception exception) {
                     QTUtility2.MakeErrorLog(exception, null);

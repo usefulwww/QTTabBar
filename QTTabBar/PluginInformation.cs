@@ -15,11 +15,11 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using QTPlugin;
-    using System;
-    using System.Drawing;
+using System;
+using System.Drawing;
+using QTPlugin;
 
+namespace QTTabBarLib {
     internal sealed class PluginInformation : IDisposable {
         public string Author;
         public string Description;
@@ -30,7 +30,7 @@ namespace QTTabBarLib {
         public string Name;
         public string Path;
         public string PluginID;
-        public QTPlugin.PluginType PluginType;
+        public PluginType PluginType;
         public string[] ShortcutKeyActions;
         public string TypeFullName;
         public string Version;

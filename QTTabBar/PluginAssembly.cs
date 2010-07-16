@@ -15,15 +15,14 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using QTPlugin;
-    using System;
-    using System.Collections.Generic;
-    using System.Drawing;
-    using System.IO;
-    using System.Reflection;
-    using System.Runtime.InteropServices;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Reflection;
+using QTPlugin;
 
+namespace QTTabBarLib {
     internal sealed class PluginAssembly : IDisposable {
         private Assembly assembly;
         public string Author;
@@ -142,7 +141,7 @@ namespace QTTabBarLib {
                                 }
                                 catch(Exception exception) {
                                     PluginManager.HandlePluginException(exception, IntPtr.Zero, information.Name, "Getting image from pluging.");
-                                    throw exception;
+                                    throw;
                                 }
                             }
                             return plugin;

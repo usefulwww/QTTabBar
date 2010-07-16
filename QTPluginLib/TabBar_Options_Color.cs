@@ -16,8 +16,6 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace QTPlugin {
-    using System;
-
     public enum TabBar_Options_Color {
         AlternateBackgourndColor = 0x40004,
         AlternateTextColor = 0x40003,

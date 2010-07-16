@@ -15,16 +15,16 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using Microsoft.Win32;
-    using QTTabBarLib.Interop;
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Drawing;
-    using System.IO;
-    using System.Windows.Forms;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
+using System.Windows.Forms;
+using Microsoft.Win32;
+using QTTabBarLib.Interop;
 
+namespace QTTabBarLib {
     internal static class MenuUtility {
         private static void AddChildrenOnOpening(DirectoryMenuItem parentItem) {
             bool flag;
@@ -48,8 +48,8 @@ namespace QTTabBarLib {
                     item.DropDown = reorderable;
                     item.DoubleClickEnabled = true;
                     item.DropDownItems.Add(new ToolStripMenuItem());
-                    item.DropDownItemClicked += new ToolStripItemClickedEventHandler(MenuUtility.realDirectory_DropDownItemClicked);
-                    item.DropDownOpening += new EventHandler(MenuUtility.realDirectory_DropDownOpening);
+                    item.DropDownItemClicked += realDirectory_DropDownItemClicked;
+                    item.DropDownOpening += realDirectory_DropDownOpening;
                     item.DoubleClick += eventPack.DirDoubleClickEventHandler;
                     parentItem.DropDownItems.Add(item);
                 }
@@ -72,7 +72,7 @@ namespace QTTabBarLib {
                     QMenuItem item2 = new QMenuItem(QTUtility2.MakeNameEllipsis(fileNameWithoutExtension, out flag), MenuTarget.File, MenuGenre.Application);
                     item2.Path = info3.FullName;
                     item2.SetImageReservationKey(info3.FullName, ext);
-                    item2.MouseMove += new MouseEventHandler(MenuUtility.qmi_File_MouseMove);
+                    item2.MouseMove += qmi_File_MouseMove;
                     if(flag) {
                         item2.ToolTipText = str4;
                     }
@@ -172,7 +172,7 @@ namespace QTTabBarLib {
                 QMenuItem item = new QMenuItem(key, mia);
                 item.Name = key;
                 item.SetImageReservationKey(name, Path.GetExtension(name));
-                item.MouseMove += new MouseEventHandler(MenuUtility.qmi_File_MouseMove);
+                item.MouseMove += qmi_File_MouseMove;
                 if(!ep.FromTaskBar && (mia.KeyShortcut > 0x100000)) {
                     int num = mia.KeyShortcut & -1048577;
                     item.ShortcutKeyDisplayString = QTUtility2.MakeKeyString((Keys)num).Replace(" ", string.Empty);
@@ -194,8 +194,8 @@ namespace QTTabBarLib {
             item2.DropDown = reorderable;
             item2.DoubleClickEnabled = true;
             item2.DropDownItems.Add(new ToolStripMenuItem());
-            item2.DropDownItemClicked += new ToolStripItemClickedEventHandler(MenuUtility.realDirectory_DropDownItemClicked);
-            item2.DropDownOpening += new EventHandler(MenuUtility.realDirectory_DropDownOpening);
+            item2.DropDownItemClicked += realDirectory_DropDownItemClicked;
+            item2.DropDownOpening += realDirectory_DropDownOpening;
             item2.DoubleClick += ep.DirDoubleClickEventHandler;
             return item2;
         }
@@ -232,8 +232,8 @@ namespace QTTabBarLib {
                     reorderable.ItemRightClicked += ep.ItemRightClickEventHandler;
                     reorderable.ImageList = QTUtility.ImageListGlobal;
                     reorderable.AddItemsRange(list.ToArray(), "userappItem");
-                    reorderable.ItemClicked += new ToolStripItemClickedEventHandler(MenuUtility.virtualDirectory_DropDownItemClicked);
-                    reorderable.ReorderFinished += new MenuReorderedEventHandler(MenuUtility.virtualDirectory_ReorderFinished);
+                    reorderable.ItemClicked += virtualDirectory_DropDownItemClicked;
+                    reorderable.ReorderFinished += virtualDirectory_ReorderFinished;
                     string name = rkSub.Name;
                     reorderable.Name = name.Substring(name.IndexOf(@"Software\Quizo\QTTabBar\UserApps\"));
                     item2.DropDown = reorderable;
@@ -380,31 +380,31 @@ namespace QTTabBarLib {
             string[] strArray = str.Split(QTUtility.SEPARATOR_CHAR);
             ContextMenu menu = new ContextMenu();
             if(QTUtility.IsVista) {
-                for(int i = 0; i < strArray.Length; i++) {
-                    string text = string.Empty;
-                    if(strArray[i].StartsWith(@"\\")) {
-                        text = strArray[i];
+                foreach(string str2 in strArray) {
+                    string text;
+                    if(str2.StartsWith(@"\\")) {
+                        text = str2;
                     }
                     else {
-                        text = ShellMethods.GetDisplayName(strArray[i]);
+                        text = ShellMethods.GetDisplayName(str2);
                     }
                     MenuItem item = new MenuItem(text);
-                    item.Name = strArray[i];
+                    item.Name = str2;
                     menu.MenuItems.Add(item);
                 }
             }
             else {
-                for(int j = 0; j < strArray.Length; j++) {
-                    string displayName = string.Empty;
-                    if(strArray[j].StartsWith(@"\\")) {
-                        displayName = strArray[j];
+                foreach(string path in strArray) {
+                    string displayName;
+                    if(path.StartsWith(@"\\")) {
+                        displayName = path;
                     }
                     else {
-                        displayName = ShellMethods.GetDisplayName(strArray[j]);
+                        displayName = ShellMethods.GetDisplayName(path);
                     }
                     MenuItemEx ex = new MenuItemEx(displayName);
-                    ex.Name = strArray[j];
-                    ex.Image = QTUtility.ImageListGlobal.Images[QTUtility.GetImageKey(strArray[j], null)];
+                    ex.Name = path;
+                    ex.Image = QTUtility.ImageListGlobal.Images[QTUtility.GetImageKey(path, null)];
                     menu.MenuItems.Add(ex);
                 }
             }
@@ -412,7 +412,7 @@ namespace QTTabBarLib {
             if(QTUtility.IsVista) {
                 for(int k = 0; k < strArray.Length; k++) {
                     string imageKey = QTUtility.GetImageKey(strArray[k], null);
-                    IntPtr hbitmap = ((Bitmap)QTUtility.ImageListGlobal.Images[imageKey]).GetHbitmap(System.Drawing.Color.Black);
+                    IntPtr hbitmap = ((Bitmap)QTUtility.ImageListGlobal.Images[imageKey]).GetHbitmap(Color.Black);
                     if(hbitmap != IntPtr.Zero) {
                         list.Add(hbitmap);
                         PInvoke.SetMenuItemBitmaps(menu.Handle, k, 0x400, hbitmap, IntPtr.Zero);
@@ -464,7 +464,7 @@ namespace QTTabBarLib {
                     string[] array = new string[] { "separator", string.Empty, string.Empty };
                     foreach(ToolStripItem item in reorderable.Items) {
                         if(item is ToolStripSeparator) {
-                            QTUtility2.WriteRegBinary<string>(array, "Separator" + num++, key);
+                            QTUtility2.WriteRegBinary(array, "Separator" + num++, key);
                         }
                         else {
                             QMenuItem item2 = item as QMenuItem;
@@ -475,7 +475,7 @@ namespace QTTabBarLib {
                                     continue;
                                 }
                                 string[] strArray2 = new string[] { menuItemArguments.Path, menuItemArguments.OriginalArgument, menuItemArguments.OriginalWorkingDirectory, menuItemArguments.KeyShortcut.ToString() };
-                                QTUtility2.WriteRegBinary<string>(strArray2, item.Name, key);
+                                QTUtility2.WriteRegBinary(strArray2, item.Name, key);
                             }
                         }
                     }

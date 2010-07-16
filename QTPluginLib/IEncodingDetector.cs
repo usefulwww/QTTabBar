@@ -15,10 +15,9 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTPlugin {
-    using System;
-    using System.Text;
+using System.Text;
 
+namespace QTPlugin {
     public interface IEncodingDetector : IPluginClient {
         Encoding GetEncoding(ref byte[] data);
     }

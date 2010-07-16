@@ -15,14 +15,13 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using System;
-    using System.Drawing;
-    using System.Drawing.Drawing2D;
-    using System.Drawing.Imaging;
-    using System.Runtime.CompilerServices;
-    using System.Windows.Forms;
+using System;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.Windows.Forms;
 
+namespace QTTabBarLib {
     internal sealed class PluginViewItem : Control {
         private string author;
         private Button btnDisable;
@@ -96,21 +95,21 @@ namespace QTTabBarLib {
             this.btnOption.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
             this.btnOption.UseVisualStyleBackColor = true;
             this.btnOption.Enabled = this.fHasOption;
-            this.btnOption.Click += new EventHandler(this.btns_Click);
+            this.btnOption.Click += this.btns_Click;
             this.btnDisable = new Button();
             this.btnDisable.Text = this.fEnabled ? PluginView.BTN_DISABLE : PluginView.BTN_ENABLE;
             this.btnDisable.Size = new Size(0x4b, 0x17);
             this.btnDisable.Location = new Point(base.Width - 0xa8, base.Height - 0x1d);
             this.btnDisable.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
             this.btnDisable.UseVisualStyleBackColor = true;
-            this.btnDisable.Click += new EventHandler(this.btns_Click);
+            this.btnDisable.Click += this.btns_Click;
             this.btnRemove = new Button();
             this.btnRemove.Text = PluginView.BTN_REMOVE;
             this.btnRemove.Size = new Size(0x4b, 0x17);
             this.btnRemove.Location = new Point(base.Width - 0x57, base.Height - 0x1d);
             this.btnRemove.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
             this.btnRemove.UseVisualStyleBackColor = true;
-            this.btnRemove.Click += new EventHandler(this.btns_Click);
+            this.btnRemove.Click += this.btns_Click;
             base.Controls.Add(this.btnOption);
             base.Controls.Add(this.btnDisable);
             base.Controls.Add(this.btnRemove);
@@ -162,7 +161,7 @@ namespace QTTabBarLib {
                 }
                 e.Graphics.DrawString(this.version + "    by " + this.author, this.Font, brush2, 60f + ef.Width, 8f, format);
                 format.FormatFlags &= ~StringFormatFlags.NoWrap;
-                SizeF size = e.Graphics.MeasureString(this.description, this.Font, new SizeF((float)Math.Max(base.Width - 60, 0x40), this.fSelected ? ((float)0x45) : ((float)0x13)), format);
+                SizeF size = e.Graphics.MeasureString(this.description, this.Font, new SizeF(Math.Max(base.Width - 60, 0x40), this.fSelected ? (0x45) : (0x13)), format);
                 e.Graphics.DrawString(this.description, this.Font, brush2, new RectangleF(new PointF(48f, 30f), size), format);
             }
             using(Pen pen = new Pen(ConvertColor(SystemColors.GrayText))) {
@@ -175,7 +174,7 @@ namespace QTTabBarLib {
             SizeF ef;
             base.Select();
             if(this.fSelected) {
-                return (float)base.Height;
+                return base.Height;
             }
             this.fSelected = true;
             this.fHasOption = fHasOption;

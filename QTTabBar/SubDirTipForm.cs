@@ -15,18 +15,17 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using QTTabBarLib.Interop;
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Drawing;
-    using System.IO;
-    using System.Media;
-    using System.Runtime.CompilerServices;
-    using System.Runtime.InteropServices;
-    using System.Windows.Forms;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.IO;
+using System.Media;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+using QTTabBarLib.Interop;
 
+namespace QTTabBarLib {
     internal sealed class SubDirTipForm : Form {
         private IContainer components;
         private DropDownMenuDropTarget contextMenuSubDir;
@@ -210,7 +209,7 @@ namespace QTTabBarLib {
             }
             item.Path = fullName;
             item.TargetPath = targetIfFolderLink.FullName;
-            item.QueryVirtualMenu += new EventHandler(this.directoryItem_QueryVirtualMenu);
+            item.QueryVirtualMenu += this.directoryItem_QueryVirtualMenu;
             return item;
         }
 
@@ -265,9 +264,9 @@ namespace QTTabBarLib {
                                         if(flag4) {
                                             ex.OriginalTitle = name;
                                         }
-                                        ex.MouseMove += new MouseEventHandler(this.tsmi_Files_MouseMove);
-                                        ex.MouseDown += new MouseEventHandler(this.tsmi_MouseDown);
-                                        ex.MouseUp += new MouseEventHandler(this.tsmi_MouseUp);
+                                        ex.MouseMove += this.tsmi_Files_MouseMove;
+                                        ex.MouseDown += this.tsmi_MouseDown;
+                                        ex.MouseUp += this.tsmi_MouseUp;
                                         collection.Add(ex);
                                     }
                                 }
@@ -342,9 +341,9 @@ namespace QTTabBarLib {
                             }
                             ex2.Exists = true;
                             ex2.SetImageReservationKey(lnkPath, ext);
-                            ex2.MouseMove += new MouseEventHandler(this.tsmi_Files_MouseMove);
-                            ex2.MouseDown += new MouseEventHandler(this.tsmi_MouseDown);
-                            ex2.MouseUp += new MouseEventHandler(this.tsmi_MouseUp);
+                            ex2.MouseMove += this.tsmi_Files_MouseMove;
+                            ex2.MouseDown += this.tsmi_MouseDown;
+                            ex2.MouseUp += this.tsmi_MouseUp;
                             collection.Add(ex2);
                         }
                     }
@@ -408,9 +407,9 @@ namespace QTTabBarLib {
                                     }
                                     ex.Exists = true;
                                     ex.SetImageReservationKey(str, Path.GetExtension(str).ToLower());
-                                    ex.MouseMove += new MouseEventHandler(this.tsmi_Files_MouseMove);
-                                    ex.MouseDown += new MouseEventHandler(this.tsmi_MouseDown);
-                                    ex.MouseUp += new MouseEventHandler(this.tsmi_MouseUp);
+                                    ex.MouseMove += this.tsmi_Files_MouseMove;
+                                    ex.MouseDown += this.tsmi_MouseDown;
+                                    ex.MouseUp += this.tsmi_MouseUp;
                                     collection.Add(ex);
                                 }
                                 else {
@@ -434,7 +433,7 @@ namespace QTTabBarLib {
                                     if(!flag2) {
                                         item.IDLData = ShellMethods.GetIDLData(pIDL);
                                     }
-                                    item.QueryVirtualMenu += new EventHandler(this.directory_FromIDL_QueryVirtualMenu);
+                                    item.QueryVirtualMenu += this.directory_FromIDL_QueryVirtualMenu;
                                     list.Add(item);
                                 }
                             }
@@ -454,11 +453,9 @@ namespace QTTabBarLib {
                 finally {
                     if(shellFolder != null) {
                         Marshal.ReleaseComObject(shellFolder);
-                        shellFolder = null;
                     }
                     if(ppenumIDList != null) {
                         Marshal.ReleaseComObject(ppenumIDList);
-                        ppenumIDList = null;
                     }
                     if(zero != IntPtr.Zero) {
                         PInvoke.CoTaskMemFree(zero);
@@ -489,7 +486,7 @@ namespace QTTabBarLib {
                     item.ImageKey = item.Path = item.TargetPath = wrapper.Path;
                     item.IDLDataChild = idlw.IDL;
                     item.PathChild = idlw.Path;
-                    item.MouseMove += new MouseEventHandler(this.tsmi_Folder_MouseMove);
+                    item.MouseMove += this.tsmi_Folder_MouseMove;
                     DropDownMenuDropTarget target = new DropDownMenuDropTarget(null, true, !this.fDesktop, false, this.hwndDialogParent);
                     target.SuspendLayout();
                     target.CheckOnEdgeClick = true;
@@ -497,21 +494,21 @@ namespace QTTabBarLib {
                     target.Items.Add(new ToolStripMenuItem("dummy"));
                     target.ImageList = QTUtility.ImageListGlobal;
                     target.SpaceKeyExecute = true;
-                    target.MouseLeave += new EventHandler(this.ddmr_MouseLeave);
-                    target.ItemRightClicked += new ItemRightClickedEventHandler(this.ddmr_ItemRightClicked);
-                    target.Opened += new EventHandler(this.ddmr_Opened);
-                    target.MenuDragEnter += new EventHandler(this.ddmr_MenuDragEnter);
+                    target.MouseLeave += this.ddmr_MouseLeave;
+                    target.ItemRightClicked += this.ddmr_ItemRightClicked;
+                    target.Opened += this.ddmr_Opened;
+                    target.MenuDragEnter += this.ddmr_MenuDragEnter;
                     item.DropDown = target;
-                    item.DropDownOpening += new EventHandler(this.tsmi_DropDownOpening);
-                    item.DropDownItemClicked += new ToolStripItemClickedEventHandler(this.ddmr_ItemClicked);
+                    item.DropDownOpening += this.tsmi_DropDownOpening;
+                    item.DropDownItemClicked += this.ddmr_ItemClicked;
                     if(wrapper.IsFileSystem) {
-                        item.MouseDown += new MouseEventHandler(this.tsmi_MouseDown);
-                        item.MouseUp += new MouseEventHandler(this.tsmi_MouseUp);
-                        target.MouseDragMove += new MouseEventHandler(this.ddmr_MouseDragMove);
-                        target.MouseUpBeforeDrop += new EventHandler(this.ddmr_MouseUpBeforeDrop);
-                        target.KeyUp += new KeyEventHandler(this.ddmr_KeyUp);
-                        target.PreviewKeyDown += new PreviewKeyDownEventHandler(this.ddmr_PreviewKeyDown);
-                        target.MouseScroll += new EventHandler(this.ddmr_MouseScroll);
+                        item.MouseDown += this.tsmi_MouseDown;
+                        item.MouseUp += this.tsmi_MouseUp;
+                        target.MouseDragMove += this.ddmr_MouseDragMove;
+                        target.MouseUpBeforeDrop += this.ddmr_MouseUpBeforeDrop;
+                        target.KeyUp += this.ddmr_KeyUp;
+                        target.PreviewKeyDown += this.ddmr_PreviewKeyDown;
+                        target.MouseScroll += this.ddmr_MouseScroll;
                         target.Path = wrapper.Path;
                     }
                     target.ResumeLayout();
@@ -573,7 +570,7 @@ namespace QTTabBarLib {
                             if(this.timerToolTipByKey == null) {
                                 this.timerToolTipByKey = new Timer(this.components);
                                 this.timerToolTipByKey.Interval = SystemInformation.MouseHoverTime;
-                                this.timerToolTipByKey.Tick += new EventHandler(this.timerToolTipByKey_Tick);
+                                this.timerToolTipByKey.Tick += this.timerToolTipByKey_Tick;
                             }
                             this.timerToolTipByKey.Tag = tsmi;
                             this.timerToolTipByKey.Enabled = false;
@@ -594,7 +591,7 @@ namespace QTTabBarLib {
 
         private void ddmr_MouseDragMove(object sender, MouseEventArgs e) {
             if(((e.Button == MouseButtons.Left) || (e.Button == MouseButtons.Right)) && (this.draggingItem != null)) {
-                Size size = new Size(Math.Abs((int)(e.X - this.pntDragStart.X)), Math.Abs((int)(e.Y - this.pntDragStart.Y)));
+                Size size = new Size(Math.Abs((e.X - this.pntDragStart.X)), Math.Abs((e.Y - this.pntDragStart.Y)));
                 if((size.Width > SystemDragSize.Width) || (size.Height > SystemDragSize.Height)) {
                     DropDownMenuDropTarget ddmrt = (DropDownMenuDropTarget)sender;
                     ddmrt.SuppressMouseMove = false;
@@ -623,7 +620,7 @@ namespace QTTabBarLib {
         private void ddmr_MouseLeave(object sender, EventArgs e) {
             DropDownMenuReorderable reorderable = (DropDownMenuReorderable)sender;
             reorderable.SuppressMouseMove = false;
-            if(!reorderable.Bounds.Contains(Control.MousePosition)) {
+            if(!reorderable.Bounds.Contains(MousePosition)) {
                 this.HideThumbnailTooltip();
             }
         }
@@ -657,7 +654,7 @@ namespace QTTabBarLib {
         private void directory_FromIDL_QueryVirtualMenu(object sender, EventArgs e) {
             QMenuItem item = (QMenuItem)sender;
             string path = item.Path;
-            item.MouseMove += new MouseEventHandler(this.tsmi_Folder_MouseMove);
+            item.MouseMove += this.tsmi_Folder_MouseMove;
             bool flag = (path.ToLower() == @"a:\") || (path.ToLower() == @"b:\");
             bool flag2 = (path.Length == 3) ? (!flag && new DriveInfo(path).IsReady) : true;
             if((item.Target == MenuTarget.Folder) && flag2) {
@@ -669,33 +666,33 @@ namespace QTTabBarLib {
                 target.ImageList = QTUtility.ImageListGlobal;
                 target.SpaceKeyExecute = true;
                 target.Path = path;
-                target.MouseLeave += new EventHandler(this.ddmr_MouseLeave);
-                target.ItemRightClicked += new ItemRightClickedEventHandler(this.ddmr_ItemRightClicked);
-                target.Opened += new EventHandler(this.ddmr_Opened);
-                target.MouseScroll += new EventHandler(this.ddmr_MouseScroll);
+                target.MouseLeave += this.ddmr_MouseLeave;
+                target.ItemRightClicked += this.ddmr_ItemRightClicked;
+                target.Opened += this.ddmr_Opened;
+                target.MouseScroll += this.ddmr_MouseScroll;
                 if(item.Exists) {
-                    target.MouseDragMove += new MouseEventHandler(this.ddmr_MouseDragMove);
-                    target.MouseUpBeforeDrop += new EventHandler(this.ddmr_MouseUpBeforeDrop);
-                    target.KeyUp += new KeyEventHandler(this.ddmr_KeyUp);
-                    target.PreviewKeyDown += new PreviewKeyDownEventHandler(this.ddmr_PreviewKeyDown);
-                    target.MenuDragEnter += new EventHandler(this.ddmr_MenuDragEnter);
+                    target.MouseDragMove += this.ddmr_MouseDragMove;
+                    target.MouseUpBeforeDrop += this.ddmr_MouseUpBeforeDrop;
+                    target.KeyUp += this.ddmr_KeyUp;
+                    target.PreviewKeyDown += this.ddmr_PreviewKeyDown;
+                    target.MenuDragEnter += this.ddmr_MenuDragEnter;
                 }
                 item.DropDown = target;
-                item.DropDownOpening += new EventHandler(this.tsmi_DropDownOpening);
-                item.DropDownItemClicked += new ToolStripItemClickedEventHandler(this.ddmr_ItemClicked);
+                item.DropDownOpening += this.tsmi_DropDownOpening;
+                item.DropDownItemClicked += this.ddmr_ItemClicked;
                 target.ResumeLayout();
             }
         }
 
         private void directoryItem_QueryVirtualMenu(object sender, EventArgs e) {
             QMenuItem item = (QMenuItem)sender;
-            item.MouseMove += new MouseEventHandler(this.tsmi_Folder_MouseMove);
-            item.MouseDown += new MouseEventHandler(this.tsmi_MouseDown);
-            item.MouseUp += new MouseEventHandler(this.tsmi_MouseUp);
+            item.MouseMove += this.tsmi_Folder_MouseMove;
+            item.MouseDown += this.tsmi_MouseDown;
+            item.MouseUp += this.tsmi_MouseUp;
             bool fSearchHidden = QTUtility.CheckConfig(Settings.SubDirTipsHidden);
             bool fSearchSystem = QTUtility.CheckConfig(Settings.SubDirTipsSystem);
             bool flag3 = QTUtility.CheckConfig(Settings.SubDirTipsFiles);
-            bool flag4 = false;
+            bool flag4;
             using(FindFile file = new FindFile(item.TargetPath, fSearchHidden, fSearchSystem)) {
                 flag4 = file.SubDirectoryExists() || (flag3 && file.SubFileExists());
             }
@@ -708,18 +705,18 @@ namespace QTTabBarLib {
                 target.ImageList = QTUtility.ImageListGlobal;
                 target.SpaceKeyExecute = true;
                 target.Path = item.TargetPath;
-                target.MouseLeave += new EventHandler(this.ddmr_MouseLeave);
-                target.MouseDragMove += new MouseEventHandler(this.ddmr_MouseDragMove);
-                target.MouseUpBeforeDrop += new EventHandler(this.ddmr_MouseUpBeforeDrop);
-                target.ItemRightClicked += new ItemRightClickedEventHandler(this.ddmr_ItemRightClicked);
-                target.Opened += new EventHandler(this.ddmr_Opened);
-                target.KeyUp += new KeyEventHandler(this.ddmr_KeyUp);
-                target.PreviewKeyDown += new PreviewKeyDownEventHandler(this.ddmr_PreviewKeyDown);
-                target.MenuDragEnter += new EventHandler(this.ddmr_MenuDragEnter);
-                target.MouseScroll += new EventHandler(this.ddmr_MouseScroll);
+                target.MouseLeave += this.ddmr_MouseLeave;
+                target.MouseDragMove += this.ddmr_MouseDragMove;
+                target.MouseUpBeforeDrop += this.ddmr_MouseUpBeforeDrop;
+                target.ItemRightClicked += this.ddmr_ItemRightClicked;
+                target.Opened += this.ddmr_Opened;
+                target.KeyUp += this.ddmr_KeyUp;
+                target.PreviewKeyDown += this.ddmr_PreviewKeyDown;
+                target.MenuDragEnter += this.ddmr_MenuDragEnter;
+                target.MouseScroll += this.ddmr_MouseScroll;
                 item.DropDown = target;
-                item.DropDownOpening += new EventHandler(this.tsmi_DropDownOpening);
-                item.DropDownItemClicked += new ToolStripItemClickedEventHandler(this.ddmr_ItemClicked);
+                item.DropDownOpening += this.tsmi_DropDownOpening;
+                item.DropDownItemClicked += this.ddmr_ItemClicked;
                 target.ResumeLayout();
             }
         }
@@ -800,11 +797,7 @@ namespace QTTabBarLib {
             }
         }
 
-        public void HideSubDirTip() {
-            this.HideSubDirTip(false);
-        }
-
-        public void HideSubDirTip(bool fForce) {
+        public void HideSubDirTip(bool fForce = false) {
             if(fForce) {
                 this.fShownByKey = false;
             }
@@ -839,16 +832,16 @@ namespace QTTabBarLib {
             base.SuspendLayout();
             this.contextMenuSubDir.SpaceKeyExecute = true;
             this.contextMenuSubDir.CheckOnEdgeClick = true;
-            this.contextMenuSubDir.Closed += new ToolStripDropDownClosedEventHandler(this.contextMenuSubDir_Closed);
-            this.contextMenuSubDir.ItemClicked += new ToolStripItemClickedEventHandler(this.ddmr_ItemClicked);
-            this.contextMenuSubDir.ItemRightClicked += new ItemRightClickedEventHandler(this.ddmr_ItemRightClicked);
-            this.contextMenuSubDir.MouseDragMove += new MouseEventHandler(this.ddmr_MouseDragMove);
-            this.contextMenuSubDir.MouseLeave += new EventHandler(this.ddmr_MouseLeave);
-            this.contextMenuSubDir.MouseUpBeforeDrop += new EventHandler(this.ddmr_MouseUpBeforeDrop);
-            this.contextMenuSubDir.MouseScroll += new EventHandler(this.ddmr_MouseScroll);
-            this.contextMenuSubDir.KeyUp += new KeyEventHandler(this.ddmr_KeyUp);
-            this.contextMenuSubDir.PreviewKeyDown += new PreviewKeyDownEventHandler(this.ddmr_PreviewKeyDown);
-            this.contextMenuSubDir.MenuDragEnter += new EventHandler(this.ddmr_MenuDragEnter);
+            this.contextMenuSubDir.Closed += this.contextMenuSubDir_Closed;
+            this.contextMenuSubDir.ItemClicked += this.ddmr_ItemClicked;
+            this.contextMenuSubDir.ItemRightClicked += this.ddmr_ItemRightClicked;
+            this.contextMenuSubDir.MouseDragMove += this.ddmr_MouseDragMove;
+            this.contextMenuSubDir.MouseLeave += this.ddmr_MouseLeave;
+            this.contextMenuSubDir.MouseUpBeforeDrop += this.ddmr_MouseUpBeforeDrop;
+            this.contextMenuSubDir.MouseScroll += this.ddmr_MouseScroll;
+            this.contextMenuSubDir.KeyUp += this.ddmr_KeyUp;
+            this.contextMenuSubDir.PreviewKeyDown += this.ddmr_PreviewKeyDown;
+            this.contextMenuSubDir.MenuDragEnter += this.ddmr_MenuDragEnter;
             this.lblSubDirBtn.BackColor = SystemColors.Window;
             this.lblSubDirBtn.Location = new Point(0, 0);
             this.lblSubDirBtn.Size = new Size(0x10, 0x10);
@@ -863,12 +856,12 @@ namespace QTTabBarLib {
         }
 
         public bool MouseIsOnThis() {
-            return base.RectangleToScreen(this.lblSubDirBtn.Bounds).Contains(Control.MousePosition);
+            return base.RectangleToScreen(this.lblSubDirBtn.Bounds).Contains(MousePosition);
         }
 
         protected override void OnClick(EventArgs e) {
             if(this.menuIsShowing) {
-                QTTabBarLib.Interop.RECT rect2;
+                RECT rect2;
                 this.lblSubDirBtn.SetPressed(false);
                 PInvoke.GetWindowRect(base.Handle, out rect2);
                 PInvoke.SetWindowPos(base.Handle, (IntPtr)(-1), rect2.left - 1, rect2.top - 1, 15, 15, 0x10);
@@ -900,7 +893,7 @@ namespace QTTabBarLib {
             }
         Label_009D:
             if((lstItems != null) && (lstItems.Count > 0)) {
-                QTTabBarLib.Interop.RECT rect;
+                RECT rect;
                 PInvoke.GetWindowRect(base.Handle, out rect);
                 PInvoke.SetWindowPos(base.Handle, (IntPtr)(-1), rect.left + 1, rect.top + 1, 15, 15, 0x10);
                 this.lblSubDirBtn.SetPressed(true);
@@ -912,7 +905,7 @@ namespace QTTabBarLib {
                 if((((rect.right + 1) + bounds.Width) > workingArea.Right) && (((rect.bottom + 1) + bounds.Height) > workingArea.Bottom)) {
                     rect.right -= bounds.Width + 0x10;
                     if(this.fDropHilitedOpened) {
-                        Point mousePosition = Control.MousePosition;
+                        Point mousePosition = MousePosition;
                         if((rect.right < mousePosition.X) && (mousePosition.X < (rect.right + bounds.Width))) {
                             rect.right -= ((rect.right + bounds.Width) - mousePosition.X) + 0x11;
                         }
@@ -930,7 +923,7 @@ namespace QTTabBarLib {
                 this.HideSubDirTip();
             }
             else {
-                Point mousePosition = Control.MousePosition;
+                Point mousePosition = MousePosition;
                 if(!this.contextMenuSubDir.Bounds.Contains(mousePosition)) {
                     foreach(Rectangle rectangle in this.lstRcts) {
                         if(rectangle.Contains(mousePosition)) {
@@ -1040,7 +1033,7 @@ namespace QTTabBarLib {
 
         private bool ShowThumbnailTooltip(ToolStripMenuItemEx tsmi, bool fKey) {
             if((this.menuIsShowing && (this.draggingPath == null)) && !this.fSuppressThumbnail) {
-                if((!QTUtility.CheckConfig(Settings.SubDirTipsPreview) ^ (Control.ModifierKeys == Keys.Shift)) && ThumbnailTooltipForm.ExtIsSupported(Path.GetExtension(tsmi.ThumbnailPath).ToLower())) {
+                if((!QTUtility.CheckConfig(Settings.SubDirTipsPreview) ^ (ModifierKeys == Keys.Shift)) && ThumbnailTooltipForm.ExtIsSupported(Path.GetExtension(tsmi.ThumbnailPath).ToLower())) {
                     if(this.iThumbnailIndex == tsmi.ThumbnailIndex) {
                         return false;
                     }
@@ -1121,7 +1114,7 @@ namespace QTTabBarLib {
             QMenuItem item = (QMenuItem)sender;
             item.DropDown.SuspendLayout();
             item.DropDownItems[0].Dispose();
-            item.DropDownOpening -= new EventHandler(this.tsmi_DropDownOpening);
+            item.DropDownOpening -= this.tsmi_DropDownOpening;
             List<QMenuItem> lstItems = null;
             try {
                 if(item.TargetPath.StartsWith("::")) {
@@ -1149,7 +1142,7 @@ namespace QTTabBarLib {
         private void tsmi_Folder_MouseMove(object sender, MouseEventArgs e) {
             this.HideThumbnailTooltip();
             QMenuItem item = (QMenuItem)sender;
-            if(item.ForceToolTip || (Control.ModifierKeys == Keys.Shift)) {
+            if(item.ForceToolTip || (ModifierKeys == Keys.Shift)) {
                 if((item.ToolTipText == null) || (item.ToolTipText == item.OriginalTitle)) {
                     string originalTitle = item.OriginalTitle;
                     string shellInfoTipText = ShellMethods.GetShellInfoTipText(item.Path, true);
@@ -1177,7 +1170,7 @@ namespace QTTabBarLib {
                 owner.SuppressMouseMove = true;
                 this.draggingItem = item;
                 this.draggingPath = item.Path;
-                this.pntDragStart = owner.PointToClient(Control.MousePosition);
+                this.pntDragStart = owner.PointToClient(MousePosition);
             }
         }
 
@@ -1212,7 +1205,7 @@ namespace QTTabBarLib {
         public bool IsMouseOnMenus {
             get {
                 if(this.contextMenuSubDir.Visible) {
-                    Point mousePosition = Control.MousePosition;
+                    Point mousePosition = MousePosition;
                     if(this.contextMenuSubDir.Bounds.Contains(mousePosition)) {
                         return true;
                     }

@@ -15,9 +15,9 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace BandObjectLib {
-    using System;
+using System;
 
+namespace BandObjectLib {
     public abstract class ExplorerGUIDs {
         public static readonly Guid CGID_DeskBand = new Guid("{EB0FE172-1A3A-11D0-89B3-00A0C90A90AC}");
         public static readonly Guid CLSID_TaskbarList = new Guid("56FDF344-FD6D-11d0-958A-006097C9A090");
@@ -35,8 +35,5 @@ namespace BandObjectLib {
         public static readonly Guid IID_ITravelLogStg = new Guid("{7EBFDD80-AD18-11d3-A4C5-00C04F72D6B8}");
         public static readonly Guid IID_IUnknown = new Guid("{00000000-0000-0000-C000-000000000046}");
         public static readonly Guid IID_IWebBrowserApp = new Guid("{0002DF05-0000-0000-C000-000000000046}");
-
-        protected ExplorerGUIDs() {
-        }
     }
 }

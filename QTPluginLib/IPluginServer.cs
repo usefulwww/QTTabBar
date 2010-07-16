@@ -15,14 +15,12 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTPlugin {
-    using System;
-    using System.Diagnostics;
-    using System.Drawing;
-    using System.Runtime.CompilerServices;
-    using System.Runtime.InteropServices;
-    using System.Windows.Forms;
+using System;
+using System.Diagnostics;
+using System.Drawing;
+using System.Windows.Forms;
 
+namespace QTPlugin {
     public interface IPluginServer {
         event PluginEventHandler ExplorerStateChanged;
 
@@ -73,6 +71,6 @@ namespace QTPlugin {
 
         ITab SelectedTab { get; set; }
 
-        QTPlugin.TabBarOption TabBarOption { get; set; }
+        TabBarOption TabBarOption { get; set; }
     }
 }

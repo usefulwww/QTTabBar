@@ -15,17 +15,16 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib.Interop {
-    using System;
-    using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 
+namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
     internal struct FOLDERSETTINGS {
         public int ViewMode;
         public int fFlags;
     }
 
-    public class FVM {
+    public static class FVM {
         public const int AUTO       = -1;
         public const int FIRST      = 1;
         public const int ICON       = 1;

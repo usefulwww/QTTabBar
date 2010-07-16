@@ -15,11 +15,11 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib.Interop {
-    using BandObjectLib;
-    using System;
-    using System.Runtime.InteropServices;
+using System;
+using System.Runtime.InteropServices;
+using BandObjectLib;
 
+namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
     internal struct NMLISTVIEW {
         public NMHDR hdr;

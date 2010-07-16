@@ -15,19 +15,15 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using QTTabBarLib.Interop;
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Diagnostics;
-    using System.Drawing;
-    using System.Runtime.CompilerServices;
-    using System.Runtime.InteropServices;
-    using System.Windows.Forms;
-    using System.Windows.Forms.VisualStyles;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
+using QTTabBarLib.Interop;
 
+namespace QTTabBarLib {
     internal sealed class QTabControl : Control {
         private Bitmap bmpCloseBtn_Cold;
         private Bitmap bmpCloseBtn_ColdAlt;
@@ -89,7 +85,7 @@ namespace QTTabBarLib {
         private QTabCollection tabPages;
         private StringAlignment tabTextAlignment;
         private Timer timerSuppressDoubleClick;
-        private System.Windows.Forms.ToolTip toolTip;
+        private ToolTip toolTip;
         private UpDown upDown;
         private const int UPDOWN_WIDTH = 0x24;
         private VisualStyleRenderer vsr_LHot;
@@ -133,7 +129,7 @@ namespace QTTabBarLib {
             this.brshInactv = new SolidBrush(this.colorSet[1]);
             this.timerSuppressDoubleClick = new Timer(this.components);
             this.timerSuppressDoubleClick.Interval = SystemInformation.DoubleClickTime + 100;
-            this.timerSuppressDoubleClick.Tick += new EventHandler(this.timerSuppressDoubleClick_Tick);
+            this.timerSuppressDoubleClick.Tick += this.timerSuppressDoubleClick_Tick;
             if(VisualStyleRenderer.IsSupported) {
                 this.InitializeRenderer();
             }
@@ -609,9 +605,9 @@ namespace QTTabBarLib {
                 rectangle2.Width -= 15;
             }
             float num2 = flag3 ? ((base2.TitleTextSize.Width + base2.SubTitleTextSize.Width) + 4f) : (base2.TitleTextSize.Width + 2f);
-            float num3 = Math.Max((float)((rectangle2.Height - base2.TitleTextSize.Height) / 2f), (float)0f);
-            float num4 = (this.tabTextAlignment == StringAlignment.Center) ? Math.Max((float)((rectangle2.Width - num2) / 2f), (float)0f) : 0f;
-            RectangleF rct = new RectangleF(rectangle2.X + num4, rectangle2.Y + num3, Math.Min((float)(base2.TitleTextSize.Width + 2f), (float)(rectangle2.Width - num4)), (float)rectangle2.Height);
+            float num3 = Math.Max(((rectangle2.Height - base2.TitleTextSize.Height) / 2f), 0f);
+            float num4 = (this.tabTextAlignment == StringAlignment.Center) ? Math.Max(((rectangle2.Width - num2) / 2f), 0f) : 0f;
+            RectangleF rct = new RectangleF(rectangle2.X + num4, rectangle2.Y + num3, Math.Min((base2.TitleTextSize.Width + 2f), (rectangle2.Width - num4)), rectangle2.Height);
             if(this.fDrawShadow) {
                 DrawTextWithShadow(g, base2.Text, bSelected ? this.colorSet[0] : this.colorSet[1], bSelected ? this.colorSet[3] : this.colorSet[4], (bSelected && this.fActiveTxtBold) ? (base2.UnderLine ? this.fntBold_Underline : this.fntBold) : (base2.UnderLine ? this.fnt_Underline : this.Font), rct, this.sfTypoGraphic);
             }
@@ -626,8 +622,8 @@ namespace QTTabBarLib {
                 ControlPaint.DrawFocusRectangle(g, rectangle);
             }
             if(flag3 && (rectangle2.Width > base2.TitleTextSize.Width)) {
-                float num5 = Math.Max((float)((rectangle2.Height - base2.SubTitleTextSize.Height) / 2f), (float)0f);
-                RectangleF ef2 = new RectangleF(rct.Right, rectangle2.Y + num5, Math.Min((float)(base2.SubTitleTextSize.Width + 2f), (float)(rectangle2.Width - ((base2.TitleTextSize.Width + num4) + 4f))), (float)rectangle2.Height);
+                float num5 = Math.Max(((rectangle2.Height - base2.SubTitleTextSize.Height) / 2f), 0f);
+                RectangleF ef2 = new RectangleF(rct.Right, rectangle2.Y + num5, Math.Min((base2.SubTitleTextSize.Width + 2f), (rectangle2.Width - ((base2.TitleTextSize.Width + num4) + 4f))), rectangle2.Height);
                 if(this.fDrawShadow) {
                     DrawTextWithShadow(g, (this.fAutoSubText ? "@ " : ": ") + base2.Comment, this.colorSet[1], this.colorSet[4], this.fntSubText, ef2, this.sfTypoGraphic);
                 }
@@ -638,7 +634,7 @@ namespace QTTabBarLib {
             if(this.fDrawCloseButton && (!this.fCloseBtnOnHover || fHot)) {
                 Rectangle closeButtonRectangle = this.GetCloseButtonRectangle(base2.TabBounds, bSelected);
                 if(this.fNowMouseIsOnCloseBtn && (this.iTabMouseOnButtonsIndex == index)) {
-                    if(Control.MouseButtons == MouseButtons.Left) {
+                    if(MouseButtons == MouseButtons.Left) {
                         if(this.bmpCloseBtn_Pressed == null) {
                             this.bmpCloseBtn_Pressed = Resources_Image.imgCloseButton_Press;
                         }
@@ -758,7 +754,7 @@ namespace QTTabBarLib {
         }
 
         public QTabItemBase GetTabMouseOn() {
-            Point pt = base.PointToClient(Control.MousePosition);
+            Point pt = base.PointToClient(MousePosition);
             if(((this.upDown != null) && this.upDown.Visible) && this.upDown.Bounds.Contains(pt)) {
                 return null;
             }
@@ -785,7 +781,7 @@ namespace QTTabBarLib {
         }
 
         public QTabItemBase GetTabMouseOn(out int index) {
-            Point pt = base.PointToClient(Control.MousePosition);
+            Point pt = base.PointToClient(MousePosition);
             QTabItemBase base2 = null;
             QTabItemBase base3 = null;
             int num = -1;
@@ -938,7 +934,7 @@ namespace QTTabBarLib {
                     }
                     return;
                 }
-                if(((e.Button == MouseButtons.Left) && ((Control.ModifierKeys & Keys.Control) != Keys.Control)) && this.SelectTab(tabMouseOn)) {
+                if(((e.Button == MouseButtons.Left) && ((ModifierKeys & Keys.Control) != Keys.Control)) && this.SelectTab(tabMouseOn)) {
                     this.fSuppressDoubleClick = true;
                     this.timerSuppressDoubleClick.Enabled = true;
                 }
@@ -964,7 +960,7 @@ namespace QTTabBarLib {
 
         protected override void OnMouseMove(MouseEventArgs e) {
             int num;
-            if(((e.Button == MouseButtons.Right) && !base.Parent.RectangleToScreen(base.Bounds).Contains(Control.MousePosition)) && ((this.ItemDrag != null) && (this.draggingTab != null))) {
+            if(((e.Button == MouseButtons.Right) && !base.Parent.RectangleToScreen(base.Bounds).Contains(MousePosition)) && ((this.ItemDrag != null) && (this.draggingTab != null))) {
                 this.ItemDrag(this, new ItemDragEventArgs(e.Button, this.draggingTab));
             }
             QTabItemBase tabMouseOn = this.GetTabMouseOn(out num);
@@ -983,7 +979,7 @@ namespace QTTabBarLib {
                 if(tabMouseOn != null) {
                     if(((this.iToolTipIndex != num) && base.IsHandleCreated) && !string.IsNullOrEmpty(tabMouseOn.ToolTipText)) {
                         if(this.toolTip == null) {
-                            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+                            this.toolTip = new ToolTip(this.components);
                             this.toolTip.ShowAlways = true;
                         }
                         else {
@@ -991,7 +987,7 @@ namespace QTTabBarLib {
                         }
                         string toolTipText = tabMouseOn.ToolTipText;
                         string str2 = ((QTabItem)tabMouseOn).TooltipText2;
-                        if((str2 != null) && (str2.Length > 0)) {
+                        if(!string.IsNullOrEmpty(str2)) {
                             toolTipText = toolTipText + "\r\n" + str2;
                         }
                         this.iToolTipIndex = num;
@@ -1259,7 +1255,7 @@ namespace QTTabBarLib {
             if(this.selectedTabPage != tabToSelect) {
                 this.ChangeSelection(tabToSelect, index);
             }
-            else if(this.iSelectedIndex != index) {
+            else {
                 this.iSelectedIndex = index;
             }
         }
@@ -1376,7 +1372,7 @@ namespace QTTabBarLib {
                 if(this.upDown == null) {
                     this.upDown = new UpDown();
                     this.upDown.Anchor = AnchorStyles.Right;
-                    this.upDown.ValueChanged += new QEventHandler(this.upDown_ValueChanged);
+                    this.upDown.ValueChanged += this.upDown_ValueChanged;
                     base.Controls.Add(this.upDown);
                 }
                 this.upDown.Location = new Point(base.Width - 0x24, 0);
@@ -1408,7 +1404,7 @@ namespace QTTabBarLib {
                         uint num5 = (((uint)((long)m.LParam)) >> 0x10) & 0xffff;
                         if((num4 == 1) && (num5 == 0x200)) {
                             tabMouseOn = this.GetTabMouseOn(out num);
-                            this.InvalidateTabsOnMouseMove(tabMouseOn, num, base.PointToClient(Control.MousePosition));
+                            this.InvalidateTabsOnMouseMove(tabMouseOn, num, base.PointToClient(MousePosition));
                             m.Result = (IntPtr)1;
                             return;
                         }
@@ -1426,7 +1422,7 @@ namespace QTTabBarLib {
                         bool cancel = num2 == 0x204;
                         m.Result = (IntPtr)4;
                         tabMouseOn = this.GetTabMouseOn(out num);
-                        if(((tabMouseOn == null) || (num == this.iTabIndexOfSubDirShown)) || !this.HitTestOnButtons(tabMouseOn.TabBounds, base.PointToClient(Control.MousePosition), false, num == this.iSelectedIndex)) {
+                        if(((tabMouseOn == null) || (num == this.iTabIndexOfSubDirShown)) || !this.HitTestOnButtons(tabMouseOn.TabBounds, base.PointToClient(MousePosition), false, num == this.iSelectedIndex)) {
                             this.TabIconMouseDown(this, new QTabCancelEventArgs(null, -1, false, TabControlAction.Deselected));
                             return;
                         }
@@ -1464,7 +1460,7 @@ namespace QTTabBarLib {
                             PInvoke.SendMessage(base.Parent.Handle, 0x7b, m.WParam, m.LParam);
                             return;
                         }
-                        if(!this.fShowSubDirTip || !this.HitTestOnButtons(tabMouseOn.TabBounds, base.PointToClient(Control.MousePosition), false, num == this.iSelectedIndex)) {
+                        if(!this.fShowSubDirTip || !this.HitTestOnButtons(tabMouseOn.TabBounds, base.PointToClient(MousePosition), false, num == this.iSelectedIndex)) {
                             break;
                         }
                     }
@@ -1567,6 +1563,9 @@ namespace QTTabBarLib {
                 this.Owner.Refresh();
             }
 
+            // I absolutely do not understand the point of this.
+            // It seems completely redundant.  Commenting it out for now.
+            /*
             new public IEnumerator<QTabItemBase> GetEnumerator() {
                 //<GetEnumerator>d__0 d__ = new <GetEnumerator>d__0(0);
                 //d__.<>4__this = this;
@@ -1579,6 +1578,7 @@ namespace QTTabBarLib {
                     }
                 }
             }
+            */
 
             new public void Insert(int index, QTabItemBase tabPage) {
                 base.Insert(index, tabPage);

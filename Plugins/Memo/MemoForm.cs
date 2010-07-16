@@ -15,16 +15,16 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QuizoPlugins {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Diagnostics;
-    using System.Drawing;
-    using System.IO;
-    using System.Runtime.Serialization.Formatters.Binary;
-    using System.Windows.Forms;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Windows.Forms;
 
+namespace QuizoPlugins {
     internal sealed class MemoForm : Form {
         private Button button1;
         private ToolStripMenuItem colorToolStripMenuItem;
@@ -51,7 +51,7 @@ namespace QuizoPlugins {
         private ToolStripMenuItem searchToolStripMenuItem;
         private TextBox textBox1;
         private ToolStripSeparator toolStripSeparator1;
-        private QuizoPlugins.ToolStripTrackBar toolStripTrackBar;
+        private ToolStripTrackBar toolStripTrackBar;
         private Dictionary<string, string> txtDic;
         
         [Serializable]
@@ -101,9 +101,9 @@ namespace QuizoPlugins {
         public MemoForm(Memo memo) {
             this.owner = memo;
             this.InitializeComponent();
-            this.toolStripTrackBar = new QuizoPlugins.ToolStripTrackBar();
+            this.toolStripTrackBar = new ToolStripTrackBar();
             this.toolStripTrackBar.BlockColorChange = true;
-            this.toolStripTrackBar.ValueChanged += new EventHandler(this.toolStripTrackBar_ValueChanged);
+            this.toolStripTrackBar.ValueChanged += this.toolStripTrackBar_ValueChanged;
             this.contextMenuStrip1.Items.Add(this.toolStripTrackBar);
         }
 
@@ -286,13 +286,13 @@ namespace QuizoPlugins {
             this.richTextBox1.TabIndex = 0;
             this.richTextBox1.TabStop = false;
             this.richTextBox1.Text = "";
-            this.richTextBox1.LinkClicked += new LinkClickedEventHandler(this.richTextBox1_LinkClicked);
-            this.richTextBox1.KeyDown += new KeyEventHandler(this.richTextBox1_KeyDown);
+            this.richTextBox1.LinkClicked += this.richTextBox1_LinkClicked;
+            this.richTextBox1.KeyDown += this.richTextBox1_KeyDown;
             this.contextMenuStrip1.Items.AddRange(new ToolStripItem[] { this.cutToolStripMenuItem, this.copyToolStripMenuItem, this.pasteToolStripMenuItem, this.deleteToolStripMenuItem, this.searchToolStripMenuItem, this.toolStripSeparator1, this.colorToolStripMenuItem, this.defaultToolStripMenuItem, this.defaultFontToolStripMenuItem });
             this.contextMenuStrip1.ShowImageMargin = false;
             this.contextMenuStrip1.Size = new Size(0x80, 0xd0);
-            this.contextMenuStrip1.Opening += new CancelEventHandler(this.contextMenuStrip1_Opening);
-            this.contextMenuStrip1.ItemClicked += new ToolStripItemClickedEventHandler(this.contextMenuStrip1_ItemClicked);
+            this.contextMenuStrip1.Opening += this.contextMenuStrip1_Opening;
+            this.contextMenuStrip1.ItemClicked += this.contextMenuStrip1_ItemClicked;
             this.cutToolStripMenuItem.Size = new Size(0x7f, 0x16);
             this.cutToolStripMenuItem.Text = "Cu&t";
             this.copyToolStripMenuItem.Size = new Size(0x7f, 0x16);
@@ -322,7 +322,7 @@ namespace QuizoPlugins {
             this.listView1.TabIndex = 1;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = View.Details;
-            this.listView1.ItemActivate += new EventHandler(this.listView1_ItemActivate);
+            this.listView1.ItemActivate += this.listView1_ItemActivate;
             this.columnHeader1.Text = "Path";
             this.columnHeader1.Width = 0x5d;
             this.columnHeader2.Text = "Text";
@@ -331,13 +331,13 @@ namespace QuizoPlugins {
             this.textBox1.Location = new Point(12, 14);
             this.textBox1.Size = new Size(0x83, 20);
             this.textBox1.TabIndex = 2;
-            this.textBox1.KeyPress += new KeyPressEventHandler(this.textBox1_KeyPress);
+            this.textBox1.KeyPress += this.textBox1_KeyPress;
             this.button1.Anchor = AnchorStyles.Right | AnchorStyles.Top;
             this.button1.Location = new Point(0x95, 12);
             this.button1.Size = new Size(0x40, 0x17);
             this.button1.TabIndex = 3;
             this.button1.Text = "Search";
-            this.button1.Click += new EventHandler(this.button1_Click);
+            this.button1.Click += this.button1_Click;
             base.AutoScaleDimensions = new SizeF(6f, 13f);
             base.AutoScaleMode = AutoScaleMode.Font;
             base.ClientSize = new Size(0xe1, 0xe1);
@@ -353,7 +353,7 @@ namespace QuizoPlugins {
             base.ShowInTaskbar = false;
             base.StartPosition = FormStartPosition.Manual;
             this.Text = "Memo";
-            base.FormClosing += new FormClosingEventHandler(this.MemoForm_FormClosing);
+            base.FormClosing += this.MemoForm_FormClosing;
             this.contextMenuStrip1.ResumeLayout(false);
             base.ResumeLayout(false);
             base.PerformLayout();
@@ -409,19 +409,13 @@ namespace QuizoPlugins {
         private void richTextBox1_KeyDown(object sender, KeyEventArgs e) {
             if(e.Modifiers == Keys.Control) {
                 if(e.KeyCode == Keys.Add) {
-                    Font selectionFont = this.richTextBox1.SelectionFont;
-                    if(selectionFont == null) {
-                        selectionFont = this.Font;
-                    }
+                    Font selectionFont = this.richTextBox1.SelectionFont ?? this.Font;
                     Font item = new Font(this.Font.FontFamily, selectionFont.Size + 0.75f);
                     this.richTextBox1.SelectionFont = item;
                     this.fontList.Add(item);
                 }
                 else if(e.KeyCode == Keys.Subtract) {
-                    Font font = this.richTextBox1.SelectionFont;
-                    if(font == null) {
-                        font = this.Font;
-                    }
+                    Font font = this.richTextBox1.SelectionFont ?? this.Font;
                     if(font.Size > 6f) {
                         Font font4 = new Font(this.Font.FontFamily, font.Size - 0.75f);
                         this.richTextBox1.SelectionFont = font4;
@@ -506,7 +500,7 @@ namespace QuizoPlugins {
         }
 
         private void toolStripTrackBar_ValueChanged(object sender, EventArgs e) {
-            base.Opacity = ((double)this.toolStripTrackBar.Value) / 255.0;
+            base.Opacity = (this.toolStripTrackBar.Value) / 255.0;
         }
 
         protected override bool ShowWithoutActivation {

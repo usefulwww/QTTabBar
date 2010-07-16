@@ -1,4 +1,4 @@
-﻿//    This file is part of QTTabBar, a shell extension for Microsoft
+//    This file is part of QTTabBar, a shell extension for Microsoft
 //    Windows Explorer.
 //    Copyright (C) 2007-2010  Quizo, Paul Accisano
 //
@@ -15,10 +15,8 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-
 namespace BandObjectLib {
-    class RB {
+    static class RB {
         public const int INSERTBANDA =       (0x400 + 1);
         public const int DELETEBAND =        (0x400 + 2);
         public const int GETBARINFO =        (0x400 + 3);

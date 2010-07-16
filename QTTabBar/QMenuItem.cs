@@ -15,11 +15,10 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using System;
-    using System.Runtime.CompilerServices;
-    using System.Windows.Forms;
+using System;
+using System.Windows.Forms;
 
+namespace QTTabBarLib {
     internal class QMenuItem : ToolStripMenuItem {
         private string extension;
         private bool fCut;
@@ -33,7 +32,7 @@ namespace QTTabBarLib {
         private ImageReservationKey imageReservationKey;
         private MenuGenre menuGenre;
         private MenuTarget menuTarget;
-        private QTTabBarLib.MenuItemArguments mia;
+        private MenuItemArguments mia;
         private string originalImageKey;
         private string originalTitle;
         private string path;
@@ -47,7 +46,7 @@ namespace QTTabBarLib {
             this.menuGenre = menuGenre;
         }
 
-        public QMenuItem(string title, QTTabBarLib.MenuItemArguments mia)
+        public QMenuItem(string title, MenuItemArguments mia)
             : base(title) {
             if(mia != null) {
                 this.path = mia.Path;
@@ -213,7 +212,7 @@ namespace QTTabBarLib {
             }
         }
 
-        public QTTabBarLib.MenuItemArguments MenuItemArguments {
+        public MenuItemArguments MenuItemArguments {
             get {
                 return this.mia;
             }

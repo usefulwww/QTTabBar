@@ -15,11 +15,10 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using System;
-    using System.Drawing;
-    using System.Windows.Forms.VisualStyles;
+using System.Drawing;
+using System.Windows.Forms.VisualStyles;
 
+namespace QTTabBarLib {
     internal class QTabItemBase {
         private string commentText = string.Empty;
         private Edges edge;
@@ -63,7 +62,7 @@ namespace QTTabBarLib {
         }
 
         private static SizeF GetTextSize(string str, Graphics g, bool fTitle) {
-            SizeF empty = SizeF.Empty;
+            SizeF empty;
             CharacterRange[] ranges = new CharacterRange[] { new CharacterRange(0, str.Length) };
             sfMeasure.SetMeasurableCharacterRanges(ranges);
             Region[] regionArray = g.MeasureCharacterRanges(str, fTitle ? font : fontSubText, rctMeasure, sfMeasure);
@@ -122,12 +121,7 @@ namespace QTTabBarLib {
                 return this.commentText;
             }
             set {
-                if(value == null) {
-                    this.commentText = string.Empty;
-                }
-                else {
-                    this.commentText = value;
-                }
+                this.commentText = value ?? string.Empty;
             }
         }
 

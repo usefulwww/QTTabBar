@@ -15,17 +15,16 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using QTTabBarLib.Interop;
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Drawing;
-    using System.Globalization;
-    using System.Reflection;
-    using System.Runtime.CompilerServices;
-    using System.Windows.Forms;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Globalization;
+using System.Reflection;
+using System.Windows.Forms;
+using QTTabBarLib.Interop;
 
+namespace QTTabBarLib {
     internal class DropDownMenuReorderable : DropDownMenuBase {
         private const int COUNT_SCROLL = 3;
         private ToolStripControlHost downButton;
@@ -284,7 +283,6 @@ namespace QTTabBarLib {
             bool fUp = keys == Keys.Prior;
             int num = -1;
             int num2 = -1;
-            int height = base.Height;
             Rectangle displayRectangle = this.DisplayRectangle;
             for(int i = 0; i < this.Items.Count; i++) {
                 if(num == -1) {
@@ -341,9 +339,9 @@ namespace QTTabBarLib {
                 BindingFlags bindingAttr = BindingFlags.ExactBinding | BindingFlags.NonPublic | BindingFlags.Instance;
                 try {
                     typeof(ToolStrip).GetMethod("UpdateToolTip", bindingAttr).Invoke(this, new object[1]);
-                    System.Type type = System.Type.GetType("System.Windows.Forms.MouseHoverTimer, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
+                    Type type = Type.GetType("System.Windows.Forms.MouseHoverTimer, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
                     PropertyInfo property = typeof(ToolStrip).GetProperty("MouseHoverTimer", bindingAttr);
-                    type.GetMethod("Cancel", System.Type.EmptyTypes).Invoke(property.GetValue(this, null), null);
+                    type.GetMethod("Cancel", Type.EmptyTypes).Invoke(property.GetValue(this, null), null);
                 }
                 catch(Exception exception) {
                     QTUtility2.MakeErrorLog(exception, null);
@@ -414,16 +412,16 @@ namespace QTTabBarLib {
                 if(clickedItem != null) {
                     Rectangle rectangle = base.RectangleToScreen(e.ClickedItem.Bounds);
                     if(this.RightToLeft == RightToLeft.Yes) {
-                        int num = DropDownMenuBase.fImageMarginModified ? 0x1f : 0x19;
+                        int num = fImageMarginModified ? 0x1f : 0x19;
                         rectangle.X += rectangle.Width - num;
                         rectangle.Width = num;
                     }
                     else {
-                        rectangle.Width = DropDownMenuBase.fImageMarginModified ? 0x1f : 0x19;
+                        rectangle.Width = fImageMarginModified ? 0x1f : 0x19;
                     }
-                    if(rectangle.Contains(Control.MousePosition)) {
+                    if(rectangle.Contains(MousePosition)) {
                         clickedItem.Checked = !clickedItem.Checked;
-                        if((Control.ModifierKeys == Keys.Shift) && (this.tsmiPreviousEdgeClicked != null)) {
+                        if((ModifierKeys == Keys.Shift) && (this.tsmiPreviousEdgeClicked != null)) {
                             int index = this.Items.IndexOf(clickedItem);
                             int num3 = this.Items.IndexOf(this.tsmiPreviousEdgeClicked);
                             if(((index != num3) && (index != -1)) && (num3 != -1)) {
@@ -581,12 +579,12 @@ namespace QTTabBarLib {
 
         protected override void OnMouseWheel(MouseEventArgs e) {
             if(this.fEnableScroll && this.fNowScrollButtonsRequired) {
-                Point mousePosition = Control.MousePosition;
+                Point mousePosition = MousePosition;
                 if(base.Bounds.Contains(mousePosition)) {
                     this.ScrollMenu(e.Delta > 0, 3);
                 }
                 else {
-                    Control control = Control.FromHandle(PInvoke.WindowFromPoint(mousePosition));
+                    Control control = FromHandle(PInvoke.WindowFromPoint(mousePosition));
                     if(control != null) {
                         DropDownMenuReorderable reorderable = control as DropDownMenuReorderable;
                         if(reorderable != null) {
@@ -773,7 +771,7 @@ namespace QTTabBarLib {
                     if((control != null) && control.Enabled) {
                         this.CloseChildDropDown();
                         if(miScroll == null) {
-                            miScroll = typeof(ToolStripDropDownMenu).GetMethod("ScrollInternal", BindingFlags.ExactBinding | BindingFlags.NonPublic | BindingFlags.Instance, null, new System.Type[] { typeof(bool) }, null);
+                            miScroll = typeof(ToolStripDropDownMenu).GetMethod("ScrollInternal", BindingFlags.ExactBinding | BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { typeof(bool) }, null);
                         }
                         base.fSuspendPainting = true;
                         try {
@@ -865,7 +863,7 @@ namespace QTTabBarLib {
                     }
                     if(this.fSuppressMouseMove) {
                         if(this.MouseDragMove != null) {
-                            this.MouseDragMove(this, new MouseEventArgs(Control.MouseButtons, 0, QTUtility2.GET_X_LPARAM(m.LParam), QTUtility2.GET_Y_LPARAM(m.LParam), 0));
+                            this.MouseDragMove(this, new MouseEventArgs(MouseButtons, 0, QTUtility2.GET_X_LPARAM(m.LParam), QTUtility2.GET_Y_LPARAM(m.LParam), 0));
                         }
                         return;
                     }

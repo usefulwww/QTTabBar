@@ -16,8 +16,5 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace QTPlugin {
-    using System;
-    using System.Runtime.CompilerServices;
-
     public delegate void PluginEventHandler(object sender, PluginEventArgs e);
 }

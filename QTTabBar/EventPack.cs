@@ -15,9 +15,9 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using System;
+using System;
 
+namespace QTTabBarLib {
     internal sealed class EventPack {
         public EventHandler DirDoubleClickEventHandler;
         public bool FromTaskBar;

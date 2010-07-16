@@ -15,18 +15,18 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTPlugin.Interop {
-    using System;
-    using System.Runtime.InteropServices;
-    using System.Text;
+using System;
+using System.Runtime.InteropServices;
+using System.Text;
 
+namespace QTPlugin.Interop {
     public static class PInvoke {
         public static IntPtr CreatePIDL(byte[] data) {
             if((data == null) || (data.Length == 0)) {
                 return IntPtr.Zero;
             }
             int length = data.Length;
-            IntPtr zero = IntPtr.Zero;
+            IntPtr zero;
             try {
                 zero = Marshal.AllocCoTaskMem(length);
             }

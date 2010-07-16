@@ -15,13 +15,13 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib.Interop {
-    using System;
-    using System.Drawing;
-    using System.Runtime.InteropServices;
-    using System.Security;
-    using System.Text;
+using System;
+using System.Drawing;
+using System.Runtime.InteropServices;
+using System.Security;
+using System.Text;
 
+namespace QTTabBarLib.Interop {
     [ComImport, SuppressUnmanagedCodeSecurity, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("BB2E617C-0920-11d1-9A0B-00C04FC2D6C1")]
     internal interface IExtractImage {
         [PreserveSig]

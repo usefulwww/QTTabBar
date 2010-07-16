@@ -16,8 +16,6 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace QTTabBarLib.Interop {
-    using System;
-
     internal enum FolderViewMode {
         FVM_DETAILS = 4,
         FVM_ICON = 1,

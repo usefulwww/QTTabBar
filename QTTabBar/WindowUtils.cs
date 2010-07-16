@@ -15,14 +15,14 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using BandObjectLib;
-    using Microsoft.Win32;
-    using QTTabBarLib.Interop;
-    using System;
-    using System.Runtime.InteropServices;
-    using System.Text;
+using System;
+using System.Runtime.InteropServices;
+using System.Text;
+using BandObjectLib;
+using Microsoft.Win32;
+using QTTabBarLib.Interop;
 
+namespace QTTabBarLib {
     internal static class WindowUtils {
         public static void BringExplorerToFront(IntPtr hwndExplr) {
             PInvoke.ShowWindow(hwndExplr, PInvoke.IsIconic(hwndExplr) ? 9 : 5);

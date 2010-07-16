@@ -18,9 +18,8 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Media;
 using System.Windows.Forms;
-using System.Runtime.InteropServices;
-
 using QTPlugin;
 using QTPlugin.Interop;
 
@@ -68,12 +67,12 @@ namespace QuizoPlugins {
 
 
             // attached events are automatically detached when plugin closes.
-            this.pluginServer.TabChanged += new PluginEventHandler(pluginServer_TabChanged);
-            this.pluginServer.TabAdded += new PluginEventHandler(pluginServer_TabAdded);
-            this.pluginServer.TabRemoved += new PluginEventHandler(pluginServer_TabRemoved);
-            this.pluginServer.NavigationComplete += new PluginEventHandler(pluginServer_NavigationComplete);
-            this.pluginServer.SettingsChanged += new PluginEventHandler(pluginServer_SettingsChanged);
-            this.pluginServer.SelectionChanged += new PluginEventHandler(pluginServer_SelectionChanged);
+            this.pluginServer.TabChanged += pluginServer_TabChanged;
+            this.pluginServer.TabAdded += pluginServer_TabAdded;
+            this.pluginServer.TabRemoved += pluginServer_TabRemoved;
+            this.pluginServer.NavigationComplete += pluginServer_NavigationComplete;
+            this.pluginServer.SettingsChanged += pluginServer_SettingsChanged;
+            this.pluginServer.SelectionChanged += pluginServer_SelectionChanged;
 
             // registering to QTTabBar menu.
             this.pluginServer.RegisterMenu(this, MenuType.Both, "SampleSplitButton Menu test", true);
@@ -135,7 +134,7 @@ namespace QuizoPlugins {
                     break;
 
                 case 1:
-                    System.Media.SystemSounds.Beep.Play();
+                    SystemSounds.Beep.Play();
                     break;
             }
         }
@@ -222,7 +221,7 @@ namespace QuizoPlugins {
                     this.pluginServer.CreateTab(new Address(mydocument), -1, false, true);
                 }
                 else if(mouseButton == MouseButtons.Right) {
-                    System.Media.SystemSounds.Asterisk.Play();
+                    SystemSounds.Asterisk.Play();
                 }
             }
             else if(item.Text == "Test selection") {

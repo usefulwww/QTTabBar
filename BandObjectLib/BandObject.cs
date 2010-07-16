@@ -15,23 +15,22 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace BandObjectLib {
-    using SHDocVw;
-    using System;
-    using System.Collections.Generic;
-    using System.Drawing;
-    using System.Runtime.InteropServices;
-    using System.Windows.Forms;
+using System;
+using System.Drawing;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+using SHDocVw;
 
-    public class BandObject : UserControl, IDeskBand, IDockingWindow, IInputObject, IObjectWithSite, BandObjectLib.IOleWindow {
+namespace BandObjectLib {
+    public class BandObject : UserControl, IDeskBand, IDockingWindow, IInputObject, IObjectWithSite, IOleWindow {
         private Size _minSize = new Size(-1, -1);
         protected IInputObjectSite BandObjectSite;
         protected WebBrowserClass Explorer;
         protected bool fClosedDW;
         protected bool fFinalRelease;
         protected IntPtr ReBarHandle;
-        private RebarBreakFixer RebarSubclass = null;
-        private IAsyncResult result = null;
+        private RebarBreakFixer RebarSubclass;
+        private IAsyncResult result;
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);        
@@ -67,7 +66,6 @@ namespace BandObjectLib {
                                 pInfo.fStyle &= ~RBBS.BREAK;
                             }
                             Marshal.StructureToPtr(pInfo, m.LParam, false);
-                            pInfo = (REBARBANDINFO)Marshal.PtrToStructure(m.LParam, typeof(REBARBANDINFO));
                         }
                     }
                 }
@@ -155,28 +153,28 @@ namespace BandObjectLib {
         }
 
         public virtual void GetBandInfo(uint dwBandID, uint dwViewMode, ref DESKBANDINFO dbi) {
-            if((dbi.dwMask & DBIM.ACTUAL) != ((DBIM)0)) {
+            if((dbi.dwMask & DBIM.ACTUAL) != 0) {
                 dbi.ptActual.X = base.Size.Width;
                 dbi.ptActual.Y = base.Size.Height;
             }
-            if((dbi.dwMask & DBIM.INTEGRAL) != ((DBIM)0)) {
+            if((dbi.dwMask & DBIM.INTEGRAL) != 0) {
                 dbi.ptIntegral.X = -1;
                 dbi.ptIntegral.Y = -1;
             }
-            if((dbi.dwMask & DBIM.MAXSIZE) != ((DBIM)0)) {
+            if((dbi.dwMask & DBIM.MAXSIZE) != 0) {
                 dbi.ptMaxSize.X = dbi.ptMaxSize.Y = -1;
             }
-            if((dbi.dwMask & DBIM.MINSIZE) != ((DBIM)0)) {
+            if((dbi.dwMask & DBIM.MINSIZE) != 0) {
                 dbi.ptMinSize.X = this.MinSize.Width;
                 dbi.ptMinSize.Y = this.MinSize.Height;
             }
-            if((dbi.dwMask & DBIM.MODEFLAGS) != ((DBIM)0)) {
+            if((dbi.dwMask & DBIM.MODEFLAGS) != 0) {
                 dbi.dwModeFlags = DBIMF.NORMAL;
             }
-            if((dbi.dwMask & DBIM.BKCOLOR) != ((DBIM)0)) {
+            if((dbi.dwMask & DBIM.BKCOLOR) != 0) {
                 dbi.dwMask &= ~DBIM.BKCOLOR;
             }
-            if((dbi.dwMask & DBIM.TITLE) != ((DBIM)0)) {
+            if((dbi.dwMask & DBIM.TITLE) != 0) {
                 dbi.wszTitle = null;
             }
         }
@@ -256,7 +254,7 @@ namespace BandObjectLib {
                 }
             }
             try {
-                BandObjectLib.IOleWindow window = pUnkSite as BandObjectLib.IOleWindow;
+                IOleWindow window = pUnkSite as IOleWindow;
                 if(window != null) {
                     window.GetWindow(out this.ReBarHandle);
                 }
@@ -279,14 +277,14 @@ namespace BandObjectLib {
             base.Visible = fShow;
         }
 
-        public virtual int TranslateAcceleratorIO(ref BandObjectLib.MSG msg) {
-            if(((msg.message == 0x100) && ((msg.wParam == ((IntPtr)9L)) || (msg.wParam == ((IntPtr)0x75L)))) && base.SelectNextControl(base.ActiveControl, (Control.ModifierKeys & Keys.Shift) != Keys.Shift, true, false, false)) {
+        public virtual int TranslateAcceleratorIO(ref MSG msg) {
+            if(((msg.message == 0x100) && ((msg.wParam == ((IntPtr)9L)) || (msg.wParam == ((IntPtr)0x75L)))) && base.SelectNextControl(base.ActiveControl, (ModifierKeys & Keys.Shift) != Keys.Shift, true, false, false)) {
                 return 0;
             }
             return 1;
         }
 
-        public virtual void UIActivateIO(int fActivate, ref BandObjectLib.MSG Msg) {
+        public virtual void UIActivateIO(int fActivate, ref MSG Msg) {
             if(fActivate != 0) {
                 Control nextControl = base.GetNextControl(this, true);
                 if(nextControl != null) {

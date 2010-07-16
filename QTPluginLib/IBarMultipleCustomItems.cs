@@ -15,11 +15,10 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTPlugin {
-    using System;
-    using System.Drawing;
-    using System.Windows.Forms;
+using System.Drawing;
+using System.Windows.Forms;
 
+namespace QTPlugin {
     public interface IBarMultipleCustomItems : IPluginClient {
         ToolStripItem CreateItem(bool fLarge, DisplayStyle displayStyle, int index);
         Image GetImage(bool fLarge, int index);

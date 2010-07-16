@@ -15,14 +15,13 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using QTPlugin;
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Drawing;
-    using System.Windows.Forms;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
+using QTPlugin;
 
+namespace QTTabBarLib {
     internal sealed class ButtonBarOptionForm : Form {
         private Button buttonAdd;
         private Button buttonBrowseImage;
@@ -73,18 +72,18 @@ namespace QTTabBarLib {
             else {
                 this.comboBoxImageText.SelectedIndex = 2;
             }
-            this.comboBoxImageSize.SelectedIndexChanged += new EventHandler(this.comboBoxes_ImageSizeAndText_SelectedIndexChanged);
-            this.comboBoxImageText.SelectedIndexChanged += new EventHandler(this.comboBoxes_ImageSizeAndText_SelectedIndexChanged);
+            this.comboBoxImageSize.SelectedIndexChanged += this.comboBoxes_ImageSizeAndText_SelectedIndexChanged;
+            this.comboBoxImageText.SelectedIndexChanged += this.comboBoxes_ImageSizeAndText_SelectedIndexChanged;
             this.chbLockSearchBox.Checked = (QTButtonBar.ConfigValues[0] & 8) != 0;
             this.InitializeImages(currentImagePath, true);
             List<PluginInformation> list = new List<PluginInformation>();
-            for(int i = 0; i < currentItemIndexes.Length; i++) {
-                if(currentItemIndexes[i] >= 0x10000) {
+            foreach(int item in currentItemIndexes) {
+                if(item >= 0x10000) {
                     int count = list.Count;
                     if(PluginManager.ActivatedButtonsOrder.Count > count) {
                         string key = PluginManager.ActivatedButtonsOrder[count];
                         foreach(PluginInformation information in PluginManager.PluginInformations) {
-                            if(!(key == information.PluginID)) {
+                            if(key != information.PluginID) {
                                 continue;
                             }
                             list.Add(information);
@@ -105,13 +104,13 @@ namespace QTTabBarLib {
                         }
                     }
                 }
-                else if(currentItemIndexes[i] != 0x15) {
-                    this.listBoxCurrent.Items.Add(currentItemIndexes[i]);
+                else if(item != 0x15) {
+                    this.listBoxCurrent.Items.Add(item);
                 }
             }
             this.listBoxPool.Items.Add(0);
             for(int j = 1; j < this.ButtonItemsDisplayName.Length; j++) {
-                if(Array.IndexOf<int>(currentItemIndexes, j) == -1) {
+                if(Array.IndexOf(currentItemIndexes, j) == -1) {
                     this.listBoxPool.Items.Add(j);
                 }
             }
@@ -156,7 +155,7 @@ namespace QTTabBarLib {
             if(selectedIndex != -1) {
                 this.fChangedExists = true;
                 object selectedItem = this.listBoxPool.SelectedItem;
-                bool flag = true;
+                bool flag;
                 PluginInformation information = selectedItem as PluginInformation;
                 if(information != null) {
                     flag = information.Index != -1;
@@ -279,12 +278,12 @@ namespace QTTabBarLib {
             this.listBoxCurrent.Items.Clear();
             this.listBoxPool.Items.Clear();
             this.dicActivePluginMulti.Clear();
-            for(int i = 0; i < QTButtonBar.DefaultButtonIndices.Length; i++) {
-                this.listBoxCurrent.Items.Add(QTButtonBar.DefaultButtonIndices[i]);
+            foreach(int index in QTButtonBar.DefaultButtonIndices) {
+                this.listBoxCurrent.Items.Add(index);
             }
             this.listBoxPool.Items.Add(0);
             for(int j = 1; j < this.ButtonItemsDisplayName.Length; j++) {
-                if(Array.IndexOf<int>(QTButtonBar.DefaultButtonIndices, j) == -1) {
+                if(Array.IndexOf(QTButtonBar.DefaultButtonIndices, j) == -1) {
                     this.listBoxPool.Items.Add(j);
                 }
             }
@@ -403,19 +402,19 @@ namespace QTTabBarLib {
             this.chbLockSearchBox.Location = new Point(0xb8, 0xcb);
             this.chbLockSearchBox.UseVisualStyleBackColor = true;
             this.chbLockSearchBox.TabIndex = 14;
-            this.chbLockSearchBox.CheckedChanged += new EventHandler(this.chbLockSearchBox_CheckedChanged);
+            this.chbLockSearchBox.CheckedChanged += this.chbLockSearchBox_CheckedChanged;
             this.buttonResetImage.Anchor = AnchorStyles.Bottom;
             this.buttonResetImage.Location = new Point(0x20d, 0xca);
             this.buttonResetImage.Size = new Size(0x7a, 0x17);
             this.buttonResetImage.TabIndex = 13;
             this.buttonResetImage.AutoSize = true;
-            this.buttonResetImage.Click += new EventHandler(this.buttonResetImage_Click);
+            this.buttonResetImage.Click += this.buttonResetImage_Click;
             this.buttonBrowseImage.Anchor = AnchorStyles.Bottom;
             this.buttonBrowseImage.Location = new Point(0x20d, 0xad);
             this.buttonBrowseImage.Size = new Size(0x7a, 0x17);
             this.buttonBrowseImage.TabIndex = 12;
             this.buttonBrowseImage.AutoSize = true;
-            this.buttonBrowseImage.Click += new EventHandler(this.buttonBrowseImage_Click);
+            this.buttonBrowseImage.Click += this.buttonBrowseImage_Click;
             this.textBoxImgPath.Anchor = AnchorStyles.Bottom;
             this.textBoxImgPath.Location = new Point(0xb8, 0xaf);
             this.textBoxImgPath.ReadOnly = true;
@@ -436,27 +435,27 @@ namespace QTTabBarLib {
             this.buttonDown.Location = new Point(0x23c, 0x89);
             this.buttonDown.Size = new Size(0x4b, 0x17);
             this.buttonDown.TabIndex = 8;
-            this.buttonDown.Click += new EventHandler(this.buttonDown_Click);
+            this.buttonDown.Click += this.buttonDown_Click;
             this.buttonUp.Anchor = AnchorStyles.Bottom;
             this.buttonUp.Location = new Point(0x23c, 0x6f);
             this.buttonUp.Size = new Size(0x4b, 0x17);
             this.buttonUp.TabIndex = 7;
-            this.buttonUp.Click += new EventHandler(this.buttonUp_Click);
+            this.buttonUp.Click += this.buttonUp_Click;
             this.buttonRestoreDefault.Anchor = AnchorStyles.Top;
             this.buttonRestoreDefault.Location = new Point(0x23c, 0x4a);
             this.buttonRestoreDefault.Size = new Size(0x4b, 0x17);
             this.buttonRestoreDefault.TabIndex = 6;
-            this.buttonRestoreDefault.Click += new EventHandler(this.buttonRestoreDefault_Click);
+            this.buttonRestoreDefault.Click += this.buttonRestoreDefault_Click;
             this.buttonCancel.Anchor = AnchorStyles.Top;
             this.buttonCancel.Location = new Point(0x23c, 0x26);
             this.buttonCancel.Size = new Size(0x4b, 0x17);
             this.buttonCancel.TabIndex = 5;
-            this.buttonCancel.Click += new EventHandler(this.buttonOKCancel_Click);
+            this.buttonCancel.Click += this.buttonOKCancel_Click;
             this.buttonOK.Anchor = AnchorStyles.Top;
             this.buttonOK.Location = new Point(0x23c, 12);
             this.buttonOK.Size = new Size(0x4b, 0x17);
             this.buttonOK.TabIndex = 4;
-            this.buttonOK.Click += new EventHandler(this.buttonOKCancel_Click);
+            this.buttonOK.Click += this.buttonOKCancel_Click;
             this.listBoxCurrent.Anchor = AnchorStyles.Bottom | AnchorStyles.Top;
             this.listBoxCurrent.DrawMode = DrawMode.OwnerDrawFixed;
             this.listBoxCurrent.FormattingEnabled = true;
@@ -464,19 +463,19 @@ namespace QTTabBarLib {
             this.listBoxCurrent.Location = new Point(0x14e, 12);
             this.listBoxCurrent.Size = new Size(0xce, 0x94);
             this.listBoxCurrent.TabIndex = 3;
-            this.listBoxCurrent.DrawItem += new DrawItemEventHandler(this.listBoxes_DrawItem);
+            this.listBoxCurrent.DrawItem += this.listBoxes_DrawItem;
             this.buttonRemove.Anchor = AnchorStyles.Top;
             this.buttonRemove.Location = new Point(240, 0x4f);
             this.buttonRemove.Size = new Size(0x4b, 0x17);
             this.buttonRemove.TabIndex = 2;
             this.buttonRemove.Text = "<<";
-            this.buttonRemove.Click += new EventHandler(this.buttonRemove_Click);
+            this.buttonRemove.Click += this.buttonRemove_Click;
             this.buttonAdd.Anchor = AnchorStyles.Top;
             this.buttonAdd.Location = new Point(240, 0x29);
             this.buttonAdd.Size = new Size(0x4b, 0x17);
             this.buttonAdd.TabIndex = 1;
             this.buttonAdd.Text = ">>";
-            this.buttonAdd.Click += new EventHandler(this.buttonAdd_Click);
+            this.buttonAdd.Click += this.buttonAdd_Click;
             this.listBoxPool.Anchor = AnchorStyles.Bottom | AnchorStyles.Top;
             this.listBoxPool.DrawMode = DrawMode.OwnerDrawFixed;
             this.listBoxPool.FormattingEnabled = true;
@@ -484,7 +483,7 @@ namespace QTTabBarLib {
             this.listBoxPool.Location = new Point(12, 12);
             this.listBoxPool.Size = new Size(0xce, 0x94);
             this.listBoxPool.TabIndex = 0;
-            this.listBoxPool.DrawItem += new DrawItemEventHandler(this.listBoxes_DrawItem);
+            this.listBoxPool.DrawItem += this.listBoxes_DrawItem;
             base.AutoScaleDimensions = new SizeF(6f, 13f);
             base.AutoScaleMode = AutoScaleMode.Font;
             base.CancelButton = this.buttonOK;
@@ -512,8 +511,8 @@ namespace QTTabBarLib {
             base.ShowInTaskbar = false;
             base.StartPosition = FormStartPosition.CenterScreen;
             this.Text = "Button options";
-            base.Load += new EventHandler(this.ButtonBarOptionForm_Load);
-            base.FormClosing += new FormClosingEventHandler(this.ButtonBarOptionForm_FormClosing);
+            base.Load += this.ButtonBarOptionForm_Load;
+            base.FormClosing += this.ButtonBarOptionForm_FormClosing;
             base.ResumeLayout(false);
             base.PerformLayout();
         }
@@ -550,16 +549,15 @@ namespace QTTabBarLib {
             if(box.Items.Count >= 1) {
                 e.DrawBackground();
                 object obj2 = box.Items[e.Index];
-                string s = string.Empty;
+                string s;
                 PluginInformation information = obj2 as PluginInformation;
                 if(information == null) {
                     int index = (int)obj2;
                     s = this.ButtonItemsDisplayName[index];
                     if((index != 0) && (index < 0x13)) {
-                        Image image2 = null;
                         Rectangle rect = new Rectangle(e.Bounds.Location, this.fLargeIcon ? new Size(0x18, 0x18) : new Size(0x10, 0x10));
                         try {
-                            image2 = this.fLargeIcon ? this.imageStripLarge[index - 1] : this.imageStripSmall[index - 1];
+                            Image image2 = this.fLargeIcon ? this.imageStripLarge[index - 1] : this.imageStripSmall[index - 1];
                             if(image2 != null) {
                                 e.Graphics.DrawImage(image2, rect);
                             }
@@ -595,7 +593,7 @@ namespace QTTabBarLib {
                     }
                 }
                 bool flag = (e.State & DrawItemState.Selected) != DrawItemState.None;
-                e.Graphics.DrawString(s, this.Font, flag ? SystemBrushes.HighlightText : SystemBrushes.ControlText, new PointF((float)(e.Bounds.X + 0x1c), (float)(e.Bounds.Y + (this.fLargeIcon ? 5 : 2))));
+                e.Graphics.DrawString(s, this.Font, flag ? SystemBrushes.HighlightText : SystemBrushes.ControlText, new PointF((e.Bounds.X + 0x1c), (e.Bounds.Y + (this.fLargeIcon ? 5 : 2))));
             }
         }
 

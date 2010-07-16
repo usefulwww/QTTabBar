@@ -16,13 +16,9 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Microsoft.Win32;
-
 using QTPlugin;
 using QTPlugin.Interop;
 
@@ -47,7 +43,7 @@ namespace QuizoPlugins {
 
             if(this.migemoWrapper == null) {
                 try {
-                    this.migemoWrapper = new MigemoWrapper(MigemoLoader.pathDLL, MigemoLoader.pathDic);
+                    this.migemoWrapper = new MigemoWrapper(pathDLL, pathDic);
                 }
                 catch {
                     return false;
@@ -61,7 +57,7 @@ namespace QuizoPlugins {
                         strQuery = strQuery.Substring(1);
 
                     string strPrefix = String.Empty;
-                    if(fStartWithNoPartial || !MigemoLoader.fPartialMatch)
+                    if(fStartWithNoPartial || !fPartialMatch)
                         strPrefix = "^";
 
                     re = new Regex(strPrefix + this.migemoWrapper.QueryRegexStr(strQuery), RegexOptions.IgnoreCase);
@@ -80,7 +76,7 @@ namespace QuizoPlugins {
 
         public void Open(IPluginServer pluginServer, IShellBrowser shellBrowser) {
             this.pluginServer = pluginServer;
-            MigemoLoader.ReadSettings();
+            ReadSettings();
         }
 
         public bool QueryShortcutKeys(out string[] actions) {
@@ -104,17 +100,17 @@ namespace QuizoPlugins {
         public void OnOption() {
             this.pluginServer.ExecuteCommand(Commands.SetModalState, true);
             try {
-                using(MigemoOptionForm mof = new MigemoOptionForm(MigemoLoader.pathDLL, MigemoLoader.pathDic, MigemoLoader.fPartialMatch)) {
+                using(MigemoOptionForm mof = new MigemoOptionForm(pathDLL, pathDic, fPartialMatch)) {
                     if(DialogResult.OK == mof.ShowDialog()) {
-                        MigemoLoader.pathDLL = mof.pathDLL;
-                        MigemoLoader.pathDic = mof.pathDic;
-                        MigemoLoader.fPartialMatch = mof.fPartialMatch;
+                        pathDLL = mof.pathDLL;
+                        pathDic = mof.pathDic;
+                        fPartialMatch = mof.fPartialMatch;
 
                         using(RegistryKey rkMigemo = Registry.CurrentUser.CreateSubKey(CONSTANTS.REGISTRY_PLUGINSETTINGS + "\\MigemoLoader")) {
                             if(rkMigemo != null) {
-                                rkMigemo.SetValue("dll", MigemoLoader.pathDLL);
-                                rkMigemo.SetValue("dic", MigemoLoader.pathDic);
-                                rkMigemo.SetValue("PartialMatch", MigemoLoader.fPartialMatch ? 1 : 0);
+                                rkMigemo.SetValue("dll", pathDLL);
+                                rkMigemo.SetValue("dic", pathDic);
+                                rkMigemo.SetValue("PartialMatch", fPartialMatch ? 1 : 0);
                             }
                         }
                     }
@@ -146,7 +142,7 @@ namespace QuizoPlugins {
                 if(rkMigemo != null) {
                     string pathDLL = (string)rkMigemo.GetValue("dll");
                     string pathDic = (string)rkMigemo.GetValue("dic");
-                    MigemoLoader.fPartialMatch = (int)rkMigemo.GetValue("PartialMatch", 0) == 1;
+                    fPartialMatch = (int)rkMigemo.GetValue("PartialMatch", 0) == 1;
 
                     //if( File.Exists( pathDLL ) && File.Exists( pathDic ) )
                     //{

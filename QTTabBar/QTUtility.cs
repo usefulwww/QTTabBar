@@ -15,19 +15,19 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using Microsoft.Win32;
-    using QTPlugin;
-    using QTTabBarLib.Interop;
-    using System;
-    using System.Collections.Generic;
-    using System.Drawing;
-    using System.Globalization;
-    using System.IO;
-    using System.Runtime.InteropServices;
-    using System.Windows.Forms;
-    using System.Xml;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Globalization;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+using System.Xml;
+using Microsoft.Win32;
+using QTPlugin;
+using QTTabBarLib.Interop;
 
+namespace QTTabBarLib {
     public enum Settings : uint {
         NeverCloseWndLocked = 8 * 00 + 0, // 0x01,
         NeverCloseWindow    = 8 * 00 + 1, // 0x02,
@@ -175,7 +175,7 @@ namespace QTTabBarLib {
         internal static float PreviewFontSize;
         internal static int PreviewMaxHeight = 0x100;
         internal static int PreviewMaxWidth = 0x200;
-        internal static System.Drawing.Color RebarBGColor;
+        internal static Color RebarBGColor;
         internal const string REGUSER = @"Software\Quizo\QTTabBar";
         internal static string[] ResMain;
         internal static string[] ResMisc;
@@ -191,12 +191,12 @@ namespace QTTabBarLib {
         internal static Font StartUpTabFont;
         internal static Font TabFont;
         internal static int TabHeight;
-        internal static System.Drawing.Color TabHiliteColor;
+        internal static Color TabHiliteColor;
         internal static Padding TabImageSizingMargin;
-        internal static System.Drawing.Color TabTextColor_Active;
-        internal static System.Drawing.Color TabTextColor_ActivShdw;
-        internal static System.Drawing.Color TabTextColor_Inactv;
-        internal static System.Drawing.Color TabTextColor_InAtvShdw;
+        internal static Color TabTextColor_Active;
+        internal static Color TabTextColor_ActivShdw;
+        internal static Color TabTextColor_Inactv;
+        internal static Color TabTextColor_InAtvShdw;
         internal static int TabWidth;
         internal static Dictionary<string, string[]> TextResourcesDic;
         internal static List<byte[]> TMPIDLList = new List<byte[]>();
@@ -222,7 +222,7 @@ namespace QTTabBarLib {
                         if(key != null) {
                             float num;
                             byte[] inputValues = (byte[])key.GetValue("Config");
-                            ConfigValues = GetSettingValue<byte>(inputValues, ConfigValues, false);
+                            ConfigValues = GetSettingValue(inputValues, ConfigValues, false);
                             string path = (string)key.GetValue("LanguageFile", string.Empty);
                             if((path.Length > 0) && File.Exists(path)) {
                                 Path_LanguageFile = path;
@@ -232,31 +232,31 @@ namespace QTTabBarLib {
                                 Path_LanguageFile = string.Empty;
                             }
                             ValidateTextResources();
-                            TabWidth = QTUtility2.GetRegistryValueSafe<int>(key, "TabWidth", 80);
-                            TabHeight = QTUtility2.GetRegistryValueSafe<int>(key, "TabHeight", 0x18);
-                            MaxTabWidth = QTUtility2.GetRegistryValueSafe<int>(key, "TabWidthMax", 150);
-                            MinTabWidth = QTUtility2.GetRegistryValueSafe<int>(key, "TabWidthMin", 70);
+                            TabWidth = QTUtility2.GetRegistryValueSafe(key, "TabWidth", 80);
+                            TabHeight = QTUtility2.GetRegistryValueSafe(key, "TabHeight", 0x18);
+                            MaxTabWidth = QTUtility2.GetRegistryValueSafe(key, "TabWidthMax", 150);
+                            MinTabWidth = QTUtility2.GetRegistryValueSafe(key, "TabWidthMin", 70);
                             if(TabHeight > 50) {
                                 TabHeight = 50;
                             }
                             if(TabHeight < 10) {
                                 TabHeight = 10;
                             }
-                            TabTextColor_Active = System.Drawing.Color.FromArgb(QTUtility2.GetRegistryValueSafe<int>(key, "TitleColorActive", SystemColors.ControlText.ToArgb()));
-                            TabTextColor_Inactv = System.Drawing.Color.FromArgb(QTUtility2.GetRegistryValueSafe<int>(key, "TitleColorInactive", SystemColors.ControlText.ToArgb()));
-                            TabHiliteColor = System.Drawing.Color.FromArgb(QTUtility2.GetRegistryValueSafe<int>(key, "HighlightColorClassic", SystemColors.Highlight.ToArgb()));
-                            TabTextColor_ActivShdw = System.Drawing.Color.FromArgb(QTUtility2.GetRegistryValueSafe<int>(key, "TitleColorShadowActive", System.Drawing.Color.Silver.ToArgb()));
-                            TabTextColor_InAtvShdw = System.Drawing.Color.FromArgb(QTUtility2.GetRegistryValueSafe<int>(key, "TitleColorShadowInActv", System.Drawing.Color.White.ToArgb()));
-                            RebarBGColor = System.Drawing.Color.FromArgb(QTUtility2.GetRegistryValueSafe<int>(key, "ToolbarBGColor", SystemColors.Control.ToArgb()));
-                            ShellViewRowCOLORREF_Background = QTUtility2.GetRegistryValueSafe<int>(key, "AlternateColor_Bk", 0xfaf5f1);
-                            ShellViewRowCOLORREF_Text = QTUtility2.GetRegistryValueSafe<int>(key, "AlternateColor_Text", QTUtility2.MakeCOLORREF(SystemColors.WindowText));
+                            TabTextColor_Active = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "TitleColorActive", SystemColors.ControlText.ToArgb()));
+                            TabTextColor_Inactv = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "TitleColorInactive", SystemColors.ControlText.ToArgb()));
+                            TabHiliteColor = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "HighlightColorClassic", SystemColors.Highlight.ToArgb()));
+                            TabTextColor_ActivShdw = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "TitleColorShadowActive", Color.Silver.ToArgb()));
+                            TabTextColor_InAtvShdw = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "TitleColorShadowInActv", Color.White.ToArgb()));
+                            RebarBGColor = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "ToolbarBGColor", SystemColors.Control.ToArgb()));
+                            ShellViewRowCOLORREF_Background = QTUtility2.GetRegistryValueSafe(key, "AlternateColor_Bk", 0xfaf5f1);
+                            ShellViewRowCOLORREF_Text = QTUtility2.GetRegistryValueSafe(key, "AlternateColor_Text", QTUtility2.MakeCOLORREF(SystemColors.WindowText));
                             string familyName = (string)key.GetValue("TabFont", string.Empty);
                             string s = (string)key.GetValue("TabFontSize", "0");
                             if(float.TryParse(s, out num) && (num != 0f)) {
                                 TabFont = new Font(familyName, num);
                             }
                             Action_BarDblClick = (string)key.GetValue("Action_BarDblClick", string.Empty);
-                            MaxCount_History = QTUtility2.GetRegistryValueSafe<int>(key, "Max_Undo", 0x10);
+                            MaxCount_History = QTUtility2.GetRegistryValueSafe(key, "Max_Undo", 0x10);
                             using(RegistryKey key2 = key.CreateSubKey("RecentlyClosed")) {
                                 if(key2 != null) {
                                     List<string> collection = new List<string>();
@@ -267,7 +267,7 @@ namespace QTTabBarLib {
                                 }
                             }
                             if(CheckConfig(Settings.AllRecentFiles)) {
-                                MaxCount_Executed = QTUtility2.GetRegistryValueSafe<int>(key, "Max_RecentFile", 0x10);
+                                MaxCount_Executed = QTUtility2.GetRegistryValueSafe(key, "Max_RecentFile", 0x10);
                                 using(RegistryKey key3 = key.CreateSubKey("RecentFiles")) {
                                     if(key3 != null) {
                                         List<string> list2 = new List<string>();
@@ -341,14 +341,14 @@ namespace QTTabBarLib {
         }
 
         public static bool ExtHasIcon(string ext) {
-            if((!(ext == ".exe") && !(ext == ".lnk")) && (!(ext == ".ico") && !(ext == ".url"))) {
+            if(ext != ".exe" && ext != ".lnk" && ext != ".ico" && ext != ".url") {
                 return (ext == ".sln");
             }
             return true;
         }
 
         public static bool ExtIsCompressed(string ext) {
-            if(!(ext == ".zip") && !(ext == ".lzh")) {
+            if(ext != ".zip" && ext != ".lzh") {
                 return (ext == ".cab");
             }
             return true;
@@ -657,7 +657,7 @@ namespace QTTabBarLib {
             if(!ImageListGlobal.Images.ContainsKey(irk.ImageKey)) {
                 switch(irk.ImageType) {
                     case 0:
-                        if(!(irk.ImageKey == "noimage")) {
+                        if(irk.ImageKey != "noimage") {
                             if(irk.ImageKey == "noext") {
                                 ImageListGlobal.Images.Add("noext", GetIcon(string.Empty, true));
                                 return;
@@ -825,7 +825,7 @@ namespace QTTabBarLib {
         }
 
         public static void RefreshShortcutKeys(RegistryKey rkUser) {
-            ShortcutKeys = GetSettingValue<int>(QTUtility2.ReadRegBinary<int>("ShortcutKeys", rkUser), KEYS_DEFAULT, true);
+            ShortcutKeys = GetSettingValue(QTUtility2.ReadRegBinary<int>("ShortcutKeys", rkUser), KEYS_DEFAULT, true);
         }
 
         public static void RefreshUserAppDic(bool fCheckShortcuts) {
@@ -866,9 +866,9 @@ namespace QTTabBarLib {
                 int num = 1;
                 string[] array = new string[] { "separator", string.Empty, string.Empty };
                 foreach(ToolStripItem item in itemsList) {
-                    string[] strArray2 = null;
+                    string[] strArray2;
                     if(item.Text.Length == 0) {
-                        QTUtility2.WriteRegBinary<string>(array, "Separator" + num++, key);
+                        QTUtility2.WriteRegBinary(array, "Separator" + num++, key);
                         continue;
                     }
                     if(UserAppsDic.TryGetValue(item.Name, out strArray2)) {
@@ -876,7 +876,7 @@ namespace QTTabBarLib {
                             key.SetValue(item.Name, new byte[0]);
                             continue;
                         }
-                        QTUtility2.WriteRegBinary<string>(strArray2, item.Name, key);
+                        QTUtility2.WriteRegBinary(strArray2, item.Name, key);
                     }
                 }
             }
@@ -1071,7 +1071,7 @@ namespace QTTabBarLib {
                     continue;
                 }
                 object obj2 = dictionary[num];
-                if(((((num < 0x10000) && (obj2 is bool)) || (((0x10000 <= num) && (num < 0x20000)) && (obj2 is int))) || ((((0x20000 <= num) && (num < 0x40000)) && (obj2 is string)) || (((0x40000 <= num) && (num < 0x80000)) && (obj2 is System.Drawing.Color)))) || ((((num == 0x80000) && (obj2 is Padding)) || ((num == 0x80001) && (obj2 is float))) || ((((num == 0x80002) && (obj2 is string[])) || ((num == 0x80003) && (obj2 is string[]))) || ((num == 0x80004) && (obj2 is float))))) {
+                if(((((num < 0x10000) && (obj2 is bool)) || (((0x10000 <= num) && (num < 0x20000)) && (obj2 is int))) || ((((0x20000 <= num) && (num < 0x40000)) && (obj2 is string)) || (((0x40000 <= num) && (num < 0x80000)) && (obj2 is Color)))) || ((((num == 0x80000) && (obj2 is Padding)) || ((num == 0x80001) && (obj2 is float))) || ((((num == 0x80002) && (obj2 is string[])) || ((num == 0x80003) && (obj2 is string[]))) || ((num == 0x80004) && (obj2 is float))))) {
                     dictionary2[num] = dictionary[num];
                 }
             }
@@ -1175,12 +1175,12 @@ namespace QTTabBarLib {
             }
             Path_PluginLangFile = (string)dictionary2[0x20004];
             PreviewFontName = (string)dictionary2[0x20005];
-            TabTextColor_Active = (System.Drawing.Color)dictionary2[0x40000];
-            TabTextColor_Inactv = (System.Drawing.Color)dictionary2[0x40001];
-            RebarBGColor = (System.Drawing.Color)dictionary2[0x40002];
-            ShellViewRowCOLORREF_Text = QTUtility2.MakeCOLORREF((System.Drawing.Color)dictionary2[0x40003]);
-            ShellViewRowCOLORREF_Background = QTUtility2.MakeCOLORREF((System.Drawing.Color)dictionary2[0x40004]);
-            TabHiliteColor = (System.Drawing.Color)dictionary2[0x40005];
+            TabTextColor_Active = (Color)dictionary2[0x40000];
+            TabTextColor_Inactv = (Color)dictionary2[0x40001];
+            RebarBGColor = (Color)dictionary2[0x40002];
+            ShellViewRowCOLORREF_Text = QTUtility2.MakeCOLORREF((Color)dictionary2[0x40003]);
+            ShellViewRowCOLORREF_Background = QTUtility2.MakeCOLORREF((Color)dictionary2[0x40004]);
+            TabHiliteColor = (Color)dictionary2[0x40005];
             TabImageSizingMargin = (Padding)dictionary2[0x80000];
             PreviewExtsList_Txt = new List<string>((string[])dictionary2[0x80002]);
             PreviewExtsList_Img = new List<string>((string[])dictionary2[0x80003]);
@@ -1212,7 +1212,7 @@ namespace QTTabBarLib {
             }
             foreach(string str in strArray) {
                 string[] strArray2 = Resources_String.ResourceManager.GetString(str).Split(SEPARATOR_CHAR);
-                string[] strArray3 = null;
+                string[] strArray3;
                 TextResourcesDic.TryGetValue(str, out strArray3);
                 if(strArray3 == null) {
                     TextResourcesDic[str] = strArray2;

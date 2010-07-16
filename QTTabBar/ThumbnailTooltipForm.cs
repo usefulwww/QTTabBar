@@ -15,22 +15,21 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using BandObjectLib;
-    using QTTabBarLib.Interop;
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.ComponentModel;
-    using System.Drawing;
-    using System.Drawing.Imaging;
-    using System.IO;
-    using System.Runtime.CompilerServices;
-    using System.Runtime.InteropServices;
-    using System.Text;
-    using System.Windows.Forms;
-    using System.Windows.Forms.VisualStyles;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
+using BandObjectLib;
+using QTTabBarLib.Interop;
 
+namespace QTTabBarLib {
     internal sealed class ThumbnailTooltipForm : Form {
         private const string EMPTYFILE = "  *empty file";
         private bool fFontAsigned;
@@ -108,7 +107,7 @@ namespace QTTabBarLib {
                 }
                 if(!flag) {
                     try {
-                        ImageData data3 = null;
+                        ImageData data3;
                         if(!ExtIsDefaultImage(ext)) {
                             if(this.lstPathFailedThumbnail.Contains(path)) {
                                 return false;
@@ -153,10 +152,10 @@ namespace QTTabBarLib {
                             object obj2 = text;
                             text = string.Concat(new object[] { obj2, "    ( ", empty.Width, " x ", empty.Height, " )", flag5 ? string.Empty : "*" });
                         }
-                        text = text + "\r\n" + info.LastWriteTime.ToString();
+                        text = text + "\r\n" + info.LastWriteTime;
                     }
                     using(Graphics graphics = this.lblInfo.CreateGraphics()) {
-                        ef = graphics.MeasureString(text, this.lblInfo.Font, (int)(width - 8));
+                        ef = graphics.MeasureString(text, this.lblInfo.Font, (width - 8));
                     }
                     this.lblInfo.SuspendLayout();
                     this.lblInfo.Text = text;
@@ -198,7 +197,7 @@ namespace QTTabBarLib {
                         SizeF ef2;
                         bool fLoadedAll = false;
                         bool flag7 = false;
-                        string str4 = string.Empty;
+                        string str4;
                         ioException = null;
                         if(info2.Length > 0L) {
                             str4 = LoadTextFile(path, out fLoadedAll);
@@ -224,7 +223,7 @@ namespace QTTabBarLib {
                         }
                         int num2 = 0x100;
                         if(this.fFontAsigned) {
-                            num2 = Math.Max((int)(num2 * (QTUtility.PreviewFontSize / Control.DefaultFont.Size)), 0x80);
+                            num2 = Math.Max((int)(num2 * (QTUtility.PreviewFontSize / DefaultFont.Size)), 0x80);
                             formSize.Width = num2;
                         }
                         using(Graphics graphics2 = this.lblText.CreateGraphics()) {
@@ -280,10 +279,10 @@ namespace QTTabBarLib {
         private static string FormatSize(long size) {
             string str = size + " bytes";
             if(size >= 0x400L) {
-                str = Math.Round((double)(((double)size) / 1024.0), 1) + " KB";
+                str = Math.Round(((size) / 1024.0), 1) + " KB";
             }
             if(size >= 0x100000L) {
-                str = Math.Round((double)(((double)size) / 1048576.0), 1) + " MB";
+                str = Math.Round(((size) / 1048576.0), 1) + " MB";
             }
             return str;
         }
@@ -364,15 +363,15 @@ namespace QTTabBarLib {
                     int height = sizeRaw.Height;
                     if((height > QTUtility.PreviewMaxHeight) || (width > QTUtility.PreviewMaxWidth)) {
                         if(height > QTUtility.PreviewMaxHeight) {
-                            width = (int)((((double)QTUtility.PreviewMaxHeight) / ((double)height)) * width);
+                            width = (int)(((QTUtility.PreviewMaxHeight) / ((double)height)) * width);
                             height = QTUtility.PreviewMaxHeight;
                             if(width > QTUtility.PreviewMaxWidth) {
-                                height = (int)((((double)QTUtility.PreviewMaxWidth) / ((double)width)) * height);
+                                height = (int)(((QTUtility.PreviewMaxWidth) / ((double)width)) * height);
                                 width = QTUtility.PreviewMaxWidth;
                             }
                         }
                         else {
-                            height = (int)((((double)QTUtility.PreviewMaxWidth) / ((double)width)) * height);
+                            height = (int)(((QTUtility.PreviewMaxWidth) / ((double)width)) * height);
                             width = QTUtility.PreviewMaxWidth;
                         }
                         sizeActual = new Size(width, height);
@@ -438,7 +437,7 @@ namespace QTTabBarLib {
             toolTipText = null;
             fCached = false;
             IntPtr zero = IntPtr.Zero;
-            QTTabBarLib.Interop.IShellItem ppsi = null;
+            IShellItem ppsi = null;
             ISharedBitmap ppvThumb = null;
             LocalThumbnailCache o = null;
             try {
@@ -614,10 +613,6 @@ namespace QTTabBarLib {
             Point point = new Point(rctMenuItem.Right + 8, rctMenuItem.Bottom);
             Rectangle workingArea = Screen.FromPoint(rctMenuItem.Location).WorkingArea;
             bool flag = (workingArea.Right - point.X) < (point.X - workingArea.Left);
-            int bottom = workingArea.Bottom;
-            int y = point.Y;
-            int num3 = point.Y;
-            int top = workingArea.Top;
             bool flag2 = false;
             if(((((formSize.Width + point.X) - workingArea.Right) + 8) > 0) && flag) {
                 point.X = (rctMenuItem.X - formSize.Width) - 8;
@@ -638,9 +633,9 @@ namespace QTTabBarLib {
             return true;
         }
 
-        protected override System.Windows.Forms.CreateParams CreateParams {
+        protected override CreateParams CreateParams {
             get {
-                System.Windows.Forms.CreateParams createParams = base.CreateParams;
+                CreateParams createParams = base.CreateParams;
                 createParams.ClassStyle |= 0x20000;
                 return createParams;
             }
@@ -661,7 +656,7 @@ namespace QTTabBarLib {
             }
         }
 
-        private sealed class ImageCacheStore : Collection<ThumbnailTooltipForm.ImageData> {
+        private sealed class ImageCacheStore : Collection<ImageData> {
             private int max_cache_length;
             private object syncObject = new object();
 
@@ -671,14 +666,14 @@ namespace QTTabBarLib {
 
             protected override void ClearItems() {
                 lock(this.syncObject) {
-                    foreach(ThumbnailTooltipForm.ImageData data in this) {
+                    foreach(ImageData data in this) {
                         data.Dispose();
                     }
                     base.ClearItems();
                 }
             }
 
-            protected override void InsertItem(int index, ThumbnailTooltipForm.ImageData item) {
+            protected override void InsertItem(int index, ImageData item) {
                 lock(this.syncObject) {
                     base.InsertItem(index, item);
                     if(base.Count > this.max_cache_length) {
@@ -695,7 +690,7 @@ namespace QTTabBarLib {
                 }
             }
 
-            protected override void SetItem(int index, ThumbnailTooltipForm.ImageData item) {
+            protected override void SetItem(int index, ImageData item) {
                 lock(this.syncObject) {
                     base.SetItem(index, item);
                 }
@@ -703,7 +698,7 @@ namespace QTTabBarLib {
         }
 
         private sealed class ImageData : IDisposable {
-            public System.Drawing.Bitmap Bitmap;
+            public Bitmap Bitmap;
             public DateTime ModifiedDate;
             public MemoryStream ms;
             public string Path;
@@ -712,7 +707,7 @@ namespace QTTabBarLib {
             public string TooltipText;
             public Size ZoomedSize;
 
-            public ImageData(System.Drawing.Bitmap bmp, MemoryStream memoryStream, string path, DateTime dtModified, Size sizeRaw, Size sizeZoomed) {
+            public ImageData(Bitmap bmp, MemoryStream memoryStream, string path, DateTime dtModified, Size sizeRaw, Size sizeZoomed) {
                 this.Bitmap = bmp;
                 this.ms = memoryStream;
                 this.Path = path;

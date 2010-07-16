@@ -16,8 +16,6 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace QTPlugin {
-    using System;
-
     public static class CONSTANTS {
         public const string REGISTRY_PLUGIN = @"Software\Quizo\QTTabBar\Plugins";
         public const string REGISTRY_PLUGINSETTINGS = @"Software\Quizo\QTTabBar\Plugins\Settings";

@@ -15,15 +15,15 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace QTTabBarLib {
-    using QTTabBarLib.Interop;
-    using System;
-    using System.ComponentModel;
-    using System.Diagnostics;
-    using System.Drawing;
-    using System.Media;
-    using System.Windows.Forms;
+using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Drawing;
+using System.Media;
+using System.Windows.Forms;
+using QTTabBarLib.Interop;
 
+namespace QTTabBarLib {
     internal class MessageForm : Form {
         private Button btnCancel;
         private Button btnOk;
@@ -136,7 +136,7 @@ namespace QTTabBarLib {
             this.btnOk.TabIndex = 0;
             this.btnOk.Text = "OK";
             this.btnOk.UseVisualStyleBackColor = true;
-            this.btnOk.Click += new EventHandler(this.btnOk_Click);
+            this.btnOk.Click += this.btnOk_Click;
             this.btnOk2.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
             this.btnOk2.Font = new Font(this.Font.FontFamily, 9f);
             this.btnOk2.Location = new Point(0xed, 0x7a);
@@ -145,7 +145,7 @@ namespace QTTabBarLib {
             this.btnOk2.Text = "OK";
             this.btnOk2.UseVisualStyleBackColor = true;
             this.btnOk2.Visible = false;
-            this.btnOk2.Click += new EventHandler(this.btnOk2_Click);
+            this.btnOk2.Click += this.btnOk2_Click;
             this.btnCancel.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
             this.btnCancel.Font = new Font(this.Font.FontFamily, 9f);
             this.btnCancel.Location = new Point(0x13e, 0x7a);
@@ -154,7 +154,7 @@ namespace QTTabBarLib {
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Visible = false;
-            this.btnCancel.Click += new EventHandler(this.btnOk_Click);
+            this.btnCancel.Click += this.btnOk_Click;
             this.panel1.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top;
             this.panel1.BackColor = SystemColors.Window;
             this.panel1.Controls.Add(this.labelMessage);
@@ -167,7 +167,7 @@ namespace QTTabBarLib {
             this.pictureBoxIcon.Location = new Point(0x1c, 20);
             this.pictureBoxIcon.Size = new Size(0x20, 0x20);
             this.timerClose.Interval = 0x3e8;
-            this.timerClose.Tick += new EventHandler(this.timerClose_Tick);
+            this.timerClose.Tick += this.timerClose_Tick;
             this.labelCounter.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
             this.labelCounter.AutoSize = true;
             this.labelCounter.Location = new Point(0x19, 130);
@@ -187,7 +187,7 @@ namespace QTTabBarLib {
             base.ShowIcon = false;
             base.ShowInTaskbar = false;
             base.StartPosition = FormStartPosition.Manual;
-            base.Shown += new EventHandler(this.MessageForm_Shown);
+            base.Shown += this.MessageForm_Shown;
             this.panel1.ResumeLayout(false);
             ((ISupportInitialize)this.pictureBoxIcon).EndInit();
             base.ResumeLayout(false);
@@ -211,10 +211,6 @@ namespace QTTabBarLib {
             }
         }
 
-        public static void Show(IntPtr hwndParent, string strMessage, string strTitle, MessageBoxIcon icon, int msecDuration) {
-            Show(hwndParent, strMessage, strTitle, icon, msecDuration, false);
-        }
-
         public static void Show(string strMessage, string strTitle, string strExecute, MessageBoxIcon icon, int msecDuration) {
             MessageForm form = new MessageForm(strMessage, strTitle, strExecute, icon, msecDuration);
             Rectangle workingArea = Screen.PrimaryScreen.WorkingArea;
@@ -222,10 +218,10 @@ namespace QTTabBarLib {
             form.ShowMessageForm();
         }
 
-        public static void Show(IntPtr hwndParent, string strMessage, string strTitle, MessageBoxIcon icon, int msecDuration, bool fModal) {
+        public static void Show(IntPtr hwndParent, string strMessage, string strTitle, MessageBoxIcon icon, int msecDuration, bool fModal = false) {
             MessageForm form = new MessageForm(strMessage, strTitle, null, icon, msecDuration);
             if(hwndParent != IntPtr.Zero) {
-                QTTabBarLib.Interop.RECT rect;
+                RECT rect;
                 PInvoke.GetWindowRect(hwndParent, out rect);
                 form.Location = new Point(rect.left + ((rect.Width - form.Width) / 2), rect.top + ((rect.Height - form.Height) / 2));
             }

@@ -16,17 +16,15 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-
 using QTPlugin;
 using QTPlugin.Interop;
 
 namespace QuizoPlugins {
-    internal class FileOps {
+    internal static class FileOps {
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern IntPtr SendMessage(IntPtr hWnd, UInt32 Msg, IntPtr wParam, IntPtr lParam);
 
@@ -46,23 +44,23 @@ namespace QuizoPlugins {
         private static extern bool ShellExecuteEx(ref SHELLEXECUTEINFO lpExecInfo);
 
 
-        private static bool fVista = FileOps.IsVista();
+        private static bool fVista = IsVista();
 
         private const int WM_COMMAND = 0x0111;
 
 
         public static void FileOperation(FileOpActions action, IntPtr hwndExplr, IShellBrowser shellBrowser) {
-            IntPtr hwnd = FileOps.fVista ? FindWindowEx(hwndExplr, IntPtr.Zero, new StringBuilder("ShellTabWindowClass"), null) : hwndExplr;
+            IntPtr hwnd = fVista ? FindWindowEx(hwndExplr, IntPtr.Zero, new StringBuilder("ShellTabWindowClass"), null) : hwndExplr;
 
-            if(FileOps.fVista)
+            if(fVista)
                 SendMessage(hwnd, WM_COMMAND, (IntPtr)action, IntPtr.Zero);
             else
                 PostMessage(hwnd, WM_COMMAND, (IntPtr)action, IntPtr.Zero);
 
             // make selected icons transparent and refresh them immediately.
             // ( when NO-FULLROW-SELECT setting is ON, vista's explorer won't redraw items... )
-            if(FileOps.fVista && action == FileOpActions.Cut && shellBrowser != null)
-                FileOps.RefreshItems(shellBrowser);
+            if(fVista && action == FileOpActions.Cut && shellBrowser != null)
+                RefreshItems(shellBrowser);
         }
 
         private static void RefreshItems(IShellBrowser shellBrowser) {
@@ -111,7 +109,7 @@ namespace QuizoPlugins {
                     return false;
 
                 string currentPath = pluginServer.SelectedTab.Address.Path;
-                string sourcePaths = FileOps.MakeSourcePaths(addresses);
+                string sourcePaths = MakeSourcePaths(addresses);
 
                 if(sourcePaths.Length < 2 || currentPath.Length < 4)
                     return false;
@@ -203,7 +201,7 @@ namespace QuizoPlugins {
         //FolderOptions		= 0xA123, ??
     }
 
-    [ComImport()]
+    [ComImport]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     [Guid("37A378C0-F82D-11CE-AE65-08002B2E1262")]
     interface IShellFolderView {
