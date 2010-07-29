@@ -1594,7 +1594,7 @@ namespace QTTabBarLib {
                 return flag;
             }
 
-            public void Swap(int indexSource, int indexDestination) {
+            public void Relocate(int indexSource, int indexDestination) {
                 int selectedIndex = this.Owner.SelectedIndex;
                 int num2 = (indexSource > indexDestination) ? indexSource : indexDestination;
                 int num3 = (indexSource > indexDestination) ? indexDestination : indexSource;

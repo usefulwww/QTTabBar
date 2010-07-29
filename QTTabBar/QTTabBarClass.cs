@@ -219,7 +219,7 @@ namespace QTTabBarLib {
                                 foreach(string str3 in str2.Split(QTUtility.SEPARATOR_CHAR)) {
                                     if(flag) {
                                         if(string.Equals(str3, openingPath, StringComparison.OrdinalIgnoreCase)) {
-                                            this.tabControl1.TabPages.Swap(0, this.tabControl1.TabCount - 1);
+                                            this.tabControl1.TabPages.Relocate(0, this.tabControl1.TabCount - 1);
                                             goto Label_0188;
                                         }
                                         bool flag2 = false;
@@ -354,7 +354,7 @@ namespace QTTabBarLib {
                         this.CurrentTab.TabLocked &&
                         !QTUtility2.IsShellPathButNotFileSystem(this.CurrentTab.CurrentPath)) &&
                         !QTUtility2.IsShellPathButNotFileSystem(path)) {
-                    this.CloneTabButton(this.CurrentTab, path, true, this.tabControl1.SelectedIndex + 1);
+                    this.CloneTabButton(this.CurrentTab, path, true, -1);
                     cancel = true;
                     return;
                 }
@@ -2115,12 +2115,39 @@ namespace QTTabBarLib {
                 bool flag2 = QTUtility2.IsShellPathButNotFileSystem(path);
                 bool flag3 = QTUtility2.IsShellPathButNotFileSystem(CurrentTab.CurrentPath);
 
-                // Restore the locked tab on 7.  This condition should never be
-                // met on XP/Vista
+                // If we're navigating on a locked tab, we simulate opening the target folder
+                // in a new tab.  First we clone the tab at the old address and lock it.  Then
+                // we move the current tab to the "new tab" position and unlock it.
                 if(!flag2 && !flag3 && !NavigatedByCode && CurrentTab.TabLocked) {
-                    QTabItem item = this.CloneTabButton(this.CurrentTab, null, false, this.tabControl1.SelectedIndex);
+                    int pos = this.tabControl1.SelectedIndex;
+                    tabControl1.SetRedraw(false);
+                    QTabItem item = this.CloneTabButton(this.CurrentTab, null, false, pos);
                     item.TabLocked = true;
                     CurrentTab.TabLocked = false;
+                    pos++;
+                    int max = this.tabControl1.TabPages.Count - 1;
+
+                    switch(QTUtility.ConfigValues[1]) {
+                        case 0:
+                            if(pos != max) {
+                                tabControl1.TabPages.Relocate(pos, max);
+                            }
+                            break;
+                        case 1:
+                            tabControl1.TabPages.Relocate(pos, 0);
+                            break;
+                        case 3:
+                            tabControl1.TabPages.Relocate(pos, pos - 1);
+                            break;
+                    }
+                    tabControl1.SetRedraw(true);
+
+                    this.lstActivatedTabs.Remove(this.CurrentTab);
+                    this.lstActivatedTabs.Add(item);
+                    this.lstActivatedTabs.Add(this.CurrentTab);
+                    if(this.lstActivatedTabs.Count > 15) {
+                        this.lstActivatedTabs.RemoveAt(0);
+                    }
                 }
 
                 if(!this.NavigatedByCode && flag) {
@@ -5824,8 +5851,8 @@ namespace QTTabBarLib {
                     if(this.tabControl1.TabCount > 1) {
                         int indexSource = 0;
                         for(int i = this.tabControl1.TabCount - 1; indexSource < i; i--) {
-                            this.tabControl1.TabPages.Swap(indexSource, i);
-                            this.tabControl1.TabPages.Swap(i - 1, indexSource);
+                            this.tabControl1.TabPages.Relocate(indexSource, i);
+                            this.tabControl1.TabPages.Relocate(i - 1, indexSource);
                             indexSource++;
                         }
                     }
@@ -5848,12 +5875,12 @@ namespace QTTabBarLib {
                                 int num6 = this.lstActivatedTabs.IndexOf((QTabItem)this.tabControl1.TabPages[j]);
                                 int num7 = this.lstActivatedTabs.IndexOf((QTabItem)this.tabControl1.TabPages[k]);
                                 if(((num6 - num7) * num3) < 0) {
-                                    this.tabControl1.TabPages.Swap(j, k);
+                                    this.tabControl1.TabPages.Relocate(j, k);
                                 }
                                 continue;
                             }
                             if((string.Compare(strA, strB) * num3) > 0) {
-                                this.tabControl1.TabPages.Swap(j, k);
+                                this.tabControl1.TabPages.Relocate(j, k);
                             }
                         }
                     }
@@ -5947,7 +5974,7 @@ namespace QTTabBarLib {
                                     continue;
                                 }
                             }
-                            this.tabControl1.TabPages.Swap(0, this.tabControl1.TabCount - 1);
+                            this.tabControl1.TabPages.Relocate(0, this.tabControl1.TabCount - 1);
                             this.fNowRestoring = true;
                         }
                     }
@@ -5967,7 +5994,7 @@ namespace QTTabBarLib {
                                     }
                                     if(!flag2 && (str2.Length > 0)) {
                                         if(str2 == openingPath) {
-                                            this.tabControl1.TabPages.Swap(0, this.tabControl1.TabCount - 1);
+                                            this.tabControl1.TabPages.Relocate(0, this.tabControl1.TabCount - 1);
                                         }
                                         else {
                                             using(IDLWrapper wrapper2 = new IDLWrapper(str2)) {
@@ -6739,7 +6766,7 @@ namespace QTTabBarLib {
                                     this.Cursor = this.GetCursor(true);
                                     bool flag = tabMouseOn.Row != this.DraggingTab.Row;
                                     bool flag2 = this.tabControl1.SelectedTab != this.DraggingTab;
-                                    this.tabControl1.TabPages.Swap(index, num);
+                                    this.tabControl1.TabPages.Relocate(index, num);
                                     if(num < index) {
                                         this.DraggingDestRect = new Rectangle(tabRect.X + rectangle2.Width, tabRect.Y, tabRect.Width - rectangle2.Width, tabRect.Height);
                                     }
@@ -8647,7 +8674,7 @@ namespace QTTabBarLib {
                     if(((this.tab != null) && (-1 < index)) && (index < (this.tabBar.tabControl1.TabCount + 1))) {
                         int indexSource = this.tabBar.tabControl1.TabPages.IndexOf(this.tab);
                         if(indexSource > -1) {
-                            this.tabBar.tabControl1.TabPages.Swap(indexSource, index);
+                            this.tabBar.tabControl1.TabPages.Relocate(indexSource, index);
                             return true;
                         }
                     }
