@@ -4986,6 +4986,7 @@ namespace QTTabBarLib {
                         foreach(string str in key3.GetValueNames()) {
                             key3.DeleteValue(str);
                         }
+                        int idx = 0;
                         foreach(PluginAssembly assembly in PluginManager.PluginAssemblies) {
                             if(assembly.PluginInfosExist) {
                                 foreach(PluginInformation information in assembly.PluginInformations) {
@@ -4993,7 +4994,7 @@ namespace QTTabBarLib {
                                         list.Add(information.PluginID);
                                     }
                                 }
-                                key3.SetValue(assembly.Title + assembly.Version, assembly.Path);
+                                key3.SetValue((idx++).ToString(), assembly.Path);
                             }
                         }
                     }
