@@ -156,12 +156,10 @@ namespace QTTabBarLib {
 
         public void ScrollHorizontal(int amount) {
             if(ListViewController != null) {
-                if(fIsSysListView) {
-                    PInvoke.SendMessage(ListViewController.Handle, LVM.SCROLL, (IntPtr)(-amount), IntPtr.Zero);
-                }
-                else {
-                    // TODO
-                }
+                // We'll intercept this message later for the ItemsView.  It's
+                // important to use PostMessage here to prevent reentry issues
+                // with the Automation Thread.
+                PInvoke.PostMessage(ListViewController.Handle, LVM.SCROLL, (IntPtr)(-amount), IntPtr.Zero);
             }
         }
 
@@ -813,6 +811,33 @@ namespace QTTabBarLib {
             }
 
             switch(msg.Msg) {
+                case LVM.SCROLL: {
+                    int amount = msg.WParam.ToInt32();
+                    SetRedraw(false);
+                    AutoMan.DoQuery(factory => {
+                        AutomationElement elem = factory.FromHandle(ListViewController.Handle);
+                        amount /= SystemInformation.MouseWheelScrollDelta;
+                        bool dec = amount < 0;
+                        if(dec) {
+                            amount = -amount;
+                        }
+                        int lines = SystemInformation.MouseWheelScrollLines;
+                        if(lines < 0) {
+                            elem.ScrollHorizontal(dec
+                                    ? ScrollAmount.LargeDecrement
+                                    : ScrollAmount.LargeIncrement, amount);
+                        }
+                        else {
+                            elem.ScrollHorizontal(dec
+                                    ? ScrollAmount.SmallDecrement
+                                    : ScrollAmount.SmallIncrement, amount * lines);
+                        }
+                        return 0;
+                    });
+                    SetRedraw(true);
+                    return true;
+                }
+
                 case WM.MOUSEACTIVATE:
                     if(MouseActivate != null) {
                         int res = (int)msg.Result;
@@ -1203,55 +1228,3 @@ namespace QTTabBarLib {
 
     }
 }
-
-/// //////////////////////////////////////////////////////////////////////////////
-/*
-internal IntPtr GetExplorerListView() {
-    bool isSLV32;
-    IntPtr ptr;
-    return this.GetExplorerListView(out isSLV32, out ptr);
-}
-
-internal IntPtr GetExplorerListView(out bool isSysListView32) {
-    IntPtr ptr;
-    return this.GetExplorerListView(out isSysListView32, out ptr);
-}
-
-internal IntPtr GetExplorerListView(out bool isSysListView32, out IntPtr hwndShellView) {
-    hwndShellView = IntPtr.Zero;
-    IShellView ppshv = null;
-    try {
-        if(this.ShellBrowser.QueryActiveShellView(out ppshv) == 0) {
-            ppshv.GetWindow(out hwndShellView);
-            if(hwndShellView != IntPtr.Zero) {
-                this.hwndDirectUI = IntPtr.Zero;
-                this.hwndSysListView32 = IntPtr.Zero;
-                PInvoke.EnumChildWindows(
-                        hwndShellView,
-                        new EnumWndProc(this.CallbackEnumChildProc_SysListView32),
-                        IntPtr.Zero);
-
-                if(this.hwndSysListView32 != IntPtr.Zero) {
-                    isSysListView32 = true;
-                    return this.hwndSysListView32;
-                }
-                else if(this.hwndDirectUI != IntPtr.Zero) {
-                    isSysListView32 = false;
-                    return this.hwndDirectUI;
-                }
-            }
-        }
-    }
-    catch(Exception exception) {
-        QTUtility2.MakeErrorLog(exception, null);
-    }
-    finally {
-        if(ppshv != null) {
-            Marshal.ReleaseComObject(ppshv);
-        }
-    }
-    isSysListView32 = false;
-    return IntPtr.Zero;
-}
-
-*/

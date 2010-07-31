@@ -32,6 +32,7 @@ namespace QTTabBarLib.Automation {
         private static readonly Guid ItemIndex_Property_GUID = new Guid("{92A053DA-2969-4021-BF27-514CFC2E4A69}");
 
         private const int UIAutomationType_Int = 1;
+        private const int UIA_ScrollPatternId = 10004;
         private const int UIA_SelectionItemPatternId = 10010;
         private static int UIA_ItemCountPropertyId;
         private static int UIA_SelectedCountPropertyId;
@@ -269,6 +270,38 @@ namespace QTTabBarLib.Automation {
             }
             catch(COMException) {
                 return 0;
+            }
+        }
+
+        public void ScrollHorizontal(ScrollAmount amount, int times) {
+            Scroll(amount, times, ScrollAmount.NoAmount, 0);
+        }
+
+        public void ScrollVertical(ScrollAmount amount, int times) {
+            Scroll(ScrollAmount.NoAmount, 0, amount, times);
+        }
+
+        public void Scroll(ScrollAmount horizontal, int hTimes, ScrollAmount vertical, int vTimes) {
+            object obj;
+            pElement.GetCurrentPattern(UIA_ScrollPatternId, out obj);
+            try {
+                if(obj == null) {
+                    return;
+                }
+                IUIAutomationScrollPattern scrollPattern = obj as IUIAutomationScrollPattern;
+                while(hTimes > 0 || vTimes > 0) {
+                    scrollPattern.Scroll(
+                        hTimes > 0 ? horizontal : ScrollAmount.NoAmount,
+                        vTimes > 0 ? vertical : ScrollAmount.NoAmount);
+                    --hTimes;
+                    --vTimes;
+                }
+            }
+            catch(COMException) {
+                return;
+            }
+            finally {
+                if(obj != null) Marshal.ReleaseComObject(obj);
             }
         }
     }

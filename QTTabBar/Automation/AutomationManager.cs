@@ -16,6 +16,7 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
 using QTTabBarLib.Interop;
@@ -29,29 +30,38 @@ namespace QTTabBarLib.Automation {
     class AutomationManager : IDisposable {
         private static readonly Guid IID_IUIAutomation = new Guid("{30CBE57D-D9D0-452A-AB13-7AC5AC4825EE}");
         private static readonly Guid CLSID_CUIAutomation = new Guid("{FF48DBA4-60EF-4201-AA87-54103EEF594E}");
-
         private static IUIAutomation pAutomation;
+        private Thread automationThread = new Thread(AutomationThreadEntry);
+        private List<Worker> workerQueue = new List<Worker>();
+
         public delegate T Query<out T>(AutomationElementFactory factory);
 
-        private class Worker<T> {
+        private interface Worker {
+            void DoWork();
+        }
+
+        private class Worker<T> : Worker {
             private T ret;
             private Query<T> query;
 
             public Worker(Query<T> query) {
                 this.query = query;
+                Complete = false;
             }
 
-            public void DoWork(object state) {
+            public void DoWork() {
                 using(AutomationElementFactory man = new AutomationElementFactory(pAutomation)) {
                     ret = query(man);
                 }
-                ((AutoResetEvent)state).Set();
+                Complete = true;
             }
 
             public T GetReturn() {
                 return ret;
             }
-        };
+
+            public bool Complete { get; private set; }
+        }
 
         public AutomationManager() {
             Guid rclsid = CLSID_CUIAutomation;
@@ -60,6 +70,11 @@ namespace QTTabBarLib.Automation {
             PInvoke.CoCreateInstance(ref rclsid, IntPtr.Zero, 1, ref riid, out obj);
             if(obj == null) return;
             pAutomation = obj as IUIAutomation;
+
+            lock(automationThread) {
+                automationThread.Start(this);
+                Monitor.Wait(automationThread);
+            }
         }
 
         ~AutomationManager() {
@@ -71,15 +86,43 @@ namespace QTTabBarLib.Automation {
                 Marshal.ReleaseComObject(pAutomation);
                 pAutomation = null;
             }
+            if(automationThread.ThreadState != ThreadState.Stopped) {
+                lock(automationThread) {
+                    workerQueue.Clear();
+                    Monitor.Pulse(automationThread);
+                    Monitor.Wait(automationThread);
+                }
+            }    
             GC.SuppressFinalize(this);
         }
 
+        private static void AutomationThreadEntry(object param) {
+            AutomationManager manager = (AutomationManager)param;
+            lock(manager.automationThread) {
+                while(true) {
+                    Monitor.PulseAll(manager.automationThread);
+                    Monitor.Wait(manager.automationThread);
+                    if(manager.workerQueue.Count == 0) break;
+                    foreach(Worker worker in manager.workerQueue) {
+                        worker.DoWork();    
+                    }
+                    manager.workerQueue.Clear();
+                }
+                Monitor.PulseAll(manager.automationThread);
+            }
+        }
+
         public T DoQuery<T>(Query<T> query) {
-            WaitHandle handle = new AutoResetEvent(false);
-            Worker<T> worker = new Worker<T>(query);
-            ThreadPool.QueueUserWorkItem(worker.DoWork, handle);
-            handle.WaitOne();
-            return worker.GetReturn();
+            lock(automationThread) {
+                Worker<T> worker = new Worker<T>(query);
+                workerQueue.Add(worker);
+                do {
+                    Monitor.Pulse(automationThread);
+                    Monitor.Wait(automationThread);
+                } 
+                while(!worker.Complete);
+                return worker.GetReturn();
+            }
         }
     }
 }

@@ -125,6 +125,7 @@
     <Compile Include="Interop\BITMAPINFO.cs" />
     <Compile Include="Interop\BITMAPINFOHEADER.cs" />
     <Compile Include="Interop\CMINVOKECOMMANDINFO.cs" />
+    <Compile Include="Interop\IUIAutomationScrollPattern.cs" />
     <Compile Include="Interop\IUIAutomationRegistrar.cs" />
     <Compile Include="Interop\IUIAutomationSelectionItemPattern.cs" />
     <Compile Include="Interop\UIAutomationPropertyInfo.cs" />
