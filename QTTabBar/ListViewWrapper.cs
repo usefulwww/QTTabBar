@@ -753,6 +753,12 @@ namespace QTTabBarLib {
                 if(AfterPaint != null) {
                     AfterPaint();
                 }
+
+                // I'm putting this here just to make filetools work.
+                // TODO: work out a better solution later.
+                if(SelectionChanged != null) {
+                    SelectionChanged();
+                }
                 return true;
             }
 
