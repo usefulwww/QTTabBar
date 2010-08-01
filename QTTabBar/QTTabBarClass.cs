@@ -2272,165 +2272,162 @@ namespace QTTabBarLib {
         }
 
         private bool explorerController_MessageCaptured(ref Message msg) {
-            if(msg.Msg == WM.CLOSE) {
-                if(this.iSequential_WM_CLOSE > 0) {
-                    return true;
-                }
-                this.iSequential_WM_CLOSE++;
-            }
-            else {
+            if(msg.Msg != WM.CLOSE) {
                 this.iSequential_WM_CLOSE = 0;
             }
-            int num6 = msg.Msg;
-            if(num6 <= WM.NCRBUTTONDOWN) {
-                switch(num6) {
-                    case WM.SETTINGCHANGE:
-                        if(!QTUtility.IsVista) {
-                            QTUtility.GetShellClickMode();
+
+            switch(msg.Msg) {
+                case WM.SETTINGCHANGE:
+                    if(!QTUtility.IsVista) {
+                        QTUtility.GetShellClickMode();
+                    }
+                    if(Marshal.PtrToStringUni(msg.LParam) == "Environment") {
+                        QTUtility.fRequiredRefresh_App = true;
+                        SyncTaskBarMenu();
+                    }
+                    return false;
+
+                case WM.NCLBUTTONDOWN:
+                case WM.NCRBUTTONDOWN:
+                    this.HideTabSwitcher(false);
+                    return false;
+
+                case WM.MOVE:
+                case WM.SIZE:
+                    this.HideThumbnailTooltip(0);
+                    this.HideSubDirTip(0);
+                    return false;
+
+                case WM.ACTIVATE: {
+                    int num3 = ((int) msg.WParam) & 0xffff;
+                    if(num3 > 0) {
+                        QTUtility.RegisterPrimaryInstance(this.ExplorerHandle, this);
+                        if((this.fNowInTray && (notifyIcon != null)) &&
+                                dicNotifyIcon.ContainsKey(this.ExplorerHandle)) {
+                            ShowTaksbarItem(this.ExplorerHandle, true);
                         }
-                        if("Environment" == Marshal.PtrToStringUni(msg.LParam)) {
-                            QTUtility.fRequiredRefresh_App = true;
-                            SyncTaskBarMenu();
+                        this.fNowInTray = false;
+                    }
+                    else {
+                        this.HideThumbnailTooltip(1);
+                        this.HideSubDirTip_ExplorerInactivated();
+                        this.HideTabSwitcher(false);
+                        if(this.tabControl1.Focused) {
+                            listViewWrapper.SetFocus();
                         }
-                        goto Label_05CE;
-
-                    case WM.NCLBUTTONDOWN:
-                    case WM.NCRBUTTONDOWN:
-                        goto Label_05B1;
-
-                    case WM.MOVE:
-                    case WM.SIZE:
-                        this.HideThumbnailTooltip(0);
-                        this.HideSubDirTip(0);
-                        goto Label_05CE;
-
-                    case 4: // Uh....  There is no 0x04!
-                        goto Label_05CE;
-
-                    case WM.ACTIVATE: {
-                            int num3 = ((int)msg.WParam) & 0xffff;
-                            if(num3 > 0) {
-                                QTUtility.RegisterPrimaryInstance(this.ExplorerHandle, this);
-                                if((this.fNowInTray && (notifyIcon != null)) && dicNotifyIcon.ContainsKey(this.ExplorerHandle)) {
-                                    ShowTaksbarItem(this.ExplorerHandle, true);
-                                }
-                                this.fNowInTray = false;
-                            }
-                            else {
-                                this.HideThumbnailTooltip(1);
-                                this.HideSubDirTip_ExplorerInactivated();
-                                this.HideTabSwitcher(false);
-                                if(this.tabControl1.Focused) {
-                                    listViewWrapper.SetFocus();
-                                }
-                                if((QTUtility.CheckConfig(Settings.ShowTabCloseButtons) && QTUtility.CheckConfig(Settings.TabCloseBtnsWithAlt)) && this.tabControl1.EnableCloseButton) {
-                                    this.tabControl1.EnableCloseButton = false;
-                                    this.tabControl1.Refresh();
-                                }
-                            }
-                            goto Label_05CE;
+                        if((QTUtility.CheckConfig(Settings.ShowTabCloseButtons) &&
+                                QTUtility.CheckConfig(Settings.TabCloseBtnsWithAlt)) &&
+                                        this.tabControl1.EnableCloseButton) {
+                            this.tabControl1.EnableCloseButton = false;
+                            this.tabControl1.Refresh();
                         }
-                    case WM.CLOSE:
-                        return this.HandleCLOSE(msg.LParam);
+                    }
+                    return false;
                 }
-            }
-            else if(num6 <= WM.SYSCOMMAND) {
-                switch(num6) {
-                    case WM.NCMBUTTONDOWN:
-                    case WM.NCXBUTTONDOWN:
-                        goto Label_05B1;
+                case WM.CLOSE:
+                    if(this.iSequential_WM_CLOSE > 0) {
+                        return true;
+                    }
+                    this.iSequential_WM_CLOSE++;
+                    return this.HandleCLOSE(msg.LParam);
 
-                    case WM.SYSCOMMAND:
-                        if((((int)msg.WParam) & 0xfff0) == 0xf020) {
-                            if(this.pluginManager != null) {
-                                this.pluginManager.OnExplorerStateChanged(ExplorerWindowActions.Minimized);
-                            }
-                            if(QTUtility.CheckConfig(Settings.TrayOnMinimize)) {
-                                this.fNowInTray = true;
-                                ShowTaksbarItem(this.ExplorerHandle, false);
-                                return true;
-                            }
-                            goto Label_05CE;
+                case WM.NCMBUTTONDOWN:
+                case WM.NCXBUTTONDOWN:
+                    this.HideTabSwitcher(false);
+                    return false;
+
+                case WM.SYSCOMMAND:
+                    if((((int) msg.WParam) & 0xfff0) == 0xf020) {
+                        if(this.pluginManager != null) {
+                            this.pluginManager.OnExplorerStateChanged(ExplorerWindowActions.Minimized);
                         }
-                        if((((int)msg.WParam) & 0xfff0) == 0xf030) {
-                            if(this.pluginManager != null) {
-                                this.pluginManager.OnExplorerStateChanged(ExplorerWindowActions.Maximized);
-                            }
-                            goto Label_05CE;
-                        }
-                        if((((int)msg.WParam) & 0xfff0) == 0xf120) {
-                            if(this.pluginManager != null) {
-                                this.pluginManager.OnExplorerStateChanged(ExplorerWindowActions.Restored);
-                            }
-                            goto Label_05CE;
-                        }
-                        if((QTUtility.CheckConfig(Settings.TrayOnClose) && ((((int)msg.WParam) == 0xf060) || (((int)msg.WParam) == 0xf063))) && (ModifierKeys != Keys.Shift)) {
+                        if(QTUtility.CheckConfig(Settings.TrayOnMinimize)) {
                             this.fNowInTray = true;
                             ShowTaksbarItem(this.ExplorerHandle, false);
                             return true;
                         }
-                        if(QTUtility.IsVista || ((((int)msg.WParam) != 0xf060) && (((int)msg.WParam) != 0xf063))) {
-                            goto Label_05CE;
+                        return false;
+                    }
+                    if((((int) msg.WParam) & 0xfff0) == 0xf030) {
+                        if(this.pluginManager != null) {
+                            this.pluginManager.OnExplorerStateChanged(ExplorerWindowActions.Maximized);
                         }
-                        WindowUtils.CloseExplorer(this.ExplorerHandle, 3);
+                        return false;
+                    }
+                    if((((int) msg.WParam) & 0xfff0) == 0xf120) {
+                        if(this.pluginManager != null) {
+                            this.pluginManager.OnExplorerStateChanged(ExplorerWindowActions.Restored);
+                        }
+                        return false;
+                    }
+                    if((QTUtility.CheckConfig(Settings.TrayOnClose) &&
+                            ((((int) msg.WParam) == 0xf060) || (((int) msg.WParam) == 0xf063))) &&
+                                    (ModifierKeys != Keys.Shift)) {
+                        this.fNowInTray = true;
+                        ShowTaksbarItem(this.ExplorerHandle, false);
                         return true;
-                }
-            }
-            else {
-                switch(num6) {
-                    case WM.POWERBROADCAST:
-                        if(((int)msg.WParam) == 7) {
-                            this.OnAwake();
-                        }
-                        goto Label_05CE;
+                    }
+                    if(QTUtility.IsVista || ((((int) msg.WParam) != 0xf060) && (((int) msg.WParam) != 0xf063))) {
+                        return false;
+                    }
+                    WindowUtils.CloseExplorer(this.ExplorerHandle, 3);
+                    return true;
 
-                    case WM.DEVICECHANGE:
-                        if(((int)msg.WParam) == 0x8004) {
-                            DEV_BROADCAST_HDR dev_broadcast_hdr = (DEV_BROADCAST_HDR)Marshal.PtrToStructure(msg.LParam, typeof(DEV_BROADCAST_HDR));
-                            if(dev_broadcast_hdr.dbch_devicetype == 2) {
-                                DEV_BROADCAST_VOLUME dev_broadcast_volume = (DEV_BROADCAST_VOLUME)Marshal.PtrToStructure(msg.LParam, typeof(DEV_BROADCAST_VOLUME));
-                                uint num4 = dev_broadcast_volume.dbcv_unitmask;
-                                ushort num5 = 0;
-                                while(num5 < 0x1a) {
-                                    if((num4 & 1) != 0) {
-                                        break;
-                                    }
-                                    num4 = num4 >> 1;
-                                    num5 = (ushort)(num5 + 1);
+                case WM.POWERBROADCAST:
+                    if(((int) msg.WParam) == 7) {
+                        this.OnAwake();
+                    }
+                    return false;
+
+                case WM.DEVICECHANGE:
+                    if(((int) msg.WParam) == 0x8004) {
+                        DEV_BROADCAST_HDR dev_broadcast_hdr = (DEV_BROADCAST_HDR)Marshal.PtrToStructure(msg.LParam, typeof(DEV_BROADCAST_HDR));
+                        if(dev_broadcast_hdr.dbch_devicetype == 2) {
+                            DEV_BROADCAST_VOLUME dev_broadcast_volume = (DEV_BROADCAST_VOLUME)Marshal.PtrToStructure(msg.LParam, typeof(DEV_BROADCAST_VOLUME));
+                            uint num4 = dev_broadcast_volume.dbcv_unitmask;
+                            ushort num5 = 0;
+                            while(num5 < 0x1a) {
+                                if((num4 & 1) != 0) {
+                                    break;
                                 }
-                                num5 = (ushort)(num5 + 0x41);
-                                string str = ((char)num5) + @":\";
-                                List<QTabItem> list = new List<QTabItem>();
-                                foreach(QTabItem item in this.tabControl1.TabPages) {
-                                    if((item != this.CurrentTab) && item.CurrentPath.StartsWith(str, StringComparison.OrdinalIgnoreCase)) {
-                                        list.Add(item);
-                                    }
-                                }
-                                foreach(QTabItem item2 in list) {
-                                    this.CloseTab(item2, true);
-                                }
-                                if((this.CurrentTab != null) && this.CurrentTab.CurrentPath.StartsWith(str, StringComparison.OrdinalIgnoreCase)) {
-                                    this.CloseTab(this.CurrentTab, true);
-                                }
-                                if(this.tabControl1.TabCount == 0) {
-                                    WindowUtils.CloseExplorer(this.ExplorerHandle, 2);
+                                num4 = num4 >> 1;
+                                num5 = (ushort) (num5 + 1);
+                            }
+                            num5 = (ushort) (num5 + 0x41);
+                            string str = ((char) num5) + @":\";
+                            List<QTabItem> list = new List<QTabItem>();
+                            foreach(QTabItem item in this.tabControl1.TabPages) {
+                                if((item != this.CurrentTab) &&
+                                        item.CurrentPath.StartsWith(str, StringComparison.OrdinalIgnoreCase)) {
+                                    list.Add(item);
                                 }
                             }
+                            foreach(QTabItem item2 in list) {
+                                this.CloseTab(item2, true);
+                            }
+                            if((this.CurrentTab != null) &&
+                                    this.CurrentTab.CurrentPath.StartsWith(str, StringComparison.OrdinalIgnoreCase)) {
+                                this.CloseTab(this.CurrentTab, true);
+                            }
+                            if(this.tabControl1.TabCount == 0) {
+                                WindowUtils.CloseExplorer(this.ExplorerHandle, 2);
+                            }
                         }
-                        goto Label_05CE;
+                    }
+                    return false;
 
-                    case WM.PARENTNOTIFY:
-                        switch((((int)msg.WParam) & 0xffff)) {
-                            case 0x207:
-                            case 0x20b:
-                            case 0x201:
-                            case 0x204:
-                                this.HideTabSwitcher(false);
-                                goto Label_05CE;
-                        }
-                        goto Label_05CE;
-                }
-                if(num6 == WM.APPCOMMAND) {
+                case WM.PARENTNOTIFY:
+                    switch((((int)msg.WParam) & 0xffff)) {
+                        case WM.LBUTTONDOWN:
+                        case WM.RBUTTONDOWN:
+                        case WM.MBUTTONDOWN:
+                        case WM.XBUTTONDOWN:
+                            this.HideTabSwitcher(false);
+                            break;
+                    }
+                    return false;
+
+                case WM.APPCOMMAND: {
                     int num = ((((int)((long)msg.LParam)) >> 0x10) & 0xffff) & -61441;
                     int num2 = ((((int)((long)msg.LParam)) >> 0x10) & 0xffff) & 0xf000;
                     bool flag = (num2 != 0x8000) || QTUtility.CheckConfig(Settings.CaptureX1X2);
@@ -2451,12 +2448,9 @@ namespace QTTabBarLib {
                             WindowUtils.CloseExplorer(this.ExplorerHandle, 0);
                             return true;
                     }
+                    return false;
                 }
             }
-            goto Label_05CE;
-        Label_05B1:
-            this.HideTabSwitcher(false);
-        Label_05CE:
             return false;
         }
 
