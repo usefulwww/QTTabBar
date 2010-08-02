@@ -67,7 +67,7 @@ namespace QTTabBarLib {
         AlternateRowColors  = 8 * 08 + 3, // 0x08,
         HashFullPath        = 8 * 08 + 4, // 0x10, */
         ExtWhileRenaming    = 8 * 08 + 5, // 0x20,
-        NoFullRowSelect     = 8 * 08 + 6, // 0x40,
+        ToggleFullRowSelect = 8 * 08 + 6, // 0x40,
         DetailsGridLines    = 8 * 08 + 7, // 0x80,
         /* [unused]         = 8 * 09 + 0, // 0x01 */
         HashClearOnClose    = 8 * 09 + 1, // 0x02 */
@@ -593,7 +593,7 @@ namespace QTTabBarLib {
             dictionary[0x1a] = CheckConfig(Settings.ToolbarBGColor);
             dictionary[0x1b] = CheckConfig(Settings.HideMenuBar);
             dictionary[0x1c] = CheckConfig(Settings.BackspaceUpLevel);
-            dictionary[0x1d] = CheckConfig(Settings.NoFullRowSelect) ^ IsVista;
+            dictionary[0x1d] = CheckConfig(Settings.ToggleFullRowSelect) ^ IsVista;
             dictionary[30] = CheckConfig(Settings.DetailsGridLines);
             dictionary[0x1f] = CheckConfig(Settings.AlternateRowColors);
             dictionary[0x20] = CheckConfig(Settings.ShowTooltipPreviews);
@@ -1104,7 +1104,7 @@ namespace QTTabBarLib {
             SetConfigAt(Settings.ToolbarBGColor, (bool)dictionary2[0x1a]);
             SetConfigAt(Settings.HideMenuBar, (bool)dictionary2[0x1b]);
             SetConfigAt(Settings.BackspaceUpLevel, (bool)dictionary2[0x1c]);
-            SetConfigAt(Settings.NoFullRowSelect, ((bool)dictionary2[0x1d]) ^ IsVista);
+            SetConfigAt(Settings.ToggleFullRowSelect, ((bool)dictionary2[0x1d]) ^ IsVista);
             SetConfigAt(Settings.DetailsGridLines, (bool)dictionary2[30]);
             SetConfigAt(Settings.AlternateRowColors, (bool)dictionary2[0x1f]);
             SetConfigAt(Settings.ShowTooltipPreviews, (bool)dictionary2[0x20]);

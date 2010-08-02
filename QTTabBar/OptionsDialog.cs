@@ -3794,7 +3794,7 @@ namespace QTTabBarLib {
                 QTUtility.SetConfigAt(Settings.DetailsGridLines, true);
             }
             if(this.chbNoFulRowSelect.Checked ^ QTUtility.IsVista) {
-                QTUtility.SetConfigAt(Settings.NoFullRowSelect, true);
+                QTUtility.SetConfigAt(Settings.ToggleFullRowSelect, true);
             }
             if(!QTUtility.IsVista && !this.chbSelectWithoutExt.Checked) {
                 QTUtility.SetConfigAt(Settings.ExtWhileRenaming, true);

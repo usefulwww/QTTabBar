@@ -444,7 +444,7 @@ namespace QTTabBarLib {
                             structure.clrText = QTUtility.ShellViewRowCOLORREF_Text;
                             Marshal.StructureToPtr(structure, msg.LParam, false);
                             bool drawingHotItem = (dwItemSpec == GetHotItem());
-                            bool fullRowSel = !QTUtility.CheckConfig(Settings.NoFullRowSelect);
+                            bool fullRowSel = !QTUtility.CheckConfig(Settings.ToggleFullRowSelect);
 
                             msg.Result = (IntPtr)(CDRF.NEWFONT);
                             if(structure.iSubItem == 0 && !drawingHotItem) {
@@ -483,7 +483,7 @@ namespace QTTabBarLib {
                             bool flag3 = false;
                             bool flag4 = false;
                             bool flag5 = QTUtility.CheckConfig(Settings.DetailsGridLines);
-                            bool flag6 = QTUtility.CheckConfig(Settings.NoFullRowSelect) ^ QTUtility.IsVista;
+                            bool flag6 = QTUtility.CheckConfig(Settings.ToggleFullRowSelect) ^ QTUtility.IsVista;
                             bool flag7 = false;
                             if(!QTUtility.IsVista && QTUtility.fSingleClick) {
                                 flag7 = (dwItemSpec == GetHotItem());
@@ -1017,7 +1017,7 @@ namespace QTTabBarLib {
             else {
                 flags &= ~LVS_EX.GRIDLINES;
             }
-            if(!QTUtility.CheckConfig(Settings.NoFullRowSelect)) {
+            if(QTUtility.CheckConfig(Settings.ToggleFullRowSelect) ^ QTUtility.IsVista) {
                 flags |= LVS_EX.FULLROWSELECT;
             }
             else {
@@ -1097,7 +1097,7 @@ namespace QTTabBarLib {
                     if(QTUtility.instanceManager.TryGetButtonBarHandle(this.ExplorerHandle, out ptr)) {
                         QTUtility2.SendCOPYDATASTRUCT(ptr, (IntPtr)13, null, (IntPtr)GetItemCount());
                     }
-                    bool flag = QTUtility.IsVista && QTUtility.CheckConfig(Settings.NoFullRowSelect);
+                    bool flag = QTUtility.IsVista && QTUtility.CheckConfig(Settings.ToggleFullRowSelect);
                     if(DropHilighted != null || SelectionChanged != null || flag) {
                         NMLISTVIEW nmlistview2 = (NMLISTVIEW)Marshal.PtrToStructure(msg.LParam, typeof(NMLISTVIEW));
                         if(nmlistview2.uChanged == 8 /*LVIF_STATE*/) {
@@ -1167,7 +1167,7 @@ namespace QTTabBarLib {
 
                 case LVN.ODSTATECHANGED:
                     // FullRowSelect doesn't look possible anyway, so whatever.
-                    if(QTUtility.IsVista && QTUtility.CheckConfig(Settings.NoFullRowSelect)) {
+                    if(QTUtility.IsVista && QTUtility.CheckConfig(Settings.ToggleFullRowSelect)) {
                         NMLVODSTATECHANGE nmlvodstatechange = (NMLVODSTATECHANGE)Marshal.PtrToStructure(msg.LParam, typeof(NMLVODSTATECHANGE));
                         if(((nmlvodstatechange.uNewState & 2) == 2) && (GetCurrentViewMode() == FVM.DETAILS)) {
                             PInvoke.SendMessage(nmlvodstatechange.hdr.hwndFrom, LVM.REDRAWITEMS, (IntPtr)nmlvodstatechange.iFrom, (IntPtr)nmlvodstatechange.iTo);
