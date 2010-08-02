@@ -754,7 +754,7 @@ namespace QTTabBarLib {
 
                 // I'm putting this here just to make filetools work.
                 // TODO: work out a better solution later.
-                if(SelectionChanged != null) {
+                if(!fIsSysListView && SelectionChanged != null) {
                     SelectionChanged();
                 }
                 return true;
@@ -770,6 +770,12 @@ namespace QTTabBarLib {
                     // It's very dangerous to do automation-related things
                     // during WM_PAINT.  So, use PostMessage to do it later.
                     PInvoke.PostMessage(ListViewController.Handle, (uint)WM_AFTERPAINT, IntPtr.Zero, IntPtr.Zero);
+                    break;
+
+                case WM.SETREDRAW:
+                    if(msg.WParam != IntPtr.Zero) {
+                        SetSLV32StyleFlags();
+                    }
                     break;
 
                 case WM.MOUSEMOVE:
@@ -981,25 +987,7 @@ namespace QTTabBarLib {
             ListViewController = new NativeWindowController(hwndEnumResult);
             ListViewController.MessageCaptured += ListViewController_MessageCaptured;
 
-            if(fIsSysListView) {
-                uint mask = LVS_EX.GRIDLINES | LVS_EX.FULLROWSELECT;
-                uint flags = 0;
-                if(QTUtility.CheckConfig(Settings.DetailsGridLines)) {
-                    flags |= LVS_EX.GRIDLINES;
-                }
-                if(QTUtility.IsVista) {
-                    if(!QTUtility.CheckConfig(Settings.NoFullRowSelect)) {
-                        flags |= LVS_EX.FULLROWSELECT;
-                    }
-                }
-                else if(QTUtility.CheckConfig(Settings.NoFullRowSelect)) {
-                    if(((int)PInvoke.SendMessage(ListViewController.Handle, LVM.GETVIEW, IntPtr.Zero, IntPtr.Zero)) == 1) {
-                        flags |= LVS_EX.FULLROWSELECT;
-                    }
-                }
-                PInvoke.SendMessage(ListViewController.Handle, LVM.SETEXTENDEDLISTVIEWSTYLE, (IntPtr)mask, (IntPtr)flags);
-            }
-
+            SetSLV32StyleFlags();
             this.fTrackMouseEvent = false;
             TRACKMOUSEEVENT structure = new TRACKMOUSEEVENT();
             structure.cbSize = Marshal.SizeOf(structure);
@@ -1020,8 +1008,26 @@ namespace QTTabBarLib {
             }
         }
 
+        private void SetSLV32StyleFlags() {
+            if(!fIsSysListView) return;
+            uint flags = 0;
+            if(QTUtility.CheckConfig(Settings.DetailsGridLines)) {
+                flags |= LVS_EX.GRIDLINES;
+            }
+            else {
+                flags &= ~LVS_EX.GRIDLINES;
+            }
+            if(!QTUtility.CheckConfig(Settings.NoFullRowSelect)) {
+                flags |= LVS_EX.FULLROWSELECT;
+            }
+            else {
+                flags &= ~LVS_EX.FULLROWSELECT;
+            }
+            uint mask = LVS_EX.GRIDLINES | LVS_EX.FULLROWSELECT;
+            PInvoke.SendMessage(ListViewController.Handle, LVM.SETEXTENDEDLISTVIEWSTYLE, (IntPtr)mask, (IntPtr)flags);
+        }
+
         private bool ShellViewController_MessageCaptured(ref Message msg) {
-            IntPtr ptr;
             switch(msg.Msg) {
                 // The ShellView is destroyed and recreated when Explorer is refreshed.
                 case WM.DESTROY:
@@ -1082,44 +1088,45 @@ namespace QTTabBarLib {
                     return HandleLVCUSTOMDRAW(ref msg);
 
                 case LVN.ITEMCHANGED: {
-                        // There are three things happening here.
-                        // 1. Notify plugins of selection changing: TODO
-                        // 2. Redraw for Full Row Select: Not happening
-                        // 3. Set new item DropHilighted: Handled in the ListView
-                        //    Controller.
-                        if(QTUtility.instanceManager.TryGetButtonBarHandle(this.ExplorerHandle, out ptr)) {
-                            QTUtility2.SendCOPYDATASTRUCT(ptr, (IntPtr)13, null, (IntPtr)GetItemCount());
-                        }
-                        bool flag = QTUtility.IsVista && QTUtility.CheckConfig(Settings.NoFullRowSelect);
-                        if(DropHilighted != null || SelectionChanged != null || flag) {
-                            NMLISTVIEW nmlistview2 = (NMLISTVIEW)Marshal.PtrToStructure(msg.LParam, typeof(NMLISTVIEW));
-                            if(nmlistview2.uChanged == 8 /*LVIF_STATE*/) {
-                                uint num5 = nmlistview2.uNewState & LVIS.SELECTED;
-                                uint num6 = nmlistview2.uOldState & LVIS.SELECTED;
-                                uint num7 = nmlistview2.uNewState & LVIS.DROPHILITED;
-                                uint num8 = nmlistview2.uOldState & LVIS.DROPHILITED;
-                                uint num9 = nmlistview2.uNewState & LVIS.CUT;
-                                uint num10 = nmlistview2.uOldState & LVIS.CUT;
-                                if(DropHilighted != null && (num8 != num7)) {
-                                    if(num7 == 0) {
-                                        DropHilighted(-1);
-                                    }
-                                    else {
-                                        DropHilighted(nmlistview2.iItem);
-                                    }
+                    // There are three things happening here.
+                    // 1. Notify plugins of selection changing: TODO
+                    // 2. Redraw for Full Row Select: Not happening
+                    // 3. Set new item DropHilighted: Handled in the ListView
+                    //    Controller.
+                    IntPtr ptr;
+                    if(QTUtility.instanceManager.TryGetButtonBarHandle(this.ExplorerHandle, out ptr)) {
+                        QTUtility2.SendCOPYDATASTRUCT(ptr, (IntPtr)13, null, (IntPtr)GetItemCount());
+                    }
+                    bool flag = QTUtility.IsVista && QTUtility.CheckConfig(Settings.NoFullRowSelect);
+                    if(DropHilighted != null || SelectionChanged != null || flag) {
+                        NMLISTVIEW nmlistview2 = (NMLISTVIEW)Marshal.PtrToStructure(msg.LParam, typeof(NMLISTVIEW));
+                        if(nmlistview2.uChanged == 8 /*LVIF_STATE*/) {
+                            uint num5 = nmlistview2.uNewState & LVIS.SELECTED;
+                            uint num6 = nmlistview2.uOldState & LVIS.SELECTED;
+                            uint num7 = nmlistview2.uNewState & LVIS.DROPHILITED;
+                            uint num8 = nmlistview2.uOldState & LVIS.DROPHILITED;
+                            uint num9 = nmlistview2.uNewState & LVIS.CUT;
+                            uint num10 = nmlistview2.uOldState & LVIS.CUT;
+                            if(DropHilighted != null && (num8 != num7)) {
+                                if(num7 == 0) {
+                                    DropHilighted(-1);
                                 }
-                                if(flag) {
-                                    if(nmlistview2.iItem != -1 && ((num5 != num6) || (num7 != num8) || (num9 != num10)) && GetCurrentViewMode() == FVM.DETAILS) {
-                                        PInvoke.SendMessage(nmlistview2.hdr.hwndFrom, LVM.REDRAWITEMS, (IntPtr)nmlistview2.iItem, (IntPtr)nmlistview2.iItem);
-                                    }
-                                }
-                                if(SelectionChanged != null && num5 != num6) {
-                                    SelectionChanged();
+                                else {
+                                    DropHilighted(nmlistview2.iItem);
                                 }
                             }
+                            if(flag) {
+                                if(nmlistview2.iItem != -1 && ((num5 != num6) || (num7 != num8) || (num9 != num10)) && GetCurrentViewMode() == FVM.DETAILS) {
+                                     PInvoke.SendMessage(nmlistview2.hdr.hwndFrom, LVM.REDRAWITEMS, (IntPtr)nmlistview2.iItem, (IntPtr)nmlistview2.iItem);
+                                }
+                            }
+                            if(SelectionChanged != null && num5 != num6) {
+                                SelectionChanged();
+                            }
                         }
-                        break;
                     }
+                    break;
+                }
 
                 case LVN.INSERTITEM:
                     ItemInserted();
