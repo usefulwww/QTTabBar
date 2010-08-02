@@ -1249,7 +1249,7 @@ namespace QTTabBarLib {
                 }
                 else {
                     IntPtr tag = (IntPtr)e.ClickedItem.Tag;
-                    ShowTaksbarItem(tag, true);
+                    ShowTaskbarItem(tag, true);
                 }
             }
         }
@@ -1257,7 +1257,7 @@ namespace QTTabBarLib {
         private static void contextMenuNotifyIcon_SubItems_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e) {
             IntPtr tag = (IntPtr)e.ClickedItem.Tag;
             int index = ((ToolStripMenuItem)sender).DropDownItems.IndexOf(e.ClickedItem);
-            ShowTaksbarItem(tag, true);
+            ShowTaskbarItem(tag, true);
             QTTabBarClass tabBar = QTUtility.instanceManager.GetTabBar(tag);
             if((tabBar != null) && (index > -1)) {
                 tabBar.Invoke(new NavigationCompleteCallback(contextMenuNotifyIcon_SubItems_SelectTab), new object[] { tabBar, (IntPtr)index });
@@ -1586,6 +1586,7 @@ namespace QTTabBarLib {
         }
 
         private static void CreateContextMenuItems_NotifyIcon(IntPtr hwnd, int sw) {
+            contextMenuNotifyIcon.EnsureHandleCreated();
             contextMenuNotifyIcon.Invoke(new NavigationCompleteCallback(CreateContextMenuItems_NotifyIcon_Core), new object[] { sw, hwnd });
         }
 
@@ -2304,7 +2305,7 @@ namespace QTTabBarLib {
                         QTUtility.RegisterPrimaryInstance(this.ExplorerHandle, this);
                         if((this.fNowInTray && (notifyIcon != null)) &&
                                 dicNotifyIcon.ContainsKey(this.ExplorerHandle)) {
-                            ShowTaksbarItem(this.ExplorerHandle, true);
+                            ShowTaskbarItem(this.ExplorerHandle, true);
                         }
                         this.fNowInTray = false;
                     }
@@ -2343,7 +2344,7 @@ namespace QTTabBarLib {
                         }
                         if(QTUtility.CheckConfig(Settings.TrayOnMinimize)) {
                             this.fNowInTray = true;
-                            ShowTaksbarItem(this.ExplorerHandle, false);
+                            ShowTaskbarItem(this.ExplorerHandle, false);
                             return true;
                         }
                         return false;
@@ -2364,7 +2365,7 @@ namespace QTTabBarLib {
                             ((((int) msg.WParam) == 0xf060) || (((int) msg.WParam) == 0xf063))) &&
                                     (ModifierKeys != Keys.Shift)) {
                         this.fNowInTray = true;
-                        ShowTaksbarItem(this.ExplorerHandle, false);
+                        ShowTaskbarItem(this.ExplorerHandle, false);
                         return true;
                     }
                     if(QTUtility.IsVista || ((((int) msg.WParam) != 0xf060) && (((int) msg.WParam) != 0xf063))) {
@@ -3172,7 +3173,7 @@ namespace QTTabBarLib {
                     else {
                         if(imkey == QTUtility.ShortcutKeys[0x27]) {
                             if(!fRepeat) {
-                                ShowTaksbarItem(this.ExplorerHandle, false);
+                                ShowTaskbarItem(this.ExplorerHandle, false);
                             }
                             return true;
                         }
@@ -5902,13 +5903,13 @@ namespace QTTabBarLib {
         private static void RestoreAllWindowFromTray() {
             Dictionary<IntPtr, int> dictionary = new Dictionary<IntPtr, int>(dicNotifyIcon);
             foreach(IntPtr ptr in dictionary.Keys) {
-                ShowTaksbarItem(ptr, true);
+                ShowTaskbarItem(ptr, true);
             }
         }
 
         private void RestoreFromTray() {
             if((dicNotifyIcon != null) && dicNotifyIcon.ContainsKey(this.ExplorerHandle)) {
-                ShowTaksbarItem(this.ExplorerHandle, true);
+                ShowTaskbarItem(this.ExplorerHandle, true);
             }
         }
 
@@ -6267,7 +6268,7 @@ namespace QTTabBarLib {
             return true;
         }
 
-        private static void ShowTaksbarItem(IntPtr hwndExplr, bool fShow) {
+        private static void ShowTaskbarItem(IntPtr hwndExplr, bool fShow) {
             lock(syncObj_NotifyIcon) {
                 if(dicNotifyIcon == null) {
                     dicNotifyIcon = new Dictionary<IntPtr, int>();
@@ -7733,7 +7734,7 @@ namespace QTTabBarLib {
                                     foreach(IntPtr ptr in dictionary.Keys) {
                                         QTTabBarClass tabBar = QTUtility.instanceManager.GetTabBar(ptr);
                                         if((tabBar != null) && (tabBar.CurrentAddress == str)) {
-                                            ShowTaksbarItem(ptr, true);
+                                            ShowTaskbarItem(ptr, true);
                                             return;
                                         }
                                     }

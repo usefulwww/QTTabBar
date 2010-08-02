@@ -55,6 +55,12 @@ namespace QTTabBarLib {
             base.Dispose(disposing);
         }
 
+        public void EnsureHandleCreated() {
+            if(!IsHandleCreated) {
+                CreateHandle();
+            }
+        }
+
         public static void InitializeMenuRenderer() {
             bool flag = false;
             if(QTUtility.CheckConfig(Settings.NonDefaultMenu)) {
