@@ -206,7 +206,7 @@ namespace QTTabBarLib {
         }
 
         private void AddStartUpTabs(string openingGRP, string openingPath) {
-            if(ModifierKeys != Keys.Shift) {
+            if(ModifierKeys != Keys.Shift && QTUtility.InstancesCount == 1) {
                 if(QTUtility.StartUpGroupList.Count > 0) {
                     bool flag = QTUtility.CheckConfig(Settings.DontOpenSame);
                     foreach(string str in QTUtility.StartUpGroupList) {
@@ -1883,14 +1883,12 @@ namespace QTTabBarLib {
         private void DoFirstNavigation(bool before, string path) {
 
             if((QTUtility.TMPPathList.Count > 0) || (QTUtility.TMPIDLList.Count > 0)) {
-                // Loads tmp paths?
                 foreach(string str2 in QTUtility.TMPPathList) {
                     if(!string.Equals(str2, path, StringComparison.OrdinalIgnoreCase)) {
                         using(IDLWrapper wrapper = new IDLWrapper(str2)) {
                             if(wrapper.Available) {
                                 this.CreateNewTab(wrapper);
                             }
-                            continue;
                         }
                     }
                 }
@@ -1908,7 +1906,6 @@ namespace QTTabBarLib {
                 this.InitializeOpenedWindow();
             }
             else if(QTUtility.CreateWindowTMPGroup.Length != 0) {
-                // Loads tmp group?
                 string createWindowTMPGroup = QTUtility.CreateWindowTMPGroup;
                 QTUtility.CreateWindowTMPGroup = string.Empty;
                 this.CurrentTab.CurrentPath = path;
@@ -1918,7 +1915,6 @@ namespace QTTabBarLib {
                 this.InitializeOpenedWindow();
             }
             else if(QTUtility.CheckConfig(Settings.NoTabsFromOutside) || (QTUtility.CreateWindowTMPPath == path)) {
-                // What config is that?
                 QTUtility.CreateWindowTMPPath = string.Empty;
                 this.AddStartUpTabs(string.Empty, path);
                 this.InitializeOpenedWindow();
