@@ -149,7 +149,7 @@ Do you want to reassign?;Confirmation of reassignment</value>
     <value>Go back ( Alt + Left );Go forward ( Alt + Right );Go back to start;Go forward to end;Select next tab;Select previous tab;Select first tab;Select last tab;Close current tab;Close all but current;Close left;Close right;Close window ( Alt + F4 );Undo close;Clone current tab;Open current folder in new window;Lock / unlock current;Lock / unlock all;Browse folder;Create new group;Open option dialog;Show toolbar menu;Show current tab menu;Show group menu ( button bar );Show recent folder menu ( button bar );Show user application menu ( button bar );Show / hide menu bar;Copy selected files path;Copy selected files name;Copy current folder path;Copy current folder name;Check MD5 of selected files;Bring window to topmost;Transparency +;Transparency -;Focus file list;Focus search bar (Vista);Focus search box ( button bar );Show Subfolder Tip Menu for selected folder;Send window to Task Tray;Focus the Tab Bar</value>
   </data>
   <data name="TaskBar_Titles" xml:space="preserve">
-    <value>Groups;Undo closed;Applications</value>
+    <value>Groups;Undo closed;Applications;Recently opened files</value>
   </data>
   <data name="TabBar_Option_Genre" xml:space="preserve">
     <value>General;Tab;Window;Appearance;Groups;Applications;Plugins;Shortcut Keys;Misc.;Path</value>
