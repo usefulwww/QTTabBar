@@ -101,7 +101,6 @@
     <Compile Include="DirectoryMenuItem.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="DisposeInvoker.cs" />
     <Compile Include="DropDownMenuBase.cs">
       <SubType>Component</SubType>
     </Compile>

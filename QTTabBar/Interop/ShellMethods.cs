@@ -488,6 +488,35 @@ namespace QTTabBarLib.Interop {
             return string.Empty;
         }
 
+        public static FileSystemInfo GetTargetIfFolderLink(DirectoryInfo di, out bool fTargetIsDirectory) {
+            fTargetIsDirectory = true;
+            try {
+                if((di.Attributes & FileAttributes.ReadOnly) == 0) {
+                    return di;
+                }
+                FileInfo[] files = di.GetFiles();
+                if((files.Length != 2) || ((files[0].Name != "desktop.ini" || files[1].Name != "target.lnk") && (files[0].Name != "target.lnk" || files[1].Name != "desktop.ini"))) {
+                    return di;
+                }
+                string lnkPath = (files[1].Name == "target.lnk") ? files[1].FullName : files[0].FullName;
+                string linkTargetPath = GetLinkTargetPath(lnkPath);
+                if(string.IsNullOrEmpty(linkTargetPath)) {
+                    return di;
+                }
+                DirectoryInfo info = new DirectoryInfo(linkTargetPath);
+                if(info.Exists) {
+                    return info;
+                }
+                if(File.Exists(linkTargetPath)) {
+                    fTargetIsDirectory = false;
+                    return new FileInfo(linkTargetPath);
+                }
+            }
+            catch {
+            }
+            return di;
+        }
+
         private static bool IsTargetPathContained(List<string> lstPaths, string pathTarget) {
             foreach(string str in lstPaths) {
                 try {
@@ -523,7 +552,7 @@ namespace QTTabBarLib.Interop {
                     if(pathTarget.Length != 3) {
                         pathTarget = pathTarget.TrimEnd(new char[] { '\\' });
                     }
-                    pathTarget = QTTabBarClass.GetTargetIfFolderLink(new DirectoryInfo(pathTarget), out flag).FullName;
+                    pathTarget = GetTargetIfFolderLink(new DirectoryInfo(pathTarget), out flag).FullName;
                     if(flag) {
                         bool prefferdDropEffect = GetPrefferdDropEffect(hwnd);
                         short num = 0x40;

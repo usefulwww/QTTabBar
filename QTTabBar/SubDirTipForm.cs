@@ -62,13 +62,9 @@ namespace QTTabBarLib {
         private ToolStripMeuItemComparer tsmiComparer;
 
         public event EventHandler MenuClosed;
-
         public event ToolStripItemClickedEventHandler MenuItemClicked;
-
         public event ItemRightClickedEventHandler MenuItemRightClicked;
-
         public event EventHandler MultipleMenuItemsClicked;
-
         public event ItemRightClickedEventHandler MultipleMenuItemsRightClicked;
 
         public SubDirTipForm(IntPtr hwndMessageReflect, IntPtr hwndFocusOnMenu, bool fEnableShiftKeyOnDDMR, ListViewWrapper lvw) {
@@ -193,7 +189,7 @@ namespace QTTabBarLib {
 
         private QMenuItem CreateDirectoryItem(DirectoryInfo diSub, string title, bool fIcon, bool fLink) {
             bool flag;
-            FileSystemInfo targetIfFolderLink = QTTabBarClass.GetTargetIfFolderLink(diSub, out flag);
+            FileSystemInfo targetIfFolderLink = ShellMethods.GetTargetIfFolderLink(diSub, out flag);
             if(!flag) {
                 return null;
             }

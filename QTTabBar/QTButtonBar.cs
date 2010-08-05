@@ -1923,6 +1923,7 @@ namespace QTTabBarLib {
                                 return;
 
                             case 9:
+                                // TODO
                                 this.RefreshSearchBox(false);
                                 return;
 
@@ -1978,6 +1979,7 @@ namespace QTTabBarLib {
                                 return;
 
                             case 14:
+                                // TODO
                                 if(this.iSearchResultCount > 0) {
                                     this.iSearchResultCount--;
                                 }
