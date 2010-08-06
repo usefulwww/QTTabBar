@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-    internal struct SHELLEXECUTEINFO {
+    public struct SHELLEXECUTEINFO {
         public int cbSize;
         public int fMask;
         public IntPtr hwnd;

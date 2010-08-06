@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-    internal struct NMTTDISPINFO {
+    public struct NMTTDISPINFO {
         public NMHDR hdr;
         public IntPtr lpszText;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)]

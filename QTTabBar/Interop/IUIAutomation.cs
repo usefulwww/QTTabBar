@@ -21,7 +21,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [ComImport, Guid("30cbe57d-d9d0-452a-ab13-7ac5ac4825ee"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    internal interface IUIAutomation {
+    public interface IUIAutomation {
         /* NOT DECLARED */ void CompareElements();
         /* NOT DECLARED */ void CompareRuntimeIds();
         /* NOT DECLARED */ void GetRootElement();

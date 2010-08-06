@@ -21,7 +21,7 @@ using System.Security;
 
 namespace QTTabBarLib.Interop {
     [ComImport, Guid("43826d1e-e718-42ee-bc55-a1e261c37bfe"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown), SuppressUnmanagedCodeSecurity]
-    internal interface IShellItem {
+    public interface IShellItem {
         [PreserveSig]
         int BindToHandler(IntPtr pbc, [In] ref Guid bhid, [In] ref Guid riid, out IntPtr ppvOut);
         [PreserveSig]

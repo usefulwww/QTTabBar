@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct MARGINS {
+    public struct MARGINS {
         public int cxLeftWidth;
         public int cxRightWidth;
         public int cyTopHeight;

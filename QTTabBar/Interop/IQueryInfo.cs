@@ -21,7 +21,7 @@ using System.Security;
 
 namespace QTTabBarLib.Interop {
     [ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), SuppressUnmanagedCodeSecurity, Guid("00021500-0000-0000-c000-000000000046")]
-    internal interface IQueryInfo {
+    public interface IQueryInfo {
         [PreserveSig]
         int GetInfoTip(int dwFlags, [MarshalAs(UnmanagedType.LPWStr)] out string ppwszTip);
         [PreserveSig]

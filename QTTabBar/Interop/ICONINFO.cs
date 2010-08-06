@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct ICONINFO {
+    public struct ICONINFO {
         public bool fIcon;
         public int xHotspot;
         public int yHotspot;

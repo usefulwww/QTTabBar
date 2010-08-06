@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct MOUSEHOOKSTRUCTEX {
+    public struct MOUSEHOOKSTRUCTEX {
         public MOUSEHOOKSTRUCT mhs;
         public int mouseData;
     }

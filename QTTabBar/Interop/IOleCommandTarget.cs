@@ -21,7 +21,7 @@ using System.Security;
 
 namespace QTTabBarLib.Interop {
     [ComImport, SuppressUnmanagedCodeSecurity, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("B722BCCB-4E68-101B-A2BC-00AA00404770")]
-    internal interface IOleCommandTarget {
+    public interface IOleCommandTarget {
         [PreserveSig]
         int QueryStatus([In] ref Guid pguidCmdGroup, int cCmds, IntPtr prgCmds, IntPtr pCmdText);
         [PreserveSig]

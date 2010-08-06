@@ -21,7 +21,7 @@ using System.Security;
 
 namespace QTTabBarLib.Interop {
     [ComImport, Guid("000214F4-0000-0000-c000-000000000046"), SuppressUnmanagedCodeSecurity, InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    internal interface IContextMenu2 {
+    public interface IContextMenu2 {
         [PreserveSig]
         int QueryContextMenu(IntPtr hMenu, uint indexMenu, uint idCmdFirst, uint idCmdLast, uint uFlags);
         [PreserveSig]

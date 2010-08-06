@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct NMUPDOWN {
+    public struct NMUPDOWN {
         public NMHDR hdr;
         public int iPos;
         public int iDelta;

@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [ComImport, Guid("4042c624-389c-4afc-a630-9df854a541fc"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    internal interface IUIAutomationTreeWalker {
+    public interface IUIAutomationTreeWalker {
         void GetParentElement(IUIAutomationElement element, out IUIAutomationElement parent);
         void GetFirstChildElement(IUIAutomationElement element, out IUIAutomationElement first);
         void GetLastChildElement(IUIAutomationElement element, out IUIAutomationElement last);

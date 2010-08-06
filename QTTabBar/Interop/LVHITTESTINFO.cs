@@ -20,7 +20,7 @@ using BandObjectLib;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct LVHITTESTINFO {
+    public struct LVHITTESTINFO {
         public POINT pt;
         public uint flags;
         public int iItem;

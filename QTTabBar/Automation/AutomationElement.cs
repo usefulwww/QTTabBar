@@ -24,7 +24,7 @@ namespace QTTabBarLib.Automation {
     // This class is for use in AutomationManager.  Never instantiate it
     // elsewhere.
 
-    class AutomationElement : IDisposable {
+    public class AutomationElement : IDisposable {
         private static readonly Guid IID_IUIAutomationRegistrar = new Guid("{8609C4EC-4A1A-4D88-A357-5A66E060E1CF}");
         private static readonly Guid CLSID_CUIAutomationRegistrar = new Guid("{6E29FABF-9977-42D1-8D0E-CA7E61AD87E6}");
         private static readonly Guid ItemCount_Property_GUID = new Guid("{ABBF5C45-5CCC-47b7-BB4E-87CB87BBD162}");

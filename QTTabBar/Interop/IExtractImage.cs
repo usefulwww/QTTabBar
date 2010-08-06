@@ -23,7 +23,7 @@ using System.Text;
 
 namespace QTTabBarLib.Interop {
     [ComImport, SuppressUnmanagedCodeSecurity, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("BB2E617C-0920-11d1-9A0B-00C04FC2D6C1")]
-    internal interface IExtractImage {
+    public interface IExtractImage {
         [PreserveSig]
         int GetLocation(StringBuilder pszPathBuffer, int cch, ref int pdwPriority, ref Size prgSize, int dwRecClrDepth, ref int pdwFlags);
         [PreserveSig]

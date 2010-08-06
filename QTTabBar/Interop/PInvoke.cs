@@ -26,7 +26,7 @@ using BandObjectLib;
 
 namespace QTTabBarLib.Interop {
     [SuppressUnmanagedCodeSecurity]
-    internal static class PInvoke {
+    public static class PInvoke {
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         public static extern bool AppendMenu(IntPtr hMenu, uint uFlags, IntPtr uIDNewItem, string lpNewItem);
         [DllImport("gdi32.dll")]

@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct BITMAPINFO {
+    public struct BITMAPINFO {
         public BITMAPINFOHEADER bmiHeader;
         public RGBQUAD bmiColors;
     }

@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [ComImport, Guid("d22108aa-8ac5-49a5-837b-37bbb3d7591e"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    internal interface IUIAutomationElement {
+    public interface IUIAutomationElement {
         /* NOT DECLARED */ void SetFocus();
         /* NOT DECLARED */ void GetRuntimeId();
         /* NOT DECLARED */ void FindFirst();

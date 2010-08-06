@@ -21,7 +21,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct DTTOPTS {
+    public struct DTTOPTS {
         public int dwSize;
         public uint dwFlags;
         public uint crText;

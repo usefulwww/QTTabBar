@@ -18,5 +18,5 @@
 using System;
 
 namespace QTTabBarLib.Interop {
-    internal delegate IntPtr HookProc(int nCode, IntPtr wParam, IntPtr lParam);
+    public delegate IntPtr HookProc(int nCode, IntPtr wParam, IntPtr lParam);
 }

@@ -25,7 +25,7 @@ namespace QTTabBarLib.Automation {
     // This class is for use in AutomationManager.  Never instantiate it
     // elsewhere.
 
-    class AutomationElementFactory : IDisposable {
+    public class AutomationElementFactory : IDisposable {
         private List<AutomationElement> disposeList;
         private IUIAutomation pAutomation;
 

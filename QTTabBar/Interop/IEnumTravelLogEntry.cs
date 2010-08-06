@@ -20,7 +20,7 @@ using System.Security;
 
 namespace QTTabBarLib.Interop {
     [ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), SuppressUnmanagedCodeSecurity, Guid("7EBFDD85-AD18-11d3-A4C5-00C04F72D6B8")]
-    internal interface IEnumTravelLogEntry {
+    public interface IEnumTravelLogEntry {
         [PreserveSig]
         int Next([In] uint cElt, [MarshalAs(UnmanagedType.Interface)] out ITravelLogEntry rgElt, [Out] uint pcEltFetched);
         [PreserveSig]

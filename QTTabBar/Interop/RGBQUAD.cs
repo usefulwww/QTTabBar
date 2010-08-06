@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct RGBQUAD {
+    public struct RGBQUAD {
         public byte rgbBlue;
         public byte rgbGreen;
         public byte rgbRed;

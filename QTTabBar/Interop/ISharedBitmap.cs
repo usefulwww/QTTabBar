@@ -22,7 +22,7 @@ using System.Security;
 
 namespace QTTabBarLib.Interop {
     [ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), SuppressUnmanagedCodeSecurity, Guid("091162a4-bc96-411f-aae8-c5122cd03363")]
-    internal interface ISharedBitmap {
+    public interface ISharedBitmap {
         [PreserveSig]
         int GetSharedBitmap(out IntPtr phbm);
         [PreserveSig]

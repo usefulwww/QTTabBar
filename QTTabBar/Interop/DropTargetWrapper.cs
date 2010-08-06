@@ -23,7 +23,7 @@ using BandObjectLib;
 using IDataObject = System.Runtime.InteropServices.ComTypes.IDataObject;
 
 namespace QTTabBarLib.Interop {
-    internal class DropTargetWrapper : _IDropTarget, IDisposable {
+    public class DropTargetWrapper : _IDropTarget, IDisposable {
         private const short CF_HDROP = 15;
         private IntPtr hwnd;
         private int iLastKeyState;
@@ -207,7 +207,7 @@ namespace QTTabBarLib.Interop {
             return 0;
         }
 
-        internal static DragDropEffects MakeEffect(int grfKeyState, int iSourceState) {
+        public static DragDropEffects MakeEffect(int grfKeyState, int iSourceState) {
             switch((grfKeyState & 0x2c)) {
                 case 12:
                 case 0x20:
@@ -228,8 +228,8 @@ namespace QTTabBarLib.Interop {
             return DragDropEffects.Copy;
         }
 
-        internal delegate int DragFileDropEventHandler(out IntPtr hwnd, out byte[] idlReal);
+        public delegate int DragFileDropEventHandler(out IntPtr hwnd, out byte[] idlReal);
 
-        internal delegate DragDropEffects DragFileEnterEventHandler(IntPtr hDrop, POINT pnt, int grfKeyState);
+        public delegate DragDropEffects DragFileEnterEventHandler(IntPtr hDrop, POINT pnt, int grfKeyState);
     }
 }

@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct HDITEM {
+    public struct HDITEM {
         public int mask;
         public int cxy;
         public IntPtr pszText;

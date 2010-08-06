@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct STRRET {
+    public struct STRRET {
         public uint uType;
         public STRRETinternal data;
     }

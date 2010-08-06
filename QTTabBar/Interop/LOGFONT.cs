@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-    internal struct LOGFONT {
+    public struct LOGFONT {
         public int lfHeight;
         public int lfWidth;
         public int lfEscapement;

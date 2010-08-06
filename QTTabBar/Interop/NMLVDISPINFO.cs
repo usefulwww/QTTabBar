@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct NMLVDISPINFO {
+    public struct NMLVDISPINFO {
         public NMHDR hdr;
         public LVITEM item;
     }

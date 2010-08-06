@@ -22,7 +22,7 @@ using System.Text;
 
 namespace QTTabBarLib.Interop {
     [ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), SuppressUnmanagedCodeSecurity, Guid("000214F9-0000-0000-C000-000000000046")]
-    internal interface IShellLinkW {
+    public interface IShellLinkW {
         [PreserveSig]
         int GetPath([Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszFile, int cch, IntPtr pfd, uint fFlags);
         [PreserveSig]

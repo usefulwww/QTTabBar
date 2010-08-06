@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Explicit, Size = 260)]
-    internal struct STRRETinternal {
+    public struct STRRETinternal {
         [FieldOffset(0)]
         public IntPtr cStr;
         [FieldOffset(0)]

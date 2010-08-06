@@ -18,5 +18,5 @@
 using System;
 
 namespace QTTabBarLib.Interop {
-    internal delegate bool EnumWndProc(IntPtr hwnd, IntPtr lParam);
+    public delegate bool EnumWndProc(IntPtr hwnd, IntPtr lParam);
 }

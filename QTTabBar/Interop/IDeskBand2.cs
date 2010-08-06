@@ -22,7 +22,7 @@ using BandObjectLib;
 
 namespace QTTabBarLib.Interop {
     [ComImport, SuppressUnmanagedCodeSecurity, Guid("79D16DE4-ABEE-4021-8D9D-9169B261D657"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    internal interface IDeskBand2 {
+    public interface IDeskBand2 {
         void GetWindow(out IntPtr phwnd);
         void ContextSensitiveHelp([In] bool fEnterMode);
         void ShowDW([In] bool fShow);

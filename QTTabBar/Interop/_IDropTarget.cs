@@ -23,7 +23,7 @@ using IDataObject = System.Runtime.InteropServices.ComTypes.IDataObject;
 
 namespace QTTabBarLib.Interop {
     [ComImport, Guid("00000122-0000-0000-C000-000000000046"), SuppressUnmanagedCodeSecurity, InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    internal interface _IDropTarget {
+    public interface _IDropTarget {
         [PreserveSig]
         int DragEnter(IDataObject pDataObj, int grfKeyState, POINT pt, ref DragDropEffects pdwEffect);
         [PreserveSig]

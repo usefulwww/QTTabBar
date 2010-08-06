@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct DEV_BROADCAST_VOLUME {
+    public struct DEV_BROADCAST_VOLUME {
         public int dbcv_size;
         public int dbcv_devicetype;
         public int dbcv_reserved;

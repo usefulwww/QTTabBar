@@ -21,7 +21,7 @@ using BandObjectLib;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct NMLISTVIEW {
+    public struct NMLISTVIEW {
         public NMHDR hdr;
         public int iItem;
         public int iSubItem;

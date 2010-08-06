@@ -21,7 +21,7 @@ using System.Security;
 
 namespace QTTabBarLib.Interop {
     [ComImport, Guid("56FDF342-FD6D-11d0-958A-006097C9A090"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown), SuppressUnmanagedCodeSecurity]
-    internal interface ITaskbarList {
+    public interface ITaskbarList {
         [PreserveSig]
         int HrInit();
         [PreserveSig]

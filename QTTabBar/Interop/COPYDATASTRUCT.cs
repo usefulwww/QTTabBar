@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct COPYDATASTRUCT {
+    public struct COPYDATASTRUCT {
         public IntPtr dwData;
         public int cbData;
         public IntPtr lpData;

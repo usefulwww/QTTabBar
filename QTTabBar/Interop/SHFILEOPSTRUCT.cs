@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 1)]
-    internal struct SHFILEOPSTRUCT {
+    public struct SHFILEOPSTRUCT {
         public IntPtr hwnd;
         public int wFunc;
         public IntPtr pFrom;

@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    internal struct DROPFILES {
+    public struct DROPFILES {
         public int pFiles;
         public Point pt;
         public bool fNC;

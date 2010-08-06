@@ -21,7 +21,7 @@ using BandObjectLib;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct MOUSEHOOKSTRUCT {
+    public struct MOUSEHOOKSTRUCT {
         public POINT pt;
         public IntPtr hwnd;
         public uint wHitTestCode;

@@ -27,7 +27,7 @@ namespace QTTabBarLib.Automation {
     // thread.
     // http://msdn.microsoft.com/en-us/library/ee671692%28VS.85%29.aspx
 
-    class AutomationManager : IDisposable {
+    public class AutomationManager : IDisposable {
         private static readonly Guid IID_IUIAutomation = new Guid("{30CBE57D-D9D0-452A-AB13-7AC5AC4825EE}");
         private static readonly Guid CLSID_CUIAutomation = new Guid("{FF48DBA4-60EF-4201-AA87-54103EEF594E}");
         private static IUIAutomation pAutomation;

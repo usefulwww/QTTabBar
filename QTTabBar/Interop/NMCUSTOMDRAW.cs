@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct NMCUSTOMDRAW {
+    public struct NMCUSTOMDRAW {
         public NMHDR hdr;
         public int dwDrawStage;
         public IntPtr hdc;

@@ -21,7 +21,7 @@ using BandObjectLib;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct TVHITTESTINFO {
+    public struct TVHITTESTINFO {
         public POINT pt;
         public int flags;
         public IntPtr hItem;

@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct CMINVOKECOMMANDINFO {
+    public struct CMINVOKECOMMANDINFO {
         public int cbSize;
         public int fMask;
         public IntPtr hwnd;

@@ -22,7 +22,7 @@ using BandObjectLib;
 
 namespace QTTabBarLib.Interop {
     [ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("37A378C0-F82D-11CE-AE65-08002B2E1262"), SuppressUnmanagedCodeSecurity]
-    internal interface IShellFolderView {
+    public interface IShellFolderView {
         [PreserveSig]
         int Rearrange(IntPtr lParamSort);
         [PreserveSig]

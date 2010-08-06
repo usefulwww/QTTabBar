@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct NMLVCUSTOMDRAW {
+    public struct NMLVCUSTOMDRAW {
         public NMCUSTOMDRAW nmcd;
         public int clrText;
         public int clrTextBk;

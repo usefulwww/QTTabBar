@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct NMLVODSTATECHANGE {
+    public struct NMLVODSTATECHANGE {
         public NMHDR hdr;
         public int iFrom;
         public int iTo;

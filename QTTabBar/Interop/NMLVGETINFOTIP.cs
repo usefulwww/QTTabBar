@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct NMLVGETINFOTIP {
+    public struct NMLVGETINFOTIP {
         public NMHDR hdr;
         public int dwFlags;
         public IntPtr pszText;

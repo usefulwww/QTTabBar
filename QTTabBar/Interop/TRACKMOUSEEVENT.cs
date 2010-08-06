@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct TRACKMOUSEEVENT {
+    public struct TRACKMOUSEEVENT {
         public int cbSize;
         public int dwFlags;
         public IntPtr hwndTrack;

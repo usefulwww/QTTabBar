@@ -28,7 +28,7 @@ using System.Windows.Forms;
 using BandObjectLib;
 
 namespace QTTabBarLib.Interop {
-    internal static class ShellMethods {
+    public static class ShellMethods {
         public static bool ClipboardContainsFileDropList(IntPtr hwnd) {
             if((hwnd != IntPtr.Zero) && PInvoke.OpenClipboard(hwnd)) {
                 try {

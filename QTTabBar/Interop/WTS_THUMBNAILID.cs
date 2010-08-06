@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct WTS_THUMBNAILID {
+    public struct WTS_THUMBNAILID {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x10)]
         public byte[] rgbKey;
     }

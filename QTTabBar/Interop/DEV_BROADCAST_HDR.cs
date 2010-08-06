@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct DEV_BROADCAST_HDR {
+    public struct DEV_BROADCAST_HDR {
         public int dbch_size;
         public int dbch_devicetype;
         public int dbch_reserved;
