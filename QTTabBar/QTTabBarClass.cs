@@ -303,15 +303,6 @@ namespace QTTabBarLib {
             }
         }
 
-        private static void AsyncComplete_ItemEdit(IAsyncResult ar) {
-            AsyncResult result = (AsyncResult)ar;
-            ((WaitTimeoutCallback)result.AsyncDelegate).EndInvoke(ar);
-            Control control = (Control)((object[])result.AsyncState)[2];
-            if(control.IsHandleCreated) {
-                control.Invoke(new FormMethodInvoker(CallbackItemEdit), new object[] { result.AsyncState });
-            }
-        }
-
         private void AsyncComplete_MultiPath(IAsyncResult ar) {
             AsyncResult result = (AsyncResult)ar;
             ((MethodInvoker)result.AsyncDelegate).EndInvoke(ar);
