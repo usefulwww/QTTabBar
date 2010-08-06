@@ -21,7 +21,7 @@ using System.Security;
 
 namespace QTTabBarLib.Interop {
     [ComImport, Guid("000214F2-0000-0000-C000-000000000046"), SuppressUnmanagedCodeSecurity, InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    internal interface IEnumIDList {
+    public interface IEnumIDList {
         [PreserveSig]
         int Next(uint celt, out IntPtr rgelt, object pceltFetched);
         void Skip(uint celt);

@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct FOLDERSETTINGS {
+    public struct FOLDERSETTINGS {
         public int ViewMode;
         public int fFlags;
     }

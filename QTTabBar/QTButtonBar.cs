@@ -82,7 +82,7 @@ namespace QTTabBarLib {
         private ToolStripSearchBox searchBox;
         private static int SearchBoxWidth;
         private static int[] selectiveLablesIndices;
-        private IShellBrowser shellBrowser;
+        private ShellBrowserEx shellBrowser;
         private static readonly Size sizeLargeButton = new Size(0x18, 0x18);
         private static readonly Size sizeSmallButton = new Size(0x10, 0x10);
         private string strSearch = string.Empty;
@@ -147,10 +147,9 @@ namespace QTTabBarLib {
                     if(tabBar != null) {
                         Address[] addressArray;
                         string str2;
-                        IntPtr currentPIDL = tabBar.GetCurrentPIDL();
-                        string path = ShellMethods.GetPath(currentPIDL);
-                        if(currentPIDL != IntPtr.Zero) {
-                            PInvoke.CoTaskMemFree(currentPIDL);
+                        string path;
+                        using(IDLWrapper wrapper = tabBar.GetCurrentPIDL()) {
+                            path = wrapper.Path;
                         }
                         if(tabBar.TryGetSelection(out addressArray, out str2, false)) {
                             this.ReplaceTokens(lstItems, new AppLauncher(addressArray, path), true);
@@ -164,16 +163,14 @@ namespace QTTabBarLib {
                     }
                     QTTabBarClass class3 = QTUtility.instanceManager.GetTabBar(this.ExplorerHandle);
                     if(class3 != null) {
-                        Address[] addressArray2;
-                        string str4;
-                        IntPtr pIDL = class3.GetCurrentPIDL();
-                        string pathCurrent = ShellMethods.GetPath(pIDL);
-                        if(pIDL != IntPtr.Zero) {
-                            PInvoke.CoTaskMemFree(pIDL);
-                        }
-                        if(class3.TryGetSelection(out addressArray2, out str4, false)) {
-                            ToolStripItem[] itemArray = this.lstTokenedItems.ToArray();
-                            this.ReplaceTokens(itemArray, new AppLauncher(addressArray2, pathCurrent), false);
+                        using(IDLWrapper wrapper = class3.GetCurrentPIDL()) {
+                            Address[] addressArray2;
+                            string str4;
+                            string pathCurrent = wrapper.Path;
+                            if(class3.TryGetSelection(out addressArray2, out str4, false)) {
+                                ToolStripItem[] itemArray = this.lstTokenedItems.ToArray();
+                                this.ReplaceTokens(itemArray, new AppLauncher(addressArray2, pathCurrent), false);
+                            }
                         }
                     }
                 }
@@ -1162,10 +1159,11 @@ namespace QTTabBarLib {
             }
         }
 
+        // TODO clean
         private void RearrangeFolderView() {
             IShellView ppshv = null;
             try {
-                if(this.ShellBrowser.QueryActiveShellView(out ppshv) == 0) {
+                if(this.ShellBrowser.GetIShellBrowser().QueryActiveShellView(out ppshv) == 0) {
                     IntPtr ptr;
                     IShellFolderView view2 = (IShellFolderView)ppshv;
                     if((view2.GetArrangeParam(out ptr) == 0) && ((((int)ptr) & 0xffff) != 0)) {
@@ -1322,7 +1320,7 @@ namespace QTTabBarLib {
             else if(e.KeyChar == '\x001b') {
                 QTTabBarClass tabBar = QTUtility.instanceManager.GetTabBar(this.ExplorerHandle);
                 if(tabBar != null) {
-                    tabBar.GetListViewWrapper().SetFocus();
+                    tabBar.GetListView().SetFocus();
                     e.Handled = true;
                 }
             }
@@ -1353,6 +1351,7 @@ namespace QTTabBarLib {
             }
         }
 
+        // TODO clean
         private bool ShellViewIncrementalSearch(string str) {
             QTUtility2.SendCOPYDATASTRUCT(QTUtility.instanceManager.GetTabBarHandle(this.ExplorerHandle), (IntPtr)0xffa, "svis", IntPtr.Zero);
             IShellView ppshv = null;
@@ -1360,7 +1359,7 @@ namespace QTTabBarLib {
             IntPtr zero = IntPtr.Zero;
             bool flag = false;
             try {
-                if(this.ShellBrowser.QueryActiveShellView(out ppshv) == 0) {
+                if(this.ShellBrowser.GetIShellBrowser().QueryActiveShellView(out ppshv) == 0) {
                     int num;
                     IFolderView view2 = (IFolderView)ppshv;
                     IShellFolderView view3 = (IShellFolderView)ppshv;
@@ -1381,7 +1380,7 @@ namespace QTTabBarLib {
                         return false;
                     }
                     view2.ItemCount(2, out num);
-                    ListViewWrapper lvw = QTUtility.instanceManager.GetTabBar(this.ExplorerHandle).GetListViewWrapper();
+                    AbstractListView lvw = QTUtility.instanceManager.GetTabBar(this.ExplorerHandle).GetListView();
                     lvw.SetRedraw(false);
                     try {
                         Regex regex;
@@ -1448,7 +1447,7 @@ namespace QTTabBarLib {
                     finally {
                         lvw.SetRedraw(true);
                     }
-                    this.ShellBrowser.SetStatusTextSB(string.Concat(new object[] { this.iSearchResultCount, " / ", this.iSearchResultCount + this.lstPUITEMIDCHILD.Count, QTUtility.TextResourcesDic["ButtonBar_Misc"][5] }));
+                    this.ShellBrowser.SetStatusText(string.Concat(new object[] { this.iSearchResultCount, " / ", this.iSearchResultCount + this.lstPUITEMIDCHILD.Count, QTUtility.TextResourcesDic["ButtonBar_Misc"][5] }));
                 }
             }
             catch(Exception exception) {
@@ -2058,12 +2057,12 @@ namespace QTTabBarLib {
             base.WndProc(ref m);
         }
 
-        private IShellBrowser ShellBrowser {
+        private ShellBrowserEx ShellBrowser {
             get {
                 if(this.shellBrowser == null) {
                     QTTabBarClass tabBar = QTUtility.instanceManager.GetTabBar(this.ExplorerHandle);
                     if(tabBar != null) {
-                        this.shellBrowser = tabBar.GetShellBrower();
+                        this.shellBrowser = tabBar.GetShellBrowser();
                     }
                 }
                 return this.shellBrowser;

@@ -25,7 +25,7 @@ using Microsoft.Win32;
 using QTTabBarLib.Interop;
 
 namespace QTTabBarLib {
-    internal sealed class IDLWrapper : IDisposable {
+    public sealed class IDLWrapper : IDisposable {
         private uint attributes;
         private static Dictionary<string, byte[]> dicCacheIDLs;
         private static Dictionary<string, int> dicCSIDLTable;
@@ -40,6 +40,8 @@ namespace QTTabBarLib {
         internal static int iPingTimeOutMS;
         private static List<string> lstPingSuccessedPaths;
         private string path;
+        private string displayName;
+        private string parseName;
         internal static string PATH_USERSFILES;
         private IntPtr pIDL;
         internal const string SEPARATOR_PATH_HASH = "???";
@@ -372,6 +374,24 @@ namespace QTTabBarLib {
                 return (this.pIDL != IntPtr.Zero);
             }
         }
+
+        public string DisplayName {
+            get {
+                if(displayName == null && pIDL != IntPtr.Zero) {
+                    displayName = ShellMethods.GetDisplayName(pIDL, true);
+                }
+                return displayName;
+            }
+        }
+
+        public string ParseName {
+            get {
+                if(parseName == null && pIDL != IntPtr.Zero) {
+                    parseName = ShellMethods.GetDisplayName(pIDL, false);
+                }
+                return parseName;
+            }
+        }  
 
         public bool HasPath {
             get {

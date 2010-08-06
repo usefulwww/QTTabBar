@@ -41,13 +41,12 @@ namespace QTTabBarLib {
         private bool fShownByKey;
         private bool fSuppressThumbnail;
         private IntPtr hwndDialogParent;
-        private IntPtr hwndFocusOnMenu;
         private IntPtr hwndMessageReflect;
         private bool isShowing;
         private int iThumbnailIndex = -1;
         private int iToolTipIndex = -1;
         private LabelEx lblSubDirBtn;
-        private ListViewWrapper listViewWrapper;
+        private AbstractListView listView;
         private List<Rectangle> lstRcts = new List<Rectangle>();
         private List<string> lstTempDirectoryPaths = new List<string>();
         private bool menuIsShowing;
@@ -67,11 +66,10 @@ namespace QTTabBarLib {
         public event EventHandler MultipleMenuItemsClicked;
         public event ItemRightClickedEventHandler MultipleMenuItemsRightClicked;
 
-        public SubDirTipForm(IntPtr hwndMessageReflect, IntPtr hwndFocusOnMenu, bool fEnableShiftKeyOnDDMR, ListViewWrapper lvw) {
-            this.listViewWrapper = lvw;
+        public SubDirTipForm(IntPtr hwndMessageReflect, bool fEnableShiftKeyOnDDMR, AbstractListView lvw) {
+            this.listView = lvw;
             this.hwndMessageReflect = hwndMessageReflect;
-            this.hwndFocusOnMenu = hwndFocusOnMenu;
-            this.hwndDialogParent = hwndFocusOnMenu;
+            this.hwndDialogParent = listView.Handle;
             this.fDesktop = !fEnableShiftKeyOnDDMR;
             this.InitializeComponent();
             this.contextMenuSubDir.ImageList = QTUtility.ImageListGlobal;
@@ -167,7 +165,7 @@ namespace QTTabBarLib {
                     this.fShownByKey = false;
                     this.HideSubDirTip();
                 }
-                else if(!listViewWrapper.MouseIsOverListView()) {
+                else if(!listView.MouseIsOverListView()) {
                     this.HideSubDirTip();
                 }
             }
@@ -580,8 +578,8 @@ namespace QTTabBarLib {
         }
 
         private void ddmr_MenuDragEnter(object sender, EventArgs e) {
-            if(this.hwndFocusOnMenu != PInvoke.GetFocus()) {
-                PInvoke.SetFocus(this.hwndFocusOnMenu);
+            if(!listView.HasFocus()) {
+                listView.SetFocus();
             }
         }
 
@@ -1018,7 +1016,7 @@ namespace QTTabBarLib {
         public void ShowSubDirTip(string path, byte[] idl, Point pnt) {
             this.lblSubDirBtn.SetPressed(false);
             IntPtr hwnd = PInvoke.WindowFromPoint(new Point(pnt.X, pnt.Y + 2));
-            if(hwnd == lblSubDirBtn.Handle || hwnd == listViewWrapper.GetListViewHandle()) {
+            if(hwnd == lblSubDirBtn.Handle || hwnd == listView.Handle) {
                 this.isShowing = true;
                 this.currentDir = this.contextMenuSubDir.Path = path;
                 this.currentIDL = idl;

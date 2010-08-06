@@ -21,7 +21,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct RECT {
+    public struct RECT {
         public int left;
         public int top;
         public int right;

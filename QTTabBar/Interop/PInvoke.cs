@@ -77,8 +77,15 @@ namespace QTTabBarLib.Interop {
         public static extern uint EnumClipboardFormats(uint format);
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
+        [DllImport("user32.dll", ExactSpelling = true)]
+        public static extern IntPtr GetAncestor(IntPtr hwnd, int gaFlags);
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
+        private static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
+        public static string GetClassName(IntPtr hwnd) {
+            StringBuilder lpClassName = new StringBuilder(260);
+            GetClassName(hwnd, lpClassName, lpClassName.Capacity);
+            return lpClassName.ToString();
+        }
         [DllImport("user32.dll")]
         public static extern IntPtr GetClipboardData(uint uFormat);
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]

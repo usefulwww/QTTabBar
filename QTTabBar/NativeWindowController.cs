@@ -19,7 +19,7 @@ using System;
 using System.Windows.Forms;
 
 namespace QTTabBarLib {
-    internal sealed class NativeWindowController : NativeWindow {
+    public sealed class NativeWindowController : NativeWindow {
         private IntPtr hwndOptional;
 
         internal event MessageEventHandler MessageCaptured;

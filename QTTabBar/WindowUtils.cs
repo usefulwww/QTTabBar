@@ -93,9 +93,7 @@ namespace QTTabBarLib {
                     PInvoke.SendMessage(hwndRebar, 0x405, (IntPtr)i, ptr);
                     structure = (REBARBANDINFO)Marshal.PtrToStructure(ptr, typeof(REBARBANDINFO));
                     Marshal.FreeHGlobal(ptr);
-                    StringBuilder lpClassName = new StringBuilder(260);
-                    PInvoke.GetClassName(structure.hwndChild, lpClassName, lpClassName.Capacity);
-                    if((lpClassName.ToString() == "ToolbarWindow32") && (structure.wID == 1)) {
+                    if((PInvoke.GetClassName(structure.hwndChild) == "ToolbarWindow32") && (structure.wID == 1)) {
                         PInvoke.SendMessage(hwndRebar, 0x423, (IntPtr)i, fShow ? ((IntPtr)1) : IntPtr.Zero);
                         return;
                     }

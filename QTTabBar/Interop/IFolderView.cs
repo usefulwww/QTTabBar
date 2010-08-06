@@ -22,7 +22,7 @@ using BandObjectLib;
 
 namespace QTTabBarLib.Interop {
     [ComImport, SuppressUnmanagedCodeSecurity, Guid("cde725b0-ccc9-4519-917e-325d72fab4ce"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    internal interface IFolderView {
+    public interface IFolderView {
         [PreserveSig]
         int GetCurrentViewMode(ref int pViewMode);
         [PreserveSig]

@@ -22,7 +22,7 @@ using BandObjectLib;
 
 namespace QTTabBarLib.Interop {
     [ComImport, Guid("000214E2-0000-0000-C000-000000000046"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown), SuppressUnmanagedCodeSecurity]
-    internal interface IShellBrowser {
+    public interface IShellBrowser {
         [PreserveSig]
         int GetWindow(out IntPtr phwnd);
         [PreserveSig]

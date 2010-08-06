@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct NMHDR {
+    public struct NMHDR {
         public IntPtr hwndFrom;
         public IntPtr idFrom;
         public int code;

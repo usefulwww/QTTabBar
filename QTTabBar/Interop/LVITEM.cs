@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct LVITEM {
+    public struct LVITEM {
         public uint mask;
         public int iItem;
         public int iSubItem;

@@ -21,7 +21,7 @@ using System.Security;
 
 namespace QTTabBarLib.Interop {
     [ComImport, SuppressUnmanagedCodeSecurity, Guid("1AC3D9F0-175C-11d1-95BE-00609797EA4F"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    internal interface IPersistFolder2 {
+    public interface IPersistFolder2 {
         void GetClassID(out Guid pClassID);
         void Initialize(IntPtr pidl);
         [PreserveSig]

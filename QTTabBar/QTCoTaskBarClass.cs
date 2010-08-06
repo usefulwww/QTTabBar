@@ -53,7 +53,6 @@ namespace QTTabBarLib {
         private bool fContextmenuedOnMain_Grp;
         private IFolderView folderView;
         private bool fRequiredRefresh_MenuItems;
-        private bool fThumbnailPending;
         private List<ToolStripItem> GroupItemsList = new List<ToolStripItem>();
         private TitleMenuItem groupsMenuItem;
         private FileHashComputerForm hashForm;
@@ -69,12 +68,11 @@ namespace QTTabBarLib {
         private static IContextMenu2 iContextMenu2;
         private int iHookTimeout;
         private int iMainMenuShownCount;
-        private int itemIndexDROPHILITED = -1;
         private TitleMenuItem labelGroupTitle;
         private TitleMenuItem labelHistoryTitle;
         private TitleMenuItem labelRecentFileTitle;
         private TitleMenuItem labelUserAppTitle;
-        private ListViewWrapper listViewWrapper;
+        private AbstractListView listView;
         private const string MENUKEY_ITEM_GROUP = "groupItem";
         private const string MENUKEY_ITEM_HISTORY = "historyItem";
         private const string MENUKEY_ITEM_RECENT = "recentItem";
@@ -97,11 +95,7 @@ namespace QTTabBarLib {
         private SubDirTipForm subDirTip;
         private const string TEXT_TOOLBAR = "QTTab Desktop Tool";
         private IntPtr ThisHandle;
-        private int thumbnailIndex = -1;
         private ThumbnailTooltipForm thumbnailTooltip;
-        private Timer timer_HoverSubDirTipMenu;
-        private Timer timer_HoverThumbnail;
-        private Timer timer_Thumbnail;
         private Timer timerHooks;
         private ToolStripMenuItem tsmiAppKeys;
         private ToolStripMenuItem tsmiDesktop;
@@ -1054,10 +1048,7 @@ namespace QTTabBarLib {
         }
 
         private void HideSubDirTip() {
-            if((this.subDirTip != null) && this.subDirTip.IsShowing) {
-                this.subDirTip.HideSubDirTip();
-            }
-            this.itemIndexDROPHILITED = -1;
+
         }
 
         private void HideSubDirTip_DesktopInactivated() {
@@ -1067,9 +1058,7 @@ namespace QTTabBarLib {
         }
 
         private void HideThumbnailTooltip() {
-            if(((this.thumbnailTooltip != null) && this.thumbnailTooltip.IsShowing) && this.thumbnailTooltip.HideToolTip()) {
-                this.thumbnailIndex = -1;
-            }
+
         }
 
         private static bool IDLIsFolder(IDLWrapper idlw, out IDLWrapper idlwLinkTarget) {
@@ -1268,15 +1257,16 @@ namespace QTTabBarLib {
             this.hHook_MsgShell_TrayWnd = PInvoke.SetWindowsHookEx(3, this.hookProc_Msg_ShellTrayWnd, IntPtr.Zero, dwThreadId);
             this.hHook_KeyDesktop = PInvoke.SetWindowsHookEx(2, this.hookProc_Keys_Desktop, IntPtr.Zero, windowThreadProcessId);
             PInvoke.PostMessage(this.hwndListView, WM.APP + 100, IntPtr.Zero, IntPtr.Zero);
-            listViewWrapper = new ListViewWrapper(shellViewHwnd, this.ThisHandle, this.hwndListView);
-            listViewWrapper.ItemActivated   += ListView_ItemActivated;
-            listViewWrapper.MiddleClick     += ListView_MiddleClick;
-            listViewWrapper.DoubleClick     += ListView_DoubleClick;
-            listViewWrapper.SubDirTip_MenuItemClicked               += subDirTip_MenuItemClicked;
-            listViewWrapper.SubDirTip_MenuItemRightClicked          += subDirTip_MenuItemRightClicked;
-            listViewWrapper.SubDirTip_MultipleMenuItemsClicked      += subDirTip_MultipleMenuItemsClicked;
-            listViewWrapper.SubDirTip_MultipleMenuItemsRightClicked += subDirTip_MultipleMenuItemsRightClicked;
-
+            /* TODO
+            listViewMonitor = new ListViewMonitor(ShellBrowser, hwndExplorer, );
+             extendedListView.ItemActivated   += ListView_ItemActivated;
+            extendedListView.MiddleClick     += ListView_MiddleClick;
+            extendedListView.DoubleClick     += ListView_DoubleClick;
+            extendedListView.SubDirTip_MenuItemClicked               += subDirTip_MenuItemClicked;
+            extendedListView.SubDirTip_MenuItemRightClicked          += subDirTip_MenuItemRightClicked;
+            extendedListView.SubDirTip_MultipleMenuItemsClicked      += subDirTip_MultipleMenuItemsClicked;
+            extendedListView.SubDirTip_MultipleMenuItemsRightClicked += subDirTip_MultipleMenuItemsRightClicked;
+            */
         }
 
         protected override void OnCreateControl() {

@@ -86,6 +86,8 @@
     <Compile Include="ButtonBarOptionForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="AbstractListView.cs" />
+    <Compile Include="ShellBrowserEx.cs" />
     <Compile Include="ContextMenuStripEx.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -111,6 +113,8 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="EventPack.cs" />
+    <Compile Include="ExtendedItemsView.cs" />
+    <Compile Include="ExtendedSysListView32.cs" />
     <Compile Include="FileHashComputerForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -201,7 +205,8 @@
     <Compile Include="Interop\_ShellLinkObject.cs" />
     <Compile Include="ItemRightClickedEventArgs.cs" />
     <Compile Include="ItemRightClickedEventHandler.cs" />
-    <Compile Include="ListViewWrapper.cs" />
+    <Compile Include="ListViewMonitor.cs" />
+    <Compile Include="ExtendedListViewCommon.cs" />
     <Compile Include="LogData.cs" />
     <Compile Include="MC.cs" />
     <Compile Include="MemoForm.cs" />

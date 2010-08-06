@@ -803,33 +803,6 @@ namespace QTTabBarLib.Interop {
             return false;
         }
 
-        public static IntPtr ShellGetPath(IShellBrowser shellBrowser) {
-            IShellView ppshv = null;
-            IPersistFolder2 ppv = null;
-            try {
-                if(shellBrowser.QueryActiveShellView(out ppshv) == 0) {
-                    Guid riid = ExplorerGUIDs.IID_IPersistFolder2;
-                    IFolderView view2 = (IFolderView)ppshv;
-                    if(view2.GetFolder(ref riid, out ppv) == 0) {
-                        IntPtr ptr;
-                        ppv.GetCurFolder(out ptr);
-                        return ptr;
-                    }
-                }
-            }
-            catch {
-            }
-            finally {
-                if(ppshv != null) {
-                    Marshal.ReleaseComObject(ppshv);
-                }
-                if(ppv != null) {
-                    Marshal.ReleaseComObject(ppv);
-                }
-            }
-            return IntPtr.Zero;
-        }
-
         public static IntPtr ShellGetPath2(IntPtr hwnd) {
             IntPtr zero = IntPtr.Zero;
             try {
