@@ -30,9 +30,10 @@ namespace QTTabBarLib.Automation {
     public class AutomationManager : IDisposable {
         private static readonly Guid IID_IUIAutomation = new Guid("{30CBE57D-D9D0-452A-AB13-7AC5AC4825EE}");
         private static readonly Guid CLSID_CUIAutomation = new Guid("{FF48DBA4-60EF-4201-AA87-54103EEF594E}");
-        private static IUIAutomation pAutomation;
+        private IUIAutomation pAutomation;
         private Thread automationThread = new Thread(AutomationThreadEntry);
         private List<Worker> workerQueue = new List<Worker>();
+        private volatile bool threadDying;
 
         public delegate T Query<out T>(AutomationElementFactory factory);
 
@@ -42,16 +43,23 @@ namespace QTTabBarLib.Automation {
 
         private class Worker<T> : Worker {
             private T ret;
+            private IUIAutomation pAutomation;
             private Query<T> query;
 
-            public Worker(Query<T> query) {
+            public Worker(IUIAutomation pAutomation, Query<T> query) {
+                this.pAutomation = pAutomation;
                 this.query = query;
                 Complete = false;
             }
 
             public void DoWork() {
-                using(AutomationElementFactory man = new AutomationElementFactory(pAutomation)) {
-                    ret = query(man);
+                try {
+                    using(AutomationElementFactory man = new AutomationElementFactory(pAutomation)) {
+                        ret = query(man);
+                    }    
+                }
+                catch(Exception exception) {
+                    QTUtility2.MakeErrorLog(exception, "Automation Thread");
                 }
                 Complete = true;
             }
@@ -82,17 +90,19 @@ namespace QTTabBarLib.Automation {
         }
 
         public void Dispose() {
+            if(automationThread.ThreadState != ThreadState.Stopped) {
+                lock(automationThread) {
+                    while(!threadDying) {
+                        workerQueue.Clear();
+                        Monitor.PulseAll(automationThread);
+                        Monitor.Wait(automationThread);
+                    }
+                }
+            }
             if(pAutomation != null) {
                 Marshal.ReleaseComObject(pAutomation);
                 pAutomation = null;
             }
-            if(automationThread.ThreadState != ThreadState.Stopped) {
-                lock(automationThread) {
-                    workerQueue.Clear();
-                    Monitor.Pulse(automationThread);
-                    Monitor.Wait(automationThread);
-                }
-            }    
             GC.SuppressFinalize(this);
         }
 
@@ -108,20 +118,22 @@ namespace QTTabBarLib.Automation {
                     }
                     manager.workerQueue.Clear();
                 }
+                manager.threadDying = true;
                 Monitor.PulseAll(manager.automationThread);
             }
         }
 
         public T DoQuery<T>(Query<T> query) {
             lock(automationThread) {
-                Worker<T> worker = new Worker<T>(query);
+                if(threadDying) return default(T);
+                Worker<T> worker = new Worker<T>(pAutomation, query);
                 workerQueue.Add(worker);
                 do {
                     Monitor.Pulse(automationThread);
                     Monitor.Wait(automationThread);
                 } 
-                while(!worker.Complete);
-                return worker.GetReturn();
+                while(!worker.Complete && !threadDying);
+                return threadDying ? default(T) : worker.GetReturn();
             }
         }
     }
