@@ -832,7 +832,10 @@ namespace QTTabBarLib {
 
         public override void CloseDW(uint dwReserved) {
             try {
-                listView.Dispose();
+                if(this.listViewManager != null) {
+                    this.listViewManager.Dispose();
+                    this.listViewManager = null;
+                }
                 if(this.subDirTip_Tab != null) {
                     this.subDirTip_Tab.Dispose();
                     this.subDirTip_Tab = null;
