@@ -76,7 +76,7 @@ namespace QTTabBarLib {
             return false;
         }
 
-        public virtual void HideSubDirTip(int iReason) {
+        public virtual void HideSubDirTip(int iReason = -1) {
         }
 
         public virtual void HideSubDirTipMenu() {
@@ -85,7 +85,7 @@ namespace QTTabBarLib {
         public virtual void HideSubDirTip_ExplorerInactivated() {
         }
 
-        public virtual void HideThumbnailTooltip(int iReason) {
+        public virtual void HideThumbnailTooltip(int iReason = -1) {
         }
 
         public virtual int HitTest(IntPtr LParam) {

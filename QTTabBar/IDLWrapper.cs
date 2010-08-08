@@ -22,6 +22,7 @@ using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Microsoft.Win32;
+using QTPlugin;
 using QTTabBarLib.Interop;
 
 namespace QTTabBarLib {
@@ -291,6 +292,10 @@ namespace QTTabBarLib {
             catch(Exception exception) {
                 QTUtility2.MakeErrorLog(exception, null, false);
             }
+        }
+
+        public Address ToAddress() {
+            return new Address(pIDL, Path);
         }
 
         private static IntPtr TranslateLocation(string path) {

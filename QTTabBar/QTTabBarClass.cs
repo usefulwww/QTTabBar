@@ -3411,9 +3411,6 @@ namespace QTTabBarLib {
                 QTUtility2.MakeErrorLog(exception, null, false);
             }
             finally {
-                if(ppshv != null) {
-                    Marshal.ReleaseComObject(ppshv);
-                }
                 if(zero != IntPtr.Zero) {
                     PInvoke.CoTaskMemFree(zero);
                 }
@@ -4764,14 +4761,15 @@ namespace QTTabBarLib {
                                 try {
                                     IntPtr ptr;
                                     if(PInvoke.SHBindToParent(idlw.PIDL, ExplorerGUIDs.IID_IShellFolder, out ppv, out ptr) == 0) {
-                                        using(IDLWrapper wrapper2 = new IDLWrapper(PInvoke.ILCombine(wrapper.PIDL, ptr))) {
-                                            if(wrapper2.Available && wrapper2.HasPath) {
+                                        using(IDLWrapper wrapper2 = new IDLWrapper(ptr))
+                                        using(IDLWrapper wrapper3 = new IDLWrapper(PInvoke.ILCombine(wrapper.PIDL, wrapper2.PIDL))) {
+                                            if(wrapper3.Available && wrapper3.HasPath) {
                                                 if(!blockSelecting && QTUtility.CheckConfig(Settings.ActivateNewTab)) {
                                                     this.NowTabCreated = true;
-                                                    this.tabControl1.SelectTab(this.CreateNewTab(wrapper2));
+                                                    this.tabControl1.SelectTab(this.CreateNewTab(wrapper3));
                                                 }
                                                 else {
-                                                    this.CreateNewTab(wrapper2);
+                                                    this.CreateNewTab(wrapper3);
                                                     this.SyncButtonBarCurrent(0x1003f);
                                                 }
                                                 return true;

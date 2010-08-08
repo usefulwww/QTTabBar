@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using BandObjectLib;
@@ -26,9 +27,10 @@ using QTTabBarLib.Interop;
 namespace QTTabBarLib {
     public class ShellBrowserEx : IDisposable {
         private IShellBrowser shellBrowser;
-
-        public ShellBrowserEx(IShellBrowser shellBrowser) {
+        private bool shared;
+        public ShellBrowserEx(IShellBrowser shellBrowser, bool shared = false) {
             this.shellBrowser = shellBrowser;
+            this.shared = shared;
         }
 
         public int ViewMode {
@@ -48,7 +50,12 @@ namespace QTTabBarLib {
 
         public void Dispose() {
             if(shellBrowser != null) {
-                Marshal.FinalReleaseComObject(shellBrowser);
+                if(shared) {
+                    Marshal.ReleaseComObject(shellBrowser);
+                }
+                else {
+                    Marshal.FinalReleaseComObject(shellBrowser);
+                }
                 shellBrowser = null;
             }
         }
@@ -84,6 +91,46 @@ namespace QTTabBarLib {
                     if(ppidl != IntPtr.Zero && !noAppend) {
                         PInvoke.CoTaskMemFree(ppidl);
                     }
+                }
+            }
+        }
+
+        public bool SelectionAvailable() {
+            using(FVWrapper w = GetFolderView()) {
+                int items;
+                return w.FolderView.ItemCount(1, out items) == 0;
+            }
+        }
+
+        public IEnumerable<IDLWrapper> GetItems(bool selectedOnly = false, bool noAppend = false) {
+            Guid guid = ExplorerGUIDs.IID_IEnumIDList;
+            IEnumIDList list = null;
+            try {
+                using(FVWrapper w = GetFolderView())
+                using(IDLWrapper path = noAppend ? null : GetShellPath(w.FolderView)) {
+                    w.FolderView.Items(0x80000000 | (selectedOnly ? 1u : 2u), ref guid, out list);
+                    if(list == null) {
+                        yield break;
+                    }
+                    IntPtr ptr;
+                    while(list.Next(1, out ptr, null) == 0) {
+                        using(IDLWrapper wrapper1 = new IDLWrapper(ptr)) {
+                            if(!wrapper1.Available) continue;
+                            if(noAppend) {
+                                yield return wrapper1;
+                            }
+                            else {
+                                using(IDLWrapper wrapper2 = new IDLWrapper(PInvoke.ILCombine(path.PIDL, wrapper1.PIDL))) {                                
+                                    yield return wrapper2;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            finally {
+                if(list != null) {
+                    Marshal.ReleaseComObject(list);
                 }
             }
         }
@@ -179,72 +226,34 @@ namespace QTTabBarLib {
             }
             return false;
         }
+        
+        public IDLWrapper GetFocusedItem() {
+            int focusedIndex;
+            using(FVWrapper w = GetFolderView()) {
+                if(w.FolderView.GetFocusedItem(out focusedIndex) != 0) {
+                    return new IDLWrapper(IntPtr.Zero);
+                }
+            }
+            return GetItem(focusedIndex);
+        }
+
+        public bool TryGetSelection(out Address[] adSelectedItems, bool fDisplayName) {
+            if(!SelectionAvailable()) {
+                adSelectedItems = new Address[0];
+                return false;
+            }
+
+            adSelectedItems = GetItems(true).Select(wrapper => fDisplayName 
+                     ? new Address(wrapper.PIDL, wrapper.DisplayName)
+                     : new Address(wrapper.PIDL, wrapper.ParseName)).ToArray();
+            return true;
+        }
 
         public bool TryGetSelection(out Address[] adSelectedItems, out string pathFocused, bool fDisplayName) {
-            adSelectedItems = new Address[0];
-            pathFocused = string.Empty;
-            List<Address> list = new List<Address>();
-            IShellFolder shellFolder = null;
-            IEnumIDList list2 = null;
-            try {
-                using(FVWrapper w = GetFolderView())
-                using(IDLWrapper zero = GetShellPath(w.FolderView)) {
-                    IFolderView view2 = w.FolderView;
-                    int focusedIndex;
-                    IntPtr focusedIDL;
-                    int itemCount;
-                    Guid guid2 = ExplorerGUIDs.IID_IEnumIDList;
-                    if(!ShellMethods.GetShellFolder(zero.PIDL, out shellFolder)) {
-                        return false;
-                    }
-                    if((view2.GetFocusedItem(out focusedIndex) == 0) && (view2.Item(focusedIndex, out focusedIDL) == 0)) {
-                        STRRET strret;
-                        IntPtr pv = PInvoke.ILCombine(zero.PIDL, focusedIDL);
-                        StringBuilder pszBuf = new StringBuilder(260);
-                        if(shellFolder.GetDisplayNameOf(focusedIDL, 0x8000, out strret) == 0) {
-                            PInvoke.StrRetToBuf(ref strret, focusedIDL, pszBuf, pszBuf.Capacity);
-                        }
-                        pathFocused = pszBuf.ToString();
-                        PInvoke.CoTaskMemFree(focusedIDL);
-                        PInvoke.CoTaskMemFree(pv);
-                    }
-                    if(view2.ItemCount(1, out itemCount) != 0) {
-                        return false;
-                    }
-                    if(itemCount != 0) {
-                        IntPtr ptr4;
-                        if((view2.Items(1, ref guid2, out list2) != 0) || (list2 == null)) {
-                            return false;
-                        }
-                        uint uFlags = fDisplayName ? 0 : 0x8000u;
-                        while(list2.Next(1, out ptr4, null) == 0) {
-                            STRRET strret2;
-                            StringBuilder builder2 = new StringBuilder(260);
-                            if(shellFolder.GetDisplayNameOf(ptr4, uFlags, out strret2) == 0) {
-                                PInvoke.StrRetToBuf(ref strret2, ptr4, builder2, builder2.Capacity);
-                            }
-                            IntPtr pidl = PInvoke.ILCombine(zero.PIDL, ptr4);
-                            list.Add(new Address(pidl, builder2.ToString()));
-                            PInvoke.CoTaskMemFree(ptr4);
-                            PInvoke.CoTaskMemFree(pidl);
-                        }
-                        adSelectedItems = list.ToArray();
-                    }
-                    return true;
-                }
+            using(IDLWrapper wrapper = GetFocusedItem()) {
+                pathFocused = wrapper.ParseName;
             }
-            catch(Exception exception) {
-                QTUtility2.MakeErrorLog(exception, null);
-            }
-            finally {
-                if(shellFolder != null) {
-                    Marshal.ReleaseComObject(shellFolder);
-                }
-                if(list2 != null) {
-                    Marshal.ReleaseComObject(list2);
-                }
-            }
-            return false;
+            return TryGetSelection(out adSelectedItems, fDisplayName);
         }
 
         // TODO: Clean

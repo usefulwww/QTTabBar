@@ -53,6 +53,7 @@ namespace QTTabBarLib {
         #endregion
 
         protected static readonly Int32 WM_AFTERPAINT = (Int32)PInvoke.RegisterWindowMessage("QTTabBar_AfterPaint");
+        protected static readonly Int32 WM_REMOTEDISPOSE = (Int32)PInvoke.RegisterWindowMessage("QTTabBar_RemoteDispose");
 
         protected NativeWindowController ListViewController;
         protected NativeWindowController ShellViewController;
@@ -276,7 +277,7 @@ namespace QTTabBarLib {
                 PInvoke.GetFocus() == ListViewController.Handle);
         }
 
-        public override void HideSubDirTip(int iReason) {
+        public override void HideSubDirTip(int iReason = -1) {
             if((this.subDirTip != null) && this.subDirTip.IsShowing) {
                 bool fForce = iReason < 0;
                 if(fForce || !this.subDirTip.IsShownByKey) {
@@ -299,7 +300,7 @@ namespace QTTabBarLib {
             }
         }
 
-        public override void HideThumbnailTooltip(int iReason) {
+        public override void HideThumbnailTooltip(int iReason = -1) {
             if((this.thumbnailTooltip != null) && this.thumbnailTooltip.IsShowing) {
                 if(((iReason == 0) || (iReason == 7)) || (iReason == 9)) {
                     this.thumbnailTooltip.IsShownByKey = false;
@@ -367,6 +368,21 @@ namespace QTTabBarLib {
                             QTUtility2.GET_Y_LPARAM(msg.LParam)));
                     }
                     break;
+
+                case WM.MOUSEWHEEL: {
+                    Point pt = new Point(QTUtility2.GET_X_LPARAM(msg.LParam), QTUtility2.GET_Y_LPARAM(msg.LParam));
+                    IntPtr handle = PInvoke.WindowFromPoint(pt);
+                    if(handle != IntPtr.Zero && handle != msg.HWnd) {
+                        Control control = Control.FromHandle(handle);
+                        if(control != null) {
+                            DropDownMenuReorderable reorderable = control as DropDownMenuReorderable;
+                            if((reorderable != null) && reorderable.CanScroll) {
+                                PInvoke.SendMessage(handle, WM.MOUSEWHEEL, msg.WParam, msg.LParam);
+                            }
+                        }
+                    }
+                    break;
+                }
 
                 case WM.MOUSELEAVE:
                     fTrackMouseEvent = true;
@@ -845,6 +861,10 @@ namespace QTTabBarLib {
                 }
             }
             this.HideSubDirTip(10);
+        }
+
+        public void RemoteDispose() {
+            PInvoke.PostMessage(Handle, (uint)WM_REMOTEDISPOSE, IntPtr.Zero, IntPtr.Zero);
         }
 
         private void timer_HoverThumbnail_Tick(object sender, EventArgs e) {
