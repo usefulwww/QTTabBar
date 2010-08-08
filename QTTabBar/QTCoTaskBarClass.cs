@@ -59,6 +59,9 @@ namespace QTTabBarLib {
         private IntPtr hHook_MsgShell_TrayWnd;
         private IntPtr hHook_MsgDesktop;
         private TitleMenuItem historyMenuItem;
+        private HookProc hookProc_Keys_Desktop;
+        private HookProc hookProc_Msg_Desktop;
+        private HookProc hookProc_Msg_ShellTrayWnd;
         private IntPtr hwndListView;
         private IntPtr hwndShellTray;
         private static IContextMenu2 iContextMenu2;
@@ -1068,6 +1071,41 @@ namespace QTTabBarLib {
         }
 
         // TODO
+        private void InstallDesktopHook() {            
+            uint num;
+            IntPtr progmanHwnd = PInvoke.FindWindowEx(IntPtr.Zero, IntPtr.Zero, "Progman", null);
+            IntPtr shellViewHwnd = PInvoke.FindWindowEx(progmanHwnd, IntPtr.Zero, "SHELLDLL_DefView", null);
+            IntPtr desktopHwnd = PInvoke.FindWindowEx(shellViewHwnd, IntPtr.Zero, "SysListView32", null);
+            if(this.timerHooks == null) {
+                if(desktopHwnd == IntPtr.Zero) {
+                    this.timerHooks = new Timer();
+                    this.timerHooks.Tick += this.timerHooks_Tick;
+                    this.timerHooks.Interval = 3000;
+                    this.timerHooks.Start();
+                    return;
+                }
+            }
+            else {
+                if(desktopHwnd == IntPtr.Zero) {
+                    return;
+                }
+                this.timerHooks.Stop();
+                this.timerHooks.Dispose();
+                this.timerHooks = null;
+            }
+            this.hwndListView = desktopHwnd;
+            this.hwndShellTray = WindowUtils.GetShellTrayWnd();
+            this.hookProc_Msg_Desktop = new HookProc(this.CallbackGetMsgProc_Desktop);
+            this.hookProc_Msg_ShellTrayWnd = new HookProc(this.CallbackGetMsgProc_ShellTrayWnd);
+            this.hookProc_Keys_Desktop = new HookProc(this.CallbackKeyProc_Desktop);
+            int windowThreadProcessId = PInvoke.GetWindowThreadProcessId(this.hwndListView, out num);
+            int dwThreadId = PInvoke.GetWindowThreadProcessId(this.hwndShellTray, out num);
+            this.hHook_MsgDesktop = PInvoke.SetWindowsHookEx(3, this.hookProc_Msg_Desktop, IntPtr.Zero, windowThreadProcessId);
+            this.hHook_MsgShell_TrayWnd = PInvoke.SetWindowsHookEx(3, this.hookProc_Msg_ShellTrayWnd, IntPtr.Zero, dwThreadId);
+            this.hHook_KeyDesktop = PInvoke.SetWindowsHookEx(2, this.hookProc_Keys_Desktop, IntPtr.Zero, windowThreadProcessId); 
+            PInvoke.PostMessage(this.hwndListView, WM.APP + 100, IntPtr.Zero, IntPtr.Zero);
+        }
+
         private bool ListView_LostFocus() {
             listView.HideThumbnailTooltip();
             listView.HideSubDirTip_ExplorerInactivated();
@@ -1099,38 +1137,6 @@ namespace QTTabBarLib {
                 QTUtility2.SendCOPYDATASTRUCT(this.ThisHandle, (IntPtr)0xff, "fromdesktop", QTUtility2.Make_LPARAM(pt.X, pt.Y));
             }
             return false;
-        }
-
-        private void InstallDesktopHook() {            
-            uint num;
-            IntPtr progmanHwnd = PInvoke.FindWindowEx(IntPtr.Zero, IntPtr.Zero, "Progman", null);
-            IntPtr shellViewHwnd = PInvoke.FindWindowEx(progmanHwnd, IntPtr.Zero, "SHELLDLL_DefView", null);
-            IntPtr desktopHwnd = PInvoke.FindWindowEx(shellViewHwnd, IntPtr.Zero, "SysListView32", null);
-            if(this.timerHooks == null) {
-                if(desktopHwnd == IntPtr.Zero) {
-                    this.timerHooks = new Timer();
-                    this.timerHooks.Tick += this.timerHooks_Tick;
-                    this.timerHooks.Interval = 3000;
-                    this.timerHooks.Start();
-                    return;
-                }
-            }
-            else {
-                if(desktopHwnd == IntPtr.Zero) {
-                    return;
-                }
-                this.timerHooks.Stop();
-                this.timerHooks.Dispose();
-                this.timerHooks = null;
-            }
-            this.hwndListView = desktopHwnd;
-            this.hwndShellTray = WindowUtils.GetShellTrayWnd();
-            int windowThreadProcessId = PInvoke.GetWindowThreadProcessId(this.hwndListView, out num);
-            int dwThreadId = PInvoke.GetWindowThreadProcessId(this.hwndShellTray, out num);
-            this.hHook_MsgDesktop = PInvoke.SetWindowsHookEx(3, this.CallbackGetMsgProc_Desktop, IntPtr.Zero, windowThreadProcessId);
-            this.hHook_MsgShell_TrayWnd = PInvoke.SetWindowsHookEx(3, this.CallbackGetMsgProc_ShellTrayWnd, IntPtr.Zero, dwThreadId);
-            this.hHook_KeyDesktop = PInvoke.SetWindowsHookEx(2, this.CallbackKeyProc_Desktop, IntPtr.Zero, windowThreadProcessId);
-            PInvoke.PostMessage(this.hwndListView, WM.APP + 100, IntPtr.Zero, IntPtr.Zero);
         }
 
         protected override void OnCreateControl() {
