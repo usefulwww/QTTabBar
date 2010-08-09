@@ -37,12 +37,12 @@ namespace QTTabBarLib {
 
         public QTabItem(string title, string path, QTabControl parent)
             : base(title, parent) {
-            this.stckHistoryForward = new Stack<LogData>();
-            this.stckHistoryBackward = new Stack<LogData>();
-            this.dicSelectdItems = new Dictionary<string, Address[]>();
-            this.dicFocusedItemName = new Dictionary<string, string>();
-            this.lstHistoryBranches = new List<LogData>();
-            this.CurrentPath = path;
+            stckHistoryForward = new Stack<LogData>();
+            stckHistoryBackward = new Stack<LogData>();
+            dicSelectdItems = new Dictionary<string, Address[]>();
+            dicFocusedItemName = new Dictionary<string, string>();
+            lstHistoryBranches = new List<LogData>();
+            CurrentPath = path;
         }
 
         public static void CheckSubTexts(QTabControl tabControl) {
@@ -138,26 +138,26 @@ namespace QTTabBarLib {
         }
 
         public QTabItem Clone(bool fAll = false) {
-            QTabItem item = new QTabItem(base.Text, this.currentPath, base.Owner);
-            item.TabBounds = base.TabBounds;
-            item.Comment = base.Comment;
-            item.currentIDL = this.currentIDL;
-            item.ToolTipText = base.ToolTipText;
-            item.tooltipText2 = this.tooltipText2;
+            QTabItem item = new QTabItem(Text, currentPath, Owner);
+            item.TabBounds = TabBounds;
+            item.Comment = Comment;
+            item.currentIDL = currentIDL;
+            item.ToolTipText = ToolTipText;
+            item.tooltipText2 = tooltipText2;
             if(fAll) {
-                item.tabLocked = base.tabLocked;
+                item.tabLocked = tabLocked;
             }
-            LogData[] array = this.stckHistoryForward.ToArray();
-            LogData[] dataArray2 = this.stckHistoryBackward.ToArray();
+            LogData[] array = stckHistoryForward.ToArray();
+            LogData[] dataArray2 = stckHistoryBackward.ToArray();
             Array.Reverse(array);
             Array.Reverse(dataArray2);
             item.stckHistoryForward = new Stack<LogData>(array);
             item.stckHistoryBackward = new Stack<LogData>(dataArray2);
-            item.dicFocusedItemName = new Dictionary<string, string>(this.dicFocusedItemName);
-            item.lstHistoryBranches = new List<LogData>(this.lstHistoryBranches.ToArray());
+            item.dicFocusedItemName = new Dictionary<string, string>(dicFocusedItemName);
+            item.lstHistoryBranches = new List<LogData>(lstHistoryBranches.ToArray());
             Dictionary<string, Address[]> dictionary = new Dictionary<string, Address[]>();
-            foreach(string str in this.dicSelectdItems.Keys) {
-                dictionary.Add(str, this.dicSelectdItems[str]);
+            foreach(string str in dicSelectdItems.Keys) {
+                dictionary.Add(str, dicSelectdItems[str]);
             }
             item.dicSelectdItems = dictionary;
             return item;
@@ -165,7 +165,7 @@ namespace QTTabBarLib {
 
         public string[] GetHistoryBack() {
             List<string> list = new List<string>();
-            foreach(LogData data in this.stckHistoryBackward) {
+            foreach(LogData data in stckHistoryBackward) {
                 list.Add(data.Path);
             }
             return list.ToArray();
@@ -173,7 +173,7 @@ namespace QTTabBarLib {
 
         public string[] GetHistoryForward() {
             List<string> list = new List<string>();
-            foreach(LogData data in this.stckHistoryForward) {
+            foreach(LogData data in stckHistoryForward) {
                 list.Add(data.Path);
             }
             return list.ToArray();
@@ -182,10 +182,10 @@ namespace QTTabBarLib {
         public int GetLogHash(bool back, int index) {
             LogData[] dataArray;
             if(back) {
-                dataArray = this.stckHistoryBackward.ToArray();
+                dataArray = stckHistoryBackward.ToArray();
             }
             else {
-                dataArray = this.stckHistoryForward.ToArray();
+                dataArray = stckHistoryForward.ToArray();
             }
             if((index > -1) && (index < dataArray.Length)) {
                 return dataArray[index].Hash;
@@ -194,7 +194,7 @@ namespace QTTabBarLib {
         }
 
         public IEnumerable<LogData> GetLogs(bool fBack) {
-            List<LogData> list = new List<LogData>(fBack ? this.stckHistoryBackward : this.stckHistoryForward);
+            List<LogData> list = new List<LogData>(fBack ? stckHistoryBackward : stckHistoryForward);
             if(fBack && (list.Count > 0)) {
                 list.RemoveAt(0);
             }
@@ -203,27 +203,27 @@ namespace QTTabBarLib {
 
         public Address[] GetSelectedItemsAt(string path, out string focused) {
             Address[] addressArray;
-            this.dicSelectdItems.TryGetValue(path, out addressArray);
-            this.dicFocusedItemName.TryGetValue(path, out focused);
+            dicSelectdItems.TryGetValue(path, out addressArray);
+            dicFocusedItemName.TryGetValue(path, out focused);
             return addressArray;
         }
 
         public LogData GoBackward() {
             LogData data = new LogData();
-            if(this.stckHistoryBackward.Count > 1) {
-                this.stckHistoryForward.Push(this.stckHistoryBackward.Pop());
-                data = this.stckHistoryBackward.Peek();
-                this.CurrentPath = data.Path;
+            if(stckHistoryBackward.Count > 1) {
+                stckHistoryForward.Push(stckHistoryBackward.Pop());
+                data = stckHistoryBackward.Peek();
+                CurrentPath = data.Path;
             }
             return data;
         }
 
         public LogData GoForward() {
             LogData data = new LogData();
-            if(this.stckHistoryForward.Count != 0) {
-                this.stckHistoryBackward.Push(this.stckHistoryForward.Pop());
-                data = this.stckHistoryBackward.Peek();
-                this.CurrentPath = data.Path;
+            if(stckHistoryForward.Count != 0) {
+                stckHistoryBackward.Push(stckHistoryForward.Pop());
+                data = stckHistoryBackward.Peek();
+                CurrentPath = data.Path;
             }
             return data;
         }
@@ -232,80 +232,80 @@ namespace QTTabBarLib {
             if((idl == null) || (idl.Length == 0)) {
                 idl = ShellMethods.GetIDLData(path);
             }
-            this.stckHistoryBackward.Push(new LogData(path, idl, hash));
-            foreach(LogData data in this.stckHistoryForward) {
-                if(!this.lstHistoryBranches.Contains(data)) {
-                    this.lstHistoryBranches.Add(data);
+            stckHistoryBackward.Push(new LogData(path, idl, hash));
+            foreach(LogData data in stckHistoryForward) {
+                if(!lstHistoryBranches.Contains(data)) {
+                    lstHistoryBranches.Add(data);
                 }
             }
-            foreach(LogData data2 in this.stckHistoryBackward) {
-                this.lstHistoryBranches.Remove(data2);
+            foreach(LogData data2 in stckHistoryBackward) {
+                lstHistoryBranches.Remove(data2);
             }
-            this.stckHistoryForward.Clear();
-            this.CurrentPath = path;
-            this.currentIDL = idl;
+            stckHistoryForward.Clear();
+            CurrentPath = path;
+            currentIDL = idl;
         }
 
         public override void OnClose() {
-            if(this.Closed != null) {
-                this.Closed(null, EventArgs.Empty);
-                this.Closed = null;
+            if(Closed != null) {
+                Closed(null, EventArgs.Empty);
+                Closed = null;
             }
             base.OnClose();
         }
 
         public void SetSelectedItemsAt(string path, Address[] names, string focused) {
-            this.dicSelectdItems[path] = names;
-            this.dicFocusedItemName[path] = focused;
+            dicSelectdItems[path] = names;
+            dicFocusedItemName[path] = focused;
         }
 
         public List<LogData> Branches {
             get {
-                return this.lstHistoryBranches;
+                return lstHistoryBranches;
             }
         }
 
         public byte[] CurrentIDL {
             get {
-                return this.currentIDL;
+                return currentIDL;
             }
             set {
-                this.currentIDL = value;
+                currentIDL = value;
             }
         }
 
         public string CurrentPath {
             get {
-                return this.currentPath;
+                return currentPath;
             }
             set {
                 if(value == null) {
-                    this.currentPath = string.Empty;
-                    base.ImageKey = string.Empty;
+                    currentPath = string.Empty;
+                    ImageKey = string.Empty;
                 }
                 else {
-                    this.currentPath = value;
-                    base.ImageKey = value;
+                    currentPath = value;
+                    ImageKey = value;
                 }
             }
         }
 
         public int HistoryCount_Back {
             get {
-                return this.stckHistoryBackward.Count;
+                return stckHistoryBackward.Count;
             }
         }
 
         public int HistoryCount_Forward {
             get {
-                return this.stckHistoryForward.Count;
+                return stckHistoryForward.Count;
             }
         }
 
         public string PathInitial {
             get {
-                if((this.currentPath != null) && (this.currentPath.Length > 3)) {
-                    char ch = this.currentPath[0];
+                if((currentPath != null) && (currentPath.Length > 3)) {
+                    char ch = currentPath[0];
                     if((('A' <= ch) && (ch <= 'Z')) || (('a' <= ch) && (ch <= 'z'))) {
                         return ch.ToString();
                     }
@@ -317,25 +317,25 @@ namespace QTTabBarLib {
         public string TooltipText2 {
             get {
                 bool fAllowSlow = Control.ModifierKeys == Keys.Shift;
-                if(this.fNowSlowTip ^ fAllowSlow) {
-                    this.tooltipText2 = null;
+                if(fNowSlowTip ^ fAllowSlow) {
+                    tooltipText2 = null;
                 }
-                if(this.tooltipText2 == null) {
-                    this.fNowSlowTip = fAllowSlow;
-                    using(IDLWrapper wrapper = new IDLWrapper(this.currentIDL)) {
+                if(tooltipText2 == null) {
+                    fNowSlowTip = fAllowSlow;
+                    using(IDLWrapper wrapper = new IDLWrapper(currentIDL)) {
                         if(wrapper.Available) {
-                            this.tooltipText2 = ShellMethods.GetShellInfoTipText(wrapper.PIDL, fAllowSlow);
+                            tooltipText2 = ShellMethods.GetShellInfoTipText(wrapper.PIDL, fAllowSlow);
                         }
                     }
-                    if(((this.tooltipText2 == null) && !string.IsNullOrEmpty(this.currentPath)) && !this.currentPath.StartsWith(@"\\")) {
-                        this.tooltipText2 = ShellMethods.GetShellInfoTipText(this.currentPath, fAllowSlow);
+                    if(((tooltipText2 == null) && !string.IsNullOrEmpty(currentPath)) && !currentPath.StartsWith(@"\\")) {
+                        tooltipText2 = ShellMethods.GetShellInfoTipText(currentPath, fAllowSlow);
                     }
                 }
-                return this.tooltipText2;
+                return tooltipText2;
             }
             set {
-                this.fNowSlowTip = false;
-                this.tooltipText2 = value;
+                fNowSlowTip = false;
+                tooltipText2 = value;
             }
         }
     }

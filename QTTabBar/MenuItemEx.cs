@@ -25,7 +25,7 @@ namespace QTTabBarLib {
 
         public MenuItemEx(string text)
             : base(text) {
-            base.OwnerDraw = true;
+            OwnerDraw = true;
         }
 
         protected override void OnDrawItem(DrawItemEventArgs e) {
@@ -33,21 +33,21 @@ namespace QTTabBarLib {
             int num = e.Bounds.Height * e.Index;
             int num2 = (e.Bounds.Height - 0x10) / 2;
             e.Graphics.FillRectangle(flag ? SystemBrushes.Highlight : SystemBrushes.Menu, e.Bounds);
-            if(this.img != null) {
-                e.Graphics.DrawImage(this.img, new Rectangle(2, num + num2, 0x10, 0x10), new RectangleF(0f, 0f, 16f, 16f), GraphicsUnit.Pixel);
+            if(img != null) {
+                e.Graphics.DrawImage(img, new Rectangle(2, num + num2, 0x10, 0x10), new RectangleF(0f, 0f, 16f, 16f), GraphicsUnit.Pixel);
             }
-            e.Graphics.DrawString(base.Text, SystemFonts.MenuFont, flag ? SystemBrushes.HighlightText : SystemBrushes.MenuText, new PointF(24f, (4 + num)));
+            e.Graphics.DrawString(Text, SystemFonts.MenuFont, flag ? SystemBrushes.HighlightText : SystemBrushes.MenuText, new PointF(24f, (4 + num)));
         }
 
         protected override void OnMeasureItem(MeasureItemEventArgs e) {
-            SizeF ef = e.Graphics.MeasureString(base.Text, SystemFonts.MenuFont);
+            SizeF ef = e.Graphics.MeasureString(Text, SystemFonts.MenuFont);
             e.ItemHeight = ((int)ef.Height) + 8;
             e.ItemWidth = ((int)ef.Width) + 0x1a;
         }
 
         public Image Image {
             set {
-                this.img = value;
+                img = value;
             }
         }
     }

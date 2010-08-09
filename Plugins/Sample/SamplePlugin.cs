@@ -108,7 +108,7 @@ namespace QuizoPlugins {
                     MessageBox.Show(tab.Address.Path);
                 }
                 else if(menuType == MenuType.Bar) {
-                    this.pluginServer.ExecuteCommand(Commands.OpenTabBarOptionDialog, null);
+                    pluginServer.ExecuteCommand(Commands.OpenTabBarOptionDialog, null);
                 }
             }
         }
@@ -147,7 +147,7 @@ namespace QuizoPlugins {
         public void InitializeItem() {
             // callled every time the interactive item is about to be added to the ToolBar.
 
-            this.fFirstMenuDropDown = true;
+            fFirstMenuDropDown = true;
         }
 
         public Image GetImage(bool fLarge) {
@@ -160,7 +160,7 @@ namespace QuizoPlugins {
             // user clicked the plugin button.
 
             Address[] addresses;
-            if(this.pluginServer.TryGetSelection(out addresses)) {
+            if(pluginServer.TryGetSelection(out addresses)) {
                 int c = addresses.Length;
 
                 string str = c + " items\r\n\r\n";
@@ -170,8 +170,8 @@ namespace QuizoPlugins {
 
                 MessageBox.Show(str);
 
-                this.lstSelectedItems.Clear();
-                this.lstSelectedItems.AddRange(addresses);
+                lstSelectedItems.Clear();
+                lstSelectedItems.AddRange(addresses);
             }
         }
 
@@ -179,7 +179,7 @@ namespace QuizoPlugins {
             get {
                 // text for button label, button tooltip, buttonbar option.
 
-                return this.text;
+                return text;
             }
         }
 
@@ -204,11 +204,11 @@ namespace QuizoPlugins {
             // Called the dropdown menu is about to open.
             // No need to call "menu.SuspendLayout" or "menu.ResumeLayout".
 
-            if(this.fFirstMenuDropDown) {
+            if(fFirstMenuDropDown) {
                 menu.Items.Add(new ToolStripMenuItem("Open folder"));
                 menu.Items.Add(new ToolStripMenuItem("Test selection"));
 
-                this.fFirstMenuDropDown = false;
+                fFirstMenuDropDown = false;
             }
         }
 
@@ -218,15 +218,15 @@ namespace QuizoPlugins {
             if(item.Text == "Open folder") {
                 if(mouseButton == MouseButtons.Left) {
                     string mydocument = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-                    this.pluginServer.CreateTab(new Address(mydocument), -1, false, true);
+                    pluginServer.CreateTab(new Address(mydocument), -1, false, true);
                 }
                 else if(mouseButton == MouseButtons.Right) {
                     SystemSounds.Asterisk.Play();
                 }
             }
             else if(item.Text == "Test selection") {
-                if(this.lstSelectedItems.Count > 0)
-                    this.pluginServer.TrySetSelection(this.lstSelectedItems.ToArray(), false);
+                if(lstSelectedItems.Count > 0)
+                    pluginServer.TrySetSelection(lstSelectedItems.ToArray(), false);
             }
         }
 

@@ -33,50 +33,50 @@ namespace QTTabBarLib {
         public void AddStrip(Bitmap bmp) {
             int width = bmp.Width;
             int num2 = 0;
-            bool flag = this.transparentColor != Color.Empty;
-            if(((width % this.size.Width) != 0) || (bmp.Height != this.size.Height)) {
+            bool flag = transparentColor != Color.Empty;
+            if(((width % size.Width) != 0) || (bmp.Height != size.Height)) {
                 throw new ArgumentException("size invalid.");
             }
-            Rectangle rect = new Rectangle(Point.Empty, this.size);
-            while((width - this.size.Width) > -1) {
+            Rectangle rect = new Rectangle(Point.Empty, size);
+            while((width - size.Width) > -1) {
                 Bitmap image = bmp.Clone(rect, PixelFormat.Format32bppArgb);
                 if(flag) {
-                    image.MakeTransparent(this.transparentColor);
+                    image.MakeTransparent(transparentColor);
                 }
-                if((this.lstImages.Count > num2) && (this.lstImages[num2] != null)) {
-                    using(Graphics graphics = Graphics.FromImage(this.lstImages[num2])) {
+                if((lstImages.Count > num2) && (lstImages[num2] != null)) {
+                    using(Graphics graphics = Graphics.FromImage(lstImages[num2])) {
                         graphics.Clear(Color.Transparent);
                         graphics.DrawImage(image, 0, 0);
                         image.Dispose();
                         goto Label_00E4;
                     }
                 }
-                this.lstImages.Add(image);
+                lstImages.Add(image);
             Label_00E4:
                 num2++;
-                width -= this.size.Width;
-                rect.X += this.size.Width;
+                width -= size.Width;
+                rect.X += size.Width;
             }
         }
 
         public void Dispose() {
-            foreach(Bitmap bitmap in this.lstImages) {
+            foreach(Bitmap bitmap in lstImages) {
                 if(bitmap != null) {
                     bitmap.Dispose();
                 }
             }
-            this.lstImages.Clear();
+            lstImages.Clear();
         }
 
         public Bitmap this[int index] {
             get {
-                return this.lstImages[index];
+                return lstImages[index];
             }
         }
 
         public Color TransparentColor {
             set {
-                this.transparentColor = value;
+                transparentColor = value;
             }
         }
     }

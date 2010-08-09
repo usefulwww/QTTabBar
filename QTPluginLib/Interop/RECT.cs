@@ -27,24 +27,24 @@ namespace QTPlugin.Interop {
         public int right;
         public int bottom;
         public RECT(Rectangle rectangle) {
-            this.left = rectangle.X;
-            this.top = rectangle.Y;
-            this.right = rectangle.Right;
-            this.bottom = rectangle.Bottom;
+            left = rectangle.X;
+            top = rectangle.Y;
+            right = rectangle.Right;
+            bottom = rectangle.Bottom;
         }
 
         public int Width {
             get {
-                return Math.Abs((this.right - this.left));
+                return Math.Abs((right - left));
             }
         }
         public int Height {
             get {
-                return (this.bottom - this.top);
+                return (bottom - top);
             }
         }
         public Rectangle ToRectangle() {
-            return new Rectangle(this.left, this.top, this.Width, this.Height);
+            return new Rectangle(left, top, Width, Height);
         }
     }
 }

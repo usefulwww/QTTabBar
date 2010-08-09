@@ -30,29 +30,29 @@ namespace QTTabBarLib {
         public string WorkingDirectory;
 
         public MenuItemArguments(string path, MenuTarget target, MenuGenre genre) {
-            this.Path = path;
-            this.Genre = genre;
-            this.Target = target;
+            Path = path;
+            Genre = genre;
+            Target = target;
         }
 
         public MenuItemArguments(string path, bool fback, int index, MenuGenre genre) {
-            this.Path = path;
-            this.IsBack = fback;
-            this.Index = index;
-            this.Genre = genre;
+            Path = path;
+            IsBack = fback;
+            Index = index;
+            Genre = genre;
         }
 
         public MenuItemArguments(string path, string arg, string work, int keyShortcut, MenuGenre genre) {
-            this.Path = path;
-            this.Argument = this.OriginalArgument = arg;
-            this.WorkingDirectory = this.OriginalWorkingDirectory = work;
-            this.KeyShortcut = keyShortcut;
-            this.Genre = genre;
+            Path = path;
+            Argument = OriginalArgument = arg;
+            WorkingDirectory = OriginalWorkingDirectory = work;
+            KeyShortcut = keyShortcut;
+            Genre = genre;
         }
 
         public void RestoreOriginalArgs() {
-            this.Argument = this.OriginalArgument;
-            this.WorkingDirectory = this.OriginalWorkingDirectory;
+            Argument = OriginalArgument;
+            WorkingDirectory = OriginalWorkingDirectory;
         }
     }
 }

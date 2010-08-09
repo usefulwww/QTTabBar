@@ -27,34 +27,34 @@ namespace QTTabBarLib {
 
         public ItemRightClickedEventArgs(ToolStripItem clickedItem, bool fKey, Point pnt) {
             this.clickedItem = clickedItem;
-            this.isKey = fKey;
+            isKey = fKey;
             this.pnt = pnt;
         }
 
         public ToolStripItem ClickedItem {
             get {
-                return this.clickedItem;
+                return clickedItem;
             }
         }
 
         public int HRESULT {
             get {
-                return this.hresult;
+                return hresult;
             }
             set {
-                this.hresult = value;
+                hresult = value;
             }
         }
 
         public bool IsKey {
             get {
-                return this.isKey;
+                return isKey;
             }
         }
 
         public Point Point {
             get {
-                return this.pnt;
+                return pnt;
             }
         }
     }

@@ -21,19 +21,19 @@ namespace QTTabBarLib {
         private string reservedKey;
 
         public ImageReservationKey(string key, int iReservedType) {
-            this.reservedKey = key;
+            reservedKey = key;
             this.iReservedType = iReservedType;
         }
 
         public string ImageKey {
             get {
-                return this.reservedKey;
+                return reservedKey;
             }
         }
 
         public int ImageType {
             get {
-                return this.iReservedType;
+                return iReservedType;
             }
         }
     }

@@ -43,23 +43,23 @@ namespace QuizoPlugins {
             this.pluginServer = pluginServer;
             this.shellBrowser = shellBrowser;
 
-            if(!pluginServer.TryGetLocalizedStrings(this, 3, out this.ResStrs)) {
+            if(!pluginServer.TryGetLocalizedStrings(this, 3, out ResStrs)) {
                 if(CultureInfo.CurrentCulture.Parent.Name == "ja")
-                    this.ResStrs = Resource.strQTFolderButton_ja.Split(new char[] { ';' });
+                    ResStrs = Resource.strQTFolderButton_ja.Split(new char[] { ';' });
                 else
-                    this.ResStrs = Resource.strQTFolderButton.Split(new char[] { ';' });
+                    ResStrs = Resource.strQTFolderButton.Split(new char[] { ';' });
             }
         }
 
         public bool QueryShortcutKeys(out string[] actions) {
-            actions = new string[] { this.ResStrs[0], this.ResStrs[2] };
+            actions = new string[] { ResStrs[0], ResStrs[2] };
             return true;
         }
 
         public void Close(EndCode code) {
             if(code != EndCode.Hidden) {
-                this.pluginServer = null;
-                this.shellBrowser = null;
+                pluginServer = null;
+                shellBrowser = null;
             }
         }
 
@@ -77,9 +77,9 @@ namespace QuizoPlugins {
 
         public void OnShortcutKeyPressed(int index) {
             if(index == 0)
-                this.ShowHideFolderTree();
+                ShowHideFolderTree();
             else
-                this.FocusOnFolderTree();
+                FocusOnFolderTree();
         }
 
         #endregion
@@ -95,7 +95,7 @@ namespace QuizoPlugins {
         }
 
         public void OnButtonClick() {
-            this.ShowHideFolderTree();
+            ShowHideFolderTree();
         }
 
         public bool ShowTextLabel {
@@ -106,7 +106,7 @@ namespace QuizoPlugins {
 
         public string Text {
             get {
-                return this.ResStrs[1];
+                return ResStrs[1];
             }
         }
 
@@ -117,18 +117,18 @@ namespace QuizoPlugins {
             const uint FCW_TREE = 0x0003;
 
             IntPtr hwndTree;
-            bool fTreeVisible = 0 == this.shellBrowser.GetControlWindow(FCW_TREE, out hwndTree);
+            bool fTreeVisible = 0 == shellBrowser.GetControlWindow(FCW_TREE, out hwndTree);
 
-            this.pluginServer.ExecuteCommand(Commands.ShowFolderTree, !fTreeVisible);
+            pluginServer.ExecuteCommand(Commands.ShowFolderTree, !fTreeVisible);
         }
 
         private void FocusOnFolderTree() {
             const uint FCW_TREE = 0x0003;
 
             IntPtr hwndTree;
-            if(0 == this.shellBrowser.GetControlWindow(FCW_TREE, out hwndTree)) {
+            if(0 == shellBrowser.GetControlWindow(FCW_TREE, out hwndTree)) {
                 if(GetFocus() == hwndTree) {
-                    this.pluginServer.ExecuteCommand(Commands.FocusFileList, null);
+                    pluginServer.ExecuteCommand(Commands.FocusFileList, null);
                 }
                 else {
                     SetFocus(hwndTree);

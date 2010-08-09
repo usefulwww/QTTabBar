@@ -34,12 +34,12 @@ namespace QuizoPlugins {
         }
 
         public void Close(EndCode code) {
-            if(this.timer != null) {
-                this.timer.Dispose();
+            if(timer != null) {
+                timer.Dispose();
             }
 
-            if(this.labelTime != null) {
-                this.labelTime.Dispose();
+            if(labelTime != null) {
+                labelTime.Dispose();
             }
         }
 
@@ -70,24 +70,24 @@ namespace QuizoPlugins {
         #region IBarCustomItem Members
 
         public ToolStripItem CreateItem(bool fLarge, DisplayStyle displayStyle) {
-            if(this.labelTime == null) {
-                this.labelTime = new ToolStripLabel();
-                this.labelTime.DisplayStyle = ToolStripItemDisplayStyle.Text;
-                this.labelTime.AutoSize = true;
-                this.labelTime.Font = new Font("Courier New", this.labelTime.Font.SizeInPoints);
-                this.labelTime.Alignment = ToolStripItemAlignment.Right;
-                this.labelTime.Padding = new Padding(0, 0, 24, 0);
+            if(labelTime == null) {
+                labelTime = new ToolStripLabel();
+                labelTime.DisplayStyle = ToolStripItemDisplayStyle.Text;
+                labelTime.AutoSize = true;
+                labelTime.Font = new Font("Courier New", labelTime.Font.SizeInPoints);
+                labelTime.Alignment = ToolStripItemAlignment.Right;
+                labelTime.Padding = new Padding(0, 0, 24, 0);
             }
 
-            if(this.timer == null) {
-                this.timer = new Timer();
-                this.timer.Interval = 1000;
-                this.timer.Tick += timer_Tick;
+            if(timer == null) {
+                timer = new Timer();
+                timer.Interval = 1000;
+                timer.Tick += timer_Tick;
             }
 
-            this.timer.Start();
+            timer.Start();
 
-            return this.labelTime;
+            return labelTime;
         }
 
         #endregion
@@ -98,12 +98,12 @@ namespace QuizoPlugins {
 
             int h = dt.Hour;
             int m = dt.Minute;
-            string sep = this.fOn ? " " : ":";
+            string sep = fOn ? " " : ":";
 
-            this.labelTime.Text = h + sep + (m < 10 ? "0" : String.Empty) + m;
-            this.labelTime.ToolTipText = dt.ToLongDateString();
+            labelTime.Text = h + sep + (m < 10 ? "0" : String.Empty) + m;
+            labelTime.ToolTipText = dt.ToLongDateString();
 
-            this.fOn = !this.fOn;
+            fOn = !fOn;
         }
     }
 }

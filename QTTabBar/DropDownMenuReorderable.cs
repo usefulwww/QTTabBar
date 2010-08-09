@@ -72,58 +72,58 @@ namespace QTTabBarLib {
 
         public DropDownMenuReorderable(IContainer container)
             : base(container) {
-            this.iSuppressStartIndex = -1;
-            this.MenuItemGroups = new Dictionary<string, List<ToolStripItem>>();
-            this.lstProhibitedKeys = new List<string>();
-            this.fReorderEnabled = true;
-            this.fEnableScroll = true;
+            iSuppressStartIndex = -1;
+            MenuItemGroups = new Dictionary<string, List<ToolStripItem>>();
+            lstProhibitedKeys = new List<string>();
+            fReorderEnabled = true;
+            fEnableScroll = true;
         }
 
         public DropDownMenuReorderable(IContainer container, bool respondModKeys, bool enableShiftKey)
             : base(container, respondModKeys, enableShiftKey) {
-            this.iSuppressStartIndex = -1;
-            this.MenuItemGroups = new Dictionary<string, List<ToolStripItem>>();
-            this.lstProhibitedKeys = new List<string>();
-            this.fReorderEnabled = true;
-            this.fEnableScroll = true;
+            iSuppressStartIndex = -1;
+            MenuItemGroups = new Dictionary<string, List<ToolStripItem>>();
+            lstProhibitedKeys = new List<string>();
+            fReorderEnabled = true;
+            fEnableScroll = true;
         }
 
         public DropDownMenuReorderable(IContainer container, bool respondModKeys, bool enableShiftKey, bool enableReorder)
             : base(container, respondModKeys, enableShiftKey) {
-            this.iSuppressStartIndex = -1;
-            this.MenuItemGroups = new Dictionary<string, List<ToolStripItem>>();
-            this.lstProhibitedKeys = new List<string>();
-            this.fReorderEnabled = true;
-            this.fEnableScroll = true;
-            this.fReorderEnabled = enableReorder;
+            iSuppressStartIndex = -1;
+            MenuItemGroups = new Dictionary<string, List<ToolStripItem>>();
+            lstProhibitedKeys = new List<string>();
+            fReorderEnabled = true;
+            fEnableScroll = true;
+            fReorderEnabled = enableReorder;
         }
 
         public void AddItem(ToolStripItem item, string key) {
-            this.Items.Add(item);
-            if(!this.MenuItemGroups.ContainsKey(key)) {
-                this.MenuItemGroups[key] = new List<ToolStripItem>();
+            Items.Add(item);
+            if(!MenuItemGroups.ContainsKey(key)) {
+                MenuItemGroups[key] = new List<ToolStripItem>();
             }
-            this.MenuItemGroups[key].Add(item);
+            MenuItemGroups[key].Add(item);
         }
 
         public void AddItemsRange(ToolStripItem[] items, string key) {
-            this.Items.AddRange(items);
-            if(!this.MenuItemGroups.ContainsKey(key)) {
-                this.MenuItemGroups[key] = new List<ToolStripItem>();
+            Items.AddRange(items);
+            if(!MenuItemGroups.ContainsKey(key)) {
+                MenuItemGroups[key] = new List<ToolStripItem>();
             }
-            this.MenuItemGroups[key].AddRange(items);
+            MenuItemGroups[key].AddRange(items);
         }
 
         public void AddItemsRangeVirtual(List<QMenuItem> lstItems) {
             if(lstItems.Count < 0x80) {
-                this.fVirtualMode = false;
-                this.Items.AddRange(lstItems.ToArray());
+                fVirtualMode = false;
+                Items.AddRange(lstItems.ToArray());
             }
             else {
-                this.fVirtualMode = true;
-                if(this.stcVirtualItems_Top == null) {
-                    this.stcVirtualItems_Top = new Stack<ToolStripItem>();
-                    this.stcVirtualItems_Bottom = new Stack<ToolStripItem>();
+                fVirtualMode = true;
+                if(stcVirtualItems_Top == null) {
+                    stcVirtualItems_Top = new Stack<ToolStripItem>();
+                    stcVirtualItems_Bottom = new Stack<ToolStripItem>();
                 }
                 ToolStripMenuItem[] toolStripItems = new ToolStripMenuItem[0x40];
                 for(int i = lstItems.Count - 1; i > -1; i--) {
@@ -131,21 +131,21 @@ namespace QTTabBarLib {
                         toolStripItems[i] = lstItems[i];
                     }
                     else {
-                        this.stcVirtualItems_Bottom.Push(lstItems[i]);
+                        stcVirtualItems_Bottom.Push(lstItems[i]);
                     }
                 }
-                this.Items.AddRange(toolStripItems);
+                Items.AddRange(toolStripItems);
             }
         }
 
         protected void CancelClosingAncestors(bool fCancel, bool fClose) {
-            this.fCancelClosingAncestors = fCancel;
+            fCancelClosingAncestors = fCancel;
             DropDownMenuReorderable owner = null;
-            if((base.OwnerItem != null) && (base.OwnerItem is ToolStripDropDownItem)) {
-                owner = base.OwnerItem.Owner as DropDownMenuReorderable;
+            if((OwnerItem != null) && (OwnerItem is ToolStripDropDownItem)) {
+                owner = OwnerItem.Owner as DropDownMenuReorderable;
             }
             if(!fCancel && fClose) {
-                base.Close(ToolStripDropDownCloseReason.ItemClicked);
+                Close(ToolStripDropDownCloseReason.ItemClicked);
             }
             if(owner != null) {
                 owner.CancelClosingAncestors(fCancel, fClose);
@@ -158,7 +158,7 @@ namespace QTTabBarLib {
         }
 
         private void CloseChildDropDown() {
-            foreach(ToolStripItem item in this.Items) {
+            foreach(ToolStripItem item in Items) {
                 ToolStripMenuItem item2 = item as ToolStripMenuItem;
                 if(((item2 != null) && item2.HasDropDownItems) && item2.DropDown.Visible) {
                     item2.DropDown.Close(ToolStripDropDownCloseReason.AppFocusChange);
@@ -168,7 +168,7 @@ namespace QTTabBarLib {
         }
 
         private bool ContainsInIdenticalMenuGroup(ToolStripItem dragging, ToolStripItem covered) {
-            if(!this.fReorderEnabled) {
+            if(!fReorderEnabled) {
                 return false;
             }
             if(dragging is ToolStripSeparator) {
@@ -176,31 +176,31 @@ namespace QTTabBarLib {
             }
             string item = string.Empty;
             string str2 = string.Empty;
-            foreach(string str3 in this.MenuItemGroups.Keys) {
-                if(this.MenuItemGroups[str3].Contains(dragging)) {
+            foreach(string str3 in MenuItemGroups.Keys) {
+                if(MenuItemGroups[str3].Contains(dragging)) {
                     item = str3;
                 }
-                if(this.MenuItemGroups[str3].Contains(covered)) {
+                if(MenuItemGroups[str3].Contains(covered)) {
                     str2 = str3;
                 }
             }
-            return (((item.Length != 0) && (str2.Length != 0)) && ((item == str2) && !this.lstProhibitedKeys.Contains(item)));
+            return (((item.Length != 0) && (str2.Length != 0)) && ((item == str2) && !lstProhibitedKeys.Contains(item)));
         }
 
         protected override void Dispose(bool disposing) {
-            this.DisposeVirtual(true);
+            DisposeVirtual(true);
             base.Dispose(disposing);
         }
 
         private void DisposeVirtual(bool disposing) {
-            if(this.stcVirtualItems_Top != null) {
-                while(this.stcVirtualItems_Top.Count > 0) {
-                    this.stcVirtualItems_Top.Pop().Dispose();
+            if(stcVirtualItems_Top != null) {
+                while(stcVirtualItems_Top.Count > 0) {
+                    stcVirtualItems_Top.Pop().Dispose();
                 }
             }
-            if(this.stcVirtualItems_Bottom != null) {
-                while(this.stcVirtualItems_Bottom.Count > 0) {
-                    this.stcVirtualItems_Bottom.Pop().Dispose();
+            if(stcVirtualItems_Bottom != null) {
+                while(stcVirtualItems_Bottom.Count > 0) {
+                    stcVirtualItems_Bottom.Pop().Dispose();
                 }
             }
         }
@@ -213,8 +213,8 @@ namespace QTTabBarLib {
                 if(piScrollButtonDn == null) {
                     piScrollButtonDn = typeof(ToolStripDropDownMenu).GetProperty("DownScrollButton", BindingFlags.ExactBinding | BindingFlags.NonPublic | BindingFlags.Instance);
                 }
-                this.upButton = (ToolStripControlHost)piScrollButtonUp.GetValue(this, null);
-                this.downButton = (ToolStripControlHost)piScrollButtonDn.GetValue(this, null);
+                upButton = (ToolStripControlHost)piScrollButtonUp.GetValue(this, null);
+                downButton = (ToolStripControlHost)piScrollButtonDn.GetValue(this, null);
             }
             catch {
             }
@@ -222,57 +222,57 @@ namespace QTTabBarLib {
 
         private bool HandleArrowKeyVirtual(bool fUp) {
             int num = -1;
-            for(int i = 0; i < this.Items.Count; i++) {
-                if(this.Items[i].Selected) {
+            for(int i = 0; i < Items.Count; i++) {
+                if(Items[i].Selected) {
                     num = i;
                 }
             }
             if(num != -1) {
-                bool flag = (fUp && (this.stcVirtualItems_Top.Count == 0)) || (!fUp && (this.stcVirtualItems_Bottom.Count == 0));
-                bool flag2 = (fUp && (num == 0)) || (!fUp && (num == (this.Items.Count - 1)));
-                bool flag3 = ((fUp && (-1 < num)) && (num < 2)) || ((!fUp && (-1 < num)) && (num > (this.Items.Count - 3)));
+                bool flag = (fUp && (stcVirtualItems_Top.Count == 0)) || (!fUp && (stcVirtualItems_Bottom.Count == 0));
+                bool flag2 = (fUp && (num == 0)) || (!fUp && (num == (Items.Count - 1)));
+                bool flag3 = ((fUp && (-1 < num)) && (num < 2)) || ((!fUp && (-1 < num)) && (num > (Items.Count - 3)));
                 if(!fUp) {
                     ToolStripItem nextItem = null;
                     if(flag2) {
                         if(flag) {
-                            this.ScrollEndVirtual(!fUp);
-                            this.Select(true, !fUp);
+                            ScrollEndVirtual(!fUp);
+                            Select(true, !fUp);
                             return true;
                         }
-                        this.fBlockItemAddRemove = true;
-                        base.SuspendLayout();
-                        ToolStripItem item2 = this.Items[0];
-                        this.Items.RemoveAt(0);
-                        this.stcVirtualItems_Top.Push(item2);
-                        nextItem = this.stcVirtualItems_Bottom.Pop();
-                        this.Items.Add(nextItem);
-                        base.ResumeLayout();
-                        this.fBlockItemAddRemove = false;
+                        fBlockItemAddRemove = true;
+                        SuspendLayout();
+                        ToolStripItem item2 = Items[0];
+                        Items.RemoveAt(0);
+                        stcVirtualItems_Top.Push(item2);
+                        nextItem = stcVirtualItems_Bottom.Pop();
+                        Items.Add(nextItem);
+                        ResumeLayout();
+                        fBlockItemAddRemove = false;
                     }
                     if(nextItem == null) {
-                        nextItem = this.GetNextItem(this.Items[num], ArrowDirection.Down);
+                        nextItem = GetNextItem(Items[num], ArrowDirection.Down);
                     }
-                    this.ChangeSelection(nextItem);
+                    ChangeSelection(nextItem);
                     return true;
                 }
                 if(flag3) {
                     if(flag) {
                         if(flag2) {
-                            this.ScrollEndVirtual(!fUp);
-                            this.Select(true, !fUp);
+                            ScrollEndVirtual(!fUp);
+                            Select(true, !fUp);
                             return true;
                         }
                     }
                     else {
-                        this.fBlockItemAddRemove = true;
-                        base.SuspendLayout();
-                        ToolStripItem item = this.Items[this.Items.Count - 1];
-                        this.Items.RemoveAt(this.Items.Count - 1);
-                        this.stcVirtualItems_Bottom.Push(item);
-                        ToolStripItem item4 = this.stcVirtualItems_Top.Pop();
-                        this.Items.Insert(0, item4);
-                        base.ResumeLayout();
-                        this.fBlockItemAddRemove = false;
+                        fBlockItemAddRemove = true;
+                        SuspendLayout();
+                        ToolStripItem item = Items[Items.Count - 1];
+                        Items.RemoveAt(Items.Count - 1);
+                        stcVirtualItems_Bottom.Push(item);
+                        ToolStripItem item4 = stcVirtualItems_Top.Pop();
+                        Items.Insert(0, item4);
+                        ResumeLayout();
+                        fBlockItemAddRemove = false;
                     }
                 }
             }
@@ -283,59 +283,59 @@ namespace QTTabBarLib {
             bool fUp = keys == Keys.Prior;
             int num = -1;
             int num2 = -1;
-            Rectangle displayRectangle = this.DisplayRectangle;
-            for(int i = 0; i < this.Items.Count; i++) {
+            Rectangle displayRectangle = DisplayRectangle;
+            for(int i = 0; i < Items.Count; i++) {
                 if(num == -1) {
-                    if(this.Items[i].Bounds.Y >= displayRectangle.Y) {
+                    if(Items[i].Bounds.Y >= displayRectangle.Y) {
                         num = i;
                     }
                 }
-                else if(displayRectangle.Bottom < this.Items[i].Bounds.Bottom) {
+                else if(displayRectangle.Bottom < Items[i].Bounds.Bottom) {
                     num2 = i - 1;
                     break;
                 }
             }
             if(num2 == -1) {
-                num2 = this.Items.Count - 1;
+                num2 = Items.Count - 1;
             }
-            if((fUp && (num > -1)) && !this.Items[num].Selected) {
-                this.Items[num].Select();
+            if((fUp && (num > -1)) && !Items[num].Selected) {
+                Items[num].Select();
             }
-            else if((!fUp && (num2 > -1)) && !this.Items[num2].Selected) {
-                this.Items[num2].Select();
+            else if((!fUp && (num2 > -1)) && !Items[num2].Selected) {
+                Items[num2].Select();
             }
             else {
                 if(num != -1) {
                     int count = (num2 - num) + 1;
                     if(count > 0) {
                         int num5 = fUp ? (num - count) : (num2 + count);
-                        if((-1 < num5) && (num5 < this.Items.Count)) {
-                            this.ChangeSelection(this.Items[num5]);
+                        if((-1 < num5) && (num5 < Items.Count)) {
+                            ChangeSelection(Items[num5]);
                             return;
                         }
-                        this.ScrollMenu(fUp, count);
+                        ScrollMenu(fUp, count);
                     }
                 }
-                for(int j = 0; j < this.Items.Count; j++) {
-                    if(fUp && (this.Items[j].Bounds.Y >= displayRectangle.Y)) {
-                        this.Items[j].Select();
+                for(int j = 0; j < Items.Count; j++) {
+                    if(fUp && (Items[j].Bounds.Y >= displayRectangle.Y)) {
+                        Items[j].Select();
                         return;
                     }
-                    if(!fUp && (displayRectangle.Bottom < this.Items[j].Bounds.Bottom)) {
+                    if(!fUp && (displayRectangle.Bottom < Items[j].Bounds.Bottom)) {
                         if(j > 0) {
-                            this.Items[j - 1].Select();
+                            Items[j - 1].Select();
                         }
                         return;
                     }
                 }
                 if(!fUp) {
-                    this.Items[this.Items.Count - 1].Select();
+                    Items[Items.Count - 1].Select();
                 }
             }
         }
 
         private void HideToolTip() {
-            if(base.ShowItemToolTips) {
+            if(ShowItemToolTips) {
                 BindingFlags bindingAttr = BindingFlags.ExactBinding | BindingFlags.NonPublic | BindingFlags.Instance;
                 try {
                     typeof(ToolStrip).GetMethod("UpdateToolTip", bindingAttr).Invoke(this, new object[1]);
@@ -350,11 +350,11 @@ namespace QTTabBarLib {
         }
 
         public void InsertItem(int index, ToolStripItem item, string key) {
-            this.Items.Insert(index, item);
-            if(!this.MenuItemGroups.ContainsKey(key)) {
-                this.MenuItemGroups[key] = new List<ToolStripItem>();
+            Items.Insert(index, item);
+            if(!MenuItemGroups.ContainsKey(key)) {
+                MenuItemGroups[key] = new List<ToolStripItem>();
             }
-            this.MenuItemGroups[key].Add(item);
+            MenuItemGroups[key].Add(item);
         }
 
         private static bool IsPseudoMnemonic(char charCode, string text) {
@@ -368,50 +368,50 @@ namespace QTTabBarLib {
         }
 
         public void ItemsClear() {
-            this.MenuItemGroups.Clear();
-            this.Items.Clear();
+            MenuItemGroups.Clear();
+            Items.Clear();
         }
 
         public void ItemsClearVirtual() {
-            this.Items.Clear();
-            this.DisposeVirtual(false);
+            Items.Clear();
+            DisposeVirtual(false);
         }
 
         protected override void OnClosing(ToolStripDropDownClosingEventArgs e) {
-            this.UpdateToolTipByKey(null);
-            this.draggingItem = null;
-            this.fSuppressMouseMove_Scroll = false;
-            this.fBlockItemAddRemove = false;
-            this.fReordered = false;
-            this.tsmiPreviousEdgeClicked = null;
-            if(this.fCancelClosingAncestors) {
+            UpdateToolTipByKey(null);
+            draggingItem = null;
+            fSuppressMouseMove_Scroll = false;
+            fBlockItemAddRemove = false;
+            fReordered = false;
+            tsmiPreviousEdgeClicked = null;
+            if(fCancelClosingAncestors) {
                 e.Cancel = true;
             }
             base.OnClosing(e);
         }
 
         protected override void OnItemAdded(ToolStripItemEventArgs e) {
-            if(!this.fBlockItemAddRemove) {
+            if(!fBlockItemAddRemove) {
                 base.OnItemAdded(e);
             }
         }
 
         protected override void OnItemClicked(ToolStripItemClickedEventArgs e) {
-            if(this.fSuppressMouseMove) {
-                this.fSuppressMouseMove = false;
-                if(this.Items.IndexOf(e.ClickedItem) != this.iSuppressStartIndex) {
-                    if(this.MouseUpBeforeDrop != null) {
-                        this.MouseUpBeforeDrop(this, EventArgs.Empty);
+            if(fSuppressMouseMove) {
+                fSuppressMouseMove = false;
+                if(Items.IndexOf(e.ClickedItem) != iSuppressStartIndex) {
+                    if(MouseUpBeforeDrop != null) {
+                        MouseUpBeforeDrop(this, EventArgs.Empty);
                     }
                     return;
                 }
-                this.iSuppressStartIndex = -1;
+                iSuppressStartIndex = -1;
             }
-            if(this.fCheckOnEdgeClick) {
+            if(fCheckOnEdgeClick) {
                 ToolStripMenuItem clickedItem = e.ClickedItem as ToolStripMenuItem;
                 if(clickedItem != null) {
-                    Rectangle rectangle = base.RectangleToScreen(e.ClickedItem.Bounds);
-                    if(this.RightToLeft == RightToLeft.Yes) {
+                    Rectangle rectangle = RectangleToScreen(e.ClickedItem.Bounds);
+                    if(RightToLeft == RightToLeft.Yes) {
                         int num = fImageMarginModified ? 0x1f : 0x19;
                         rectangle.X += rectangle.Width - num;
                         rectangle.Width = num;
@@ -421,16 +421,16 @@ namespace QTTabBarLib {
                     }
                     if(rectangle.Contains(MousePosition)) {
                         clickedItem.Checked = !clickedItem.Checked;
-                        if((ModifierKeys == Keys.Shift) && (this.tsmiPreviousEdgeClicked != null)) {
-                            int index = this.Items.IndexOf(clickedItem);
-                            int num3 = this.Items.IndexOf(this.tsmiPreviousEdgeClicked);
+                        if((ModifierKeys == Keys.Shift) && (tsmiPreviousEdgeClicked != null)) {
+                            int index = Items.IndexOf(clickedItem);
+                            int num3 = Items.IndexOf(tsmiPreviousEdgeClicked);
                             if(((index != num3) && (index != -1)) && (num3 != -1)) {
                                 int num4 = Math.Min(index, num3);
                                 int num5 = Math.Max(index, num3);
-                                if(num5 < this.Items.Count) {
+                                if(num5 < Items.Count) {
                                     bool flag = clickedItem.Checked;
                                     for(int i = num4; i <= num5; i++) {
-                                        ToolStripMenuItem item2 = this.Items[i] as ToolStripMenuItem;
+                                        ToolStripMenuItem item2 = Items[i] as ToolStripMenuItem;
                                         if(item2 != null) {
                                             item2.Checked = flag;
                                         }
@@ -438,7 +438,7 @@ namespace QTTabBarLib {
                                 }
                             }
                         }
-                        this.tsmiPreviousEdgeClicked = clickedItem;
+                        tsmiPreviousEdgeClicked = clickedItem;
                         return;
                     }
                 }
@@ -449,39 +449,39 @@ namespace QTTabBarLib {
         }
 
         protected virtual void OnItemMiddleClicked(ItemRightClickedEventArgs e) {
-            if(this.ItemMiddleClicked != null) {
-                this.ItemMiddleClicked(this, e);
+            if(ItemMiddleClicked != null) {
+                ItemMiddleClicked(this, e);
                 if(e.HRESULT != 0xffff) {
-                    base.Close(ToolStripDropDownCloseReason.ItemClicked);
+                    Close(ToolStripDropDownCloseReason.ItemClicked);
                 }
             }
         }
 
         protected override void OnItemRemoved(ToolStripItemEventArgs e) {
-            if(!this.fBlockItemAddRemove) {
+            if(!fBlockItemAddRemove) {
                 base.OnItemRemoved(e);
             }
         }
 
         protected override void OnKeyUp(KeyEventArgs e) {
-            if((e.KeyCode == Keys.Apps) && (this.ItemRightClicked != null)) {
-                foreach(ToolStripItem item in this.Items) {
+            if((e.KeyCode == Keys.Apps) && (ItemRightClicked != null)) {
+                foreach(ToolStripItem item in Items) {
                     if(item.Selected) {
                         if((item is ToolStripMenuItem) && ((ToolStripMenuItem)item).HasDropDownItems) {
                             ((ToolStripMenuItem)item).DropDown.Close(ToolStripDropDownCloseReason.AppFocusChange);
                         }
-                        this.CancelClosingAncestors(true, false);
-                        ItemRightClickedEventArgs args = new ItemRightClickedEventArgs(item, true, base.PointToScreen(new Point(item.Bounds.X, item.Bounds.Y + item.Height)));
-                        this.ItemRightClicked(this, args);
-                        this.CancelClosingAncestors(false, (args.HRESULT != 0xffff) && (args.HRESULT != 0xfffd));
+                        CancelClosingAncestors(true, false);
+                        ItemRightClickedEventArgs args = new ItemRightClickedEventArgs(item, true, PointToScreen(new Point(item.Bounds.X, item.Bounds.Y + item.Height)));
+                        ItemRightClicked(this, args);
+                        CancelClosingAncestors(false, (args.HRESULT != 0xffff) && (args.HRESULT != 0xfffd));
                         break;
                     }
                 }
             }
-            else if((e.KeyCode == Keys.Space) && this.fSpaceKeyExecute) {
+            else if((e.KeyCode == Keys.Space) && fSpaceKeyExecute) {
                 foreach(ToolStripItem item2 in base.Items) {
                     if(item2.Selected) {
-                        this.OnItemClicked(new ToolStripItemClickedEventArgs(item2));
+                        OnItemClicked(new ToolStripItemClickedEventArgs(item2));
                         return;
                     }
                 }
@@ -491,14 +491,14 @@ namespace QTTabBarLib {
 
         protected override void OnLayout(LayoutEventArgs e) {
             base.OnLayout(e);
-            if(this.fEnableScroll) {
+            if(fEnableScroll) {
                 try {
                     if(piScroll == null) {
                         piScroll = typeof(ToolStripDropDownMenu).GetProperty("RequiresScrollButtons", BindingFlags.ExactBinding | BindingFlags.NonPublic | BindingFlags.Instance);
                     }
-                    this.fNowScrollButtonsRequired = (bool)piScroll.GetValue(this, null);
-                    if(this.fNowScrollButtonsRequired && (this.upButton == null)) {
-                        this.GetScrollButtons();
+                    fNowScrollButtonsRequired = (bool)piScroll.GetValue(this, null);
+                    if(fNowScrollButtonsRequired && (upButton == null)) {
+                        GetScrollButtons();
                     }
                 }
                 catch {
@@ -507,37 +507,37 @@ namespace QTTabBarLib {
         }
 
         protected override void OnMouseDown(MouseEventArgs e) {
-            if(this.fReorderEnabled) {
-                this.mouseButtons = e.Button;
-                this.draggingItem = base.GetItemAt(e.Location);
-                if((this.draggingItem != null) && string.Equals(this.draggingItem.GetType().ToString(), "System.Windows.Forms.ToolStripScrollButton")) {
-                    this.draggingItem = null;
+            if(fReorderEnabled) {
+                mouseButtons = e.Button;
+                draggingItem = GetItemAt(e.Location);
+                if((draggingItem != null) && string.Equals(draggingItem.GetType().ToString(), "System.Windows.Forms.ToolStripScrollButton")) {
+                    draggingItem = null;
                 }
             }
             base.OnMouseDown(e);
         }
 
         protected override void OnMouseMove(MouseEventArgs e) {
-            if(((e.Button == this.mouseButtons) && (this.mouseButtons == MouseButtons.Left)) && (this.draggingItem != null)) {
-                ToolStripItem itemAt = base.GetItemAt(e.Location);
-                if((itemAt != null) && (itemAt != this.draggingItem)) {
-                    if(this.ContainsInIdenticalMenuGroup(this.draggingItem, itemAt)) {
-                        int index = this.Items.IndexOf(itemAt);
+            if(((e.Button == mouseButtons) && (mouseButtons == MouseButtons.Left)) && (draggingItem != null)) {
+                ToolStripItem itemAt = GetItemAt(e.Location);
+                if((itemAt != null) && (itemAt != draggingItem)) {
+                    if(ContainsInIdenticalMenuGroup(draggingItem, itemAt)) {
+                        int index = Items.IndexOf(itemAt);
                         if(index != -1) {
-                            if((this.draggingItem is ToolStripDropDownItem) && (((ToolStripDropDownItem)this.draggingItem).DropDownItems.Count > 0)) {
-                                ((ToolStripDropDownItem)this.draggingItem).DropDown.Hide();
+                            if((draggingItem is ToolStripDropDownItem) && (((ToolStripDropDownItem)draggingItem).DropDownItems.Count > 0)) {
+                                ((ToolStripDropDownItem)draggingItem).DropDown.Hide();
                             }
-                            this.fBlockItemAddRemove = true;
-                            base.SuspendLayout();
-                            this.Items.Remove(this.draggingItem);
-                            this.Items.Insert(index, this.draggingItem);
-                            base.ResumeLayout();
-                            this.fBlockItemAddRemove = false;
-                            this.fReordered = true;
+                            fBlockItemAddRemove = true;
+                            SuspendLayout();
+                            Items.Remove(draggingItem);
+                            Items.Insert(index, draggingItem);
+                            ResumeLayout();
+                            fBlockItemAddRemove = false;
+                            fReordered = true;
                         }
                     }
                     else {
-                        this.fReordered = true;
+                        fReordered = true;
                     }
                 }
             }
@@ -545,43 +545,43 @@ namespace QTTabBarLib {
         }
 
         protected override void OnMouseUp(MouseEventArgs e) {
-            if((this.fReordered && (this.ReorderFinished != null)) && (this.draggingItem != null)) {
-                if(this.fReorderEnabled) {
-                    this.ReorderFinished(this, new ToolStripItemClickedEventArgs(this.draggingItem));
+            if((fReordered && (ReorderFinished != null)) && (draggingItem != null)) {
+                if(fReorderEnabled) {
+                    ReorderFinished(this, new ToolStripItemClickedEventArgs(draggingItem));
                 }
-                this.draggingItem = null;
+                draggingItem = null;
             }
-            ToolStripItem itemAt = base.GetItemAt(e.Location);
-            if((!this.fReordered && (itemAt != null)) && !(itemAt is ToolStripSeparator)) {
+            ToolStripItem itemAt = GetItemAt(e.Location);
+            if((!fReordered && (itemAt != null)) && !(itemAt is ToolStripSeparator)) {
                 if(e.Button == MouseButtons.Right) {
-                    if(this.ItemRightClicked != null) {
+                    if(ItemRightClicked != null) {
                         itemAt.Select();
                         if((itemAt is ToolStripMenuItem) && ((ToolStripMenuItem)itemAt).HasDropDownItems) {
                             ((ToolStripMenuItem)itemAt).DropDown.Close(ToolStripDropDownCloseReason.AppFocusChange);
                         }
-                        this.CancelClosingAncestors(true, false);
+                        CancelClosingAncestors(true, false);
                         ItemRightClickedEventArgs args = new ItemRightClickedEventArgs(itemAt, false, e.Location);
-                        this.ItemRightClicked(this, args);
-                        this.CancelClosingAncestors(false, (args.HRESULT != 0xffff) && (args.HRESULT != 0xfffd));
+                        ItemRightClicked(this, args);
+                        CancelClosingAncestors(false, (args.HRESULT != 0xffff) && (args.HRESULT != 0xfffd));
                     }
                 }
                 else {
                     base.OnMouseUp(e);
                     if(e.Button == MouseButtons.Middle) {
-                        this.OnItemMiddleClicked(new ItemRightClickedEventArgs(itemAt, false, e.Location));
+                        OnItemMiddleClicked(new ItemRightClickedEventArgs(itemAt, false, e.Location));
                     }
                 }
             }
             else {
-                this.fReordered = false;
+                fReordered = false;
             }
         }
 
         protected override void OnMouseWheel(MouseEventArgs e) {
-            if(this.fEnableScroll && this.fNowScrollButtonsRequired) {
+            if(fEnableScroll && fNowScrollButtonsRequired) {
                 Point mousePosition = MousePosition;
-                if(base.Bounds.Contains(mousePosition)) {
-                    this.ScrollMenu(e.Delta > 0, 3);
+                if(Bounds.Contains(mousePosition)) {
+                    ScrollMenu(e.Delta > 0, 3);
                 }
                 else {
                     Control control = FromHandle(PInvoke.WindowFromPoint(mousePosition));
@@ -597,7 +597,7 @@ namespace QTTabBarLib {
         }
 
         protected override void OnOpening(CancelEventArgs e) {
-            if((base.OwnerItem != null) && ((base.OwnerItem.IsDisposed || (base.OwnerItem.Owner == null)) || base.OwnerItem.Owner.IsDisposed)) {
+            if((OwnerItem != null) && ((OwnerItem.IsDisposed || (OwnerItem.Owner == null)) || OwnerItem.Owner.IsDisposed)) {
                 e.Cancel = true;
             }
             else {
@@ -609,20 +609,20 @@ namespace QTTabBarLib {
             switch(e.KeyCode) {
                 case Keys.Prior:
                 case Keys.Next:
-                    this.HandlePageKeys(e.KeyCode);
+                    HandlePageKeys(e.KeyCode);
                     e.IsInputKey = true;
                     return;
 
                 case Keys.End:
                 case Keys.Home:
-                    if(this.fVirtualMode) {
-                        this.ScrollEndVirtual(e.KeyCode == Keys.Home);
+                    if(fVirtualMode) {
+                        ScrollEndVirtual(e.KeyCode == Keys.Home);
                     }
                     goto Label_014F;
 
                 case Keys.Right:
-                    if(!(base.OwnerItem is ToolStripDropDownButton)) {
-                        foreach(ToolStripItem item in this.Items) {
+                    if(!(OwnerItem is ToolStripDropDownButton)) {
+                        foreach(ToolStripItem item in Items) {
                             if(item.Selected) {
                                 if((item is ToolStripMenuItem) && !((ToolStripMenuItem)item).HasDropDownItems) {
                                     e.IsInputKey = true;
@@ -634,8 +634,8 @@ namespace QTTabBarLib {
                     goto Label_014F;
 
                 case Keys.Return:
-                    if(!this.fCancelClosingAncestors) {
-                        foreach(ToolStripItem item2 in this.Items) {
+                    if(!fCancelClosingAncestors) {
+                        foreach(ToolStripItem item2 in Items) {
                             if(item2.Selected) {
                                 QMenuItem item3 = item2 as QMenuItem;
                                 if((item3 != null) && item3.HasDropDownItems) {
@@ -659,7 +659,7 @@ namespace QTTabBarLib {
         }
 
         public override bool PreProcessMessage(ref Message msg) {
-            if(this.fCancelClosingAncestors) {
+            if(fCancelClosingAncestors) {
                 return false;
             }
             if(msg.Msg == WM.KEYDOWN) {
@@ -667,10 +667,10 @@ namespace QTTabBarLib {
                 switch(wParam) {
                     case Keys.Up:
                     case Keys.Down:
-                        if(this.MouseScroll != null) {
-                            this.MouseScroll(this, EventArgs.Empty);
+                        if(MouseScroll != null) {
+                            MouseScroll(this, EventArgs.Empty);
                         }
-                        if(this.fVirtualMode && this.HandleArrowKeyVirtual(wParam == Keys.Up)) {
+                        if(fVirtualMode && HandleArrowKeyVirtual(wParam == Keys.Up)) {
                             return true;
                         }
                         break;
@@ -680,21 +680,21 @@ namespace QTTabBarLib {
         }
 
         protected override bool ProcessMnemonic(char charCode) {
-            if((base.Visible && base.Enabled) && !this.fCancelClosingAncestors) {
+            if((Visible && Enabled) && !fCancelClosingAncestors) {
                 ToolStripItem item = null;
                 int num = 0;
-                for(int i = 0; i < this.DisplayedItems.Count; i++) {
-                    if(this.DisplayedItems[i].Selected) {
-                        item = this.DisplayedItems[i];
+                for(int i = 0; i < DisplayedItems.Count; i++) {
+                    if(DisplayedItems[i].Selected) {
+                        item = DisplayedItems[i];
                         num = i;
                         break;
                     }
                 }
                 ToolStripItem item2 = null;
                 int num3 = num;
-                for(int j = 0; j < this.DisplayedItems.Count; j++) {
-                    ToolStripItem item3 = this.DisplayedItems[num3];
-                    num3 = (num3 + 1) % this.DisplayedItems.Count;
+                for(int j = 0; j < DisplayedItems.Count; j++) {
+                    ToolStripItem item3 = DisplayedItems[num3];
+                    num3 = (num3 + 1) % DisplayedItems.Count;
                     if((((item3 is ToolStripMenuItem) && !string.IsNullOrEmpty(item3.Text)) && (item3.Enabled && ((item3.DisplayStyle & ToolStripItemDisplayStyle.Text) == ToolStripItemDisplayStyle.Text))) && IsPseudoMnemonic(charCode, item3.Text)) {
                         if(item2 != null) {
                             if(item2 == item) {
@@ -717,63 +717,63 @@ namespace QTTabBarLib {
         }
 
         private void ScrollEndVirtual(bool fUp) {
-            this.fBlockItemAddRemove = true;
-            base.SuspendLayout();
+            fBlockItemAddRemove = true;
+            SuspendLayout();
             if(fUp) {
-                while(this.stcVirtualItems_Top.Count > 0) {
-                    this.Items.Insert(0, this.stcVirtualItems_Top.Pop());
+                while(stcVirtualItems_Top.Count > 0) {
+                    Items.Insert(0, stcVirtualItems_Top.Pop());
                 }
-                while(this.Items.Count > 0x40) {
-                    ToolStripItem item = this.Items[this.Items.Count - 1];
-                    this.Items.RemoveAt(this.Items.Count - 1);
-                    this.stcVirtualItems_Bottom.Push(item);
+                while(Items.Count > 0x40) {
+                    ToolStripItem item = Items[Items.Count - 1];
+                    Items.RemoveAt(Items.Count - 1);
+                    stcVirtualItems_Bottom.Push(item);
                 }
             }
             else {
                 List<ToolStripItem> list = new List<ToolStripItem>();
-                while(this.stcVirtualItems_Bottom.Count > 0) {
-                    list.Add(this.stcVirtualItems_Bottom.Pop());
+                while(stcVirtualItems_Bottom.Count > 0) {
+                    list.Add(stcVirtualItems_Bottom.Pop());
                 }
-                this.Items.AddRange(list.ToArray());
-                while(this.Items.Count > 0x40) {
-                    ToolStripItem item2 = this.Items[0];
-                    this.Items.RemoveAt(0);
-                    this.stcVirtualItems_Top.Push(item2);
+                Items.AddRange(list.ToArray());
+                while(Items.Count > 0x40) {
+                    ToolStripItem item2 = Items[0];
+                    Items.RemoveAt(0);
+                    stcVirtualItems_Top.Push(item2);
                 }
             }
-            base.ResumeLayout();
-            this.Refresh();
-            this.fBlockItemAddRemove = false;
+            ResumeLayout();
+            Refresh();
+            fBlockItemAddRemove = false;
         }
 
         protected void ScrollMenu(bool fUp, int count) {
-            this.fSuppressMouseMove_Scroll = true;
-            this.fSuppressMouseMoveOnce = true;
-            this.HideToolTip();
-            base.SuspendLayout();
-            int num = this.ScrollMenuCore(fUp, count);
-            if((num < count) && this.fVirtualMode) {
-                this.ScrollMenuVirtual(fUp, count - num);
+            fSuppressMouseMove_Scroll = true;
+            fSuppressMouseMoveOnce = true;
+            HideToolTip();
+            SuspendLayout();
+            int num = ScrollMenuCore(fUp, count);
+            if((num < count) && fVirtualMode) {
+                ScrollMenuVirtual(fUp, count - num);
             }
-            base.ResumeLayout();
-            this.Refresh();
-            this.fSuppressMouseMove_Scroll = false;
-            if(this.MouseScroll != null) {
-                this.MouseScroll(this, EventArgs.Empty);
+            ResumeLayout();
+            Refresh();
+            fSuppressMouseMove_Scroll = false;
+            if(MouseScroll != null) {
+                MouseScroll(this, EventArgs.Empty);
             }
         }
 
         private int ScrollMenuCore(bool fUp, int count) {
             if(count >= 1) {
-                ToolStripControlHost host = fUp ? this.upButton : this.downButton;
+                ToolStripControlHost host = fUp ? upButton : downButton;
                 if((host != null) && host.Visible) {
                     Control control = host.Control;
                     if((control != null) && control.Enabled) {
-                        this.CloseChildDropDown();
+                        CloseChildDropDown();
                         if(miScroll == null) {
                             miScroll = typeof(ToolStripDropDownMenu).GetMethod("ScrollInternal", BindingFlags.ExactBinding | BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { typeof(bool) }, null);
                         }
-                        base.fSuspendPainting = true;
+                        fSuspendPainting = true;
                         try {
                             miScroll.Invoke(this, new object[] { fUp });
                             for(int i = 1; i < count; i++) {
@@ -787,7 +787,7 @@ namespace QTTabBarLib {
                             return count;
                         }
                         finally {
-                            base.fSuspendPainting = false;
+                            fSuspendPainting = false;
                         }
                     }
                 }
@@ -796,39 +796,39 @@ namespace QTTabBarLib {
         }
 
         private bool ScrollMenuVirtual(bool fUp, int count) {
-            if((fUp && (this.stcVirtualItems_Top.Count == 0)) || (!fUp && (this.stcVirtualItems_Bottom.Count == 0))) {
+            if((fUp && (stcVirtualItems_Top.Count == 0)) || (!fUp && (stcVirtualItems_Bottom.Count == 0))) {
                 return false;
             }
-            this.fBlockItemAddRemove = true;
-            this.CloseChildDropDown();
+            fBlockItemAddRemove = true;
+            CloseChildDropDown();
             for(int i = 0; i < count; i++) {
                 if(fUp) {
-                    ToolStripItem item = this.Items[this.Items.Count - 1];
-                    this.Items.RemoveAt(this.Items.Count - 1);
-                    this.stcVirtualItems_Bottom.Push(item);
-                    ToolStripItem item2 = this.stcVirtualItems_Top.Pop();
-                    this.Items.Insert(0, item2);
-                    if(this.stcVirtualItems_Top.Count != 0) {
+                    ToolStripItem item = Items[Items.Count - 1];
+                    Items.RemoveAt(Items.Count - 1);
+                    stcVirtualItems_Bottom.Push(item);
+                    ToolStripItem item2 = stcVirtualItems_Top.Pop();
+                    Items.Insert(0, item2);
+                    if(stcVirtualItems_Top.Count != 0) {
                         continue;
                     }
                     break;
                 }
-                ToolStripItem item3 = this.Items[0];
-                this.Items.RemoveAt(0);
-                this.stcVirtualItems_Top.Push(item3);
-                ToolStripItem item4 = this.stcVirtualItems_Bottom.Pop();
-                this.Items.Add(item4);
-                if(this.stcVirtualItems_Bottom.Count == 0) {
+                ToolStripItem item3 = Items[0];
+                Items.RemoveAt(0);
+                stcVirtualItems_Top.Push(item3);
+                ToolStripItem item4 = stcVirtualItems_Bottom.Pop();
+                Items.Add(item4);
+                if(stcVirtualItems_Bottom.Count == 0) {
                     break;
                 }
             }
-            this.fBlockItemAddRemove = false;
+            fBlockItemAddRemove = false;
             return true;
         }
 
         public void UpdateToolTipByKey(ToolStripMenuItem item) {
             try {
-                if(base.ShowItemToolTips) {
+                if(ShowItemToolTips) {
                     ToolTip tip = typeof(ToolStrip).GetProperty("ToolTip", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(this, null) as ToolTip;
                     if(tip != null) {
                         tip.Hide(this);
@@ -847,28 +847,28 @@ namespace QTTabBarLib {
         }
 
         protected override void WndProc(ref Message m) {
-            if((this.MessageParent != IntPtr.Zero) && (((m.Msg == WM.INITMENUPOPUP) || (m.Msg == WM.DRAWITEM)) || (m.Msg == WM.MEASUREITEM))) {
-                PInvoke.SendMessage(this.MessageParent, (uint)m.Msg, m.WParam, m.LParam);
+            if((MessageParent != IntPtr.Zero) && (((m.Msg == WM.INITMENUPOPUP) || (m.Msg == WM.DRAWITEM)) || (m.Msg == WM.MEASUREITEM))) {
+                PInvoke.SendMessage(MessageParent, (uint)m.Msg, m.WParam, m.LParam);
             }
             else {
                 if(m.Msg == WM.MOUSELEAVE) {
-                    if(this.fCancelClosingAncestors) {
+                    if(fCancelClosingAncestors) {
                         return;
                     }
                 }
                 else if(m.Msg == WM.MOUSEFIRST) {
-                    if(this.fSuppressMouseMove_Scroll) {
+                    if(fSuppressMouseMove_Scroll) {
                         m.Result = IntPtr.Zero;
                         return;
                     }
-                    if(this.fSuppressMouseMove) {
-                        if(this.MouseDragMove != null) {
-                            this.MouseDragMove(this, new MouseEventArgs(MouseButtons, 0, QTUtility2.GET_X_LPARAM(m.LParam), QTUtility2.GET_Y_LPARAM(m.LParam), 0));
+                    if(fSuppressMouseMove) {
+                        if(MouseDragMove != null) {
+                            MouseDragMove(this, new MouseEventArgs(MouseButtons, 0, QTUtility2.GET_X_LPARAM(m.LParam), QTUtility2.GET_Y_LPARAM(m.LParam), 0));
                         }
                         return;
                     }
-                    if(this.fSuppressMouseMoveOnce) {
-                        this.fSuppressMouseMoveOnce = false;
+                    if(fSuppressMouseMoveOnce) {
+                        fSuppressMouseMoveOnce = false;
                         return;
                     }
                 }
@@ -878,58 +878,58 @@ namespace QTTabBarLib {
 
         public bool CanScroll {
             get {
-                return (this.fEnableScroll && this.fNowScrollButtonsRequired);
+                return (fEnableScroll && fNowScrollButtonsRequired);
             }
         }
 
         public bool CheckOnEdgeClick {
             set {
-                this.fCheckOnEdgeClick = value;
+                fCheckOnEdgeClick = value;
             }
         }
 
         public string Path {
             get {
-                return this.pathParent;
+                return pathParent;
             }
             set {
-                this.pathParent = value;
+                pathParent = value;
             }
         }
 
         public IList<string> ProhibitedKey {
             get {
-                return this.lstProhibitedKeys;
+                return lstProhibitedKeys;
             }
         }
 
         public bool ReorderEnabled {
             set {
-                this.fReorderEnabled = value;
+                fReorderEnabled = value;
             }
         }
 
         public bool SpaceKeyExecute {
             set {
-                this.fSpaceKeyExecute = value;
+                fSpaceKeyExecute = value;
             }
         }
 
         public bool SuppressMouseMove {
             set {
-                this.fSuppressMouseMove = value;
+                fSuppressMouseMove = value;
             }
         }
 
         public bool SuppressMouseMoveOnce {
             set {
-                this.fSuppressMouseMoveOnce = value;
+                fSuppressMouseMoveOnce = value;
             }
         }
 
         public int SuppressStartIndex {
             set {
-                this.iSuppressStartIndex = value;
+                iSuppressStartIndex = value;
             }
         }
     }

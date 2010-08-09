@@ -27,7 +27,7 @@ namespace QTTabBarLib {
         public event EventHandler MouseActivated;
 
         public void HideToolTip() {
-            if(base.ShowItemToolTips) {
+            if(ShowItemToolTips) {
                 BindingFlags bindingAttr = BindingFlags.NonPublic | BindingFlags.Instance;
                 try {
                     typeof(ToolStrip).GetMethod("UpdateToolTip", bindingAttr).Invoke(this, new object[1]);
@@ -42,8 +42,8 @@ namespace QTTabBarLib {
         }
 
         protected override void OnMouseMove(MouseEventArgs mea) {
-            if(!base.OverflowButton.DropDown.Visible) {
-                foreach(ToolStripItem item in this.Items) {
+            if(!OverflowButton.DropDown.Visible) {
+                foreach(ToolStripItem item in Items) {
                     if((item.Visible && (item is ToolStripDropDownItem)) && (((ToolStripDropDownItem)item).HasDropDownItems && ((ToolStripDropDownItem)item).DropDown.Visible)) {
                         return;
                     }
@@ -53,28 +53,28 @@ namespace QTTabBarLib {
         }
 
         internal void RaiseOnResize() {
-            this.OnResize(EventArgs.Empty);
+            OnResize(EventArgs.Empty);
         }
 
         protected override void WndProc(ref Message m) {
             if(m.Msg == WM.MOUSEACTIVATE) {
-                this.fMA = false;
+                fMA = false;
                 if(0x201 == QTUtility2.GET_Y_LPARAM(m.LParam)) {
                     base.WndProc(ref m);
                     if(2 == ((int)m.Result)) {
-                        this.fMA = true;
+                        fMA = true;
                     }
                     return;
                 }
             }
             else if(m.Msg == WM.LBUTTONUP) {
-                if(this.fMA && (this.MouseActivated != null)) {
+                if(fMA && (MouseActivated != null)) {
                     base.WndProc(ref m);
-                    this.MouseActivated(this, EventArgs.Empty);
-                    this.fMA = false;
+                    MouseActivated(this, EventArgs.Empty);
+                    fMA = false;
                     return;
                 }
-                this.fMA = false;
+                fMA = false;
             }
             base.WndProc(ref m);
         }

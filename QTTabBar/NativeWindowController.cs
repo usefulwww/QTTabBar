@@ -25,14 +25,14 @@ namespace QTTabBarLib {
         internal event MessageEventHandler MessageCaptured;
 
         public NativeWindowController(IntPtr hwnd) {
-            base.AssignHandle(hwnd);
+            AssignHandle(hwnd);
         }
 
         protected override void WndProc(ref Message m) {
             bool consumed = false;
-            if(this.MessageCaptured != null) {
+            if(MessageCaptured != null) {
                 try {
-                    consumed = this.MessageCaptured(ref m);
+                    consumed = MessageCaptured(ref m);
                 }
                 catch(Exception ex) {
                     QTUtility2.MakeErrorLog(ex, String.Format("Message: {0:x4}", m.Msg));
@@ -45,10 +45,10 @@ namespace QTTabBarLib {
 
         public IntPtr OptionalHandle {
             get {
-                return this.hwndOptional;
+                return hwndOptional;
             }
             set {
-                this.hwndOptional = value;
+                hwndOptional = value;
             }
         }
 

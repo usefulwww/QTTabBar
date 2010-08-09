@@ -49,7 +49,7 @@ namespace QTTabBarLib {
         private static event EventHandler menuRendererChanged;
 
         public DropDownMenuBase(IContainer container) {
-            this.lstQMIResponds = new List<QMenuItem>();
+            lstQMIResponds = new List<QMenuItem>();
             if(!fRendererInitialized) {
                 fRendererInitialized = true;
                 InitializeMenuRenderer();
@@ -57,8 +57,8 @@ namespace QTTabBarLib {
             if(container != null) {
                 container.Add(this);
             }
-            base.Renderer = menuRenderer;
-            menuRendererChanged = (EventHandler)Delegate.Combine(menuRendererChanged, new EventHandler(this.DropDownMenuBase_menuRendererChanged));
+            Renderer = menuRenderer;
+            menuRendererChanged = (EventHandler)Delegate.Combine(menuRendererChanged, new EventHandler(DropDownMenuBase_menuRendererChanged));
         }
 
         public DropDownMenuBase(IContainer container, bool fRespondModKeys, bool fEnableShiftKey)
@@ -75,17 +75,17 @@ namespace QTTabBarLib {
         }
 
         protected override void Dispose(bool disposing) {
-            menuRendererChanged = (EventHandler)Delegate.Remove(menuRendererChanged, new EventHandler(this.DropDownMenuBase_menuRendererChanged));
-            this.lstQMIResponds.Clear();
+            menuRendererChanged = (EventHandler)Delegate.Remove(menuRendererChanged, new EventHandler(DropDownMenuBase_menuRendererChanged));
+            lstQMIResponds.Clear();
             base.Dispose(disposing);
         }
 
         private void DropDownMenuBase_menuRendererChanged(object sender, EventArgs e) {
-            if(base.InvokeRequired) {
-                base.Invoke(new MethodInvoker(this.RefreshRenderer));
+            if(InvokeRequired) {
+                Invoke(new MethodInvoker(RefreshRenderer));
             }
             else {
-                this.RefreshRenderer();
+                RefreshRenderer();
             }
         }
 
@@ -146,15 +146,15 @@ namespace QTTabBarLib {
         }
 
         protected override void OnClosed(ToolStripDropDownClosedEventArgs e) {
-            this.fOnceKeyDown = false;
-            this.ResetImageKeys();
+            fOnceKeyDown = false;
+            ResetImageKeys();
             base.OnClosed(e);
         }
 
         protected override void OnItemAdded(ToolStripItemEventArgs e) {
             QMenuItem qmi = e.Item as QMenuItem;
             if(IsQmiResponds(qmi)) {
-                this.lstQMIResponds.Add(qmi);
+                lstQMIResponds.Add(qmi);
             }
             base.OnItemAdded(e);
         }
@@ -168,7 +168,7 @@ namespace QTTabBarLib {
         protected override void OnItemRemoved(ToolStripItemEventArgs e) {
             QMenuItem qmi = e.Item as QMenuItem;
             if(IsQmiResponds(qmi)) {
-                this.lstQMIResponds.Remove(qmi);
+                lstQMIResponds.Remove(qmi);
             }
             base.OnItemRemoved(e);
         }
@@ -186,16 +186,16 @@ namespace QTTabBarLib {
         }
 
         protected override void OnPreviewKeyDown(PreviewKeyDownEventArgs e) {
-            if(!this.fRespondModKeys) {
+            if(!fRespondModKeys) {
                 base.OnPreviewKeyDown(e);
                 return;
             }
-            if(((this.fEnableShiftKey && e.Shift) || (e.Control || this.fChangeImageSelected)) && ((e.KeyCode == Keys.Down) || (e.KeyCode == Keys.Up))) {
-                base.SuspendLayout();
+            if(((fEnableShiftKey && e.Shift) || (e.Control || fChangeImageSelected)) && ((e.KeyCode == Keys.Down) || (e.KeyCode == Keys.Up))) {
+                SuspendLayout();
                 try {
                     int index;
                     ToolStripItem item = null;
-                    foreach(ToolStripItem item2 in this.Items) {
+                    foreach(ToolStripItem item2 in Items) {
                         if(item2.Selected) {
                             item = item2;
                             break;
@@ -210,10 +210,10 @@ namespace QTTabBarLib {
                             }
                             item3.RestoreOriginalImage();
                         }
-                        index = this.Items.IndexOf(item);
+                        index = Items.IndexOf(item);
                     }
                     else if(e.KeyCode == Keys.Down) {
-                        index = this.Items.Count - 1;
+                        index = Items.Count - 1;
                     }
                     else {
                         index = 0;
@@ -221,14 +221,14 @@ namespace QTTabBarLib {
                     if(index != -1) {
                         int num2;
                         if(e.KeyCode == Keys.Down) {
-                            if(index == (this.Items.Count - 1)) {
+                            if(index == (Items.Count - 1)) {
                                 num2 = 0;
                             }
                             else {
                                 num2 = index + 1;
                             }
-                            for(int i = 0; (this.Items[num2] is ToolStripSeparator) && (i < this.Items.Count); i++) {
-                                if(num2 == (this.Items.Count - 1)) {
+                            for(int i = 0; (Items[num2] is ToolStripSeparator) && (i < Items.Count); i++) {
+                                if(num2 == (Items.Count - 1)) {
                                     num2 = 0;
                                 }
                                 else {
@@ -238,22 +238,22 @@ namespace QTTabBarLib {
                         }
                         else {
                             if(index == 0) {
-                                num2 = this.Items.Count - 1;
+                                num2 = Items.Count - 1;
                             }
                             else {
                                 num2 = index - 1;
                             }
-                            for(int j = 0; (this.Items[num2] is ToolStripSeparator) && (j < this.Items.Count); j++) {
+                            for(int j = 0; (Items[num2] is ToolStripSeparator) && (j < Items.Count); j++) {
                                 if(num2 == 0) {
-                                    num2 = this.Items.Count - 1;
+                                    num2 = Items.Count - 1;
                                 }
                                 else {
                                     num2--;
                                 }
                             }
                         }
-                        if(this.Items[num2].Enabled) {
-                            QMenuItem item4 = this.Items[num2] as QMenuItem;
+                        if(Items[num2].Enabled) {
+                            QMenuItem item4 = Items[num2] as QMenuItem;
                             if(((item4 != null) && (item4.Genre != MenuGenre.Application)) && (item4.Target == MenuTarget.Folder)) {
                                 switch(ModifierKeys) {
                                     case Keys.Control:
@@ -270,7 +270,7 @@ namespace QTTabBarLib {
                     }
                 }
                 finally {
-                    base.ResumeLayout(false);
+                    ResumeLayout(false);
                 }
             }
         Label_0254:
@@ -280,8 +280,8 @@ namespace QTTabBarLib {
         public override bool PreProcessMessage(ref Message msg) {
             if(msg.Msg == WM.KEYDOWN) {
                 Keys wParam = (Keys)((int)((long)msg.WParam));
-                if((wParam == Keys.Escape) && ((base.OwnerItem == null) || !(base.OwnerItem is ToolStripMenuItem))) {
-                    base.Close(ToolStripDropDownCloseReason.Keyboard);
+                if((wParam == Keys.Escape) && ((OwnerItem == null) || !(OwnerItem is ToolStripMenuItem))) {
+                    Close(ToolStripDropDownCloseReason.Keyboard);
                     base.PreProcessMessage(ref msg);
                     return true;
                 }
@@ -290,16 +290,16 @@ namespace QTTabBarLib {
         }
 
         private void RefreshRenderer() {
-            base.Renderer = menuRenderer;
+            Renderer = menuRenderer;
         }
 
         private void ResetImageKeys() {
-            if(this.fRespondModKeys) {
-                base.SuspendLayout();
-                foreach(QMenuItem item in this.lstQMIResponds) {
+            if(fRespondModKeys) {
+                SuspendLayout();
+                foreach(QMenuItem item in lstQMIResponds) {
                     item.RestoreOriginalImage();
                 }
-                base.ResumeLayout(false);
+                ResumeLayout(false);
             }
         }
 
@@ -317,7 +317,7 @@ namespace QTTabBarLib {
         public bool UpdateToolTip_OnTheEdge(ToolStripItem item) {
             AnchorStyles styles;
             int num;
-            if(base.ShowItemToolTips && IsCursorOnTheEdgeOfScreen(out styles, out num)) {
+            if(ShowItemToolTips && IsCursorOnTheEdgeOfScreen(out styles, out num)) {
                 try {
                     FieldInfo field = typeof(ToolStrip).GetField("currentlyActiveTooltipItem", BindingFlags.NonPublic | BindingFlags.Instance);
                     ToolStripItem item2 = (ToolStripItem)field.GetValue(this);
@@ -332,19 +332,19 @@ namespace QTTabBarLib {
                                 Cursor cursor = new Cursor(handle);
                                 tip.Active = true;
                                 Point position = Cursor.Position;
-                                position.Y += this.Cursor.Size.Height - cursor.HotSpot.Y;
+                                position.Y += Cursor.Size.Height - cursor.HotSpot.Y;
                                 using(Font font = SystemFonts.StatusFont) {
-                                    using(Graphics graphics = base.CreateGraphics()) {
+                                    using(Graphics graphics = CreateGraphics()) {
                                         SizeF ef = graphics.MeasureString(item.ToolTipText, font);
                                         if((num < ef.Width) || (styles == (AnchorStyles.Right | AnchorStyles.Bottom))) {
-                                            position.X = base.Bounds.X - ((int)ef.Width);
+                                            position.X = Bounds.X - ((int)ef.Width);
                                         }
                                         else {
                                             position.X += 0x20;
                                         }
                                     }
                                 }
-                                tip.Show(item.ToolTipText, this, base.PointToClient(position), tip.AutoPopDelay);
+                                tip.Show(item.ToolTipText, this, PointToClient(position), tip.AutoPopDelay);
                             }
                         }
                         return true;
@@ -359,7 +359,7 @@ namespace QTTabBarLib {
         protected override void WndProc(ref Message m) {
             try {
                 QMenuItem ownerItem;
-                if(!this.fRespondModKeys) {
+                if(!fRespondModKeys) {
                     base.WndProc(ref m);
                     return;
                 }
@@ -369,9 +369,9 @@ namespace QTTabBarLib {
                         break;
 
                     case WM.KEYUP:
-                        if(this.fOnceKeyDown && ((wParam == 0x10) || (wParam == 0x11))) {
+                        if(fOnceKeyDown && ((wParam == 0x10) || (wParam == 0x11))) {
                             bool flag2 = false;
-                            foreach(QMenuItem item4 in this.lstQMIResponds) {
+                            foreach(QMenuItem item4 in lstQMIResponds) {
                                 if(!item4.Selected) {
                                     continue;
                                 }
@@ -380,18 +380,18 @@ namespace QTTabBarLib {
                                     if(modifierKeys == Keys.Control) {
                                         item4.ImageKey = "control";
                                     }
-                                    else if(this.fEnableShiftKey && (modifierKeys == Keys.Shift)) {
+                                    else if(fEnableShiftKey && (modifierKeys == Keys.Shift)) {
                                         item4.ImageKey = "shift";
                                     }
                                     else {
-                                        item4.RestoreOriginalImage(this.fChangeImageSelected, false);
+                                        item4.RestoreOriginalImage(fChangeImageSelected, false);
                                     }
-                                    this.lastKeyImageChangedItem = item4;
+                                    lastKeyImageChangedItem = item4;
                                 }
                                 flag2 = true;
                                 break;
                             }
-                            ownerItem = base.OwnerItem as QMenuItem;
+                            ownerItem = OwnerItem as QMenuItem;
                             if(ownerItem != null) {
                                 DropDownMenuBase owner = ownerItem.Owner as DropDownMenuBase;
                                 if((owner != null) && owner.Visible) {
@@ -413,7 +413,7 @@ namespace QTTabBarLib {
                         goto Label_072E;
 
                     case WM.PAINT:
-                        if(this.fSuspendPainting) {
+                        if(fSuspendPainting) {
                             PInvoke.ValidateRect(m.HWnd, IntPtr.Zero);
                         }
                         else {
@@ -423,7 +423,7 @@ namespace QTTabBarLib {
 
                     case WM.COPYDATA: {
                             COPYDATASTRUCT copydatastruct = (COPYDATASTRUCT)Marshal.PtrToStructure(m.LParam, typeof(COPYDATASTRUCT));
-                            ownerItem = base.GetItemAt(base.PointToClient(MousePosition)) as QMenuItem;
+                            ownerItem = GetItemAt(PointToClient(MousePosition)) as QMenuItem;
                             if(!(copydatastruct.dwData == IntPtr.Zero)) {
                                 goto Label_04B6;
                             }
@@ -434,23 +434,23 @@ namespace QTTabBarLib {
                             if((wParam == 0x11) && ((keys3 & Keys.Shift) != Keys.Shift)) {
                                 ownerItem.ImageKey = "control";
                             }
-                            else if((this.fEnableShiftKey && (wParam == 0x10)) && ((keys3 & Keys.Control) != Keys.Control)) {
+                            else if((fEnableShiftKey && (wParam == 0x10)) && ((keys3 & Keys.Control) != Keys.Control)) {
                                 ownerItem.ImageKey = "shift";
                             }
                             else {
-                                ownerItem.RestoreOriginalImage(this.fChangeImageSelected, false);
+                                ownerItem.RestoreOriginalImage(fChangeImageSelected, false);
                             }
-                            this.lastKeyImageChangedItem = ownerItem;
+                            lastKeyImageChangedItem = ownerItem;
                             goto Label_07C2;
                         }
                     default:
                         goto Label_07C2;
                 }
-                this.fOnceKeyDown = true;
+                fOnceKeyDown = true;
                 if((((int)((long)m.LParam)) & 0x40000000) == 0) {
                     if((wParam == 0x10) || (wParam == 0x11)) {
                         bool flag = false;
-                        foreach(QMenuItem item2 in this.lstQMIResponds) {
+                        foreach(QMenuItem item2 in lstQMIResponds) {
                             if(!item2.Selected) {
                                 continue;
                             }
@@ -459,18 +459,18 @@ namespace QTTabBarLib {
                                 if((wParam == 0x11) && ((keys & Keys.Shift) != Keys.Shift)) {
                                     item2.ImageKey = "control";
                                 }
-                                else if((this.fEnableShiftKey && (wParam == 0x10)) && ((keys & Keys.Control) != Keys.Control)) {
+                                else if((fEnableShiftKey && (wParam == 0x10)) && ((keys & Keys.Control) != Keys.Control)) {
                                     item2.ImageKey = "shift";
                                 }
                                 else {
-                                    item2.RestoreOriginalImage(this.fChangeImageSelected, false);
+                                    item2.RestoreOriginalImage(fChangeImageSelected, false);
                                 }
-                                this.lastKeyImageChangedItem = item2;
+                                lastKeyImageChangedItem = item2;
                             }
                             flag = true;
                             break;
                         }
-                        ownerItem = base.OwnerItem as QMenuItem;
+                        ownerItem = OwnerItem as QMenuItem;
                         if(ownerItem != null) {
                             DropDownMenuBase base2 = ownerItem.Owner as DropDownMenuBase;
                             if((base2 != null) && base2.Visible) {
@@ -483,11 +483,11 @@ namespace QTTabBarLib {
                             }
                         }
                     }
-                    else if((wParam == 13) && ((this.fEnableShiftKey && (ModifierKeys == Keys.Shift)) || (ModifierKeys == Keys.Control))) {
-                        foreach(ToolStripItem item3 in this.Items) {
+                    else if((wParam == 13) && ((fEnableShiftKey && (ModifierKeys == Keys.Shift)) || (ModifierKeys == Keys.Control))) {
+                        foreach(ToolStripItem item3 in Items) {
                             if(item3.Selected) {
                                 if(item3.Enabled) {
-                                    this.OnItemClicked(new ToolStripItemClickedEventArgs(item3));
+                                    OnItemClicked(new ToolStripItemClickedEventArgs(item3));
                                 }
                                 break;
                             }
@@ -496,7 +496,7 @@ namespace QTTabBarLib {
                 }
                 goto Label_07C2;
             Label_0462:
-                ownerItem = base.OwnerItem as QMenuItem;
+                ownerItem = OwnerItem as QMenuItem;
                 if(ownerItem != null) {
                     DropDownMenuBase base4 = ownerItem.Owner as DropDownMenuBase;
                     if((base4 != null) && base4.Visible) {
@@ -510,16 +510,16 @@ namespace QTTabBarLib {
                     if(keys4 == Keys.Control) {
                         ownerItem.ImageKey = "control";
                     }
-                    else if(this.fEnableShiftKey && (keys4 == Keys.Shift)) {
+                    else if(fEnableShiftKey && (keys4 == Keys.Shift)) {
                         ownerItem.ImageKey = "shift";
                     }
                     else {
-                        ownerItem.RestoreOriginalImage(this.fChangeImageSelected, false);
+                        ownerItem.RestoreOriginalImage(fChangeImageSelected, false);
                     }
-                    this.lastKeyImageChangedItem = ownerItem;
+                    lastKeyImageChangedItem = ownerItem;
                 }
                 else {
-                    ownerItem = base.OwnerItem as QMenuItem;
+                    ownerItem = OwnerItem as QMenuItem;
                     if(ownerItem != null) {
                         DropDownMenuBase base5 = ownerItem.Owner as DropDownMenuBase;
                         if((base5 != null) && base5.Visible) {
@@ -529,15 +529,15 @@ namespace QTTabBarLib {
                 }
                 goto Label_07C2;
             Label_0562:
-                if((m.WParam == IntPtr.Zero) && (m.LParam == this.lparamPreviousMouseMove)) {
+                if((m.WParam == IntPtr.Zero) && (m.LParam == lparamPreviousMouseMove)) {
                     m.Result = IntPtr.Zero;
                     return;
                 }
-                this.lparamPreviousMouseMove = m.LParam;
-                if((!this.fEnableShiftKey || ((wParam & 4) != 4)) && (((wParam & 8) != 8) && !this.fChangeImageSelected)) {
+                lparamPreviousMouseMove = m.LParam;
+                if((!fEnableShiftKey || ((wParam & 4) != 4)) && (((wParam & 8) != 8) && !fChangeImageSelected)) {
                     goto Label_07C2;
                 }
-                ToolStripItem itemAt = base.GetItemAt(new Point(QTUtility2.GET_X_LPARAM(m.LParam), QTUtility2.GET_Y_LPARAM(m.LParam)));
+                ToolStripItem itemAt = GetItemAt(new Point(QTUtility2.GET_X_LPARAM(m.LParam), QTUtility2.GET_Y_LPARAM(m.LParam)));
                 if(itemAt == null) {
                     base.WndProc(ref m);
                     return;
@@ -546,13 +546,13 @@ namespace QTTabBarLib {
                 if(!IsQmiResponds(ownerItem)) {
                     goto Label_06F8;
                 }
-                if(ownerItem == this.lastMouseActiveItem) {
+                if(ownerItem == lastMouseActiveItem) {
                     goto Label_07C2;
                 }
-                if(this.lstQMIResponds.Count > 0x1c) {
-                    this.fSuspendPainting = true;
+                if(lstQMIResponds.Count > 0x1c) {
+                    fSuspendPainting = true;
                 }
-                base.SuspendLayout();
+                SuspendLayout();
                 if(ownerItem.Enabled) {
                     switch(wParam) {
                         case 8:
@@ -571,37 +571,37 @@ namespace QTTabBarLib {
                     }
                 }
             Label_06AB:
-                if(this.lastMouseActiveItem != null) {
-                    this.lastMouseActiveItem.RestoreOriginalImage();
+                if(lastMouseActiveItem != null) {
+                    lastMouseActiveItem.RestoreOriginalImage();
                 }
-                if((ownerItem != this.lastKeyImageChangedItem) && (this.lastKeyImageChangedItem != null)) {
-                    this.lastKeyImageChangedItem.RestoreOriginalImage();
-                    this.lastKeyImageChangedItem = null;
+                if((ownerItem != lastKeyImageChangedItem) && (lastKeyImageChangedItem != null)) {
+                    lastKeyImageChangedItem.RestoreOriginalImage();
+                    lastKeyImageChangedItem = null;
                 }
-                this.lastMouseActiveItem = ownerItem;
-                this.fSuspendPainting = false;
-                base.ResumeLayout(false);
+                lastMouseActiveItem = ownerItem;
+                fSuspendPainting = false;
+                ResumeLayout(false);
                 goto Label_07C2;
             Label_06F8:
-                if(this.lastMouseActiveItem != null) {
-                    this.lastMouseActiveItem.RestoreOriginalImage();
-                    this.lastMouseActiveItem = null;
+                if(lastMouseActiveItem != null) {
+                    lastMouseActiveItem.RestoreOriginalImage();
+                    lastMouseActiveItem = null;
                 }
-                if(this.lastKeyImageChangedItem != null) {
-                    this.lastKeyImageChangedItem.RestoreOriginalImage();
-                    this.lastKeyImageChangedItem = null;
+                if(lastKeyImageChangedItem != null) {
+                    lastKeyImageChangedItem.RestoreOriginalImage();
+                    lastKeyImageChangedItem = null;
                 }
                 goto Label_07C2;
             Label_072E:
-                this.ResetImageKeys();
-                this.lastMouseActiveItem = null;
+                ResetImageKeys();
+                lastMouseActiveItem = null;
             }
             catch(Exception exception) {
                 QTUtility2.MakeErrorLog(exception, "MSG:" + m.Msg.ToString("X") + ", WPARAM:" + m.WParam.ToString("X") + ", LPARAM:" + m.LParam.ToString("X"));
             }
         Label_07C2:
             base.WndProc(ref m);
-            this.fSuspendPainting = false;
+            fSuspendPainting = false;
         }
 
         public static ToolStripRenderer CurrentRenderer {

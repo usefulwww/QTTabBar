@@ -27,38 +27,38 @@ namespace QTPlugin {
         public string Version;
 
         public PluginAttribute(PluginType pluginType) {
-            this.PluginType = pluginType;
+            PluginType = pluginType;
         }
 
         public PluginAttribute(PluginType pluginType, Type tProvider, int iKey = -1) {
-            this.PluginType = pluginType;
+            PluginType = pluginType;
             if(tProvider.IsSubclassOf(typeof(LocalizedStringProvider))) {
                 try {
                     LocalizedStringProvider provider = (LocalizedStringProvider)Activator.CreateInstance(tProvider);
                     provider.SetKey(iKey);
-                    this.Author = provider.Author;
-                    this.Name = provider.Name;
-                    this.Description = provider.Description;
+                    Author = provider.Author;
+                    Name = provider.Name;
+                    Description = provider.Description;
                 }
                 catch(MissingMethodException) {
-                    this.Author = string.Empty;
-                    this.Name = "Name missing";
-                    this.Description = "Default constuctor of LocalizedStringProvider is missing. \nContact the author of this plugin.";
+                    Author = string.Empty;
+                    Name = "Name missing";
+                    Description = "Default constuctor of LocalizedStringProvider is missing. \nContact the author of this plugin.";
                 }
             }
             else {
-                this.Author = string.Empty;
-                this.Name = "Name missing";
-                this.Description = "The type is not subclass of LocalizedStringProvider. \nContact the author of this plugin.";
+                Author = string.Empty;
+                Name = "Name missing";
+                Description = "The type is not subclass of LocalizedStringProvider. \nContact the author of this plugin.";
             }
         }
 
         public PluginAttribute(PluginType pluginType, string name, string author, string version, string description) {
-            this.PluginType = pluginType;
-            this.Name = name;
-            this.Author = author;
-            this.Version = version;
-            this.Description = description;
+            PluginType = pluginType;
+            Name = name;
+            Author = author;
+            Version = version;
+            Description = description;
         }
     }
 }

@@ -44,46 +44,46 @@ namespace QTTabBarLib {
         public event ItemCheckEventHandler Switched;
 
         public TabSwitchForm() {
-            this.InitializeComponent();
-            this.fntMenu = SystemFonts.MenuFont;
-            this.fntMenuBold = new Font(this.fntMenu, FontStyle.Bold);
-            this.SetCompositionState();
+            InitializeComponent();
+            fntMenu = SystemFonts.MenuFont;
+            fntMenuBold = new Font(fntMenu, FontStyle.Bold);
+            SetCompositionState();
         }
 
         protected override void Dispose(bool disposing) {
-            if(this.fntMenu != null) {
-                this.fntMenu.Dispose();
-                this.fntMenu = null;
+            if(fntMenu != null) {
+                fntMenu.Dispose();
+                fntMenu = null;
             }
-            if(this.fntMenuBold != null) {
-                this.fntMenuBold.Dispose();
-                this.fntMenuBold = null;
+            if(fntMenuBold != null) {
+                fntMenuBold.Dispose();
+                fntMenuBold = null;
             }
-            if(disposing && (this.components != null)) {
-                this.components.Dispose();
+            if(disposing && (components != null)) {
+                components.Dispose();
             }
             base.Dispose(disposing);
         }
 
         private void DrawItems(Graphics g) {
-            this.dicItemRcts.Clear();
-            int x = this.fCompositionEnabled ? 2 : 6;
-            int num2 = this.fCompositionEnabled ? 0 : (QTUtility.IsVista ? 2 : 8);
+            dicItemRcts.Clear();
+            int x = fCompositionEnabled ? 2 : 6;
+            int num2 = fCompositionEnabled ? 0 : (QTUtility.IsVista ? 2 : 8);
             int y = QTUtility.IsVista ? 4 : 8;
             int num4 = TabSwitchForm.menuHeight + (QTUtility.IsVista ? 11 : 0x12);
-            int width = base.ClientSize.Width;
+            int width = ClientSize.Width;
             int menuHeight = TabSwitchForm.menuHeight;
             int num7 = Math.Max((menuHeight - 0x10) / 2, 0);
-            int count = this.lstPaths.Count;
+            int count = lstPaths.Count;
             int num9 = 5;
             bool flag = count > 11;
             int num10 = flag ? num9 : ((count - 1) / 2);
             int num11 = flag ? num9 : ((count - 1) - num10);
-            int num12 = this.selectedIndex - num10;
+            int num12 = selectedIndex - num10;
             if(num12 < 0) {
                 num12 += count;
             }
-            this.DrawText(g, GetTitleText(this.lstPaths[this.selectedIndex]), new Rectangle(num2, y, (width - 4) - num2, menuHeight), false, false, StringAlignment.Center);
+            DrawText(g, GetTitleText(lstPaths[selectedIndex]), new Rectangle(num2, y, (width - 4) - num2, menuHeight), false, false, StringAlignment.Center);
             for(int i = 0; i < num10; i++) {
                 int num14 = i + num12;
                 if(num14 < 0) {
@@ -96,12 +96,12 @@ namespace QTTabBarLib {
                 Rectangle rectangle2 = new Rectangle(0x24, num4 + num7, 0x10, 0x10);
                 Rectangle rectangle3 = new Rectangle(0x36, num4, 300, menuHeight);
                 Rectangle rectangle4 = new Rectangle(4, num4, width - 8, menuHeight);
-                bool flag2 = num14 == this.initialSelectedIndex;
-                this.DrawText(g, (num14 + 1).ToString(), rectangle, false, flag2, StringAlignment.Far);
-                g.DrawImage(GetImage(this.lstPaths[num14]), rectangle2);
-                this.DrawText(g, this.lstPaths[num14].strDisplay, rectangle3, false, flag2, StringAlignment.Near);
-                this.dicItemRcts[num14] = rectangle4;
-                if(num14 == this.iHoveredIndex) {
+                bool flag2 = num14 == initialSelectedIndex;
+                DrawText(g, (num14 + 1).ToString(), rectangle, false, flag2, StringAlignment.Far);
+                g.DrawImage(GetImage(lstPaths[num14]), rectangle2);
+                DrawText(g, lstPaths[num14].strDisplay, rectangle3, false, flag2, StringAlignment.Near);
+                dicItemRcts[num14] = rectangle4;
+                if(num14 == iHoveredIndex) {
                     DrawSelection(g, rectangle4, MouseButtons == MouseButtons.Left);
                 }
                 num4 += menuHeight;
@@ -110,20 +110,20 @@ namespace QTTabBarLib {
             Rectangle rect = new Rectangle(0x24, num4 + num7, 0x10, 0x10);
             Rectangle rectangle7 = new Rectangle(0x36, num4, 300, menuHeight);
             Rectangle rectangle8 = new Rectangle(4, num4, width - 8, menuHeight);
-            bool fBold = this.selectedIndex == this.initialSelectedIndex;
-            if(!this.fCompositionEnabled) {
+            bool fBold = selectedIndex == initialSelectedIndex;
+            if(!fCompositionEnabled) {
                 g.FillRectangle(SystemBrushes.MenuHighlight, rectangle8);
             }
-            this.DrawText(g, (this.selectedIndex + 1).ToString(), rct, true, fBold, StringAlignment.Far);
-            g.DrawImage(GetImage(this.lstPaths[this.selectedIndex]), rect);
-            this.DrawText(g, this.lstPaths[this.selectedIndex].strDisplay, rectangle7, true, fBold, StringAlignment.Near);
-            if(this.fCompositionEnabled) {
+            DrawText(g, (selectedIndex + 1).ToString(), rct, true, fBold, StringAlignment.Far);
+            g.DrawImage(GetImage(lstPaths[selectedIndex]), rect);
+            DrawText(g, lstPaths[selectedIndex].strDisplay, rectangle7, true, fBold, StringAlignment.Near);
+            if(fCompositionEnabled) {
                 DrawSelection(g, rectangle8, true);
             }
-            this.dicItemRcts[this.selectedIndex] = rectangle8;
+            dicItemRcts[selectedIndex] = rectangle8;
             num4 += menuHeight;
             for(int j = 0; j < num11; j++) {
-                int num16 = (j + this.selectedIndex) + 1;
+                int num16 = (j + selectedIndex) + 1;
                 if(num16 < 0) {
                     num16 += count;
                 }
@@ -134,12 +134,12 @@ namespace QTTabBarLib {
                 Rectangle rectangle10 = new Rectangle(0x24, num4 + num7, 0x10, 0x10);
                 Rectangle rectangle11 = new Rectangle(0x36, num4, 300, menuHeight);
                 Rectangle rectangle12 = new Rectangle(4, num4, width - 8, menuHeight);
-                bool flag4 = num16 == this.initialSelectedIndex;
-                this.DrawText(g, (num16 + 1).ToString(), rectangle9, false, flag4, StringAlignment.Far);
-                g.DrawImage(GetImage(this.lstPaths[num16]), rectangle10);
-                this.DrawText(g, this.lstPaths[num16].strDisplay, rectangle11, false, flag4, StringAlignment.Near);
-                this.dicItemRcts[num16] = rectangle12;
-                if(num16 == this.iHoveredIndex) {
+                bool flag4 = num16 == initialSelectedIndex;
+                DrawText(g, (num16 + 1).ToString(), rectangle9, false, flag4, StringAlignment.Far);
+                g.DrawImage(GetImage(lstPaths[num16]), rectangle10);
+                DrawText(g, lstPaths[num16].strDisplay, rectangle11, false, flag4, StringAlignment.Near);
+                dicItemRcts[num16] = rectangle12;
+                if(num16 == iHoveredIndex) {
                     DrawSelection(g, rectangle12, MouseButtons == MouseButtons.Left);
                 }
                 num4 += menuHeight;
@@ -184,9 +184,9 @@ namespace QTTabBarLib {
         }
 
         private void DrawText(Graphics g, string text, Rectangle rct, bool fSelect, bool fBold, StringAlignment horizontalAlign) {
-            if(this.fCompositionEnabled) {
+            if(fCompositionEnabled) {
                 IntPtr hdc = g.GetHdc();
-                DrawTextOnGlass(hdc, text, fBold ? this.fntMenuBold : this.fntMenu, rct, 4, horizontalAlign);
+                DrawTextOnGlass(hdc, text, fBold ? fntMenuBold : fntMenu, rct, 4, horizontalAlign);
                 g.ReleaseHdc(hdc);
             }
             else {
@@ -198,7 +198,7 @@ namespace QTTabBarLib {
                     if(horizontalAlign == StringAlignment.Center) {
                         format.Trimming = StringTrimming.EllipsisPath;
                     }
-                    g.DrawString(text, fBold ? this.fntMenuBold : this.fntMenu, fSelect ? SystemBrushes.HighlightText : SystemBrushes.MenuText, rct, format);
+                    g.DrawString(text, fBold ? fntMenuBold : fntMenu, fSelect ? SystemBrushes.HighlightText : SystemBrushes.MenuText, rct, format);
                 }
             }
         }
@@ -284,112 +284,112 @@ namespace QTTabBarLib {
         }
 
         public void HideSwitcher(bool fSwitch) {
-            this.HideSwitcherInner(false, fSwitch);
+            HideSwitcherInner(false, fSwitch);
         }
 
         private void HideSwitcherInner(bool fClickClose, bool fSwitch) {
-            if(this.fIsShown) {
-                if(this.fCompositionEnabled) {
-                    base.SetStyle(ControlStyles.OptimizedDoubleBuffer, false);
-                    this.fDoubleBufferRequired = true;
+            if(fIsShown) {
+                if(fCompositionEnabled) {
+                    SetStyle(ControlStyles.OptimizedDoubleBuffer, false);
+                    fDoubleBufferRequired = true;
                 }
-                this.fIsShown = false;
-                PInvoke.ShowWindow(base.Handle, 0);
-                if(fSwitch && (this.Switched != null)) {
-                    ItemCheckEventArgs e = new ItemCheckEventArgs(fClickClose ? this.iHoveredIndex : this.selectedIndex, CheckState.Checked, CheckState.Checked);
-                    this.Switched(this, e);
+                fIsShown = false;
+                PInvoke.ShowWindow(Handle, 0);
+                if(fSwitch && (Switched != null)) {
+                    ItemCheckEventArgs e = new ItemCheckEventArgs(fClickClose ? iHoveredIndex : selectedIndex, CheckState.Checked, CheckState.Checked);
+                    Switched(this, e);
                 }
             }
         }
 
         private void InitializeComponent() {
-            this.components = new Container();
-            this.toolTipSwitcher = new ToolTip(this.components);
-            base.SuspendLayout();
-            this.toolTipSwitcher.ShowAlways = true;
-            base.AutoScaleDimensions = new SizeF(6f, 13f);
-            base.AutoScaleMode = AutoScaleMode.Font;
-            base.ClientSize = new Size(0x110, 0x130);
-            base.ControlBox = false;
-            base.MaximizeBox = false;
-            base.MinimizeBox = false;
-            base.Name = "TabSwitchForm";
-            base.ShowIcon = false;
-            base.ShowInTaskbar = false;
-            base.StartPosition = FormStartPosition.Manual;
-            base.ResumeLayout(false);
+            components = new Container();
+            toolTipSwitcher = new ToolTip(components);
+            SuspendLayout();
+            toolTipSwitcher.ShowAlways = true;
+            AutoScaleDimensions = new SizeF(6f, 13f);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(0x110, 0x130);
+            ControlBox = false;
+            MaximizeBox = false;
+            MinimizeBox = false;
+            Name = "TabSwitchForm";
+            ShowIcon = false;
+            ShowInTaskbar = false;
+            StartPosition = FormStartPosition.Manual;
+            ResumeLayout(false);
         }
 
         protected override void OnMouseLeave(EventArgs e) {
             base.OnMouseLeave(e);
-            if(this.iHoveredIndex != -1) {
-                this.iHoveredIndex = -1;
-                base.Invalidate();
+            if(iHoveredIndex != -1) {
+                iHoveredIndex = -1;
+                Invalidate();
             }
         }
 
         protected override void OnMouseMove(MouseEventArgs e) {
             base.OnMouseMove(e);
-            Dictionary<int, Rectangle> dictionary = new Dictionary<int, Rectangle>(this.dicItemRcts);
+            Dictionary<int, Rectangle> dictionary = new Dictionary<int, Rectangle>(dicItemRcts);
             foreach(int num in dictionary.Keys) {
-                Rectangle rectangle = this.dicItemRcts[num];
+                Rectangle rectangle = dicItemRcts[num];
                 if(rectangle.Contains(e.Location)) {
-                    if(this.iHoveredIndex != num) {
-                        if(this.dicItemRcts.ContainsKey(this.iHoveredIndex)) {
-                            base.Invalidate(this.dicItemRcts[this.iHoveredIndex]);
+                    if(iHoveredIndex != num) {
+                        if(dicItemRcts.ContainsKey(iHoveredIndex)) {
+                            Invalidate(dicItemRcts[iHoveredIndex]);
                         }
-                        this.iHoveredIndex = num;
-                        base.Invalidate(this.dicItemRcts[num]);
-                        this.toolTipSwitcher.Active = false;
-                        this.toolTipSwitcher.SetToolTip(this, GetTitleText(this.lstPaths[this.iHoveredIndex]));
-                        this.toolTipSwitcher.Active = true;
+                        iHoveredIndex = num;
+                        Invalidate(dicItemRcts[num]);
+                        toolTipSwitcher.Active = false;
+                        toolTipSwitcher.SetToolTip(this, GetTitleText(lstPaths[iHoveredIndex]));
+                        toolTipSwitcher.Active = true;
                     }
                     return;
                 }
             }
-            if(this.iHoveredIndex != -1) {
-                base.Invalidate();
-                this.iHoveredIndex = -1;
+            if(iHoveredIndex != -1) {
+                Invalidate();
+                iHoveredIndex = -1;
             }
-            this.toolTipSwitcher.Active = false;
+            toolTipSwitcher.Active = false;
         }
 
         protected override void OnPaint(PaintEventArgs e) {
-            if(this.lstPaths.Count > 0) {
-                this.DrawItems(e.Graphics);
+            if(lstPaths.Count > 0) {
+                DrawItems(e.Graphics);
             }
-            if(this.fDoubleBufferRequired) {
-                base.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
-                this.fDoubleBufferRequired = false;
+            if(fDoubleBufferRequired) {
+                SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+                fDoubleBufferRequired = false;
             }
         }
 
         private void SetCompositionState() {
             if(QTUtility.IsVista) {
-                if((0 <= PInvoke.DwmIsCompositionEnabled(out this.fCompositionEnabled)) && this.fCompositionEnabled) {
+                if((0 <= PInvoke.DwmIsCompositionEnabled(out fCompositionEnabled)) && fCompositionEnabled) {
                     MARGINS pMarInset = new MARGINS();
                     pMarInset.cxLeftWidth = -1;
-                    if(0 <= PInvoke.DwmExtendFrameIntoClientArea(base.Handle, ref pMarInset)) {
-                        base.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
-                        this.BackColor = Color.Black;
+                    if(0 <= PInvoke.DwmExtendFrameIntoClientArea(Handle, ref pMarInset)) {
+                        SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
+                        BackColor = Color.Black;
                         return;
                     }
                 }
-                this.BackColor = SystemColors.Menu;
+                BackColor = SystemColors.Menu;
             }
             else {
-                base.FormBorderStyle = FormBorderStyle.FixedToolWindow;
+                FormBorderStyle = FormBorderStyle.FixedToolWindow;
             }
-            base.SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
+            SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
         }
 
         public void ShowSwitcher(IntPtr hwndExplr, int indexCurrent, List<PathData> lstPaths) {
             RECT rect;
-            this.initialSelectedIndex = this.selectedIndex = indexCurrent;
+            initialSelectedIndex = selectedIndex = indexCurrent;
             this.lstPaths = lstPaths;
             menuHeight = SystemInformation.MenuHeight;
-            if(QTUtility.IsVista && (PInvoke.DwmIsCompositionEnabled(out this.fCompositionEnabled) != 0)) {
-                this.fCompositionEnabled = false;
+            if(QTUtility.IsVista && (PInvoke.DwmIsCompositionEnabled(out fCompositionEnabled) != 0)) {
+                fCompositionEnabled = false;
             }
             int num = Math.Min(11, lstPaths.Count);
             int cy = 0x2a + (menuHeight * (num + 1));
@@ -397,39 +397,39 @@ namespace QTTabBarLib {
             PInvoke.GetWindowRect(hwndExplr, out rect);
             int x = rect.left + ((rect.Width - cx) / 2);
             int y = rect.top + ((rect.Height - cy) / 2);
-            PInvoke.SetWindowPos(base.Handle, (IntPtr)(-1), x, y, cx, cy, 0x18);
-            PInvoke.ShowWindow(base.Handle, 4);
-            this.fIsShown = true;
-            this.fDoubleBufferRequired = this.fCompositionEnabled;
+            PInvoke.SetWindowPos(Handle, (IntPtr)(-1), x, y, cx, cy, 0x18);
+            PInvoke.ShowWindow(Handle, 4);
+            fIsShown = true;
+            fDoubleBufferRequired = fCompositionEnabled;
         }
 
         public int Switch(bool fShift) {
-            this.selectedIndex += fShift ? -1 : 1;
-            this.iHoveredIndex = -1;
-            if(this.selectedIndex < 0) {
-                this.selectedIndex = this.lstPaths.Count - 1;
+            selectedIndex += fShift ? -1 : 1;
+            iHoveredIndex = -1;
+            if(selectedIndex < 0) {
+                selectedIndex = lstPaths.Count - 1;
             }
-            else if(this.selectedIndex > (this.lstPaths.Count - 1)) {
-                this.selectedIndex = 0;
+            else if(selectedIndex > (lstPaths.Count - 1)) {
+                selectedIndex = 0;
             }
-            if(this.toolTipSwitcher.Active) {
-                this.toolTipSwitcher.Hide(this);
+            if(toolTipSwitcher.Active) {
+                toolTipSwitcher.Hide(this);
             }
-            base.Invalidate();
-            return this.selectedIndex;
+            Invalidate();
+            return selectedIndex;
         }
 
         protected override void WndProc(ref Message m) {
             switch(m.Msg) {
                 case WM.LBUTTONUP:
-                    if(this.iHoveredIndex != -1) {
+                    if(iHoveredIndex != -1) {
                         Point pt = new Point(QTUtility2.GET_X_LPARAM(m.LParam), QTUtility2.GET_Y_LPARAM(m.LParam));
-                        Dictionary<int, Rectangle> dictionary2 = new Dictionary<int, Rectangle>(this.dicItemRcts);
+                        Dictionary<int, Rectangle> dictionary2 = new Dictionary<int, Rectangle>(dicItemRcts);
                         foreach(int num2 in dictionary2.Keys) {
-                            if(num2 == this.iHoveredIndex) {
-                                Rectangle rectangle2 = this.dicItemRcts[num2];
+                            if(num2 == iHoveredIndex) {
+                                Rectangle rectangle2 = dicItemRcts[num2];
                                 if(rectangle2.Contains(pt)) {
-                                    this.HideSwitcherInner(true, true);
+                                    HideSwitcherInner(true, true);
                                 }
                                 break;
                             }
@@ -438,18 +438,18 @@ namespace QTTabBarLib {
                     goto Label_01D5;
 
                 case WM.DWMCOMPOSITIONCHANGED:
-                    this.SetCompositionState();
+                    SetCompositionState();
                     goto Label_01D5;
 
                 case WM.MOUSEACTIVATE:
-                    if((QTUtility2.GET_Y_LPARAM(m.LParam) == 0x201) && (this.iHoveredIndex != -1)) {
-                        Point point = base.PointToClient(MousePosition);
-                        Dictionary<int, Rectangle> dictionary = new Dictionary<int, Rectangle>(this.dicItemRcts);
+                    if((QTUtility2.GET_Y_LPARAM(m.LParam) == 0x201) && (iHoveredIndex != -1)) {
+                        Point point = PointToClient(MousePosition);
+                        Dictionary<int, Rectangle> dictionary = new Dictionary<int, Rectangle>(dicItemRcts);
                         foreach(int num in dictionary.Keys) {
-                            if(num == this.iHoveredIndex) {
-                                Rectangle rectangle = this.dicItemRcts[num];
+                            if(num == iHoveredIndex) {
+                                Rectangle rectangle = dicItemRcts[num];
                                 if(rectangle.Contains(point)) {
-                                    base.Invalidate(this.dicItemRcts[num]);
+                                    Invalidate(dicItemRcts[num]);
                                 }
                                 break;
                             }
@@ -494,13 +494,13 @@ namespace QTTabBarLib {
 
         public bool IsShown {
             get {
-                return this.fIsShown;
+                return fIsShown;
             }
         }
 
         public int SelectedIndex {
             get {
-                return this.selectedIndex;
+                return selectedIndex;
             }
         }
     }

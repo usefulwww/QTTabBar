@@ -27,7 +27,7 @@ namespace QTTabBarLib {
             if(capacity < 1) {
                 capacity = 1;
             }
-            this.maxCapacity = capacity;
+            maxCapacity = capacity;
         }
 
         public PathList(IList<string> collection, int capacity)
@@ -35,20 +35,20 @@ namespace QTTabBarLib {
             if(capacity < 1) {
                 capacity = 1;
             }
-            this.maxCapacity = capacity;
-            this.ensureCount();
+            maxCapacity = capacity;
+            ensureCount();
         }
 
         private void ensureCount() {
-            while(base.Count > this.maxCapacity) {
-                base.RemoveItem(0);
+            while(Count > maxCapacity) {
+                RemoveItem(0);
             }
         }
 
         private int ensureUnique(string path) {
-            for(int i = 0; i < base.Count; i++) {
+            for(int i = 0; i < Count; i++) {
                 if(string.Equals(path, base[i], StringComparison.OrdinalIgnoreCase)) {
-                    base.RemoveItem(i);
+                    RemoveItem(i);
                     return i;
                 }
             }
@@ -56,17 +56,17 @@ namespace QTTabBarLib {
         }
 
         protected override void InsertItem(int index, string item) {
-            int num = this.ensureUnique(item);
+            int num = ensureUnique(item);
             if((num != -1) && (num < index)) {
                 index--;
             }
             base.InsertItem(index, item);
-            this.ensureCount();
+            ensureCount();
         }
 
         public string[] ToArray() {
-            string[] strArray = new string[base.Count];
-            for(int i = 0; i < base.Count; i++) {
+            string[] strArray = new string[Count];
+            for(int i = 0; i < Count; i++) {
                 strArray[i] = base[i];
             }
             return strArray;
@@ -77,8 +77,8 @@ namespace QTTabBarLib {
                 if(value < 1) {
                     value = 1;
                 }
-                this.maxCapacity = value;
-                this.ensureCount();
+                maxCapacity = value;
+                ensureCount();
             }
         }
     }

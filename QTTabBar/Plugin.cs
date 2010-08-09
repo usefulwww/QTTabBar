@@ -28,48 +28,48 @@ namespace QTTabBarLib {
         public Plugin(IPluginClient pluginClient, PluginInformation pluginInfo) {
             this.pluginClient = pluginClient;
             this.pluginInfo = pluginInfo;
-            this.fBackgroundButtonIsSupported = ((pluginInfo.PluginType == PluginType.Background) && ((pluginClient is IBarButton) || (pluginClient is IBarCustomItem))) || ((pluginInfo.PluginType == PluginType.BackgroundMultiple) && (pluginClient is IBarMultipleCustomItems));
+            fBackgroundButtonIsSupported = ((pluginInfo.PluginType == PluginType.Background) && ((pluginClient is IBarButton) || (pluginClient is IBarCustomItem))) || ((pluginInfo.PluginType == PluginType.BackgroundMultiple) && (pluginClient is IBarMultipleCustomItems));
         }
 
         public void Close(EndCode code) {
-            if(this.pluginClient != null) {
+            if(pluginClient != null) {
                 try {
-                    this.pluginClient.Close(code);
+                    pluginClient.Close(code);
                 }
                 catch(Exception exception) {
-                    PluginManager.HandlePluginException(exception, IntPtr.Zero, this.pluginInfo.Name, "Closing plugin.");
+                    PluginManager.HandlePluginException(exception, IntPtr.Zero, pluginInfo.Name, "Closing plugin.");
                 }
-                this.pluginClient = null;
+                pluginClient = null;
             }
-            this.pluginInfo = null;
+            pluginInfo = null;
         }
 
         public bool BackgroundButtonEnabled {
             get {
-                return (this.fBackgroundButtonIsSupported && this.fBackgroundButtonIsEnabled);
+                return (fBackgroundButtonIsSupported && fBackgroundButtonIsEnabled);
             }
             set {
-                if(this.fBackgroundButtonIsSupported) {
-                    this.fBackgroundButtonIsEnabled = value;
+                if(fBackgroundButtonIsSupported) {
+                    fBackgroundButtonIsEnabled = value;
                 }
             }
         }
 
         public bool BackgroundButtonSupported {
             get {
-                return this.fBackgroundButtonIsSupported;
+                return fBackgroundButtonIsSupported;
             }
         }
 
         public IPluginClient Instance {
             get {
-                return this.pluginClient;
+                return pluginClient;
             }
         }
 
         public PluginInformation PluginInformation {
             get {
-                return this.pluginInfo;
+                return pluginInfo;
             }
         }
     }

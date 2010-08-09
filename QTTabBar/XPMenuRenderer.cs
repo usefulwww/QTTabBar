@@ -52,7 +52,7 @@ namespace QTTabBarLib {
         }
 
         protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e) {
-            if(this.fNoPrefix) {
+            if(fNoPrefix) {
                 e.TextFormat |= TextFormatFlags.NoPrefix;
             }
             e.TextColor = e.Item.Selected ? SystemColors.HighlightText : SystemColors.MenuText;

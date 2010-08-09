@@ -49,138 +49,138 @@ namespace QTTabBarLib {
         public event PluginInfoHasOption QueryPluginInfoHasOption;
 
         public PluginView() {
-            base.AutoScroll = true;
-            base.BackColor = SystemColors.Window;
-            base.ColumnCount = 1;
-            base.ColumnStyles.Add(new ColumnStyle());
-            base.Padding = new Padding(0, 0, 6, 0);
-            base.RowCount = 1;
-            base.RowStyles.Add(new RowStyle());
-            base.BorderStyle = BorderStyle.FixedSingle;
-            base.VisibleChanged += this.PluginView_VisibleChanged;
+            AutoScroll = true;
+            BackColor = SystemColors.Window;
+            ColumnCount = 1;
+            ColumnStyles.Add(new ColumnStyle());
+            Padding = new Padding(0, 0, 6, 0);
+            RowCount = 1;
+            RowStyles.Add(new RowStyle());
+            BorderStyle = BorderStyle.FixedSingle;
+            VisibleChanged += PluginView_VisibleChanged;
         }
 
         public void AddPluginViewItem(PluginInformation pi, PluginAssembly pa) {
-            base.SuspendLayout();
+            SuspendLayout();
             PluginViewItem control = new PluginViewItem(pi, pa);
-            control.MouseDown += this.pvi_MouseDown;
-            control.MouseUp += this.pvi_MouseUp;
-            control.DoubleClick += this.pvi_DoubleClick;
-            control.OptionButtonClick += this.pvi_OptionButtonClick;
-            control.DisableButtonClick += this.pvi_DisableButtonClick;
-            control.RemoveButtonClick += this.pvi_RemoveButtonClick;
-            int count = base.Controls.Count;
-            base.RowStyles.Insert(count, new RowStyle(SizeType.Absolute, 55f));
-            base.Controls.Add(control, 0, count);
-            base.RowCount = base.Controls.Count + 1;
-            base.ResumeLayout();
-            for(int i = 0; i < base.Controls.Count; i++) {
-                base.SetRow(base.Controls[i], i);
+            control.MouseDown += pvi_MouseDown;
+            control.MouseUp += pvi_MouseUp;
+            control.DoubleClick += pvi_DoubleClick;
+            control.OptionButtonClick += pvi_OptionButtonClick;
+            control.DisableButtonClick += pvi_DisableButtonClick;
+            control.RemoveButtonClick += pvi_RemoveButtonClick;
+            int count = Controls.Count;
+            RowStyles.Insert(count, new RowStyle(SizeType.Absolute, 55f));
+            Controls.Add(control, 0, count);
+            RowCount = Controls.Count + 1;
+            ResumeLayout();
+            for(int i = 0; i < Controls.Count; i++) {
+                SetRow(Controls[i], i);
             }
         }
 
         private void contextMenuStripPlugin_ItemClicked(object sender, ToolStripItemClickedEventArgs e) {
-            PluginViewItem sourceControl = this.contextMenuStripPlugin.SourceControl as PluginViewItem;
+            PluginViewItem sourceControl = contextMenuStripPlugin.SourceControl as PluginViewItem;
             if(sourceControl != null) {
-                if(e.ClickedItem == this.tsmiOption) {
-                    this.ShowPluginOption(sourceControl);
+                if(e.ClickedItem == tsmiOption) {
+                    ShowPluginOption(sourceControl);
                 }
-                else if(e.ClickedItem == this.tsmiPluginAbout) {
-                    if(this.PluginAboutRequired != null) {
-                        this.PluginAboutRequired(this, new PluginOptionEventArgs(sourceControl));
+                else if(e.ClickedItem == tsmiPluginAbout) {
+                    if(PluginAboutRequired != null) {
+                        PluginAboutRequired(this, new PluginOptionEventArgs(sourceControl));
                     }
                 }
-                else if(e.ClickedItem == this.tsmiDisable) {
+                else if(e.ClickedItem == tsmiDisable) {
                     sourceControl.PluginEnabled = !sourceControl.PluginEnabled;
                 }
-                else if(e.ClickedItem == this.tsmiUninstall) {
-                    this.contextMenuStripPlugin.Close(ToolStripDropDownCloseReason.ItemClicked);
-                    this.RemovePluginViewItem(sourceControl, false);
+                else if(e.ClickedItem == tsmiUninstall) {
+                    contextMenuStripPlugin.Close(ToolStripDropDownCloseReason.ItemClicked);
+                    RemovePluginViewItem(sourceControl, false);
                 }
             }
         }
 
         private void CreateContextMenu() {
-            this.contextMenuStripPlugin = new ContextMenuStrip();
-            this.tsmiOption = new ToolStripMenuItem();
-            this.tsmiPluginAbout = new ToolStripMenuItem();
-            this.tss = new ToolStripSeparator();
-            this.tsmiUninstall = new ToolStripMenuItem();
-            this.tsmiDisable = new ToolStripMenuItem();
-            this.contextMenuStripPlugin.SuspendLayout();
-            this.tsmiOption.Text = BTN_OPTION;
-            this.tsmiUninstall.Text = BTN_REMOVE;
-            this.tsmiDisable.Text = BTN_DISABLE;
-            this.tss.Enabled = false;
-            this.contextMenuStripPlugin.Items.AddRange(new ToolStripItem[] { this.tsmiOption, this.tsmiPluginAbout, this.tss, this.tsmiUninstall, this.tsmiDisable });
-            this.contextMenuStripPlugin.ShowImageMargin = false;
-            this.contextMenuStripPlugin.Size = new Size(120, 0x62);
-            this.contextMenuStripPlugin.ItemClicked += this.contextMenuStripPlugin_ItemClicked;
-            this.contextMenuStripPlugin.ResumeLayout(false);
+            contextMenuStripPlugin = new ContextMenuStrip();
+            tsmiOption = new ToolStripMenuItem();
+            tsmiPluginAbout = new ToolStripMenuItem();
+            tss = new ToolStripSeparator();
+            tsmiUninstall = new ToolStripMenuItem();
+            tsmiDisable = new ToolStripMenuItem();
+            contextMenuStripPlugin.SuspendLayout();
+            tsmiOption.Text = BTN_OPTION;
+            tsmiUninstall.Text = BTN_REMOVE;
+            tsmiDisable.Text = BTN_DISABLE;
+            tss.Enabled = false;
+            contextMenuStripPlugin.Items.AddRange(new ToolStripItem[] { tsmiOption, tsmiPluginAbout, tss, tsmiUninstall, tsmiDisable });
+            contextMenuStripPlugin.ShowImageMargin = false;
+            contextMenuStripPlugin.Size = new Size(120, 0x62);
+            contextMenuStripPlugin.ItemClicked += contextMenuStripPlugin_ItemClicked;
+            contextMenuStripPlugin.ResumeLayout(false);
         }
 
         protected override void Dispose(bool disposing) {
-            if(this.contextMenuStripPlugin != null) {
-                this.contextMenuStripPlugin.Dispose();
-                this.contextMenuStripPlugin = null;
+            if(contextMenuStripPlugin != null) {
+                contextMenuStripPlugin.Dispose();
+                contextMenuStripPlugin = null;
             }
-            if(base.IsHandleCreated) {
-                PInvoke.DragAcceptFiles(base.Handle, false);
+            if(IsHandleCreated) {
+                PInvoke.DragAcceptFiles(Handle, false);
             }
             base.Dispose(disposing);
         }
 
         public void NotifyApplied() {
-            for(int i = 0; i < base.Controls.Count; i++) {
-                ((PluginViewItem)base.Controls[i]).Applied();
+            for(int i = 0; i < Controls.Count; i++) {
+                ((PluginViewItem)Controls[i]).Applied();
             }
         }
 
         private bool PluginInfoHasOption(PluginInformation pi) {
-            return ((this.QueryPluginInfoHasOption != null) && this.QueryPluginInfoHasOption(pi));
+            return ((QueryPluginInfoHasOption != null) && QueryPluginInfoHasOption(pi));
         }
 
         private void PluginView_VisibleChanged(object sender, EventArgs e) {
-            if(base.Visible) {
-                base.VisibleChanged -= this.PluginView_VisibleChanged;
-                PInvoke.DragAcceptFiles(base.Handle, true);
+            if(Visible) {
+                VisibleChanged -= PluginView_VisibleChanged;
+                PInvoke.DragAcceptFiles(Handle, true);
             }
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
             if((keyData == Keys.Up) || (keyData == Keys.Left)) {
-                if(this.iSelectedIndex > 0) {
-                    this.SelectPlugin(this.iSelectedIndex - 1);
+                if(iSelectedIndex > 0) {
+                    SelectPlugin(iSelectedIndex - 1);
                 }
                 return true;
             }
             if((keyData == Keys.Down) || (keyData == Keys.Right)) {
-                if(this.iSelectedIndex < (base.Controls.Count - 1)) {
-                    this.SelectPlugin(this.iSelectedIndex + 1);
+                if(iSelectedIndex < (Controls.Count - 1)) {
+                    SelectPlugin(iSelectedIndex + 1);
                 }
                 return true;
             }
             if(keyData == Keys.Home) {
-                if(base.Controls.Count > 0) {
-                    this.SelectPlugin(0);
+                if(Controls.Count > 0) {
+                    SelectPlugin(0);
                 }
                 return true;
             }
             if(keyData == Keys.End) {
-                if(base.Controls.Count > 0) {
-                    this.SelectPlugin(base.Controls.Count - 1);
+                if(Controls.Count > 0) {
+                    SelectPlugin(Controls.Count - 1);
                 }
                 return true;
             }
-            if(((keyData == Keys.Apps) && (base.Controls.Count > 0)) && ((-1 < this.iSelectedIndex) && (this.iSelectedIndex < base.Controls.Count))) {
-                PluginViewItem control = (PluginViewItem)base.Controls[this.iSelectedIndex];
-                if(this.contextMenuStripPlugin == null) {
-                    this.CreateContextMenu();
+            if(((keyData == Keys.Apps) && (Controls.Count > 0)) && ((-1 < iSelectedIndex) && (iSelectedIndex < Controls.Count))) {
+                PluginViewItem control = (PluginViewItem)Controls[iSelectedIndex];
+                if(contextMenuStripPlugin == null) {
+                    CreateContextMenu();
                 }
-                this.tsmiPluginAbout.Text = string.Format(MNU_PLUGINABOUT, control.Name);
-                this.tsmiOption.Enabled = control.HasOption && control.PluginEnabled;
-                this.tsmiDisable.Text = control.PluginEnabled ? BTN_DISABLE : BTN_ENABLE;
-                this.contextMenuStripPlugin.Show(control, 2, control.Height + 2);
+                tsmiPluginAbout.Text = string.Format(MNU_PLUGINABOUT, control.Name);
+                tsmiOption.Enabled = control.HasOption && control.PluginEnabled;
+                tsmiDisable.Text = control.PluginEnabled ? BTN_DISABLE : BTN_ENABLE;
+                contextMenuStripPlugin.Show(control, 2, control.Height + 2);
             }
             return base.ProcessCmdKey(ref msg, keyData);
         }
@@ -193,80 +193,80 @@ namespace QTTabBarLib {
         private void pvi_DoubleClick(object sender, EventArgs e) {
             PluginViewItem pvi = (PluginViewItem)sender;
             if(pvi.HasOption) {
-                this.ShowPluginOption(pvi);
+                ShowPluginOption(pvi);
             }
         }
 
         private void pvi_MouseDown(object sender, MouseEventArgs e) {
-            int index = base.Controls.IndexOf((PluginViewItem)sender);
+            int index = Controls.IndexOf((PluginViewItem)sender);
             if(index != -1) {
-                this.SelectPlugin(index);
+                SelectPlugin(index);
             }
         }
 
         private void pvi_MouseUp(object sender, MouseEventArgs e) {
             if(e.Button == MouseButtons.Right) {
                 PluginViewItem control = (PluginViewItem)sender;
-                if(this.contextMenuStripPlugin == null) {
-                    this.CreateContextMenu();
+                if(contextMenuStripPlugin == null) {
+                    CreateContextMenu();
                 }
-                this.tsmiPluginAbout.Text = string.Format(MNU_PLUGINABOUT, control.Name);
-                this.tsmiOption.Enabled = control.HasOption && control.PluginEnabled;
-                this.tsmiDisable.Text = control.PluginEnabled ? BTN_DISABLE : BTN_ENABLE;
-                this.contextMenuStripPlugin.Show(control, e.Location);
+                tsmiPluginAbout.Text = string.Format(MNU_PLUGINABOUT, control.Name);
+                tsmiOption.Enabled = control.HasOption && control.PluginEnabled;
+                tsmiDisable.Text = control.PluginEnabled ? BTN_DISABLE : BTN_ENABLE;
+                contextMenuStripPlugin.Show(control, e.Location);
             }
         }
 
         private void pvi_OptionButtonClick(object sender, EventArgs e) {
-            this.ShowPluginOption((PluginViewItem)sender);
+            ShowPluginOption((PluginViewItem)sender);
         }
 
         private void pvi_RemoveButtonClick(object sender, EventArgs e) {
-            this.RemovePluginViewItem((PluginViewItem)sender, false);
+            RemovePluginViewItem((PluginViewItem)sender, false);
         }
 
         public void RemovePluginsRange(PluginInformation[] pis) {
-            base.SuspendLayout();
+            SuspendLayout();
             try {
                 List<PluginViewItem> list = new List<PluginViewItem>();
-                foreach(Control control in base.Controls) {
+                foreach(Control control in Controls) {
                     PluginViewItem item = control as PluginViewItem;
                     if((item != null) && (Array.IndexOf(pis, item.PluginInfo) != -1)) {
                         list.Add(item);
                     }
                 }
                 foreach(PluginViewItem item2 in list) {
-                    this.RemovePluginViewItem(item2, true);
+                    RemovePluginViewItem(item2, true);
                 }
             }
             finally {
-                base.ResumeLayout();
+                ResumeLayout();
             }
         }
 
         private bool RemovePluginViewItem(PluginViewItem pvi, bool noRaiseEvent) {
             bool flag;
-            base.SuspendLayout();
+            SuspendLayout();
             try {
                 if(!noRaiseEvent) {
                     PluginOptionEventArgs e = new PluginOptionEventArgs(pvi);
-                    if(this.PluginRemoved != null) {
-                        this.PluginRemoved(this, e);
+                    if(PluginRemoved != null) {
+                        PluginRemoved(this, e);
                         if(e.Cancel) {
                             return false;
                         }
                     }
                 }
-                int index = base.Controls.IndexOf(pvi);
-                if(this.iSelectedIndex == index) {
-                    this.iSelectedIndex = -1;
+                int index = Controls.IndexOf(pvi);
+                if(iSelectedIndex == index) {
+                    iSelectedIndex = -1;
                 }
                 if(index > -1) {
-                    base.Controls.RemoveAt(index);
-                    base.RowStyles.RemoveAt(index);
-                    base.RowCount--;
-                    for(int i = 0; i < base.Controls.Count; i++) {
-                        base.SetRow(base.Controls[i], i);
+                    Controls.RemoveAt(index);
+                    RowStyles.RemoveAt(index);
+                    RowCount--;
+                    for(int i = 0; i < Controls.Count; i++) {
+                        SetRow(Controls[i], i);
                     }
                     pvi.Dispose();
                     return true;
@@ -274,62 +274,62 @@ namespace QTTabBarLib {
                 flag = false;
             }
             finally {
-                base.ResumeLayout();
+                ResumeLayout();
             }
             return flag;
         }
 
         public void SelectPlugin(int index) {
-            this.iSelectedIndex = index;
+            iSelectedIndex = index;
             PluginViewItem activeControl = null;
-            base.SuspendLayout();
-            for(int i = 0; i < base.Controls.Count; i++) {
-                PluginViewItem item2 = (PluginViewItem)base.Controls[i];
+            SuspendLayout();
+            for(int i = 0; i < Controls.Count; i++) {
+                PluginViewItem item2 = (PluginViewItem)Controls[i];
                 if(i == index) {
                     activeControl = item2;
                     bool hasOption = item2.HasOption;
                     if(!item2.HasOptionQueried) {
-                        hasOption = this.PluginInfoHasOption(item2.PluginInfo);
+                        hasOption = PluginInfoHasOption(item2.PluginInfo);
                     }
-                    base.RowStyles[i].Height = Math.Min(item2.SelectPlugin(hasOption), 134f);
+                    RowStyles[i].Height = Math.Min(item2.SelectPlugin(hasOption), 134f);
                     item2.Invalidate();
                 }
                 else {
                     item2.UnselectPlugin();
-                    base.RowStyles[i].Height = 55f;
+                    RowStyles[i].Height = 55f;
                 }
             }
-            base.ResumeLayout();
+            ResumeLayout();
             if(activeControl != null) {
-                base.ScrollControlIntoView(activeControl);
+                ScrollControlIntoView(activeControl);
             }
         }
 
         private void ShowPluginOption(PluginViewItem pvi) {
-            if(this.PluginOptionRequired != null) {
-                this.PluginOptionRequired(this, new PluginOptionEventArgs(pvi));
+            if(PluginOptionRequired != null) {
+                PluginOptionRequired(this, new PluginOptionEventArgs(pvi));
             }
         }
 
         protected override void WndProc(ref Message m) {
-            if((m.Msg == WM.DROPFILES) && (this.DragDropEx != null)) {
+            if((m.Msg == WM.DROPFILES) && (DragDropEx != null)) {
                 int num = (int)PInvoke.DragQueryFile(m.WParam, uint.MaxValue, null, 0);
                 try {
                     if(num > 0) {
-                        this.lstFilePaths.Clear();
+                        lstFilePaths.Clear();
                         for(int i = 0; i < num; i++) {
                             StringBuilder lpszFile = new StringBuilder(260);
                             PInvoke.DragQueryFile(m.WParam, (uint)i, lpszFile, lpszFile.Capacity);
-                            this.lstFilePaths.Add(lpszFile.ToString());
+                            lstFilePaths.Add(lpszFile.ToString());
                         }
-                        if(this.lstFilePaths.Count > 0) {
-                            this.DragDropEx(this, EventArgs.Empty);
+                        if(lstFilePaths.Count > 0) {
+                            DragDropEx(this, EventArgs.Empty);
                         }
                     }
                 }
                 finally {
                     PInvoke.DragFinish(m.WParam);
-                    this.lstFilePaths.Clear();
+                    lstFilePaths.Clear();
                 }
             }
             else {
@@ -339,13 +339,13 @@ namespace QTTabBarLib {
 
         public IEnumerable<string> DroppedFiles {
             get {
-                return this.lstFilePaths;
+                return lstFilePaths;
             }
         }
 
         public int ItemsCount {
             get {
-                return base.Controls.Count;
+                return Controls.Count;
             }
         }
 
@@ -355,8 +355,8 @@ namespace QTTabBarLib {
                 //d__.<>4__this = this;
                 //return d__;
 
-                for(int i = 0; i < this.Controls.Count; i++) {
-                    yield return (PluginViewItem)this.Controls[i];
+                for(int i = 0; i < Controls.Count; i++) {
+                    yield return (PluginViewItem)Controls[i];
                 }
             }
         }

@@ -36,30 +36,30 @@ namespace QTTabBarLib {
         public string Version;
 
         public PluginInformation(PluginAttribute pluginAtt, string path, string pluginID, string typeFullName) {
-            this.Author = pluginAtt.Author;
-            this.Name = pluginAtt.Name;
-            this.Version = pluginAtt.Version;
-            this.Description = pluginAtt.Description;
-            this.PluginType = pluginAtt.PluginType;
-            this.Path = path;
-            this.PluginID = pluginID;
-            this.TypeFullName = typeFullName;
+            Author = pluginAtt.Author;
+            Name = pluginAtt.Name;
+            Version = pluginAtt.Version;
+            Description = pluginAtt.Description;
+            PluginType = pluginAtt.PluginType;
+            Path = path;
+            PluginID = pluginID;
+            TypeFullName = typeFullName;
         }
 
         public PluginInformation Clone(int index) {
-            PluginInformation information = (PluginInformation)base.MemberwiseClone();
+            PluginInformation information = (PluginInformation)MemberwiseClone();
             information.Index = index;
             return information;
         }
 
         public void Dispose() {
-            if(this.ImageLarge != null) {
-                this.ImageLarge.Dispose();
-                this.ImageLarge = null;
+            if(ImageLarge != null) {
+                ImageLarge.Dispose();
+                ImageLarge = null;
             }
-            if(this.ImageSmall != null) {
-                this.ImageSmall.Dispose();
-                this.ImageSmall = null;
+            if(ImageSmall != null) {
+                ImageSmall.Dispose();
+                ImageSmall = null;
             }
         }
     }

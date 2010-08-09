@@ -34,19 +34,19 @@ namespace QTPlugin {
 
         public Address Address {
             get {
-                return this.address;
+                return address;
             }
         }
 
         public int Index {
             get {
-                return this.index;
+                return index;
             }
         }
 
         public ExplorerWindowActions WindowAction {
             get {
-                return this.windowAction;
+                return windowAction;
             }
         }
     }

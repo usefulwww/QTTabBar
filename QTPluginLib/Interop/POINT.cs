@@ -24,12 +24,12 @@ namespace QTPlugin.Interop {
         public int x;
         public int y;
         public POINT(Point pnt) {
-            this.x = pnt.X;
-            this.y = pnt.Y;
+            x = pnt.X;
+            y = pnt.Y;
         }
 
         public Point ToPoint() {
-            return new Point(this.x, this.y);
+            return new Point(x, y);
         }
     }
 }

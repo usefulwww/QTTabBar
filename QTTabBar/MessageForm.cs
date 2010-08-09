@@ -41,61 +41,61 @@ namespace QTTabBarLib {
 
         private MessageForm(string strMessage, string strTitle, string strExecute, MessageBoxIcon icon, int msecDuration) {
             Icon question;
-            this.InitializeComponent();
-            this.Text = strTitle;
-            this.labelMessage.Text = strMessage;
+            InitializeComponent();
+            Text = strTitle;
+            labelMessage.Text = strMessage;
             this.strExecute = strExecute;
-            this.duration = msecDuration;
-            this.labelCounter.Text = (this.duration / 0x3e8).ToString();
-            using(Graphics graphics = this.labelMessage.CreateGraphics()) {
-                SizeF ef = graphics.MeasureString(strMessage, this.labelMessage.Font, this.labelMessage.Width);
-                int num = ((int)ef.Height) - this.labelMessage.Height;
-                this.labelMessage.Height = (int)ef.Height;
-                this.panel1.Height += num;
-                base.ClientSize = new Size(base.ClientSize.Width, base.ClientSize.Height + num);
-                this.pictureBoxIcon.Size = new Size(0x20, 0x20);
+            duration = msecDuration;
+            labelCounter.Text = (duration / 0x3e8).ToString();
+            using(Graphics graphics = labelMessage.CreateGraphics()) {
+                SizeF ef = graphics.MeasureString(strMessage, labelMessage.Font, labelMessage.Width);
+                int num = ((int)ef.Height) - labelMessage.Height;
+                labelMessage.Height = (int)ef.Height;
+                panel1.Height += num;
+                ClientSize = new Size(ClientSize.Width, ClientSize.Height + num);
+                pictureBoxIcon.Size = new Size(0x20, 0x20);
             }
             if(!string.IsNullOrEmpty(this.strExecute)) {
-                this.btnOk.Visible = false;
-                this.btnOk2.Visible = this.btnCancel.Visible = true;
+                btnOk.Visible = false;
+                btnOk2.Visible = btnCancel.Visible = true;
             }
             switch(icon) {
                 case MessageBoxIcon.Question:
                     question = SystemIcons.Question;
-                    this.sound = SystemSounds.Question;
+                    sound = SystemSounds.Question;
                     break;
 
                 case MessageBoxIcon.Exclamation:
                     question = SystemIcons.Exclamation;
-                    this.sound = SystemSounds.Exclamation;
+                    sound = SystemSounds.Exclamation;
                     break;
 
                 case MessageBoxIcon.None:
                     question = SystemIcons.Information;
-                    this.sound = null;
+                    sound = null;
                     break;
 
                 case MessageBoxIcon.Hand:
                     question = SystemIcons.Error;
-                    this.sound = SystemSounds.Hand;
+                    sound = SystemSounds.Hand;
                     break;
 
                 default:
                     question = SystemIcons.Asterisk;
-                    this.sound = SystemSounds.Asterisk;
+                    sound = SystemSounds.Asterisk;
                     break;
             }
-            this.pictureBoxIcon.Image = question.ToBitmap();
+            pictureBoxIcon.Image = question.ToBitmap();
         }
 
         private void btnOk_Click(object sender, EventArgs e) {
-            this.CloseMessageForm();
+            CloseMessageForm();
         }
 
         private void btnOk2_Click(object sender, EventArgs e) {
-            if(!string.IsNullOrEmpty(this.strExecute)) {
+            if(!string.IsNullOrEmpty(strExecute)) {
                 try {
-                    Process.Start(this.strExecute);
+                    Process.Start(strExecute);
                 }
                 catch {
                 }
@@ -103,111 +103,111 @@ namespace QTTabBarLib {
         }
 
         private void CloseMessageForm() {
-            this.timerClose.Enabled = false;
-            if(!base.IsDisposed) {
-                base.Dispose();
+            timerClose.Enabled = false;
+            if(!IsDisposed) {
+                Dispose();
             }
         }
 
         protected override void Dispose(bool disposing) {
-            if(disposing && (this.components != null)) {
-                this.components.Dispose();
+            if(disposing && (components != null)) {
+                components.Dispose();
             }
             base.Dispose(disposing);
         }
 
         private void InitializeComponent() {
-            this.components = new Container();
-            this.btnOk = new Button();
-            this.btnOk2 = new Button();
-            this.btnCancel = new Button();
-            this.panel1 = new Panel();
-            this.labelMessage = new Label();
-            this.pictureBoxIcon = new PictureBox();
-            this.timerClose = new Timer(this.components);
-            this.labelCounter = new Label();
-            this.panel1.SuspendLayout();
-            ((ISupportInitialize)this.pictureBoxIcon).BeginInit();
-            base.SuspendLayout();
-            this.btnOk.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
-            this.btnOk.Font = new Font(this.Font.FontFamily, 9f);
-            this.btnOk.Location = new Point(0x13e, 0x7a);
-            this.btnOk.Size = new Size(0x4b, 0x1c);
-            this.btnOk.TabIndex = 0;
-            this.btnOk.Text = "OK";
-            this.btnOk.UseVisualStyleBackColor = true;
-            this.btnOk.Click += this.btnOk_Click;
-            this.btnOk2.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
-            this.btnOk2.Font = new Font(this.Font.FontFamily, 9f);
-            this.btnOk2.Location = new Point(0xed, 0x7a);
-            this.btnOk2.Size = new Size(0x4b, 0x1c);
-            this.btnOk2.TabIndex = 0;
-            this.btnOk2.Text = "OK";
-            this.btnOk2.UseVisualStyleBackColor = true;
-            this.btnOk2.Visible = false;
-            this.btnOk2.Click += this.btnOk2_Click;
-            this.btnCancel.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
-            this.btnCancel.Font = new Font(this.Font.FontFamily, 9f);
-            this.btnCancel.Location = new Point(0x13e, 0x7a);
-            this.btnCancel.Size = new Size(0x4b, 0x1c);
-            this.btnCancel.TabIndex = 1;
-            this.btnCancel.Text = "Cancel";
-            this.btnCancel.UseVisualStyleBackColor = true;
-            this.btnCancel.Visible = false;
-            this.btnCancel.Click += this.btnOk_Click;
-            this.panel1.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top;
-            this.panel1.BackColor = SystemColors.Window;
-            this.panel1.Controls.Add(this.labelMessage);
-            this.panel1.Controls.Add(this.pictureBoxIcon);
-            this.panel1.Location = new Point(0, 0);
-            this.panel1.Size = new Size(0x196, 0x70);
-            this.labelMessage.Font = new Font(this.Font.FontFamily, 9f);
-            this.labelMessage.Location = new Point(0x4d, 0x17);
-            this.labelMessage.Size = new Size(0x13c, 0x34);
-            this.pictureBoxIcon.Location = new Point(0x1c, 20);
-            this.pictureBoxIcon.Size = new Size(0x20, 0x20);
-            this.timerClose.Interval = 0x3e8;
-            this.timerClose.Tick += this.timerClose_Tick;
-            this.labelCounter.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
-            this.labelCounter.AutoSize = true;
-            this.labelCounter.Location = new Point(0x19, 130);
-            this.labelCounter.Size = new Size(0x23, 13);
-            base.AutoScaleDimensions = new SizeF(6f, 13f);
-            base.AutoScaleMode = AutoScaleMode.Font;
-            base.ClientSize = new Size(0x195, 0xa2);
-            base.Controls.Add(this.labelCounter);
-            base.Controls.Add(this.panel1);
-            base.Controls.Add(this.btnOk);
-            base.Controls.Add(this.btnOk2);
-            base.Controls.Add(this.btnCancel);
-            base.FormBorderStyle = FormBorderStyle.FixedSingle;
-            base.MaximizeBox = false;
-            base.MinimizeBox = false;
-            base.KeyPreview = true;
-            base.ShowIcon = false;
-            base.ShowInTaskbar = false;
-            base.StartPosition = FormStartPosition.Manual;
-            base.Shown += this.MessageForm_Shown;
-            this.panel1.ResumeLayout(false);
-            ((ISupportInitialize)this.pictureBoxIcon).EndInit();
-            base.ResumeLayout(false);
-            base.PerformLayout();
+            components = new Container();
+            btnOk = new Button();
+            btnOk2 = new Button();
+            btnCancel = new Button();
+            panel1 = new Panel();
+            labelMessage = new Label();
+            pictureBoxIcon = new PictureBox();
+            timerClose = new Timer(components);
+            labelCounter = new Label();
+            panel1.SuspendLayout();
+            ((ISupportInitialize)pictureBoxIcon).BeginInit();
+            SuspendLayout();
+            btnOk.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
+            btnOk.Font = new Font(Font.FontFamily, 9f);
+            btnOk.Location = new Point(0x13e, 0x7a);
+            btnOk.Size = new Size(0x4b, 0x1c);
+            btnOk.TabIndex = 0;
+            btnOk.Text = "OK";
+            btnOk.UseVisualStyleBackColor = true;
+            btnOk.Click += btnOk_Click;
+            btnOk2.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
+            btnOk2.Font = new Font(Font.FontFamily, 9f);
+            btnOk2.Location = new Point(0xed, 0x7a);
+            btnOk2.Size = new Size(0x4b, 0x1c);
+            btnOk2.TabIndex = 0;
+            btnOk2.Text = "OK";
+            btnOk2.UseVisualStyleBackColor = true;
+            btnOk2.Visible = false;
+            btnOk2.Click += btnOk2_Click;
+            btnCancel.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
+            btnCancel.Font = new Font(Font.FontFamily, 9f);
+            btnCancel.Location = new Point(0x13e, 0x7a);
+            btnCancel.Size = new Size(0x4b, 0x1c);
+            btnCancel.TabIndex = 1;
+            btnCancel.Text = "Cancel";
+            btnCancel.UseVisualStyleBackColor = true;
+            btnCancel.Visible = false;
+            btnCancel.Click += btnOk_Click;
+            panel1.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top;
+            panel1.BackColor = SystemColors.Window;
+            panel1.Controls.Add(labelMessage);
+            panel1.Controls.Add(pictureBoxIcon);
+            panel1.Location = new Point(0, 0);
+            panel1.Size = new Size(0x196, 0x70);
+            labelMessage.Font = new Font(Font.FontFamily, 9f);
+            labelMessage.Location = new Point(0x4d, 0x17);
+            labelMessage.Size = new Size(0x13c, 0x34);
+            pictureBoxIcon.Location = new Point(0x1c, 20);
+            pictureBoxIcon.Size = new Size(0x20, 0x20);
+            timerClose.Interval = 0x3e8;
+            timerClose.Tick += timerClose_Tick;
+            labelCounter.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            labelCounter.AutoSize = true;
+            labelCounter.Location = new Point(0x19, 130);
+            labelCounter.Size = new Size(0x23, 13);
+            AutoScaleDimensions = new SizeF(6f, 13f);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(0x195, 0xa2);
+            Controls.Add(labelCounter);
+            Controls.Add(panel1);
+            Controls.Add(btnOk);
+            Controls.Add(btnOk2);
+            Controls.Add(btnCancel);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
+            MaximizeBox = false;
+            MinimizeBox = false;
+            KeyPreview = true;
+            ShowIcon = false;
+            ShowInTaskbar = false;
+            StartPosition = FormStartPosition.Manual;
+            Shown += MessageForm_Shown;
+            panel1.ResumeLayout(false);
+            ((ISupportInitialize)pictureBoxIcon).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         private void MessageForm_Shown(object sender, EventArgs e) {
-            if(this.sound != null) {
-                this.sound.Play();
+            if(sound != null) {
+                sound.Play();
             }
-            if(this.duration == 0) {
-                base.ControlBox = this.labelCounter.Visible = this.btnOk.Visible = false;
+            if(duration == 0) {
+                ControlBox = labelCounter.Visible = btnOk.Visible = false;
             }
-            this.timerClose.Start();
+            timerClose.Start();
         }
 
         protected override void OnKeyDown(KeyEventArgs e) {
             base.OnKeyDown(e);
             if(e.KeyData == (Keys.Control | Keys.C)) {
-                QTTabBarClass.SetStringClipboard(this.Text + Environment.NewLine + Environment.NewLine + this.labelMessage.Text);
+                QTTabBarClass.SetStringClipboard(Text + Environment.NewLine + Environment.NewLine + labelMessage.Text);
             }
         }
 
@@ -239,18 +239,18 @@ namespace QTTabBarLib {
         }
 
         private void ShowMessageForm() {
-            PInvoke.ShowWindow(base.Handle, 4);
-            this.MessageForm_Shown(this, EventArgs.Empty);
+            PInvoke.ShowWindow(Handle, 4);
+            MessageForm_Shown(this, EventArgs.Empty);
         }
 
         private void timerClose_Tick(object sender, EventArgs e) {
-            this.elapsed += 0x3e8;
-            this.labelCounter.Text = ((this.duration - this.elapsed) / 0x3e8).ToString();
-            this.labelCounter.Refresh();
-            if(this.elapsed >= this.duration) {
-                this.timerClose.Stop();
-                if(!base.IsDisposed) {
-                    base.Dispose();
+            elapsed += 0x3e8;
+            labelCounter.Text = ((duration - elapsed) / 0x3e8).ToString();
+            labelCounter.Refresh();
+            if(elapsed >= duration) {
+                timerClose.Stop();
+                if(!IsDisposed) {
+                    Dispose();
                 }
             }
         }

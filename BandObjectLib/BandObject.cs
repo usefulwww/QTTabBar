@@ -42,7 +42,7 @@ namespace BandObjectLib {
             bool monitorSetInfo = true;
             public RebarBreakFixer(IntPtr hwnd, BandObject parent) {
                 this.parent = parent;
-                base.AssignHandle(hwnd);
+                AssignHandle(hwnd);
             }
 
             public void ToggleSetInfoMonitor(bool on) {
@@ -120,7 +120,7 @@ namespace BandObjectLib {
             int n = ActiveRebarCount();
             for(int i = 0; i < n; ++i) {
                 REBARBANDINFO info = GetRebarBand(i, RBBIM.STYLE | RBBIM.CHILD);
-                if(info.hwndChild == base.Handle) {
+                if(info.hwndChild == Handle) {
                     return (info.fStyle & RBBS.BREAK) != 0;
                 }
             }
@@ -128,19 +128,19 @@ namespace BandObjectLib {
         }
 
         public virtual void CloseDW(uint dwReserved) {
-            this.fClosedDW = true;
-            this.ShowDW(false);
-            this.Dispose(true);
-            if(this.Explorer != null) {
-                Marshal.ReleaseComObject(this.Explorer);
-                this.Explorer = null;
+            fClosedDW = true;
+            ShowDW(false);
+            Dispose(true);
+            if(Explorer != null) {
+                Marshal.ReleaseComObject(Explorer);
+                Explorer = null;
             }
-            if(this.BandObjectSite != null) {
-                Marshal.ReleaseComObject(this.BandObjectSite);
-                this.BandObjectSite = null;
+            if(BandObjectSite != null) {
+                Marshal.ReleaseComObject(BandObjectSite);
+                BandObjectSite = null;
             }
-            if(this.RebarSubclass != null) {
-                this.RebarSubclass.ReleaseHandle();
+            if(RebarSubclass != null) {
+                RebarSubclass.ReleaseHandle();
                 RebarSubclass = null;
             }
             if(RebarSubclass != null) {
@@ -154,8 +154,8 @@ namespace BandObjectLib {
 
         public virtual void GetBandInfo(uint dwBandID, uint dwViewMode, ref DESKBANDINFO dbi) {
             if((dbi.dwMask & DBIM.ACTUAL) != 0) {
-                dbi.ptActual.X = base.Size.Width;
-                dbi.ptActual.Y = base.Size.Height;
+                dbi.ptActual.X = Size.Width;
+                dbi.ptActual.Y = Size.Height;
             }
             if((dbi.dwMask & DBIM.INTEGRAL) != 0) {
                 dbi.ptIntegral.X = -1;
@@ -165,8 +165,8 @@ namespace BandObjectLib {
                 dbi.ptMaxSize.X = dbi.ptMaxSize.Y = -1;
             }
             if((dbi.dwMask & DBIM.MINSIZE) != 0) {
-                dbi.ptMinSize.X = this.MinSize.Width;
-                dbi.ptMinSize.Y = this.MinSize.Height;
+                dbi.ptMinSize.X = MinSize.Width;
+                dbi.ptMinSize.Y = MinSize.Height;
             }
             if((dbi.dwMask & DBIM.MODEFLAGS) != 0) {
                 dbi.dwModeFlags = DBIMF.NORMAL;
@@ -192,15 +192,15 @@ namespace BandObjectLib {
         }
 
         public virtual void GetSite(ref Guid riid, out object ppvSite) {
-            ppvSite = this.BandObjectSite;
+            ppvSite = BandObjectSite;
         }
 
         public virtual void GetWindow(out IntPtr phwnd) {
-            phwnd = base.Handle;
+            phwnd = Handle;
         }
 
         public virtual int HasFocusIO() {
-            if(!base.ContainsFocus) {
+            if(!ContainsFocus) {
                 return 1;
             }
             return 0;
@@ -211,15 +211,15 @@ namespace BandObjectLib {
 
         protected override void OnGotFocus(EventArgs e) {
             base.OnGotFocus(e);
-            if((!this.fClosedDW && (this.BandObjectSite != null)) && base.IsHandleCreated) {
-                this.BandObjectSite.OnFocusChangeIS(this, 1);
+            if((!fClosedDW && (BandObjectSite != null)) && IsHandleCreated) {
+                BandObjectSite.OnFocusChangeIS(this, 1);
             }
         }
 
         protected override void OnLostFocus(EventArgs e) {
             base.OnLostFocus(e);
-            if((!this.fClosedDW && (this.BandObjectSite != null)) && (base.ActiveControl == null)) {
-                this.BandObjectSite.OnFocusChangeIS(this, 0);
+            if((!fClosedDW && (BandObjectSite != null)) && (ActiveControl == null)) {
+                BandObjectSite.OnFocusChangeIS(this, 0);
             }
         }
 
@@ -233,22 +233,22 @@ namespace BandObjectLib {
         }
 
         public virtual void SetSite(object pUnkSite) {
-            if(this.BandObjectSite != null) {
-                Marshal.ReleaseComObject(this.BandObjectSite);
+            if(BandObjectSite != null) {
+                Marshal.ReleaseComObject(BandObjectSite);
             }
-            if(this.Explorer != null) {
-                Marshal.ReleaseComObject(this.Explorer);
-                this.Explorer = null;
+            if(Explorer != null) {
+                Marshal.ReleaseComObject(Explorer);
+                Explorer = null;
             }
-            this.BandObjectSite = pUnkSite as IInputObjectSite;
-            if(this.BandObjectSite != null) {
+            BandObjectSite = pUnkSite as IInputObjectSite;
+            if(BandObjectSite != null) {
                 Guid guid = ExplorerGUIDs.IID_IWebBrowserApp;
                 Guid riid = ExplorerGUIDs.IID_IUnknown;
                 try {
                     object obj2;
-                    ((_IServiceProvider)this.BandObjectSite).QueryService(ref guid, ref riid, out obj2);
-                    this.Explorer = (WebBrowserClass)Marshal.CreateWrapperOfType(obj2 as IWebBrowser, typeof(WebBrowserClass));
-                    this.OnExplorerAttached();
+                    ((_IServiceProvider)BandObjectSite).QueryService(ref guid, ref riid, out obj2);
+                    Explorer = (WebBrowserClass)Marshal.CreateWrapperOfType(obj2 as IWebBrowser, typeof(WebBrowserClass));
+                    OnExplorerAttached();
                 }
                 catch(COMException) {
                 }
@@ -256,7 +256,7 @@ namespace BandObjectLib {
             try {
                 IOleWindow window = pUnkSite as IOleWindow;
                 if(window != null) {
-                    window.GetWindow(out this.ReBarHandle);
+                    window.GetWindow(out ReBarHandle);
                 }
             }
             catch {
@@ -264,7 +264,7 @@ namespace BandObjectLib {
         }
 
         public virtual void ShowDW(bool fShow) {
-            if(this.ReBarHandle != IntPtr.Zero && Environment.OSVersion.Version.Major > 5) {
+            if(ReBarHandle != IntPtr.Zero && Environment.OSVersion.Version.Major > 5) {
                 if(RebarSubclass == null) {
                     RebarSubclass = new RebarBreakFixer(ReBarHandle, this);
                 }
@@ -274,11 +274,11 @@ namespace BandObjectLib {
                     result = BeginInvoke(new UnsetInfoDelegate(UnsetInfo));
                 }
             }
-            base.Visible = fShow;
+            Visible = fShow;
         }
 
         public virtual int TranslateAcceleratorIO(ref MSG msg) {
-            if(((msg.message == 0x100) && ((msg.wParam == ((IntPtr)9L)) || (msg.wParam == ((IntPtr)0x75L)))) && base.SelectNextControl(base.ActiveControl, (ModifierKeys & Keys.Shift) != Keys.Shift, true, false, false)) {
+            if(((msg.message == 0x100) && ((msg.wParam == ((IntPtr)9L)) || (msg.wParam == ((IntPtr)0x75L)))) && SelectNextControl(ActiveControl, (ModifierKeys & Keys.Shift) != Keys.Shift, true, false, false)) {
                 return 0;
             }
             return 1;
@@ -286,11 +286,11 @@ namespace BandObjectLib {
 
         public virtual void UIActivateIO(int fActivate, ref MSG Msg) {
             if(fActivate != 0) {
-                Control nextControl = base.GetNextControl(this, true);
+                Control nextControl = GetNextControl(this, true);
                 if(nextControl != null) {
                     nextControl.Select();
                 }
-                base.Focus();
+                Focus();
             }
         }
 
@@ -304,10 +304,10 @@ namespace BandObjectLib {
 
         public Size MinSize {
             get {
-                return this._minSize;
+                return _minSize;
             }
             set {
-                this._minSize = value;
+                _minSize = value;
             }
         }
     }

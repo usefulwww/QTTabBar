@@ -23,46 +23,46 @@ namespace QTPlugin {
         private Dictionary<int, object> dic;
 
         public TabBarOption() {
-            this.dic = new Dictionary<int, object>();
+            dic = new Dictionary<int, object>();
         }
 
         public TabBarOption(Dictionary<int, object> option_value_pairs) {
-            this.dic = new Dictionary<int, object>();
-            this.dic = option_value_pairs;
+            dic = new Dictionary<int, object>();
+            dic = option_value_pairs;
         }
 
         public void SetValue(TabBar_Options_Boolean option, bool value) {
-            this.dic[(int)option] = value;
+            dic[(int)option] = value;
         }
 
         public void SetValue(TabBar_Options_Color option, Color value) {
-            this.dic[(int)option] = value;
+            dic[(int)option] = value;
         }
 
         public void SetValue(TabBar_Options_Int option, int value) {
-            this.dic[(int)option] = value;
+            dic[(int)option] = value;
         }
 
         public void SetValue(TabBar_Options_Misc option, object value) {
-            this.dic[(int)option] = value;
+            dic[(int)option] = value;
         }
 
         public void SetValue(TabBar_Options_String option, string value) {
             if(value == null) {
                 value = string.Empty;
             }
-            this.dic[(int)option] = value;
+            dic[(int)option] = value;
         }
 
         public void SetValues(Dictionary<int, object> option_value_pairs) {
             foreach(int num in option_value_pairs.Keys) {
-                this.dic[num] = option_value_pairs[num];
+                dic[num] = option_value_pairs[num];
             }
         }
 
         public bool TryGetValue(TabBar_Options_Boolean option, out bool value) {
             object obj2;
-            if(this.dic.TryGetValue((int)option, out obj2) && (obj2 is bool)) {
+            if(dic.TryGetValue((int)option, out obj2) && (obj2 is bool)) {
                 value = (bool)obj2;
                 return true;
             }
@@ -72,7 +72,7 @@ namespace QTPlugin {
 
         public bool TryGetValue(TabBar_Options_Color option, out Color value) {
             object obj2;
-            if(this.dic.TryGetValue((int)option, out obj2) && (obj2 is Color)) {
+            if(dic.TryGetValue((int)option, out obj2) && (obj2 is Color)) {
                 value = (Color)obj2;
                 return true;
             }
@@ -82,7 +82,7 @@ namespace QTPlugin {
 
         public bool TryGetValue(TabBar_Options_Int option, out int value) {
             object obj2;
-            if(this.dic.TryGetValue((int)option, out obj2) && (obj2 is int)) {
+            if(dic.TryGetValue((int)option, out obj2) && (obj2 is int)) {
                 value = (int)obj2;
                 return true;
             }
@@ -91,12 +91,12 @@ namespace QTPlugin {
         }
 
         public bool TryGetValue(TabBar_Options_Misc option, out object value) {
-            return this.dic.TryGetValue((int)option, out value);
+            return dic.TryGetValue((int)option, out value);
         }
 
         public bool TryGetValue(TabBar_Options_String option, out string value) {
             object obj2;
-            if(this.dic.TryGetValue((int)option, out obj2) && (obj2 is string)) {
+            if(dic.TryGetValue((int)option, out obj2) && (obj2 is string)) {
                 value = (string)obj2;
                 return true;
             }
@@ -106,7 +106,7 @@ namespace QTPlugin {
 
         public Dictionary<int, object> Dictionary {
             get {
-                return this.dic;
+                return dic;
             }
         }
     }

@@ -72,7 +72,7 @@ namespace QuizoPlugins {
             IntPtr pIDL = IntPtr.Zero;
 
             try {
-                string path = this.pluginServer.SelectedTab.Address.Path;
+                string path = pluginServer.SelectedTab.Address.Path;
 
                 if(String.IsNullOrEmpty(path) || !Directory.Exists(path)) {
                     SystemSounds.Hand.Play();
@@ -101,7 +101,7 @@ namespace QuizoPlugins {
 
 
                 // Select and put into rename mode.
-                if(0 == this.shellBrowser.QueryActiveShellView(out shellView)) {
+                if(0 == shellBrowser.QueryActiveShellView(out shellView)) {
                     shellView.Refresh();
 
                     pIDL = ILCreateFromPath(pathNew);

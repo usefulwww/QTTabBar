@@ -25,10 +25,10 @@ namespace QTTabBarLib {
         public IntPtr MessageParentHandle;
 
         public EventPack(IntPtr hwnd, ItemRightClickedEventHandler handlerRightClick, EventHandler handlerDirDblClick, bool fFromTaskBar) {
-            this.MessageParentHandle = hwnd;
-            this.ItemRightClickEventHandler = handlerRightClick;
-            this.DirDoubleClickEventHandler = handlerDirDblClick;
-            this.FromTaskBar = fFromTaskBar;
+            MessageParentHandle = hwnd;
+            ItemRightClickEventHandler = handlerRightClick;
+            DirDoubleClickEventHandler = handlerDirDblClick;
+            FromTaskBar = fFromTaskBar;
         }
     }
 }

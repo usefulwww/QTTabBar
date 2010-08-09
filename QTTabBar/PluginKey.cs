@@ -24,8 +24,8 @@ namespace QTTabBarLib {
         public string PluginID;
         public int[] Keys;
         public PluginKey(string pluginID, int[] keys) {
-            this.PluginID = pluginID;
-            this.Keys = keys;
+            PluginID = pluginID;
+            Keys = keys;
         }
     }
 }

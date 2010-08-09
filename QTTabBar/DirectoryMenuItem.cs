@@ -29,19 +29,19 @@ namespace QTTabBarLib {
 
         public EventPack EventPack {
             get {
-                return this.ep;
+                return ep;
             }
             set {
-                this.ep = value;
+                ep = value;
             }
         }
 
         public DateTime ModifiiedDate {
             get {
-                return this.dtDirMod;
+                return dtDirMod;
             }
             set {
-                this.dtDirMod = value;
+                dtDirMod = value;
             }
         }
     }

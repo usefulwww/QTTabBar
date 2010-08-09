@@ -41,16 +41,16 @@ namespace QuizoPlugins {
             if(String.IsNullOrEmpty(strQuery))
                 return false;
 
-            if(this.migemoWrapper == null) {
+            if(migemoWrapper == null) {
                 try {
-                    this.migemoWrapper = new MigemoWrapper(pathDLL, pathDic);
+                    migemoWrapper = new MigemoWrapper(pathDLL, pathDic);
                 }
                 catch {
                     return false;
                 }
             }
 
-            if(this.migemoWrapper != null && this.migemoWrapper.IsEnable) {
+            if(migemoWrapper != null && migemoWrapper.IsEnable) {
                 try {
                     bool fStartWithNoPartial = strQuery.StartsWith("^");
                     if(fStartWithNoPartial && strQuery.Length > 1)
@@ -60,7 +60,7 @@ namespace QuizoPlugins {
                     if(fStartWithNoPartial || !fPartialMatch)
                         strPrefix = "^";
 
-                    re = new Regex(strPrefix + this.migemoWrapper.QueryRegexStr(strQuery), RegexOptions.IgnoreCase);
+                    re = new Regex(strPrefix + migemoWrapper.QueryRegexStr(strQuery), RegexOptions.IgnoreCase);
                     return true;
                 }
                 catch {
@@ -85,9 +85,9 @@ namespace QuizoPlugins {
         }
 
         public void Close(EndCode endCode) {
-            if(this.migemoWrapper != null) {
-                this.migemoWrapper.Dispose();
-                this.migemoWrapper = null;
+            if(migemoWrapper != null) {
+                migemoWrapper.Dispose();
+                migemoWrapper = null;
             }
         }
 
@@ -98,7 +98,7 @@ namespace QuizoPlugins {
         }
 
         public void OnOption() {
-            this.pluginServer.ExecuteCommand(Commands.SetModalState, true);
+            pluginServer.ExecuteCommand(Commands.SetModalState, true);
             try {
                 using(MigemoOptionForm mof = new MigemoOptionForm(pathDLL, pathDic, fPartialMatch)) {
                     if(DialogResult.OK == mof.ShowDialog()) {
@@ -117,7 +117,7 @@ namespace QuizoPlugins {
                 }
             }
             finally {
-                this.pluginServer.ExecuteCommand(Commands.SetModalState, false);
+                pluginServer.ExecuteCommand(Commands.SetModalState, false);
             }
         }
 

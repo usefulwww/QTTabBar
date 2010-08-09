@@ -27,7 +27,7 @@ namespace QTTabBarLib {
 
         public ToolStripTrackBar()
             : base(new TrackBar()) {
-            TrackBar control = (TrackBar)base.Control;
+            TrackBar control = (TrackBar)Control;
             control.MaximumSize = new Size(80, 0x16);
             control.Maximum = 0xff;
             control.Minimum = 20;
@@ -40,27 +40,27 @@ namespace QTTabBarLib {
         protected override void OnSubscribeControlEvents(Control control) {
             base.OnSubscribeControlEvents(control);
             TrackBar bar = (TrackBar)control;
-            bar.ValueChanged += this.OnValueChange;
+            bar.ValueChanged += OnValueChange;
         }
 
         private void OnValueChange(object sender, EventArgs e) {
-            if(!this.fSuppressEvent && (this.ValueChanged != null)) {
-                this.ValueChanged(this, e);
+            if(!fSuppressEvent && (ValueChanged != null)) {
+                ValueChanged(this, e);
             }
         }
 
         public void SetValueWithoutEvent(int value) {
-            TrackBar control = (TrackBar)base.Control;
+            TrackBar control = (TrackBar)Control;
             if((control.Minimum <= value) && (value <= control.Maximum)) {
-                this.fSuppressEvent = true;
+                fSuppressEvent = true;
                 control.Value = value;
-                this.fSuppressEvent = false;
+                fSuppressEvent = false;
             }
         }
 
         public int Value {
             get {
-                return ((TrackBar)base.Control).Value;
+                return ((TrackBar)Control).Value;
             }
         }
     }

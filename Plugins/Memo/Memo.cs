@@ -37,14 +37,14 @@ namespace QuizoPlugins {
         }
 
         public void Close(EndCode code) {
-            this.pluginServer = null;
-            if(this.memoForm != null) {
-                this.memoForm.Dispose();
+            pluginServer = null;
+            if(memoForm != null) {
+                memoForm.Dispose();
             }
         }
 
         public void OnMenuItemClick(MenuType menuType, string menuText, ITab tab) {
-            this.ShowMemoForm(tab.Address.Path, true);
+            ShowMemoForm(tab.Address.Path, true);
         }
 
         public void OnOption() {
@@ -71,13 +71,13 @@ namespace QuizoPlugins {
         }
 
         public void OnShortcutKeyPressed(int index) {
-            if((this.memoForm != null) && this.memoForm.Visible) {
-                this.memoForm.HideMemoForm();
+            if((memoForm != null) && memoForm.Visible) {
+                memoForm.HideMemoForm();
             }
             else {
-                ITab selectedTab = this.pluginServer.SelectedTab;
+                ITab selectedTab = pluginServer.SelectedTab;
                 if(selectedTab != null) {
-                    this.ShowMemoForm(selectedTab.Address.Path, true);
+                    ShowMemoForm(selectedTab.Address.Path, true);
                 }
             }
         }
@@ -93,24 +93,24 @@ namespace QuizoPlugins {
                 }
             }
             this.pluginServer.RegisterMenu(this, MenuType.Tab, ResStrs[0], true);
-            this.pluginServer.NavigationComplete += this.pluginServer_NavigationComplete;
-            this.pluginServer.ExplorerStateChanged += this.pluginServer_ExplorerStateChanged;
+            this.pluginServer.NavigationComplete += pluginServer_NavigationComplete;
+            this.pluginServer.ExplorerStateChanged += pluginServer_ExplorerStateChanged;
         }
 
         internal void OpenDirectory(string path) {
-            this.pluginServer.CreateTab(new Address(path), -1, false, true);
+            pluginServer.CreateTab(new Address(path), -1, false, true);
         }
 
         private void pluginServer_ExplorerStateChanged(object sender, PluginEventArgs e) {
             if(e.WindowAction == ExplorerWindowActions.Minimized) {
-                if(this.memoForm != null) {
-                    this.memoForm.HideMemoForm();
+                if(memoForm != null) {
+                    memoForm.HideMemoForm();
                 }
             }
             else if(e.WindowAction == ExplorerWindowActions.Restored) {
-                ITab selectedTab = this.pluginServer.SelectedTab;
+                ITab selectedTab = pluginServer.SelectedTab;
                 if(((selectedTab != null) && !string.IsNullOrEmpty(selectedTab.Address.Path)) && Directory.Exists(selectedTab.Address.Path)) {
-                    this.ShowMemoForm(selectedTab.Address.Path, false);
+                    ShowMemoForm(selectedTab.Address.Path, false);
                 }
             }
         }
@@ -118,7 +118,7 @@ namespace QuizoPlugins {
         private void pluginServer_NavigationComplete(object sender, PluginEventArgs e) {
             string path = e.Address.Path;
             if(!string.IsNullOrEmpty(path) && Directory.Exists(path)) {
-                this.ShowMemoForm(path, false);
+                ShowMemoForm(path, false);
             }
         }
 
@@ -137,17 +137,17 @@ namespace QuizoPlugins {
 
         private void ShowMemoForm(string path, bool fForce) {
             try {
-                if(this.memoForm == null) {
-                    this.memoForm = new MemoForm(this);
+                if(memoForm == null) {
+                    memoForm = new MemoForm(this);
                 }
                 if(fForce) {
-                    this.memoForm.ShowMemoForm(path);
+                    memoForm.ShowMemoForm(path);
                 }
-                else if(((ConfigValues[0] & 0xc0) != 0xc0) && (((ConfigValues[0] & 0x80) == 0x80) || this.memoForm.ContainsPath(path))) {
-                    this.memoForm.ShowMemoForm(path);
+                else if(((ConfigValues[0] & 0xc0) != 0xc0) && (((ConfigValues[0] & 0x80) == 0x80) || memoForm.ContainsPath(path))) {
+                    memoForm.ShowMemoForm(path);
                 }
                 else {
-                    this.memoForm.HideMemoForm();
+                    memoForm.HideMemoForm();
                 }
             }
             catch(Exception) {

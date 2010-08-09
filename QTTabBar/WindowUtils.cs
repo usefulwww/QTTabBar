@@ -17,7 +17,6 @@
 
 using System;
 using System.Runtime.InteropServices;
-using System.Text;
 using BandObjectLib;
 using Microsoft.Win32;
 using QTTabBarLib.Interop;

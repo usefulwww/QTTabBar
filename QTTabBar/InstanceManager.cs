@@ -30,11 +30,11 @@ namespace QTTabBarLib {
 
         public void AddButtonBarHandle(IntPtr hwndExplr, IntPtr hwndBtnBar) {
             try {
-                this.rwLockBtnBar.AcquireWriterLock(-1);
-                this.dicBtnBarHandle[hwndExplr] = hwndBtnBar;
+                rwLockBtnBar.AcquireWriterLock(-1);
+                dicBtnBarHandle[hwndExplr] = hwndBtnBar;
             }
             finally {
-                this.rwLockBtnBar.ReleaseWriterLock();
+                rwLockBtnBar.ReleaseWriterLock();
             }
         }
 
@@ -44,13 +44,13 @@ namespace QTTabBarLib {
             //return _a;
 
             try {
-                this.rwLockBtnBar.AcquireReaderLock(-1);
-                foreach(IntPtr hwndBB in this.dicBtnBarHandle.Values) {
+                rwLockBtnBar.AcquireReaderLock(-1);
+                foreach(IntPtr hwndBB in dicBtnBarHandle.Values) {
                     yield return hwndBB;
                 }
             }
             finally {
-                this.rwLockBtnBar.ReleaseReaderLock();
+                rwLockBtnBar.ReleaseReaderLock();
             }
         }
 
@@ -60,13 +60,13 @@ namespace QTTabBarLib {
             //return d__;
 
             try {
-                this.rwLockTabBar.AcquireReaderLock(-1);
-                foreach(IntPtr hwnd in this.sdInstancePair.Keys) {
+                rwLockTabBar.AcquireReaderLock(-1);
+                foreach(IntPtr hwnd in sdInstancePair.Keys) {
                     yield return hwnd;
                 }
             }
             finally {
-                this.rwLockTabBar.ReleaseReaderLock();
+                rwLockTabBar.ReleaseReaderLock();
             }
         }
 
@@ -74,14 +74,14 @@ namespace QTTabBarLib {
             QTTabBarClass class2;
             try {
                 InstancePair pair;
-                this.rwLockTabBar.AcquireReaderLock(-1);
-                if((this.sdInstancePair.TryGetValue(hwndExplr, out pair) && (pair.tabBar != null)) && pair.tabBar.IsHandleCreated) {
+                rwLockTabBar.AcquireReaderLock(-1);
+                if((sdInstancePair.TryGetValue(hwndExplr, out pair) && (pair.tabBar != null)) && pair.tabBar.IsHandleCreated) {
                     return pair.tabBar;
                 }
                 class2 = null;
             }
             finally {
-                this.rwLockTabBar.ReleaseReaderLock();
+                rwLockTabBar.ReleaseReaderLock();
             }
             return class2;
         }
@@ -90,66 +90,66 @@ namespace QTTabBarLib {
             IntPtr zero;
             try {
                 InstancePair pair;
-                this.rwLockTabBar.AcquireReaderLock(-1);
-                if((this.sdInstancePair.TryGetValue(hwndExplr, out pair) && (pair.tabBar != null)) && pair.tabBar.IsHandleCreated) {
+                rwLockTabBar.AcquireReaderLock(-1);
+                if((sdInstancePair.TryGetValue(hwndExplr, out pair) && (pair.tabBar != null)) && pair.tabBar.IsHandleCreated) {
                     return pair.hwnd;
                 }
                 zero = IntPtr.Zero;
             }
             finally {
-                this.rwLockTabBar.ReleaseReaderLock();
+                rwLockTabBar.ReleaseReaderLock();
             }
             return zero;
         }
 
         public bool NextInstanceExists() {
             try {
-                this.rwLockTabBar.AcquireWriterLock(-1);
-                while(this.sdInstancePair.Count > 0) {
+                rwLockTabBar.AcquireWriterLock(-1);
+                while(sdInstancePair.Count > 0) {
                     IntPtr ptr;
-                    InstancePair pair = this.sdInstancePair.Peek(out ptr);
+                    InstancePair pair = sdInstancePair.Peek(out ptr);
                     if(((pair.tabBar != null) && pair.tabBar.IsHandleCreated) && (PInvoke.IsWindow(pair.hwnd) && PInvoke.IsWindow(ptr))) {
                         return true;
                     }
-                    this.sdInstancePair.Pop();
+                    sdInstancePair.Pop();
                 }
             }
             finally {
-                this.rwLockTabBar.ReleaseWriterLock();
+                rwLockTabBar.ReleaseWriterLock();
             }
             return false;
         }
 
         public void PushInstance(IntPtr hwndExplr, QTTabBarClass tabBar) {
             try {
-                this.rwLockTabBar.AcquireWriterLock(-1);
-                this.sdInstancePair.Push(hwndExplr, new InstancePair(tabBar, tabBar.Handle));
+                rwLockTabBar.AcquireWriterLock(-1);
+                sdInstancePair.Push(hwndExplr, new InstancePair(tabBar, tabBar.Handle));
             }
             finally {
-                this.rwLockTabBar.ReleaseWriterLock();
+                rwLockTabBar.ReleaseWriterLock();
             }
         }
 
         public void RemoveButtonBarHandle(IntPtr hwndExplr) {
             try {
-                this.rwLockBtnBar.AcquireWriterLock(-1);
-                this.dicBtnBarHandle.Remove(hwndExplr);
+                rwLockBtnBar.AcquireWriterLock(-1);
+                dicBtnBarHandle.Remove(hwndExplr);
             }
             finally {
-                this.rwLockBtnBar.ReleaseWriterLock();
+                rwLockBtnBar.ReleaseWriterLock();
             }
         }
 
         public bool RemoveInstance(IntPtr hwndExplr, QTTabBarClass tabBar) {
             bool flag2;
             try {
-                this.rwLockTabBar.AcquireWriterLock(-1);
-                bool flag = tabBar == this.CurrentTabBar;
-                this.sdInstancePair.Remove(hwndExplr);
+                rwLockTabBar.AcquireWriterLock(-1);
+                bool flag = tabBar == CurrentTabBar;
+                sdInstancePair.Remove(hwndExplr);
                 flag2 = flag;
             }
             finally {
-                this.rwLockTabBar.ReleaseWriterLock();
+                rwLockTabBar.ReleaseWriterLock();
             }
             return flag2;
         }
@@ -160,28 +160,28 @@ namespace QTTabBarLib {
             //return d__;
 
             try {
-                this.rwLockTabBar.AcquireReaderLock(-1);
-                foreach(InstancePair ip in this.sdInstancePair.Values) {
+                rwLockTabBar.AcquireReaderLock(-1);
+                foreach(InstancePair ip in sdInstancePair.Values) {
                     yield return ip.hwnd;
                 }
             }
             finally {
-                this.rwLockTabBar.ReleaseReaderLock();
+                rwLockTabBar.ReleaseReaderLock();
             }
         }
 
         public bool TryGetButtonBarHandle(IntPtr hwndExplr, out IntPtr hwndButtonBar) {
             try {
                 IntPtr ptr;
-                this.rwLockBtnBar.AcquireReaderLock(-1);
-                if(this.dicBtnBarHandle.TryGetValue(hwndExplr, out ptr) && PInvoke.IsWindow(ptr)) {
+                rwLockBtnBar.AcquireReaderLock(-1);
+                if(dicBtnBarHandle.TryGetValue(hwndExplr, out ptr) && PInvoke.IsWindow(ptr)) {
                     hwndButtonBar = ptr;
                     return true;
                 }
                 hwndButtonBar = IntPtr.Zero;
             }
             finally {
-                this.rwLockBtnBar.ReleaseReaderLock();
+                rwLockBtnBar.ReleaseReaderLock();
             }
             return false;
         }
@@ -190,9 +190,9 @@ namespace QTTabBarLib {
             get {
                 IntPtr zero;
                 try {
-                    this.rwLockTabBar.AcquireReaderLock(-1);
-                    if(this.sdInstancePair.Count > 0) {
-                        InstancePair pair = this.sdInstancePair.Peek();
+                    rwLockTabBar.AcquireReaderLock(-1);
+                    if(sdInstancePair.Count > 0) {
+                        InstancePair pair = sdInstancePair.Peek();
                         if((pair.tabBar != null) && pair.tabBar.IsHandleCreated) {
                             return pair.hwnd;
                         }
@@ -200,7 +200,7 @@ namespace QTTabBarLib {
                     zero = IntPtr.Zero;
                 }
                 finally {
-                    this.rwLockTabBar.ReleaseReaderLock();
+                    rwLockTabBar.ReleaseReaderLock();
                 }
                 return zero;
             }
@@ -210,14 +210,14 @@ namespace QTTabBarLib {
             get {
                 QTTabBarClass class2;
                 try {
-                    this.rwLockTabBar.AcquireReaderLock(-1);
-                    if(this.sdInstancePair.Count > 0) {
-                        return this.sdInstancePair.Peek().tabBar;
+                    rwLockTabBar.AcquireReaderLock(-1);
+                    if(sdInstancePair.Count > 0) {
+                        return sdInstancePair.Peek().tabBar;
                     }
                     class2 = null;
                 }
                 finally {
-                    this.rwLockTabBar.ReleaseReaderLock();
+                    rwLockTabBar.ReleaseReaderLock();
                 }
                 return class2;
             }

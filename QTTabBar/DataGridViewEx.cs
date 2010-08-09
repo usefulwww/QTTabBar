@@ -20,7 +20,7 @@ using System.Windows.Forms;
 namespace QTTabBarLib {
     internal sealed class DataGridViewEx : DataGridView {
         public DataGridViewEx() {
-            base.DoubleBuffered = true;
+            DoubleBuffered = true;
         }
     }
 }

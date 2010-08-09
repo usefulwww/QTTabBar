@@ -44,15 +44,15 @@ namespace QTTabBarLib {
             this.fSearchHidden = fSearchHidden;
             this.fSearchSystem = fSearchSystem;
             if(this.path.StartsWith(@"\\")) {
-                this.fSubDirectoryFound = this.fSubFileFound = true;
+                fSubDirectoryFound = fSubFileFound = true;
             }
         }
 
         public void Dispose() {
-            if((this.hFindFile != IntPtr.Zero) && (this.hFindFile != INVALID_HANDLE_VALUE)) {
-                FindClose(this.hFindFile);
-                this.path = null;
-                this.hFindFile = IntPtr.Zero;
+            if((hFindFile != IntPtr.Zero) && (hFindFile != INVALID_HANDLE_VALUE)) {
+                FindClose(hFindFile);
+                path = null;
+                hFindFile = IntPtr.Zero;
             }
         }
 
@@ -65,40 +65,40 @@ namespace QTTabBarLib {
         [SuppressUnmanagedCodeSecurity, DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         private static extern int SetErrorMode(int uMode);
         public bool SubDirectoryExists() {
-            return this.subObjectExists(true);
+            return subObjectExists(true);
         }
 
         public bool SubFileExists() {
-            return this.subObjectExists(false);
+            return subObjectExists(false);
         }
 
         private bool subObjectExists(bool fDirectory) {
-            if(this.hFindFile != INVALID_HANDLE_VALUE) {
-                if((fDirectory && this.fSubDirectoryFound) || (!fDirectory && this.fSubFileFound)) {
+            if(hFindFile != INVALID_HANDLE_VALUE) {
+                if((fDirectory && fSubDirectoryFound) || (!fDirectory && fSubFileFound)) {
                     return true;
                 }
-                if(this.iLastError == 0x12) {
+                if(iLastError == 0x12) {
                     return false;
                 }
                 int num = 0;
                 WIN32_FIND_DATA lpFindFileData = new WIN32_FIND_DATA();
                 int uMode = SetErrorMode(1);
                 try {
-                    if(this.hFindFile == IntPtr.Zero) {
-                        this.hFindFile = FindFirstFile(this.path, lpFindFileData);
+                    if(hFindFile == IntPtr.Zero) {
+                        hFindFile = FindFirstFile(path, lpFindFileData);
                     }
-                    if(this.hFindFile != INVALID_HANDLE_VALUE) {
+                    if(hFindFile != INVALID_HANDLE_VALUE) {
                         do {
                             if(((lpFindFileData.cFileName != null) && (lpFindFileData.cFileName != ".")) && (lpFindFileData.cFileName != "..")) {
-                                if((this.fSearchHidden || ((lpFindFileData.dwFileAttributes & 2) == 0)) && (this.fSearchSystem || ((lpFindFileData.dwFileAttributes & 4) == 0))) {
+                                if((fSearchHidden || ((lpFindFileData.dwFileAttributes & 2) == 0)) && (fSearchSystem || ((lpFindFileData.dwFileAttributes & 4) == 0))) {
                                     if((lpFindFileData.dwFileAttributes & 0x10) != 0) {
-                                        this.fSubDirectoryFound = true;
+                                        fSubDirectoryFound = true;
                                         if(fDirectory) {
                                             return true;
                                         }
                                     }
                                     else {
-                                        this.fSubFileFound = true;
+                                        fSubFileFound = true;
                                         if(!fDirectory) {
                                             return true;
                                         }
@@ -106,17 +106,17 @@ namespace QTTabBarLib {
                                 }
                                 if(++num > 0x20) {
                                     if(fDirectory) {
-                                        this.fSubDirectoryFound = true;
+                                        fSubDirectoryFound = true;
                                     }
                                     else {
-                                        this.fSubFileFound = true;
+                                        fSubFileFound = true;
                                     }
                                     return true;
                                 }
                             }
                         }
-                        while(FindNextFile(this.hFindFile, lpFindFileData));
-                        this.iLastError = Marshal.GetLastWin32Error();
+                        while(FindNextFile(hFindFile, lpFindFileData));
+                        iLastError = Marshal.GetLastWin32Error();
                     }
                 }
                 finally {

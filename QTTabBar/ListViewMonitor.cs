@@ -35,7 +35,7 @@ namespace QTTabBarLib {
         private bool fDisposed;
 
         internal ListViewMonitor(ShellBrowserEx shellBrowser, IntPtr hwndExplorer, IntPtr hwndSubDirTipMessageReflect) {
-            this.ShellBrowser = shellBrowser;
+            ShellBrowser = shellBrowser;
             this.hwndExplorer = hwndExplorer;
             this.hwndSubDirTipMessageReflect = hwndSubDirTipMessageReflect;
             if(QTUtility.IsVista) {

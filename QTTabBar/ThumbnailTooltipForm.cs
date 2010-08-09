@@ -54,13 +54,13 @@ namespace QTTabBarLib {
         public event QEventHandler ThumbnailVisibleChanged;
 
         public ThumbnailTooltipForm() {
-            this.InitializeComponent();
-            this.lstPathFailedThumbnail = new List<string>();
-            this.imageCacheStore = new ImageCacheStore(0x80);
+            InitializeComponent();
+            lstPathFailedThumbnail = new List<string>();
+            imageCacheStore = new ImageCacheStore(0x80);
         }
 
         public void ClearCache() {
-            this.imageCacheStore.Clear();
+            imageCacheStore.Clear();
         }
 
         private bool CreateThumbnail(string path, ref Size formSize) {
@@ -77,16 +77,16 @@ namespace QTTabBarLib {
                 ImageData item = null;
                 Size empty = Size.Empty;
                 Size sizeActual = Size.Empty;
-                this.lblInfo.Text = string.Empty;
+                lblInfo.Text = string.Empty;
                 string toolTipText = null;
-                if((this.maxWidth != QTUtility.PreviewMaxWidth) || (this.maxHeight != QTUtility.PreviewMaxHeight)) {
-                    this.maxWidth = QTUtility.PreviewMaxWidth;
-                    this.maxHeight = QTUtility.PreviewMaxHeight;
-                    this.pictureBox1.Image = null;
-                    this.imageCacheStore.Clear();
-                    this.lstPathFailedThumbnail.Clear();
+                if((maxWidth != QTUtility.PreviewMaxWidth) || (maxHeight != QTUtility.PreviewMaxHeight)) {
+                    maxWidth = QTUtility.PreviewMaxWidth;
+                    maxHeight = QTUtility.PreviewMaxHeight;
+                    pictureBox1.Image = null;
+                    imageCacheStore.Clear();
+                    lstPathFailedThumbnail.Clear();
                 }
-                foreach(ImageData data2 in this.imageCacheStore) {
+                foreach(ImageData data2 in imageCacheStore) {
                     if(string.Equals(data2.Path, path, StringComparison.OrdinalIgnoreCase)) {
                         if(data2.ModifiedDate == info.LastWriteTime) {
                             bitmap = data2.Bitmap;
@@ -103,13 +103,13 @@ namespace QTTabBarLib {
                     }
                 }
                 if(item != null) {
-                    this.imageCacheStore.Remove(item);
+                    imageCacheStore.Remove(item);
                 }
                 if(!flag) {
                     try {
                         ImageData data3;
                         if(!ExtIsDefaultImage(ext)) {
-                            if(this.lstPathFailedThumbnail.Contains(path)) {
+                            if(lstPathFailedThumbnail.Contains(path)) {
                                 return false;
                             }
                             thumbnail = true;
@@ -124,11 +124,11 @@ namespace QTTabBarLib {
                             data3 = LoadImageFile(path, info.LastWriteTime, out empty, out sizeActual);
                         }
                         if(data3 == null) {
-                            this.lstPathFailedThumbnail.Add(path);
+                            lstPathFailedThumbnail.Add(path);
                             return false;
                         }
                         bitmap = data3.Bitmap;
-                        this.imageCacheStore.Add(data3);
+                        imageCacheStore.Add(data3);
                     }
                     catch {
                         return false;
@@ -154,35 +154,35 @@ namespace QTTabBarLib {
                         }
                         text = text + "\r\n" + info.LastWriteTime;
                     }
-                    using(Graphics graphics = this.lblInfo.CreateGraphics()) {
-                        ef = graphics.MeasureString(text, this.lblInfo.Font, (width - 8));
+                    using(Graphics graphics = lblInfo.CreateGraphics()) {
+                        ef = graphics.MeasureString(text, lblInfo.Font, (width - 8));
                     }
-                    this.lblInfo.SuspendLayout();
-                    this.lblInfo.Text = text;
-                    this.lblInfo.Width = width;
-                    this.lblInfo.Height = (int)(ef.Height + 8f);
-                    this.lblInfo.ResumeLayout();
-                    formSize = new Size(width + 8, (sizeActual.Height + this.lblInfo.Height) + 8);
+                    lblInfo.SuspendLayout();
+                    lblInfo.Text = text;
+                    lblInfo.Width = width;
+                    lblInfo.Height = (int)(ef.Height + 8f);
+                    lblInfo.ResumeLayout();
+                    formSize = new Size(width + 8, (sizeActual.Height + lblInfo.Height) + 8);
                 }
                 else {
                     flag4 = true;
                     formSize = new Size(width + 8, sizeActual.Height + 8);
                 }
                 try {
-                    base.SuspendLayout();
+                    SuspendLayout();
                     if(flag4) {
-                        this.lblInfo.Dock = DockStyle.None;
+                        lblInfo.Dock = DockStyle.None;
                     }
                     else {
-                        this.lblInfo.Dock = DockStyle.Bottom;
-                        this.lblInfo.BringToFront();
+                        lblInfo.Dock = DockStyle.Bottom;
+                        lblInfo.BringToFront();
                     }
-                    this.pictureBox1.SuspendLayout();
-                    this.pictureBox1.SizeMode = (sizeActual != bitmap.Size) ? PictureBoxSizeMode.Zoom : PictureBoxSizeMode.CenterImage;
-                    this.pictureBox1.Image = bitmap;
-                    this.pictureBox1.ResumeLayout();
-                    this.pictureBox1.BringToFront();
-                    base.ResumeLayout();
+                    pictureBox1.SuspendLayout();
+                    pictureBox1.SizeMode = (sizeActual != bitmap.Size) ? PictureBoxSizeMode.Zoom : PictureBoxSizeMode.CenterImage;
+                    pictureBox1.Image = bitmap;
+                    pictureBox1.ResumeLayout();
+                    pictureBox1.BringToFront();
+                    ResumeLayout();
                     return true;
                 }
                 catch(Exception exception) {
@@ -206,28 +206,28 @@ namespace QTTabBarLib {
                             flag7 = true;
                             str4 = "  *empty file";
                         }
-                        this.lblText.ForeColor = (ioException != null) ? Color.Red : (flag7 ? SystemColors.GrayText : SystemColors.InfoText);
+                        lblText.ForeColor = (ioException != null) ? Color.Red : (flag7 ? SystemColors.GrayText : SystemColors.InfoText);
                         if(!string.IsNullOrEmpty(QTUtility.PreviewFontName)) {
-                            if((this.lblText.Font.Name != QTUtility.PreviewFontName) || (this.lblText.Font.Size != QTUtility.PreviewFontSize)) {
-                                this.fFontAsigned = true;
+                            if((lblText.Font.Name != QTUtility.PreviewFontName) || (lblText.Font.Size != QTUtility.PreviewFontSize)) {
+                                fFontAsigned = true;
                                 try {
-                                    this.lblText.Font = new Font(QTUtility.PreviewFontName, QTUtility.PreviewFontSize);
+                                    lblText.Font = new Font(QTUtility.PreviewFontName, QTUtility.PreviewFontSize);
                                 }
                                 catch {
                                 }
                             }
                         }
-                        else if(this.fFontAsigned) {
-                            this.fFontAsigned = false;
-                            this.lblText.Font = null;
+                        else if(fFontAsigned) {
+                            fFontAsigned = false;
+                            lblText.Font = null;
                         }
                         int num2 = 0x100;
-                        if(this.fFontAsigned) {
+                        if(fFontAsigned) {
                             num2 = Math.Max((int)(num2 * (QTUtility.PreviewFontSize / DefaultFont.Size)), 0x80);
                             formSize.Width = num2;
                         }
-                        using(Graphics graphics2 = this.lblText.CreateGraphics()) {
-                            ef2 = graphics2.MeasureString(str4, this.lblText.Font, num2);
+                        using(Graphics graphics2 = lblText.CreateGraphics()) {
+                            ef2 = graphics2.MeasureString(str4, lblText.Font, num2);
                         }
                         if((ef2.Height < 512f) || fLoadedAll) {
                             formSize.Height = (int)(ef2.Height + 8f);
@@ -235,11 +235,11 @@ namespace QTTabBarLib {
                         else {
                             formSize.Height = 0x200;
                         }
-                        base.SuspendLayout();
-                        this.lblInfo.Dock = DockStyle.None;
-                        this.lblText.Text = str4;
-                        this.lblText.BringToFront();
-                        base.ResumeLayout();
+                        SuspendLayout();
+                        lblInfo.Dock = DockStyle.None;
+                        lblText.Text = str4;
+                        lblText.BringToFront();
+                        ResumeLayout();
                         return true;
                     }
                     catch(Exception exception2) {
@@ -253,7 +253,7 @@ namespace QTTabBarLib {
         }
 
         protected override void Dispose(bool disposing) {
-            this.imageCacheStore.Clear();
+            imageCacheStore.Clear();
             base.Dispose(disposing);
         }
 
@@ -300,58 +300,58 @@ namespace QTTabBarLib {
         }
 
         public bool HideToolTip() {
-            if(this.fIsShownByKey) {
-                this.fIsShownByKey = false;
+            if(fIsShownByKey) {
+                fIsShownByKey = false;
                 return false;
             }
-            this.isShowing = false;
-            PInvoke.ShowWindow(base.Handle, 0);
-            this.pictureBox1.Image = null;
-            if(this.ThumbnailVisibleChanged != null) {
-                this.ThumbnailVisibleChanged(this, new QEventArgs(ArrowDirection.Down));
+            isShowing = false;
+            PInvoke.ShowWindow(Handle, 0);
+            pictureBox1.Image = null;
+            if(ThumbnailVisibleChanged != null) {
+                ThumbnailVisibleChanged(this, new QEventArgs(ArrowDirection.Down));
             }
             return true;
         }
 
         private void InitializeComponent() {
-            this.pictureBox1 = new PictureBox();
-            this.lblText = new Label();
-            this.lblInfo = new Label();
-            ((ISupportInitialize)this.pictureBox1).BeginInit();
-            base.SuspendLayout();
-            this.lblInfo.ForeColor = SystemColors.InfoText;
-            this.lblInfo.BackColor = Color.Transparent;
-            this.lblInfo.Dock = DockStyle.Bottom;
-            this.lblInfo.Padding = new Padding(4);
-            this.lblInfo.Size = new Size(0x10, 50);
-            this.lblInfo.UseMnemonic = false;
-            this.pictureBox1.BackColor = Color.Transparent;
-            this.pictureBox1.Dock = DockStyle.Fill;
-            this.pictureBox1.Location = new Point(0, 0);
-            this.pictureBox1.Padding = new Padding(4);
-            this.pictureBox1.Size = new Size(0x100, 0x80);
-            this.pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
-            this.pictureBox1.TabStop = false;
-            this.lblText.AutoEllipsis = true;
-            this.lblText.ForeColor = SystemColors.InfoText;
-            this.lblText.BackColor = Color.Transparent;
-            this.lblText.Dock = DockStyle.Fill;
-            this.lblText.Location = new Point(0, 0);
-            this.lblText.Padding = new Padding(4);
-            this.lblText.Size = new Size(0x100, 0x80);
-            this.lblText.UseMnemonic = false;
-            base.AutoScaleDimensions = new SizeF(6f, 13f);
-            base.AutoScaleMode = AutoScaleMode.Font;
-            this.BackColor = SystemColors.Info;
-            base.ClientSize = new Size(0x100, 0x80);
-            base.Controls.Add(this.lblText);
-            base.Controls.Add(this.pictureBox1);
-            base.Controls.Add(this.lblInfo);
-            base.FormBorderStyle = FormBorderStyle.None;
-            base.ShowInTaskbar = false;
-            base.StartPosition = FormStartPosition.Manual;
-            ((ISupportInitialize)this.pictureBox1).EndInit();
-            base.ResumeLayout(false);
+            pictureBox1 = new PictureBox();
+            lblText = new Label();
+            lblInfo = new Label();
+            ((ISupportInitialize)pictureBox1).BeginInit();
+            SuspendLayout();
+            lblInfo.ForeColor = SystemColors.InfoText;
+            lblInfo.BackColor = Color.Transparent;
+            lblInfo.Dock = DockStyle.Bottom;
+            lblInfo.Padding = new Padding(4);
+            lblInfo.Size = new Size(0x10, 50);
+            lblInfo.UseMnemonic = false;
+            pictureBox1.BackColor = Color.Transparent;
+            pictureBox1.Dock = DockStyle.Fill;
+            pictureBox1.Location = new Point(0, 0);
+            pictureBox1.Padding = new Padding(4);
+            pictureBox1.Size = new Size(0x100, 0x80);
+            pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
+            pictureBox1.TabStop = false;
+            lblText.AutoEllipsis = true;
+            lblText.ForeColor = SystemColors.InfoText;
+            lblText.BackColor = Color.Transparent;
+            lblText.Dock = DockStyle.Fill;
+            lblText.Location = new Point(0, 0);
+            lblText.Padding = new Padding(4);
+            lblText.Size = new Size(0x100, 0x80);
+            lblText.UseMnemonic = false;
+            AutoScaleDimensions = new SizeF(6f, 13f);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = SystemColors.Info;
+            ClientSize = new Size(0x100, 0x80);
+            Controls.Add(lblText);
+            Controls.Add(pictureBox1);
+            Controls.Add(lblInfo);
+            FormBorderStyle = FormBorderStyle.None;
+            ShowInTaskbar = false;
+            StartPosition = FormStartPosition.Manual;
+            ((ISupportInitialize)pictureBox1).EndInit();
+            ResumeLayout(false);
         }
 
         private static ImageData LoadImageFile(string path, DateTime dtLastWriteTime, out Size sizeRaw, out Size sizeActual) {
@@ -553,17 +553,17 @@ namespace QTTabBarLib {
 
         protected override void OnPaintBackground(PaintEventArgs e) {
             if(QTUtility.IsVista && VisualStyleRenderer.IsSupported) {
-                new VisualStyleRenderer(VisualStyleElement.ToolTip.Standard.Normal).DrawBackground(e.Graphics, new Rectangle(0, 0, base.Width, base.Height));
+                new VisualStyleRenderer(VisualStyleElement.ToolTip.Standard.Normal).DrawBackground(e.Graphics, new Rectangle(0, 0, Width, Height));
             }
             else {
                 base.OnPaintBackground(e);
-                e.Graphics.DrawRectangle(SystemPens.InfoText, new Rectangle(0, 0, base.Width - 1, base.Height - 1));
+                e.Graphics.DrawRectangle(SystemPens.InfoText, new Rectangle(0, 0, Width - 1, Height - 1));
             }
         }
 
         public bool ShowToolTip(string path, Point pnt) {
             Size formSize = new Size(0x100, 0x80);
-            if(!this.CreateThumbnail(path, ref formSize)) {
+            if(!CreateThumbnail(path, ref formSize)) {
                 return false;
             }
             Rectangle workingArea = Screen.FromPoint(pnt).WorkingArea;
@@ -596,18 +596,18 @@ namespace QTTabBarLib {
                     pnt.Y += 8;
                 }
             }
-            this.isShowing = true;
-            PInvoke.SetWindowPos(base.Handle, (IntPtr)(-1), pnt.X + 0x18, pnt.Y + 0x10, formSize.Width, formSize.Height, 0x10);
-            PInvoke.ShowWindow(base.Handle, 4);
-            if(this.ThumbnailVisibleChanged != null) {
-                this.ThumbnailVisibleChanged(this, new QEventArgs(ArrowDirection.Up));
+            isShowing = true;
+            PInvoke.SetWindowPos(Handle, (IntPtr)(-1), pnt.X + 0x18, pnt.Y + 0x10, formSize.Width, formSize.Height, 0x10);
+            PInvoke.ShowWindow(Handle, 4);
+            if(ThumbnailVisibleChanged != null) {
+                ThumbnailVisibleChanged(this, new QEventArgs(ArrowDirection.Up));
             }
             return true;
         }
 
         public bool ShowToolTip(string path, Rectangle rctMenuItem) {
             Size formSize = new Size(0x100, 0x80);
-            if(!this.CreateThumbnail(path, ref formSize)) {
+            if(!CreateThumbnail(path, ref formSize)) {
                 return false;
             }
             Point point = new Point(rctMenuItem.Right + 8, rctMenuItem.Bottom);
@@ -627,9 +627,9 @@ namespace QTTabBarLib {
                     point.Y += 8;
                 }
             }
-            this.isShowing = true;
-            PInvoke.SetWindowPos(base.Handle, (IntPtr)(-1), point.X, point.Y, formSize.Width, formSize.Height, 0x10);
-            PInvoke.ShowWindow(base.Handle, 4);
+            isShowing = true;
+            PInvoke.SetWindowPos(Handle, (IntPtr)(-1), point.X, point.Y, formSize.Width, formSize.Height, 0x10);
+            PInvoke.ShowWindow(Handle, 4);
             return true;
         }
 
@@ -643,16 +643,16 @@ namespace QTTabBarLib {
 
         public bool IsShowing {
             get {
-                return this.isShowing;
+                return isShowing;
             }
         }
 
         public bool IsShownByKey {
             get {
-                return this.fIsShownByKey;
+                return fIsShownByKey;
             }
             set {
-                this.fIsShownByKey = value;
+                fIsShownByKey = value;
             }
         }
 
@@ -665,7 +665,7 @@ namespace QTTabBarLib {
             }
 
             protected override void ClearItems() {
-                lock(this.syncObject) {
+                lock(syncObject) {
                     foreach(ImageData data in this) {
                         data.Dispose();
                     }
@@ -674,9 +674,9 @@ namespace QTTabBarLib {
             }
 
             protected override void InsertItem(int index, ImageData item) {
-                lock(this.syncObject) {
+                lock(syncObject) {
                     base.InsertItem(index, item);
-                    if(base.Count > this.max_cache_length) {
+                    if(Count > max_cache_length) {
                         base[0].Dispose();
                         base.RemoveItem(0);
                     }
@@ -684,14 +684,14 @@ namespace QTTabBarLib {
             }
 
             protected override void RemoveItem(int index) {
-                lock(this.syncObject) {
+                lock(syncObject) {
                     base[index].Dispose();
                     base.RemoveItem(index);
                 }
             }
 
             protected override void SetItem(int index, ImageData item) {
-                lock(this.syncObject) {
+                lock(syncObject) {
                     base.SetItem(index, item);
                 }
             }
@@ -708,23 +708,23 @@ namespace QTTabBarLib {
             public Size ZoomedSize;
 
             public ImageData(Bitmap bmp, MemoryStream memoryStream, string path, DateTime dtModified, Size sizeRaw, Size sizeZoomed) {
-                this.Bitmap = bmp;
-                this.ms = memoryStream;
-                this.Path = path;
-                this.ModifiedDate = dtModified;
-                this.RawSize = sizeRaw;
-                this.ZoomedSize = sizeZoomed;
+                Bitmap = bmp;
+                ms = memoryStream;
+                Path = path;
+                ModifiedDate = dtModified;
+                RawSize = sizeRaw;
+                ZoomedSize = sizeZoomed;
             }
 
             public void Dispose() {
                 try {
-                    if(this.Bitmap != null) {
-                        this.Bitmap.Dispose();
-                        this.Bitmap = null;
+                    if(Bitmap != null) {
+                        Bitmap.Dispose();
+                        Bitmap = null;
                     }
-                    if(this.ms != null) {
-                        this.ms.Dispose();
-                        this.ms = null;
+                    if(ms != null) {
+                        ms.Dispose();
+                        ms = null;
                     }
                 }
                 catch(Exception exception) {

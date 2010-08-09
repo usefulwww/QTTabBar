@@ -125,7 +125,7 @@ namespace QTTabBarLib {
                     // start to drag, a MOUSELEAVE message is sent, which hides
                     // the SubDirTip anyway.
                     ShellViewController.DefWndProc(ref msg);
-                    this.HideSubDirTip(0xff);
+                    HideSubDirTip(0xff);
                     break;
 
                 case LVN.ITEMACTIVATE: {

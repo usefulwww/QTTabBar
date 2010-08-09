@@ -25,16 +25,16 @@ namespace QTTabBarLib {
         public byte[] IDL;
         public int Hash;
         public LogData(string path, byte[] idl, int hash) {
-            this.Path = path;
-            this.IDL = idl;
-            this.Hash = hash;
+            Path = path;
+            IDL = idl;
+            Hash = hash;
         }
 
         public bool Equals(LogData other) {
-            if(!string.Equals(this.Path, other.Path, StringComparison.OrdinalIgnoreCase)) {
+            if(!string.Equals(Path, other.Path, StringComparison.OrdinalIgnoreCase)) {
                 return false;
             }
-            return (System.IO.Path.IsPathRooted(this.Path) || (this.Hash == other.Hash));
+            return (System.IO.Path.IsPathRooted(Path) || (Hash == other.Hash));
         }
     }
 }

@@ -27,8 +27,8 @@ namespace QTTabBarLib {
 
         public DataGridViewProgressBarColumn()
             : base(new DataGridViewProgressBarCell()) {
-            this.lstCells = new List<DataGridViewProgressBarCell>();
-            base.SortMode = DataGridViewColumnSortMode.Automatic;
+            lstCells = new List<DataGridViewProgressBarCell>();
+            SortMode = DataGridViewColumnSortMode.Automatic;
         }
 
         public void FinishProgress(DataGridViewProgressBarCell cell) {
@@ -36,31 +36,31 @@ namespace QTTabBarLib {
                 cell.CalculatingStatus = HashCalcStatus.Finished;
             }
             cell.EndProgress();
-            this.lstCells.Remove(cell);
+            lstCells.Remove(cell);
         }
 
         public void InitializeProgress(DataGridViewProgressBarCell cell) {
-            if(cell.ColumnIndex != base.Index) {
+            if(cell.ColumnIndex != Index) {
                 throw new ArgumentException("cell is not contained in this column.");
             }
-            if(!this.lstCells.Contains(cell)) {
+            if(!lstCells.Contains(cell)) {
                 cell.OldStyle = cell.Style.Clone();
                 cell.Value = VALUE_WAITING;
                 cell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 cell.Style.ForeColor = cell.Style.SelectionForeColor = SystemColors.GrayText;
                 cell.CalculatingStatus = HashCalcStatus.Calculating;
-                this.lstCells.Add(cell);
+                lstCells.Add(cell);
             }
         }
 
         public void StopAll() {
-            foreach(DataGridViewProgressBarCell cell in this.lstCells) {
+            foreach(DataGridViewProgressBarCell cell in lstCells) {
                 if(cell.CalculatingStatus != HashCalcStatus.Finished) {
                     cell.CalculatingStatus = HashCalcStatus.Aborted;
                 }
                 cell.EndProgress();
             }
-            this.lstCells.Clear();
+            lstCells.Clear();
         }
     }
 }

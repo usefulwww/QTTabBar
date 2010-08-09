@@ -28,16 +28,16 @@ namespace QTTabBarLib.Interop {
         public int bottom;
         public int Width {
             get {
-                return Math.Abs((this.right - this.left));
+                return Math.Abs((right - left));
             }
         }
         public int Height {
             get {
-                return (this.bottom - this.top);
+                return (bottom - top);
             }
         }
         public Rectangle ToRectangle() {
-            return new Rectangle(this.left, this.top, Math.Abs((this.right - this.left)), this.bottom - this.top);
+            return new Rectangle(left, top, Math.Abs((right - left)), bottom - top);
         }
     }
 }

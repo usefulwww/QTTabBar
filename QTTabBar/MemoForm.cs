@@ -30,37 +30,37 @@ namespace QTTabBarLib {
 
             public Rectangle Bounds {
                 get {
-                    return this._bounds;
+                    return _bounds;
                 }
                 set {
-                    this._bounds = value;
+                    _bounds = value;
                 }
             }
 
             public Dictionary<string, string> Dictionary {
                 get {
-                    return this._dic;
+                    return _dic;
                 }
                 set {
-                    this._dic = value;
+                    _dic = value;
                 }
             }
 
             public double Opacity {
                 get {
-                    return this._opacity;
+                    return _opacity;
                 }
                 set {
-                    this._opacity = value;
+                    _opacity = value;
                 }
             }
 
             public Dictionary<string, string> TxtDictionary {
                 get {
-                    return this._txtDic;
+                    return _txtDic;
                 }
                 set {
-                    this._txtDic = value;
+                    _txtDic = value;
                 }
             }
         }

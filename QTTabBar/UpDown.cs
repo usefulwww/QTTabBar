@@ -29,24 +29,24 @@ namespace QTTabBarLib {
         public event QEventHandler ValueChanged;
 
         public UpDown() {
-            base.Size = new Size(0x24, 0x18);
-            this.nativeUpDown = new NativeUpDown(this);
+            Size = new Size(0x24, 0x18);
+            nativeUpDown = new NativeUpDown(this);
         }
 
         protected override void Dispose(bool disposing) {
-            if(this.nativeUpDown != null) {
-                this.nativeUpDown.DestroyHandle();
-                this.nativeUpDown = null;
+            if(nativeUpDown != null) {
+                nativeUpDown.DestroyHandle();
+                nativeUpDown = null;
             }
             base.Dispose(disposing);
         }
 
         protected override void WndProc(ref Message m) {
-            if(((this.nativeUpDown != null) && (m.Msg == WM.NOTIFY)) && (this.ValueChanged != null)) {
+            if(((nativeUpDown != null) && (m.Msg == WM.NOTIFY)) && (ValueChanged != null)) {
                 NMHDR nmhdr = (NMHDR)Marshal.PtrToStructure(m.LParam, typeof(NMHDR));
-                if((nmhdr.code == -722) && (nmhdr.hwndFrom == this.nativeUpDown.Handle)) {
+                if((nmhdr.code == -722) && (nmhdr.hwndFrom == nativeUpDown.Handle)) {
                     NMUPDOWN nmupdown = (NMUPDOWN)Marshal.PtrToStructure(m.LParam, typeof(NMUPDOWN));
-                    this.ValueChanged(this, new QEventArgs((nmupdown.iDelta < 0) ? ArrowDirection.Right : ArrowDirection.Left));
+                    ValueChanged(this, new QEventArgs((nmupdown.iDelta < 0) ? ArrowDirection.Right : ArrowDirection.Left));
                 }
             }
             base.WndProc(ref m);
@@ -74,68 +74,68 @@ namespace QTTabBarLib {
                 cp.Height = OwnerControl.Height;
                 cp.Parent = OwnerControl.Handle;
                 cp.Style = 0x50000040;
-                this.CreateHandle(cp);
-                this.fTrackMouseEvent = true;
-                this.TME = new TRACKMOUSEEVENT();
-                this.TME.cbSize = Marshal.SizeOf(this.TME);
-                this.TME.dwFlags = 2;
-                this.TME.hwndTrack = base.Handle;
+                CreateHandle(cp);
+                fTrackMouseEvent = true;
+                TME = new TRACKMOUSEEVENT();
+                TME.cbSize = Marshal.SizeOf(TME);
+                TME.dwFlags = 2;
+                TME.hwndTrack = Handle;
             }
 
             private void InitializeRenderer() {
-                this.rendererDown_Normal = new VisualStyleRenderer(VisualStyleElement.Spin.DownHorizontal.Normal);
-                this.rendererUp_Normal = new VisualStyleRenderer(VisualStyleElement.Spin.UpHorizontal.Normal);
-                this.rendererDown_Hot = new VisualStyleRenderer(VisualStyleElement.Spin.DownHorizontal.Hot);
-                this.rendererUp_Hot = new VisualStyleRenderer(VisualStyleElement.Spin.UpHorizontal.Hot);
-                this.rendererDown_Pressed = new VisualStyleRenderer(VisualStyleElement.Spin.DownHorizontal.Pressed);
-                this.rendererUp_Pressed = new VisualStyleRenderer(VisualStyleElement.Spin.UpHorizontal.Pressed);
+                rendererDown_Normal = new VisualStyleRenderer(VisualStyleElement.Spin.DownHorizontal.Normal);
+                rendererUp_Normal = new VisualStyleRenderer(VisualStyleElement.Spin.UpHorizontal.Normal);
+                rendererDown_Hot = new VisualStyleRenderer(VisualStyleElement.Spin.DownHorizontal.Hot);
+                rendererUp_Hot = new VisualStyleRenderer(VisualStyleElement.Spin.UpHorizontal.Hot);
+                rendererDown_Pressed = new VisualStyleRenderer(VisualStyleElement.Spin.DownHorizontal.Pressed);
+                rendererUp_Pressed = new VisualStyleRenderer(VisualStyleElement.Spin.UpHorizontal.Pressed);
             }
 
             protected override void WndProc(ref Message m) {
                 if(VisualStyleRenderer.IsSupported) {
                     switch(m.Msg) {
                         case WM.MOUSEMOVE: {
-                                if(this.fTrackMouseEvent) {
-                                    this.fTrackMouseEvent = false;
-                                    PInvoke.TrackMouseEvent(ref this.TME);
+                                if(fTrackMouseEvent) {
+                                    fTrackMouseEvent = false;
+                                    PInvoke.TrackMouseEvent(ref TME);
                                 }
                                 bool flag = (((int)m.WParam) & 1) == 1;
                                 if((((int)((long)m.LParam)) & 0xffff) < 0x13) {
-                                    this.stateDown = flag ? 2 : 1;
-                                    this.stateUP = 0;
+                                    stateDown = flag ? 2 : 1;
+                                    stateUP = 0;
                                 }
                                 else {
-                                    this.stateDown = 0;
-                                    this.stateUP = flag ? 2 : 1;
+                                    stateDown = 0;
+                                    stateUP = flag ? 2 : 1;
                                 }
                                 PInvoke.InvalidateRect(m.HWnd, IntPtr.Zero, false);
                                 break;
                             }
                         case WM.LBUTTONDOWN:
                             if((((int)((long)m.LParam)) & 0xffff) >= 0x13) {
-                                this.stateUP = 2;
+                                stateUP = 2;
                                 break;
                             }
-                            this.stateDown = 2;
+                            stateDown = 2;
                             break;
 
                         case WM.LBUTTONUP:
                             if((((int)((long)m.LParam)) & 0xffff) >= 0x13) {
-                                this.stateUP = 1;
+                                stateUP = 1;
                                 break;
                             }
-                            this.stateDown = 1;
+                            stateDown = 1;
                             break;
 
                         case WM.MOUSELEAVE:
-                            this.stateDown = this.stateUP = 0;
-                            this.fTrackMouseEvent = true;
+                            stateDown = stateUP = 0;
+                            fTrackMouseEvent = true;
                             PInvoke.InvalidateRect(m.HWnd, IntPtr.Zero, false);
                             break;
 
                         case WM.PAINT: {
-                                if(this.rendererDown_Normal == null) {
-                                    this.InitializeRenderer();
+                                if(rendererDown_Normal == null) {
+                                    InitializeRenderer();
                                 }
                                 IntPtr dC = PInvoke.GetDC(m.HWnd);
                                 if(!(dC != IntPtr.Zero)) {
@@ -144,23 +144,23 @@ namespace QTTabBarLib {
                                 using(Graphics graphics = Graphics.FromHdc(dC)) {
                                     VisualStyleRenderer renderer;
                                     VisualStyleRenderer renderer2;
-                                    if(this.stateDown == 0) {
-                                        renderer = this.rendererDown_Normal;
+                                    if(stateDown == 0) {
+                                        renderer = rendererDown_Normal;
                                     }
-                                    else if(this.stateDown == 1) {
-                                        renderer = this.rendererDown_Hot;
-                                    }
-                                    else {
-                                        renderer = this.rendererDown_Pressed;
-                                    }
-                                    if(this.stateUP == 0) {
-                                        renderer2 = this.rendererUp_Normal;
-                                    }
-                                    else if(this.stateUP == 1) {
-                                        renderer2 = this.rendererUp_Hot;
+                                    else if(stateDown == 1) {
+                                        renderer = rendererDown_Hot;
                                     }
                                     else {
-                                        renderer2 = this.rendererUp_Pressed;
+                                        renderer = rendererDown_Pressed;
+                                    }
+                                    if(stateUP == 0) {
+                                        renderer2 = rendererUp_Normal;
+                                    }
+                                    else if(stateUP == 1) {
+                                        renderer2 = rendererUp_Hot;
+                                    }
+                                    else {
+                                        renderer2 = rendererUp_Pressed;
                                     }
                                     renderer.DrawBackground(graphics, rctDw);
                                     renderer2.DrawBackground(graphics, rctUp);

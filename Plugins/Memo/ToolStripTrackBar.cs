@@ -28,7 +28,7 @@ namespace QuizoPlugins {
 
         public ToolStripTrackBar()
             : base(new TrackBar()) {
-            TrackBar control = (TrackBar)base.Control;
+            TrackBar control = (TrackBar)Control;
             control.MaximumSize = new Size(80, 0x16);
             control.Maximum = 0xff;
             control.Minimum = 20;
@@ -39,15 +39,15 @@ namespace QuizoPlugins {
         }
 
         protected override void OnGotFocus(EventArgs e) {
-            if(!this.blockColorChange) {
-                base.Control.BackColor = ProfessionalColors.ButtonSelectedHighlight;
+            if(!blockColorChange) {
+                Control.BackColor = ProfessionalColors.ButtonSelectedHighlight;
             }
             base.OnGotFocus(e);
         }
 
         protected override void OnLostFocus(EventArgs e) {
-            if(!this.blockColorChange) {
-                base.Control.BackColor = SystemColors.Control;
+            if(!blockColorChange) {
+                Control.BackColor = SystemColors.Control;
             }
             base.OnLostFocus(e);
         }
@@ -55,43 +55,43 @@ namespace QuizoPlugins {
         protected override void OnSubscribeControlEvents(Control control) {
             base.OnSubscribeControlEvents(control);
             TrackBar bar = (TrackBar)control;
-            bar.ValueChanged += this.OnValueChange;
+            bar.ValueChanged += OnValueChange;
         }
 
         private void OnValueChange(object sender, EventArgs e) {
-            if(!this.fSuppressEvent && (this.ValueChanged != null)) {
-                this.ValueChanged(this, e);
+            if(!fSuppressEvent && (ValueChanged != null)) {
+                ValueChanged(this, e);
             }
         }
 
         public void SetValueWithoutEvent(int value) {
-            TrackBar control = (TrackBar)base.Control;
+            TrackBar control = (TrackBar)Control;
             if((control.Minimum <= value) && (value <= control.Maximum)) {
-                this.fSuppressEvent = true;
+                fSuppressEvent = true;
                 control.Value = value;
-                this.fSuppressEvent = false;
+                fSuppressEvent = false;
             }
         }
 
         public bool BlockColorChange {
             get {
-                return this.blockColorChange;
+                return blockColorChange;
             }
             set {
-                this.blockColorChange = value;
+                blockColorChange = value;
             }
         }
 
         public int Value {
             get {
-                return ((TrackBar)base.Control).Value;
+                return ((TrackBar)Control).Value;
             }
             set {
                 if((value < 20) || (value > 0xff)) {
-                    ((TrackBar)base.Control).Value = 0xff;
+                    ((TrackBar)Control).Value = 0xff;
                 }
                 else {
-                    ((TrackBar)base.Control).Value = value;
+                    ((TrackBar)Control).Value = value;
                 }
             }
         }

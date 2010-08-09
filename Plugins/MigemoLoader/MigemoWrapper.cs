@@ -45,14 +45,14 @@ namespace QuizoPlugins {
 
         public MigemoWrapper(string pathMigemoDll, string pathDict) {
             if(!String.IsNullOrEmpty(pathMigemoDll) && !String.IsNullOrEmpty(pathDict)) {
-                this.hMoudleMigemo = LoadLibrary(pathMigemoDll);
+                hMoudleMigemo = LoadLibrary(pathMigemoDll);
 
-                if(this.hMoudleMigemo != IntPtr.Zero) {
-                    IntPtr pOpen = GetProcAddress(this.hMoudleMigemo, "migemo_open");
-                    IntPtr pQuery = GetProcAddress(this.hMoudleMigemo, "migemo_query");
-                    IntPtr pRelease = GetProcAddress(this.hMoudleMigemo, "migemo_release");
-                    IntPtr pClose = GetProcAddress(this.hMoudleMigemo, "migemo_close");
-                    IntPtr pIsEnable = GetProcAddress(this.hMoudleMigemo, "migemo_is_enable");
+                if(hMoudleMigemo != IntPtr.Zero) {
+                    IntPtr pOpen = GetProcAddress(hMoudleMigemo, "migemo_open");
+                    IntPtr pQuery = GetProcAddress(hMoudleMigemo, "migemo_query");
+                    IntPtr pRelease = GetProcAddress(hMoudleMigemo, "migemo_release");
+                    IntPtr pClose = GetProcAddress(hMoudleMigemo, "migemo_close");
+                    IntPtr pIsEnable = GetProcAddress(hMoudleMigemo, "migemo_is_enable");
 
                     bool fSuccess = pOpen != IntPtr.Zero &&
                                     pQuery != IntPtr.Zero &&
@@ -62,29 +62,29 @@ namespace QuizoPlugins {
 
                     if(fSuccess) {
                         migemo_open mOpen = Marshal.GetDelegateForFunctionPointer(pOpen, typeof(migemo_open)) as migemo_open;
-                        this.mQuery = Marshal.GetDelegateForFunctionPointer(pQuery, typeof(migemo_query)) as migemo_query;
-                        this.mRlease = Marshal.GetDelegateForFunctionPointer(pRelease, typeof(migemo_release)) as migemo_release;
-                        this.mClose = Marshal.GetDelegateForFunctionPointer(pClose, typeof(migemo_close)) as migemo_close;
-                        this.mIsEnable = Marshal.GetDelegateForFunctionPointer(pIsEnable, typeof(migemo_is_enable)) as migemo_is_enable;
+                        mQuery = Marshal.GetDelegateForFunctionPointer(pQuery, typeof(migemo_query)) as migemo_query;
+                        mRlease = Marshal.GetDelegateForFunctionPointer(pRelease, typeof(migemo_release)) as migemo_release;
+                        mClose = Marshal.GetDelegateForFunctionPointer(pClose, typeof(migemo_close)) as migemo_close;
+                        mIsEnable = Marshal.GetDelegateForFunctionPointer(pIsEnable, typeof(migemo_is_enable)) as migemo_is_enable;
 
                         if(mOpen != null &&
-                            this.mQuery != null &&
-                            this.mRlease != null &&
-                            this.mClose != null &&
-                            this.mIsEnable != null) {
-                            this.pMigemo = mOpen(pathDict);
+                            mQuery != null &&
+                            mRlease != null &&
+                            mClose != null &&
+                            mIsEnable != null) {
+                            pMigemo = mOpen(pathDict);
 
-                            if(this.IsEnable) {
+                            if(IsEnable) {
                                 return;
                             }
-                            else if(this.pMigemo != IntPtr.Zero) {
-                                this.mClose(this.pMigemo);
+                            else if(pMigemo != IntPtr.Zero) {
+                                mClose(pMigemo);
                             }
                         }
                     }
 
-                    FreeLibrary(this.hMoudleMigemo);
-                    this.hMoudleMigemo = IntPtr.Zero;
+                    FreeLibrary(hMoudleMigemo);
+                    hMoudleMigemo = IntPtr.Zero;
                 }
             }
 
@@ -92,17 +92,17 @@ namespace QuizoPlugins {
         }
 
         public string QueryRegexStr(string strQuery) {
-            if(this.IsEnable && strQuery != null) {
+            if(IsEnable && strQuery != null) {
                 IntPtr pRegexStr = IntPtr.Zero;
                 try {
-                    pRegexStr = this.mQuery(this.pMigemo, strQuery);
+                    pRegexStr = mQuery(pMigemo, strQuery);
                     if(pRegexStr != IntPtr.Zero) {
                         return Marshal.PtrToStringAnsi(pRegexStr);
                     }
                 }
                 finally {
                     if(pRegexStr != IntPtr.Zero)
-                        this.mRlease(this.pMigemo, pRegexStr);
+                        mRlease(pMigemo, pRegexStr);
                 }
 
             }
@@ -111,21 +111,21 @@ namespace QuizoPlugins {
 
         public bool IsEnable {
             get {
-                return this.pMigemo != IntPtr.Zero && 0 != this.mIsEnable(this.pMigemo);
+                return pMigemo != IntPtr.Zero && 0 != mIsEnable(pMigemo);
             }
         }
 
         #region IDisposable member
 
         public void Dispose() {
-            if(this.pMigemo != IntPtr.Zero) {
-                this.mClose(this.pMigemo);
-                this.pMigemo = IntPtr.Zero;
+            if(pMigemo != IntPtr.Zero) {
+                mClose(pMigemo);
+                pMigemo = IntPtr.Zero;
             }
 
-            if(this.hMoudleMigemo != IntPtr.Zero) {
-                FreeLibrary(this.hMoudleMigemo);
-                this.hMoudleMigemo = IntPtr.Zero;
+            if(hMoudleMigemo != IntPtr.Zero) {
+                FreeLibrary(hMoudleMigemo);
+                hMoudleMigemo = IntPtr.Zero;
             }
         }
 

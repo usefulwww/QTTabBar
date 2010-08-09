@@ -27,7 +27,7 @@ namespace QTTabBarLib {
 
         public PluginViewItem PluginViewItem {
             get {
-                return this.pvi;
+                return pvi;
             }
         }
     }

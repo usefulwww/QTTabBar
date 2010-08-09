@@ -25,23 +25,23 @@ namespace QTPlugin {
         public byte[] ITEMIDLIST;
         public string Path;
         public Address(IntPtr pidl, string path) {
-            this.ITEMIDLIST = PInvoke.GetIDListData(pidl);
-            this.Path = path;
+            ITEMIDLIST = PInvoke.GetIDListData(pidl);
+            Path = path;
         }
 
         public Address(IntPtr pidl) {
-            this.ITEMIDLIST = PInvoke.GetIDListData(pidl);
-            this.Path = null;
+            ITEMIDLIST = PInvoke.GetIDListData(pidl);
+            Path = null;
         }
 
         public Address(string path) {
-            this.ITEMIDLIST = null;
-            this.Path = path;
+            ITEMIDLIST = null;
+            Path = path;
         }
 
         public Address(byte[] idl, string path) {
-            this.ITEMIDLIST = idl;
-            this.Path = path;
+            ITEMIDLIST = idl;
+            Path = path;
         }
     }
 }

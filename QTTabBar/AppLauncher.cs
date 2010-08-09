@@ -44,10 +44,10 @@ namespace QTTabBarLib {
         public AppLauncher(Address[] addresses, string pathCurrent) {
             List<string> list = new List<string>();
             List<string> list2 = new List<string>();
-            this.strCurrentPath = this.strSelFiles = this.strSelDirs = this.strSelObjs = string.Empty;
-            this.iSelItemsCount = this.iSelFileCount = this.iSelDirsCount = 0;
+            strCurrentPath = strSelFiles = strSelDirs = strSelObjs = string.Empty;
+            iSelItemsCount = iSelFileCount = iSelDirsCount = 0;
             if(addresses != null) {
-                this.iSelItemsCount = addresses.Length;
+                iSelItemsCount = addresses.Length;
                 for(int i = 0; i < addresses.Length; i++) {
                     using(IDLWrapper wrapper = new IDLWrapper(addresses[i].ITEMIDLIST)) {
                         if(wrapper.Available && wrapper.HasPath) {
@@ -62,19 +62,19 @@ namespace QTTabBarLib {
                 }
             }
             if(Directory.Exists(pathCurrent)) {
-                this.strCurrentPath = "\"" + pathCurrent + "\"";
+                strCurrentPath = "\"" + pathCurrent + "\"";
             }
             foreach(string str in list) {
-                this.strSelFiles = this.strSelFiles + "\"" + str + "\" ";
+                strSelFiles = strSelFiles + "\"" + str + "\" ";
             }
             foreach(string str2 in list2) {
-                this.strSelDirs = this.strSelDirs + "\"" + str2 + "\" ";
+                strSelDirs = strSelDirs + "\"" + str2 + "\" ";
             }
-            this.strSelObjs = (this.strSelFiles + this.strSelDirs).Trim();
-            this.strSelFiles = this.strSelFiles.Trim();
-            this.strSelDirs = this.strSelDirs.Trim();
-            this.iSelFileCount = list.Count;
-            this.iSelDirsCount = list2.Count;
+            strSelObjs = (strSelFiles + strSelDirs).Trim();
+            strSelFiles = strSelFiles.Trim();
+            strSelDirs = strSelDirs.Trim();
+            iSelFileCount = list.Count;
+            iSelDirsCount = list2.Count;
         }
 
         public static void Execute(MenuItemArguments mia, IntPtr hwnd) {
@@ -195,39 +195,39 @@ namespace QTTabBarLib {
             int num = 0;
             mia.TokenReplaced = true;
             if(!string.IsNullOrEmpty(mia.Argument)) {
-                if(this.iSelItemsCount > 0) {
+                if(iSelItemsCount > 0) {
                     if(reSlct.IsMatch(mia.Argument)) {
-                        mia.Argument = reSlct.Replace(mia.Argument, this.strSelObjs);
+                        mia.Argument = reSlct.Replace(mia.Argument, strSelObjs);
                         num |= 1;
                     }
                     if(reFile.IsMatch(mia.Argument)) {
-                        mia.Argument = reFile.Replace(mia.Argument, this.strSelFiles);
+                        mia.Argument = reFile.Replace(mia.Argument, strSelFiles);
                         num |= 2;
                     }
                     if(reDirs.IsMatch(mia.Argument)) {
-                        mia.Argument = reDirs.Replace(mia.Argument, this.strSelDirs);
+                        mia.Argument = reDirs.Replace(mia.Argument, strSelDirs);
                         num |= 4;
                     }
                     if(reDrCr.IsMatch(mia.Argument)) {
-                        if(this.strSelDirs.Length > 0) {
-                            mia.Argument = reDrCr.Replace(mia.Argument, this.strSelDirs);
+                        if(strSelDirs.Length > 0) {
+                            mia.Argument = reDrCr.Replace(mia.Argument, strSelDirs);
                             num |= 4;
                         }
-                        else if(this.strCurrentPath != null) {
-                            mia.Argument = reDrCr.Replace(mia.Argument, this.strCurrentPath);
+                        else if(strCurrentPath != null) {
+                            mia.Argument = reDrCr.Replace(mia.Argument, strCurrentPath);
                             num |= 8;
                         }
                     }
                 }
-                else if((this.strCurrentPath != null) && reDrCr.IsMatch(mia.Argument)) {
-                    mia.Argument = reDrCr.Replace(mia.Argument, this.strCurrentPath);
+                else if((strCurrentPath != null) && reDrCr.IsMatch(mia.Argument)) {
+                    mia.Argument = reDrCr.Replace(mia.Argument, strCurrentPath);
                     num |= 8;
                 }
                 else if(reAll.IsMatch(mia.Argument)) {
                     num = 10;
                 }
-                if((this.strCurrentPath != null) && reCrnt.IsMatch(mia.Argument)) {
-                    mia.Argument = reCrnt.Replace(mia.Argument, this.strCurrentPath);
+                if((strCurrentPath != null) && reCrnt.IsMatch(mia.Argument)) {
+                    mia.Argument = reCrnt.Replace(mia.Argument, strCurrentPath);
                     num |= 8;
                 }
                 mia.Argument = reAll.Replace(mia.Argument, string.Empty);
@@ -239,27 +239,27 @@ namespace QTTabBarLib {
             bool flag = false;
             mia.TokenReplaced = true;
             if(!string.IsNullOrEmpty(mia.WorkingDirectory)) {
-                if(this.iSelItemsCount == 1) {
-                    if(reSlct.IsMatch(mia.WorkingDirectory) && Directory.Exists(this.strSelDirs.Trim(new char[] { '"' }))) {
-                        mia.WorkingDirectory = reSlct.Replace(mia.WorkingDirectory, this.strSelDirs);
+                if(iSelItemsCount == 1) {
+                    if(reSlct.IsMatch(mia.WorkingDirectory) && Directory.Exists(strSelDirs.Trim(new char[] { '"' }))) {
+                        mia.WorkingDirectory = reSlct.Replace(mia.WorkingDirectory, strSelDirs);
                         flag = true;
                     }
-                    else if(reDirs.IsMatch(mia.WorkingDirectory) && (this.strSelDirs.Length > 0)) {
-                        mia.WorkingDirectory = reDirs.Replace(mia.WorkingDirectory, this.strSelDirs);
+                    else if(reDirs.IsMatch(mia.WorkingDirectory) && (strSelDirs.Length > 0)) {
+                        mia.WorkingDirectory = reDirs.Replace(mia.WorkingDirectory, strSelDirs);
                         flag = true;
                     }
-                    else if(reDrCr.IsMatch(mia.WorkingDirectory) && Directory.Exists(this.strSelDirs.Trim(new char[] { '"' }))) {
-                        mia.WorkingDirectory = reDrCr.Replace(mia.WorkingDirectory, this.strSelDirs);
+                    else if(reDrCr.IsMatch(mia.WorkingDirectory) && Directory.Exists(strSelDirs.Trim(new char[] { '"' }))) {
+                        mia.WorkingDirectory = reDrCr.Replace(mia.WorkingDirectory, strSelDirs);
                         flag = true;
                     }
                 }
-                if(!flag && (this.strCurrentPath != null)) {
+                if(!flag && (strCurrentPath != null)) {
                     if(reDrCr.IsMatch(mia.WorkingDirectory)) {
-                        mia.WorkingDirectory = reDrCr.Replace(mia.WorkingDirectory, this.strCurrentPath);
+                        mia.WorkingDirectory = reDrCr.Replace(mia.WorkingDirectory, strCurrentPath);
                         flag = true;
                     }
                     else if(reCrnt.IsMatch(mia.WorkingDirectory)) {
-                        mia.WorkingDirectory = reCrnt.Replace(mia.WorkingDirectory, this.strCurrentPath);
+                        mia.WorkingDirectory = reCrnt.Replace(mia.WorkingDirectory, strCurrentPath);
                         flag = true;
                     }
                 }

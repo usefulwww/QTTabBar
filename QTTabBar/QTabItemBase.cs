@@ -40,8 +40,8 @@ namespace QTTabBarLib {
         private string tooltipText = string.Empty;
 
         public QTabItemBase(string title, QTabControl parent) {
-            this.titleText = title;
-            this.Owner = parent;
+            titleText = title;
+            Owner = parent;
             if(font == null) {
                 font = new Font(parent.Font, FontStyle.Bold);
             }
@@ -54,10 +54,10 @@ namespace QTTabBarLib {
                 sfMeasure.FormatFlags |= StringFormatFlags.NoWrap;
             }
             if(title.Length > 0) {
-                this.RefreshRectangle();
+                RefreshRectangle();
             }
             else {
-                this.tabBounds = new Rectangle(this.tabBounds.X, this.tabBounds.Y, 100, 0x18);
+                tabBounds = new Rectangle(tabBounds.X, tabBounds.Y, 100, 0x18);
             }
         }
 
@@ -74,101 +74,101 @@ namespace QTTabBarLib {
         }
 
         public virtual void OnClose() {
-            this.Owner = null;
+            Owner = null;
         }
 
         public void RefreshRectangle() {
-            using(Graphics graphics = this.Owner.CreateGraphics()) {
+            using(Graphics graphics = Owner.CreateGraphics()) {
                 float num = 6f;
-                if(this.Owner.DrawFolderImage) {
+                if(Owner.DrawFolderImage) {
                     num = 26f;
                 }
-                else if(this.tabLocked) {
+                else if(tabLocked) {
                     num = 13f;
                 }
-                if((this.Owner.EnableCloseButton && !this.Owner.TabCloseButtonOnHover) && !this.Owner.TabCloseButtonOnAlt) {
+                if((Owner.EnableCloseButton && !Owner.TabCloseButtonOnHover) && !Owner.TabCloseButtonOnAlt) {
                     num += 17f;
                 }
-                this.sizeTitle = GetTextSize(this.titleText, graphics, true);
-                this.sizeSubTitle = SizeF.Empty;
-                if(this.commentText.Length > 0) {
-                    this.sizeSubTitle = GetTextSize("@ " + this.commentText, graphics, false);
-                    num += this.sizeSubTitle.Width + 3f;
+                sizeTitle = GetTextSize(titleText, graphics, true);
+                sizeSubTitle = SizeF.Empty;
+                if(commentText.Length > 0) {
+                    sizeSubTitle = GetTextSize("@ " + commentText, graphics, false);
+                    num += sizeSubTitle.Width + 3f;
                 }
                 else {
                     num++;
                 }
-                int width = (int)(this.sizeTitle.Width + num);
-                if(this.Owner.OncePainted && (width > this.Owner.Width)) {
-                    if(this.Owner.Width > 40) {
-                        width = this.Owner.Width - 40;
+                int width = (int)(sizeTitle.Width + num);
+                if(Owner.OncePainted && (width > Owner.Width)) {
+                    if(Owner.Width > 40) {
+                        width = Owner.Width - 40;
                     }
                     else {
                         width = 0x20;
                     }
                 }
-                this.tabBounds = new Rectangle(this.tabBounds.X, this.tabBounds.Y, width, (int)this.sizeTitle.Height);
+                tabBounds = new Rectangle(tabBounds.X, tabBounds.Y, width, (int)sizeTitle.Height);
             }
         }
 
         public void ResetOwner(QTabControl owner) {
-            this.Owner = owner;
+            Owner = owner;
             owner.TabPages.Add(this);
         }
 
         public string Comment {
             get {
-                return this.commentText;
+                return commentText;
             }
             set {
-                this.commentText = value ?? string.Empty;
+                commentText = value ?? string.Empty;
             }
         }
 
         public Edges Edge {
             get {
-                return this.edge;
+                return edge;
             }
             set {
-                this.edge = value;
+                edge = value;
             }
         }
 
         public string ImageKey {
             get {
-                return this.imageKey;
+                return imageKey;
             }
             set {
-                if(((this.Owner != null) && this.Owner.DrawFolderImage) && !string.IsNullOrEmpty(value)) {
-                    this.imageKey = QTUtility.GetImageKey(value, null);
+                if(((Owner != null) && Owner.DrawFolderImage) && !string.IsNullOrEmpty(value)) {
+                    imageKey = QTUtility.GetImageKey(value, null);
                 }
                 else {
-                    this.imageKey = value;
+                    imageKey = value;
                 }
             }
         }
 
         public int Row {
             get {
-                return this.iRow;
+                return iRow;
             }
             set {
-                this.iRow = value;
+                iRow = value;
             }
         }
 
         public SizeF SubTitleTextSize {
             get {
-                return this.sizeSubTitle;
+                return sizeSubTitle;
             }
         }
 
         public Rectangle TabBounds {
             get {
-                return this.tabBounds;
+                return tabBounds;
             }
             set {
-                this.tabBounds = value;
+                tabBounds = value;
             }
         }
 
@@ -188,51 +188,51 @@ namespace QTTabBarLib {
 
         public bool TabLocked {
             get {
-                return this.tabLocked;
+                return tabLocked;
             }
             set {
-                this.tabLocked = value;
-                this.RefreshRectangle();
-                if(this.Owner != null) {
-                    this.Owner.Refresh();
+                tabLocked = value;
+                RefreshRectangle();
+                if(Owner != null) {
+                    Owner.Refresh();
                 }
             }
         }
 
         public string Text {
             get {
-                return this.titleText;
+                return titleText;
             }
             set {
-                this.titleText = value;
-                this.RefreshRectangle();
-                if(this.Owner != null) {
-                    this.Owner.Refresh();
+                titleText = value;
+                RefreshRectangle();
+                if(Owner != null) {
+                    Owner.Refresh();
                 }
             }
         }
 
         public SizeF TitleTextSize {
             get {
-                return this.sizeTitle;
+                return sizeTitle;
             }
         }
 
         public string ToolTipText {
             get {
-                return this.tooltipText;
+                return tooltipText;
             }
             set {
-                this.tooltipText = value;
+                tooltipText = value;
             }
         }
 
         public bool UnderLine {
             get {
-                return this.fUnderLine;
+                return fUnderLine;
             }
             set {
-                this.fUnderLine = value;
+                fUnderLine = value;
             }
         }
     }

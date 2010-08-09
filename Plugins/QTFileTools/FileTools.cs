@@ -39,8 +39,8 @@ namespace QuizoPlugins {
             this.pluginServer = pluginServer;
             this.shellBrowser = shellBrowser;
 
-            if(!pluginServer.TryGetLocalizedStrings(this, 1, out this.ResStr)) {
-                this.ResStr = new string[] { StringResources.ButtonNames[0] };
+            if(!pluginServer.TryGetLocalizedStrings(this, 1, out ResStr)) {
+                ResStr = new string[] { StringResources.ButtonNames[0] };
             }
 
             this.pluginServer.SelectionChanged += pluginServer_SelectionChanged;
@@ -53,8 +53,8 @@ namespace QuizoPlugins {
         }
 
         public void Close(EndCode code) {
-            this.pluginServer = null;
-            this.shellBrowser = null;
+            pluginServer = null;
+            shellBrowser = null;
         }
 
         public void OnShortcutKeyPressed(int index) {
@@ -85,7 +85,7 @@ namespace QuizoPlugins {
         }
 
         public void OnButtonClick() {
-            FileOps.FileOperation(FileOpActions.Cut, this.pluginServer.ExplorerHandle, this.shellBrowser);
+            FileOps.FileOperation(FileOpActions.Cut, pluginServer.ExplorerHandle, shellBrowser);
         }
 
         public bool ShowTextLabel {
@@ -96,7 +96,7 @@ namespace QuizoPlugins {
 
         public string Text {
             get {
-                return this.ResStr[0];
+                return ResStr[0];
             }
         }
 
@@ -104,17 +104,17 @@ namespace QuizoPlugins {
 
 
         private void pluginServer_NavigationComplete(object sender, PluginEventArgs e) {
-            this.Update();
+            Update();
         }
 
         private void pluginServer_SelectionChanged(object sender, PluginEventArgs e) {
-            this.Update();
+            Update();
         }
 
         private void Update() {
             Address[] addresses;
-            if(this.pluginServer.TryGetSelection(out addresses)) {
-                this.pluginServer.UpdateItem(this, addresses.Length > 0, false);
+            if(pluginServer.TryGetSelection(out addresses)) {
+                pluginServer.UpdateItem(this, addresses.Length > 0, false);
             }
         }
     }
@@ -133,8 +133,8 @@ namespace QuizoPlugins {
         public void Open(IPluginServer pluginServer, IShellBrowser shellBrowser) {
             this.pluginServer = pluginServer;
 
-            if(!pluginServer.TryGetLocalizedStrings(this, 1, out this.ResStr)) {
-                this.ResStr = new string[] { StringResources.ButtonNames[1] };
+            if(!pluginServer.TryGetLocalizedStrings(this, 1, out ResStr)) {
+                ResStr = new string[] { StringResources.ButtonNames[1] };
             }
 
             this.pluginServer.NavigationComplete += pluginServer_NavigationComplete;
@@ -147,7 +147,7 @@ namespace QuizoPlugins {
         }
 
         public void Close(EndCode code) {
-            this.pluginServer = null;
+            pluginServer = null;
         }
 
         public void OnShortcutKeyPressed(int index) {
@@ -178,7 +178,7 @@ namespace QuizoPlugins {
         }
 
         public void OnButtonClick() {
-            FileOps.FileOperation(FileOpActions.Copy, this.pluginServer.ExplorerHandle, null);
+            FileOps.FileOperation(FileOpActions.Copy, pluginServer.ExplorerHandle, null);
         }
 
         public bool ShowTextLabel {
@@ -189,7 +189,7 @@ namespace QuizoPlugins {
 
         public string Text {
             get {
-                return this.ResStr[0];
+                return ResStr[0];
             }
         }
 
@@ -197,17 +197,17 @@ namespace QuizoPlugins {
 
 
         private void pluginServer_NavigationComplete(object sender, PluginEventArgs e) {
-            this.Update();
+            Update();
         }
 
         private void pluginServer_SelectionChanged(object sender, PluginEventArgs e) {
-            this.Update();
+            Update();
         }
 
         private void Update() {
             Address[] addresses;
-            if(this.pluginServer.TryGetSelection(out addresses)) {
-                this.pluginServer.UpdateItem(this, addresses.Length > 0, false);
+            if(pluginServer.TryGetSelection(out addresses)) {
+                pluginServer.UpdateItem(this, addresses.Length > 0, false);
             }
         }
     }
@@ -225,8 +225,8 @@ namespace QuizoPlugins {
         public void Open(IPluginServer pluginServer, IShellBrowser shellBrowser) {
             this.pluginServer = pluginServer;
 
-            if(!pluginServer.TryGetLocalizedStrings(this, 1, out this.ResStr)) {
-                this.ResStr = new string[] { StringResources.ButtonNames[2] };
+            if(!pluginServer.TryGetLocalizedStrings(this, 1, out ResStr)) {
+                ResStr = new string[] { StringResources.ButtonNames[2] };
             }
         }
 
@@ -236,7 +236,7 @@ namespace QuizoPlugins {
         }
 
         public void Close(EndCode code) {
-            this.pluginServer = null;
+            pluginServer = null;
         }
 
         public void OnShortcutKeyPressed(int index) {
@@ -275,7 +275,7 @@ namespace QuizoPlugins {
             }
 
             if(fFilesInClipboard)
-                FileOps.FileOperation(FileOpActions.Paste, this.pluginServer.ExplorerHandle, null);
+                FileOps.FileOperation(FileOpActions.Paste, pluginServer.ExplorerHandle, null);
             else
                 SystemSounds.Beep.Play();
         }
@@ -288,7 +288,7 @@ namespace QuizoPlugins {
 
         public string Text {
             get {
-                return this.ResStr[0];
+                return ResStr[0];
             }
         }
 
@@ -309,8 +309,8 @@ namespace QuizoPlugins {
         public void Open(IPluginServer pluginServer, IShellBrowser shellBrowser) {
             this.pluginServer = pluginServer;
 
-            if(!pluginServer.TryGetLocalizedStrings(this, 1, out this.ResStr)) {
-                this.ResStr = new string[] { StringResources.ButtonNames[3] };
+            if(!pluginServer.TryGetLocalizedStrings(this, 1, out ResStr)) {
+                ResStr = new string[] { StringResources.ButtonNames[3] };
             }
 
             this.pluginServer.NavigationComplete += pluginServer_NavigationComplete;
@@ -323,7 +323,7 @@ namespace QuizoPlugins {
         }
 
         public void Close(EndCode code) {
-            this.pluginServer = null;
+            pluginServer = null;
         }
 
         public void OnShortcutKeyPressed(int index) {
@@ -354,7 +354,7 @@ namespace QuizoPlugins {
         }
 
         public void OnButtonClick() {
-            FileOps.FileOperation(FileOpActions.Delete, this.pluginServer.ExplorerHandle, null);
+            FileOps.FileOperation(FileOpActions.Delete, pluginServer.ExplorerHandle, null);
         }
 
         public bool ShowTextLabel {
@@ -365,7 +365,7 @@ namespace QuizoPlugins {
 
         public string Text {
             get {
-                return this.ResStr[0];
+                return ResStr[0];
             }
         }
 
@@ -373,17 +373,17 @@ namespace QuizoPlugins {
 
 
         private void pluginServer_NavigationComplete(object sender, PluginEventArgs e) {
-            this.Update();
+            Update();
         }
 
         private void pluginServer_SelectionChanged(object sender, PluginEventArgs e) {
-            this.Update();
+            Update();
         }
 
         private void Update() {
             Address[] addresses;
-            if(this.pluginServer.TryGetSelection(out addresses)) {
-                this.pluginServer.UpdateItem(this, addresses.Length > 0, false);
+            if(pluginServer.TryGetSelection(out addresses)) {
+                pluginServer.UpdateItem(this, addresses.Length > 0, false);
             }
         }
     }
@@ -402,8 +402,8 @@ namespace QuizoPlugins {
         public void Open(IPluginServer pluginServer, IShellBrowser shellBrowser) {
             this.pluginServer = pluginServer;
 
-            if(!pluginServer.TryGetLocalizedStrings(this, 1, out this.ResStr)) {
-                this.ResStr = new string[] { StringResources.ButtonNames[4] };
+            if(!pluginServer.TryGetLocalizedStrings(this, 1, out ResStr)) {
+                ResStr = new string[] { StringResources.ButtonNames[4] };
             }
 
             this.pluginServer.SelectionChanged += pluginServer_SelectionChanged;
@@ -411,16 +411,16 @@ namespace QuizoPlugins {
         }
 
         public bool QueryShortcutKeys(out string[] actions) {
-            actions = new string[] { this.ResStr[0] };
+            actions = new string[] { ResStr[0] };
             return true;
         }
 
         public void Close(EndCode code) {
-            this.pluginServer = null;
+            pluginServer = null;
         }
 
         public void OnShortcutKeyPressed(int index) {
-            FileOps.FileOperation(FileOpActions.CopyTo, this.pluginServer.ExplorerHandle, null);
+            FileOps.FileOperation(FileOpActions.CopyTo, pluginServer.ExplorerHandle, null);
         }
 
         public void OnMenuItemClick(MenuType menuType, string menuText, ITab tab) {
@@ -448,7 +448,7 @@ namespace QuizoPlugins {
         }
 
         public void OnButtonClick() {
-            FileOps.FileOperation(FileOpActions.CopyTo, this.pluginServer.ExplorerHandle, null);
+            FileOps.FileOperation(FileOpActions.CopyTo, pluginServer.ExplorerHandle, null);
         }
 
         public bool ShowTextLabel {
@@ -459,7 +459,7 @@ namespace QuizoPlugins {
 
         public string Text {
             get {
-                return this.ResStr[0];
+                return ResStr[0];
             }
         }
 
@@ -467,17 +467,17 @@ namespace QuizoPlugins {
 
 
         private void pluginServer_NavigationComplete(object sender, PluginEventArgs e) {
-            this.Update();
+            Update();
         }
 
         private void pluginServer_SelectionChanged(object sender, PluginEventArgs e) {
-            this.Update();
+            Update();
         }
 
         private void Update() {
             Address[] addresses;
-            if(this.pluginServer.TryGetSelection(out addresses)) {
-                this.pluginServer.UpdateItem(this, addresses.Length > 0, false);
+            if(pluginServer.TryGetSelection(out addresses)) {
+                pluginServer.UpdateItem(this, addresses.Length > 0, false);
             }
         }
     }
@@ -496,8 +496,8 @@ namespace QuizoPlugins {
         public void Open(IPluginServer pluginServer, IShellBrowser shellBrowser) {
             this.pluginServer = pluginServer;
 
-            if(!pluginServer.TryGetLocalizedStrings(this, 1, out this.ResStr)) {
-                this.ResStr = new string[] { StringResources.ButtonNames[5] };
+            if(!pluginServer.TryGetLocalizedStrings(this, 1, out ResStr)) {
+                ResStr = new string[] { StringResources.ButtonNames[5] };
             }
 
             this.pluginServer.SelectionChanged += pluginServer_SelectionChanged;
@@ -505,16 +505,16 @@ namespace QuizoPlugins {
         }
 
         public bool QueryShortcutKeys(out string[] actions) {
-            actions = new string[] { this.ResStr[0] };
+            actions = new string[] { ResStr[0] };
             return true;
         }
 
         public void Close(EndCode code) {
-            this.pluginServer = null;
+            pluginServer = null;
         }
 
         public void OnShortcutKeyPressed(int index) {
-            FileOps.FileOperation(FileOpActions.MoveTo, this.pluginServer.ExplorerHandle, null);
+            FileOps.FileOperation(FileOpActions.MoveTo, pluginServer.ExplorerHandle, null);
         }
 
         public void OnMenuItemClick(MenuType menuType, string menuText, ITab tab) {
@@ -542,7 +542,7 @@ namespace QuizoPlugins {
         }
 
         public void OnButtonClick() {
-            FileOps.FileOperation(FileOpActions.MoveTo, this.pluginServer.ExplorerHandle, null);
+            FileOps.FileOperation(FileOpActions.MoveTo, pluginServer.ExplorerHandle, null);
         }
 
         public bool ShowTextLabel {
@@ -553,7 +553,7 @@ namespace QuizoPlugins {
 
         public string Text {
             get {
-                return this.ResStr[0];
+                return ResStr[0];
             }
         }
 
@@ -561,17 +561,17 @@ namespace QuizoPlugins {
 
 
         private void pluginServer_NavigationComplete(object sender, PluginEventArgs e) {
-            this.Update();
+            Update();
         }
 
         private void pluginServer_SelectionChanged(object sender, PluginEventArgs e) {
-            this.Update();
+            Update();
         }
 
         private void Update() {
             Address[] addresses;
-            if(this.pluginServer.TryGetSelection(out addresses)) {
-                this.pluginServer.UpdateItem(this, addresses.Length > 0, false);
+            if(pluginServer.TryGetSelection(out addresses)) {
+                pluginServer.UpdateItem(this, addresses.Length > 0, false);
             }
         }
     }
@@ -589,8 +589,8 @@ namespace QuizoPlugins {
         public void Open(IPluginServer pluginServer, IShellBrowser shellBrowser) {
             this.pluginServer = pluginServer;
 
-            if(!pluginServer.TryGetLocalizedStrings(this, 1, out this.ResStr)) {
-                this.ResStr = new string[] { StringResources.ButtonNames[6] };
+            if(!pluginServer.TryGetLocalizedStrings(this, 1, out ResStr)) {
+                ResStr = new string[] { StringResources.ButtonNames[6] };
             }
         }
 
@@ -600,7 +600,7 @@ namespace QuizoPlugins {
         }
 
         public void Close(EndCode code) {
-            this.pluginServer = null;
+            pluginServer = null;
         }
 
         public void OnShortcutKeyPressed(int index) {
@@ -632,7 +632,7 @@ namespace QuizoPlugins {
         }
 
         public void OnButtonClick() {
-            FileOps.FileOperation(FileOpActions.Undo, this.pluginServer.ExplorerHandle, null);
+            FileOps.FileOperation(FileOpActions.Undo, pluginServer.ExplorerHandle, null);
         }
 
         public bool ShowTextLabel {
@@ -643,7 +643,7 @@ namespace QuizoPlugins {
 
         public string Text {
             get {
-                return this.ResStr[0];
+                return ResStr[0];
             }
         }
 
@@ -664,8 +664,8 @@ namespace QuizoPlugins {
         public void Open(IPluginServer pluginServer, IShellBrowser shellBrowser) {
             this.pluginServer = pluginServer;
 
-            if(!pluginServer.TryGetLocalizedStrings(this, 1, out this.ResStr)) {
-                this.ResStr = new string[] { StringResources.ButtonNames[7] };
+            if(!pluginServer.TryGetLocalizedStrings(this, 1, out ResStr)) {
+                ResStr = new string[] { StringResources.ButtonNames[7] };
             }
 
             this.pluginServer.SelectionChanged += pluginServer_SelectionChanged;
@@ -673,17 +673,17 @@ namespace QuizoPlugins {
         }
 
         public bool QueryShortcutKeys(out string[] actions) {
-            actions = new string[] { this.ResStr[0] };
+            actions = new string[] { ResStr[0] };
             return true;
         }
 
         public void Close(EndCode code) {
             if(code != EndCode.Hidden)
-                this.pluginServer = null;
+                pluginServer = null;
         }
 
         public void OnShortcutKeyPressed(int index) {
-            if(!FileOps.MoveSelectedToParent(this.pluginServer))
+            if(!FileOps.MoveSelectedToParent(pluginServer))
                 SystemSounds.Beep.Play();
         }
 
@@ -712,7 +712,7 @@ namespace QuizoPlugins {
         }
 
         public void OnButtonClick() {
-            if(!FileOps.MoveSelectedToParent(this.pluginServer))
+            if(!FileOps.MoveSelectedToParent(pluginServer))
                 SystemSounds.Beep.Play();
         }
 
@@ -724,7 +724,7 @@ namespace QuizoPlugins {
 
         public string Text {
             get {
-                return this.ResStr[0];
+                return ResStr[0];
             }
         }
 
@@ -732,26 +732,26 @@ namespace QuizoPlugins {
 
 
         private void pluginServer_NavigationComplete(object sender, PluginEventArgs e) {
-            this.Update();
+            Update();
         }
 
         private void pluginServer_SelectionChanged(object sender, PluginEventArgs e) {
-            this.Update();
+            Update();
         }
 
         private void Update() {
             try {
-                string currentPath = this.pluginServer.SelectedTab.Address.Path;
+                string currentPath = pluginServer.SelectedTab.Address.Path;
 
                 Address[] addresses;
-                if(this.pluginServer.TryGetSelection(out addresses)) {
+                if(pluginServer.TryGetSelection(out addresses)) {
                     bool fEnabled = currentPath != null && currentPath.Length > 3 && !currentPath.StartsWith("::") && addresses.Length > 0;
 
-                    this.pluginServer.UpdateItem(this, fEnabled, false);
+                    pluginServer.UpdateItem(this, fEnabled, false);
                 }
             }
             catch {
-                this.pluginServer.UpdateItem(this, false, false);
+                pluginServer.UpdateItem(this, false, false);
             }
         }
     }
@@ -770,22 +770,22 @@ namespace QuizoPlugins {
         public void Open(IPluginServer pluginServer, IShellBrowser shellBrowser) {
             this.pluginServer = pluginServer;
 
-            if(!pluginServer.TryGetLocalizedStrings(this, 1, out this.ResStr)) {
-                this.ResStr = new string[] { StringResources.ButtonNames[8] };
+            if(!pluginServer.TryGetLocalizedStrings(this, 1, out ResStr)) {
+                ResStr = new string[] { StringResources.ButtonNames[8] };
             }
         }
 
         public bool QueryShortcutKeys(out string[] actions) {
-            actions = new string[] { this.ResStr[0] };
+            actions = new string[] { ResStr[0] };
             return true;
         }
 
         public void Close(EndCode code) {
-            this.pluginServer = null;
+            pluginServer = null;
         }
 
         public void OnShortcutKeyPressed(int index) {
-            FileOps.FileOperation(FileOpActions.Properties, this.pluginServer.ExplorerHandle, null);
+            FileOps.FileOperation(FileOpActions.Properties, pluginServer.ExplorerHandle, null);
         }
 
         public void OnMenuItemClick(MenuType menuType, string menuText, ITab tab) {
@@ -814,11 +814,11 @@ namespace QuizoPlugins {
 
         public void OnButtonClick() {
             Address[] addresses;
-            if(this.pluginServer.TryGetSelection(out addresses)) {
+            if(pluginServer.TryGetSelection(out addresses)) {
                 if(addresses.Length > 0)
-                    FileOps.FileOperation(FileOpActions.Properties, this.pluginServer.ExplorerHandle, null);
+                    FileOps.FileOperation(FileOpActions.Properties, pluginServer.ExplorerHandle, null);
                 else
-                    FileOps.ShowProperties(this.pluginServer);
+                    FileOps.ShowProperties(pluginServer);
             }
         }
 
@@ -830,7 +830,7 @@ namespace QuizoPlugins {
 
         public string Text {
             get {
-                return this.ResStr[0];
+                return ResStr[0];
             }
         }
 

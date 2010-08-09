@@ -24,8 +24,8 @@ namespace BandObjectLib {
         public int x;
         public int y;
         public POINT(Point pnt) {
-            this.x = pnt.X;
-            this.y = pnt.Y;
+            x = pnt.X;
+            y = pnt.Y;
         }
     }
 }

@@ -109,7 +109,7 @@ namespace QTTabBarLib {
                 textRectangle.X -= 6;
                 e.TextRectangle = textRectangle;
             }
-            if(this.fNoPrefix) {
+            if(fNoPrefix) {
                 e.TextFormat |= TextFormatFlags.NoPrefix;
             }
             base.OnRenderItemText(e);

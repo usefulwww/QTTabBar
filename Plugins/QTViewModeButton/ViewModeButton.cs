@@ -40,31 +40,31 @@ namespace QuizoPlugins {
             this.pluginServer = pluginServer;
             this.shellBrowser = shellBrowser;
 
-            if(!this.pluginServer.TryGetLocalizedStrings(this, 7, out this.ResStrs)) {
+            if(!this.pluginServer.TryGetLocalizedStrings(this, 7, out ResStrs)) {
                 // if localized strings not found, falls back to default strings in assembly resource of this dll.
 
                 // this plugin has 2 language resources in assemly, but usually there's no need to do like this.
                 // it only has to have a resource of your own language.
 
                 if(CultureInfo.CurrentCulture.Parent.Name == "ja")
-                    this.ResStrs = Resource.viewModes_Ja.Split(new char[] { ';' });
+                    ResStrs = Resource.viewModes_Ja.Split(new char[] { ';' });
                 else
-                    this.ResStrs = Resource.viewModes.Split(new char[] { ';' });
+                    ResStrs = Resource.viewModes.Split(new char[] { ';' });
             }
 
             this.pluginServer.NavigationComplete += pluginServer_NavigationComplete;
         }
 
         public void Close(EndCode code) {
-            this.pluginServer = null;
-            this.shellBrowser = null;
+            pluginServer = null;
+            shellBrowser = null;
 
-            if(this.button != null) {
-                this.button.Dispose();
+            if(button != null) {
+                button.Dispose();
             }
 
-            if(this.fvmw != null) {
-                this.fvmw.Dispose();
+            if(fvmw != null) {
+                fvmw.Dispose();
             }
         }
 
@@ -94,26 +94,26 @@ namespace QuizoPlugins {
         #region IBarCustomItem members
 
         public ToolStripItem CreateItem(bool fLarge, DisplayStyle displayStyle) {
-            if(this.button == null) {
-                this.button = new ToolStripButton();
-                this.button.Text =
-                this.button.ToolTipText = this.ResStrs[6];
-                this.button.MouseDown += button_MouseDown;
+            if(button == null) {
+                button = new ToolStripButton();
+                button.Text =
+                button.ToolTipText = ResStrs[6];
+                button.MouseDown += button_MouseDown;
             }
 
             switch(displayStyle) {
                 case DisplayStyle.NoLabel:
                 case DisplayStyle.SelectiveText:
-                    this.button.DisplayStyle = ToolStripItemDisplayStyle.Image;
+                    button.DisplayStyle = ToolStripItemDisplayStyle.Image;
                     break;
                 case DisplayStyle.ShowTextLabel:
-                    this.button.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
+                    button.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
                     break;
             }
 
-            this.button.Image = fLarge ? Resource.ViewModeButton_large : Resource.ViewModeButton_small;
+            button.Image = fLarge ? Resource.ViewModeButton_large : Resource.ViewModeButton_small;
 
-            return this.button;
+            return button;
         }
 
         #endregion
@@ -121,35 +121,35 @@ namespace QuizoPlugins {
 
 
         private void pluginServer_NavigationComplete(object sender, PluginEventArgs e) {
-            this.UpdateButtonImage(this.GetCurrentViewMode());
+            UpdateButtonImage(GetCurrentViewMode());
         }
 
         private void button_MouseDown(object sender, MouseEventArgs e) {
             if(e.Button == MouseButtons.Left) {
-                if(this.fvmw == null) {
-                    this.fvmw = new FolderViewModeWindow(this.ResStrs);
-                    this.fvmw.ViewModeChanged += this.fvmw_ViewModeChanged;
+                if(fvmw == null) {
+                    fvmw = new FolderViewModeWindow(ResStrs);
+                    fvmw.ViewModeChanged += fvmw_ViewModeChanged;
                 }
 
-                this.fvmw.ShowWindow(Control.MousePosition, this.GetCurrentViewMode());
+                fvmw.ShowWindow(Control.MousePosition, GetCurrentViewMode());
             }
         }
 
         private void fvmw_ViewModeChanged(object sender, EventArgs e) {
             IShellView shellView = null;
             try {
-                if(0 == this.shellBrowser.QueryActiveShellView(out shellView)) {
+                if(0 == shellBrowser.QueryActiveShellView(out shellView)) {
                     IFolderView folderView = shellView as IFolderView;
 
                     if(folderView != null) {
                         FOLDERVIEWMODE currentMode = 0;
                         folderView.GetCurrentViewMode(ref currentMode);
 
-                        FOLDERVIEWMODE mode = this.fvmw.ViewMode;
+                        FOLDERVIEWMODE mode = fvmw.ViewMode;
 
                         if(currentMode != mode) {
                             folderView.SetCurrentViewMode(mode);
-                            this.UpdateButtonImage(mode);
+                            UpdateButtonImage(mode);
                         }
                     }
                 }
@@ -166,7 +166,7 @@ namespace QuizoPlugins {
         private FOLDERVIEWMODE GetCurrentViewMode() {
             IShellView shellView = null;
             try {
-                if(0 == this.shellBrowser.QueryActiveShellView(out shellView)) {
+                if(0 == shellBrowser.QueryActiveShellView(out shellView)) {
                     IFolderView folderView = shellView as IFolderView;
 
                     if(folderView != null) {
@@ -190,22 +190,22 @@ namespace QuizoPlugins {
         private void UpdateButtonImage(FOLDERVIEWMODE mode) {
             switch(mode) {
                 case FOLDERVIEWMODE.FVM_THUMBSTRIP:
-                    this.button.Image = Resource.imgFilm;
+                    button.Image = Resource.imgFilm;
                     break;
                 case FOLDERVIEWMODE.FVM_THUMBNAIL:
-                    this.button.Image = Resource.imgThumb;
+                    button.Image = Resource.imgThumb;
                     break;
                 case FOLDERVIEWMODE.FVM_TILE:
-                    this.button.Image = Resource.imgTiles;
+                    button.Image = Resource.imgTiles;
                     break;
                 case FOLDERVIEWMODE.FVM_ICON:
-                    this.button.Image = Resource.imgIcon;
+                    button.Image = Resource.imgIcon;
                     break;
                 case FOLDERVIEWMODE.FVM_LIST:
-                    this.button.Image = Resource.imgList;
+                    button.Image = Resource.imgList;
                     break;
                 case FOLDERVIEWMODE.FVM_DETAILS:
-                    this.button.Image = Resource.imgDetails;
+                    button.Image = Resource.imgDetails;
                     break;
             }
         }

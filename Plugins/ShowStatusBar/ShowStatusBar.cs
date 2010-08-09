@@ -73,7 +73,7 @@ namespace QuizoPlugins {
         }
 
         public void OnShortcutKeyPressed(int index) {
-            IntPtr hwndExplr = this.pluginServer.ExplorerHandle;
+            IntPtr hwndExplr = pluginServer.ExplorerHandle;
             IntPtr hwnd = fVista ? FindWindowEx(hwndExplr, IntPtr.Zero, new StringBuilder("ShellTabWindowClass"), null) : hwndExplr;
 
             int command = 0xA202;

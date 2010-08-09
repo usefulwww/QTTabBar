@@ -35,114 +35,114 @@ namespace QuizoPlugins {
             if(CultureInfo.CurrentCulture.Parent.Name == "ja") {
                 string[] strs = Resource.ResStrs_Options_ja.Split(new char[] { ';' });
 
-                this.chbInitialSize.Text = strs[0];
-                this.chbInitialLoc.Text = strs[1];
-                this.buttonRestoreSize.Text = strs[2];
-                this.buttonRestoreLoc.Text = strs[3];
-                this.checkBoxResizeMode.Text = strs[4];
-                this.labelDELTARESIZE.Text = strs[5];
-                this.groupBoxPresets.Text = strs[6];
-                this.buttonSet.Text = strs[7];
-                this.buttonDel.Text = strs[8];
-                this.buttonOK.Text = strs[9];
-                this.buttonCancel.Text = strs[10];
-                this.buttonGetCurLoc.Text = strs[11];
-                this.buttonGetCurSize.Text = strs[12];
-                this.chbStartingPreset.Text = strs[13];
-                this.buttonGetCurrentToPreset.Text = strs[14];
+                chbInitialSize.Text = strs[0];
+                chbInitialLoc.Text = strs[1];
+                buttonRestoreSize.Text = strs[2];
+                buttonRestoreLoc.Text = strs[3];
+                checkBoxResizeMode.Text = strs[4];
+                labelDELTARESIZE.Text = strs[5];
+                groupBoxPresets.Text = strs[6];
+                buttonSet.Text = strs[7];
+                buttonDel.Text = strs[8];
+                buttonOK.Text = strs[9];
+                buttonCancel.Text = strs[10];
+                buttonGetCurLoc.Text = strs[11];
+                buttonGetCurSize.Text = strs[12];
+                chbStartingPreset.Text = strs[13];
+                buttonGetCurrentToPreset.Text = strs[14];
             }
 
 
-            this.hwndExplorer = hwnd;
+            hwndExplorer = hwnd;
             this.dicPresets = new Dictionary<string, Rectangle>(dicPresets);
             this.startingPreset = startingPreset;
 
             Rectangle rctScreen = Screen.FromHandle(hwnd).Bounds;
-            this.nudInitialW.Maximum = rctScreen.Width;
-            this.nudInitialH.Maximum = rctScreen.Height;
+            nudInitialW.Maximum = rctScreen.Width;
+            nudInitialH.Maximum = rctScreen.Height;
 
             RECT rct;
             PInvoke_QTWM.GetWindowRect(hwnd, out rct);
-            this.Text += " ( " + rct.left + ", " + rct.top + " )  " + rct.Width + " x " + rct.Height;
+            Text += " ( " + rct.left + ", " + rct.top + " )  " + rct.Width + " x " + rct.Height;
 
             try {
                 if((config[0] & 0x80) != 0) {
-                    this.chbInitialSize.Checked = true;
+                    chbInitialSize.Checked = true;
                 }
 
                 if((config[0] & 0x40) != 0) {
-                    this.checkBoxResizeMode.Checked = false;
+                    checkBoxResizeMode.Checked = false;
                 }
 
                 if((config[0] & 0x20) != 0) {
-                    this.chbInitialLoc.Checked = true;
+                    chbInitialLoc.Checked = true;
                 }
 
                 if((config[0] & 0x10) != 0) {
-                    this.chbStartingPreset.Checked = true;
+                    chbStartingPreset.Checked = true;
                 }
 
                 if((config[0] & 0x08) != 0) {
-                    this.chbRestoreClosedRct.Checked = true;
+                    chbRestoreClosedRct.Checked = true;
                 }
 
 
-                this.nudInitialX.Value = rctInitial.X;
-                this.nudInitialY.Value = rctInitial.Y;
-                this.nudInitialW.Value = rctInitial.Width;
-                this.nudInitialH.Value = rctInitial.Height;
+                nudInitialX.Value = rctInitial.X;
+                nudInitialY.Value = rctInitial.Y;
+                nudInitialW.Value = rctInitial.Width;
+                nudInitialH.Value = rctInitial.Height;
 
                 if(delta_RESIZE < 33 && delta_RESIZE > 0)
-                    this.nudDelta.Value = delta_RESIZE;
+                    nudDelta.Value = delta_RESIZE;
 
-                this.chbInitialLoc_CheckedChanged(null, EventArgs.Empty);
-                this.chbInitialSize_CheckedChanged(null, EventArgs.Empty);
+                chbInitialLoc_CheckedChanged(null, EventArgs.Empty);
+                chbInitialSize_CheckedChanged(null, EventArgs.Empty);
 
-                if(this.chbStartingPreset.Checked) {
-                    this.nudInitialX.Enabled = this.nudInitialY.Enabled = this.chbInitialLoc.Enabled =
-                    this.buttonRestoreLoc.Enabled = this.buttonGetCurLoc.Enabled =
-                    this.buttonRestoreSize.Enabled = this.buttonGetCurSize.Enabled =
-                    this.nudInitialW.Enabled = this.nudInitialH.Enabled = this.chbInitialSize.Enabled = false;
+                if(chbStartingPreset.Checked) {
+                    nudInitialX.Enabled = nudInitialY.Enabled = chbInitialLoc.Enabled =
+                    buttonRestoreLoc.Enabled = buttonGetCurLoc.Enabled =
+                    buttonRestoreSize.Enabled = buttonGetCurSize.Enabled =
+                    nudInitialW.Enabled = nudInitialH.Enabled = chbInitialSize.Enabled = false;
                 }
                 else {
-                    this.comboBox2.Enabled = false;
+                    comboBox2.Enabled = false;
                 }
             }
             catch {
             }
 
             foreach(string name in this.dicPresets.Keys) {
-                this.comboBox1.Items.Add(name);
-                this.comboBox2.Items.Add(name);
+                comboBox1.Items.Add(name);
+                comboBox2.Items.Add(name);
             }
 
             if(!string.IsNullOrEmpty(this.startingPreset)) {
-                int indexStartingPreset = this.comboBox2.Items.IndexOf(this.startingPreset);
+                int indexStartingPreset = comboBox2.Items.IndexOf(this.startingPreset);
                 if(indexStartingPreset != -1) {
-                    this.comboBox2.SelectedIndex = indexStartingPreset;
+                    comboBox2.SelectedIndex = indexStartingPreset;
                 }
             }
 
-            if(this.comboBox1.Items.Count > 0)
-                this.comboBox1.SelectedIndex = 0;
+            if(comboBox1.Items.Count > 0)
+                comboBox1.SelectedIndex = 0;
         }
 
 
         public Point InitialLocation {
             get {
-                return new Point((int)this.nudInitialX.Value, (int)this.nudInitialY.Value);
+                return new Point((int)nudInitialX.Value, (int)nudInitialY.Value);
             }
         }
 
         public Size InitialSize {
             get {
-                return new Size((int)this.nudInitialW.Value, (int)this.nudInitialH.Value);
+                return new Size((int)nudInitialW.Value, (int)nudInitialH.Value);
             }
         }
 
         public int ResizeDelta {
             get {
-                return (int)this.nudDelta.Value;
+                return (int)nudDelta.Value;
             }
         }
 
@@ -150,16 +150,16 @@ namespace QuizoPlugins {
             get {
                 byte[] config = new byte[] { 0, 0, 0, 0 };
 
-                if(this.chbInitialSize.Checked)
+                if(chbInitialSize.Checked)
                     config[0] |= 0x80;
 
-                if(!this.checkBoxResizeMode.Checked)
+                if(!checkBoxResizeMode.Checked)
                     config[0] |= 0x40;
 
-                if(this.chbInitialLoc.Checked)
+                if(chbInitialLoc.Checked)
                     config[0] |= 0x20;
 
-                if(this.chbStartingPreset.Checked)
+                if(chbStartingPreset.Checked)
                     config[0] |= 0x10;
 
                 return config;
@@ -168,38 +168,38 @@ namespace QuizoPlugins {
 
         public Dictionary<string, Rectangle> Presets {
             get {
-                return this.dicPresets;
+                return dicPresets;
             }
         }
 
         public string StartingPreset {
             get {
-                if(this.comboBox2.SelectedItem != null)
-                    return this.comboBox2.SelectedItem.ToString();
+                if(comboBox2.SelectedItem != null)
+                    return comboBox2.SelectedItem.ToString();
                 else
                     return String.Empty;
             }
         }
 
         private void chbInitialLoc_CheckedChanged(object sender, EventArgs e) {
-            this.nudInitialX.Enabled = this.nudInitialY.Enabled =
-            this.buttonRestoreLoc.Enabled = this.buttonGetCurLoc.Enabled =
-            this.chbInitialLoc.Checked;
+            nudInitialX.Enabled = nudInitialY.Enabled =
+            buttonRestoreLoc.Enabled = buttonGetCurLoc.Enabled =
+            chbInitialLoc.Checked;
         }
 
         private void chbInitialSize_CheckedChanged(object sender, EventArgs e) {
-            this.nudInitialW.Enabled = this.nudInitialH.Enabled =
-            this.buttonRestoreSize.Enabled = this.buttonGetCurSize.Enabled =
-            this.chbInitialSize.Checked;
+            nudInitialW.Enabled = nudInitialH.Enabled =
+            buttonRestoreSize.Enabled = buttonGetCurSize.Enabled =
+            chbInitialSize.Checked;
         }
 
         private void chbStartingPreset_CheckedChanged(object sender, EventArgs e) {
-            this.nudInitialX.Enabled = this.nudInitialY.Enabled = this.chbInitialLoc.Enabled =
-            this.buttonRestoreLoc.Enabled = this.buttonGetCurLoc.Enabled =
-            this.buttonRestoreSize.Enabled = this.buttonGetCurSize.Enabled =
-            this.nudInitialW.Enabled = this.nudInitialH.Enabled = this.chbInitialSize.Enabled = !this.chbStartingPreset.Checked;
+            nudInitialX.Enabled = nudInitialY.Enabled = chbInitialLoc.Enabled =
+            buttonRestoreLoc.Enabled = buttonGetCurLoc.Enabled =
+            buttonRestoreSize.Enabled = buttonGetCurSize.Enabled =
+            nudInitialW.Enabled = nudInitialH.Enabled = chbInitialSize.Enabled = !chbStartingPreset.Checked;
 
-            this.comboBox2.Enabled = this.chbStartingPreset.Checked;
+            comboBox2.Enabled = chbStartingPreset.Checked;
         }
 
         private void chbRestoreClosedRct_CheckedChanged(object sender, EventArgs e) {
@@ -210,12 +210,12 @@ namespace QuizoPlugins {
             const uint SWP_NOSIZE = 0x0001;
             const uint SWP_NOZORDER = 0x0004;
 
-            if(this.hwndExplorer != IntPtr.Zero) {
-                Point pnt = this.InitialLocation;
+            if(hwndExplorer != IntPtr.Zero) {
+                Point pnt = InitialLocation;
 
-                PInvoke_QTWM.SetWindowPos(this.hwndExplorer, IntPtr.Zero, pnt.X, pnt.Y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+                PInvoke_QTWM.SetWindowPos(hwndExplorer, IntPtr.Zero, pnt.X, pnt.Y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 
-                QTWindowManager.RemoveMAXIMIZE(this.hwndExplorer);
+                QTWindowManager.RemoveMAXIMIZE(hwndExplorer);
             }
         }
 
@@ -223,80 +223,80 @@ namespace QuizoPlugins {
             const uint SWP_NOMOVE = 0x0002;
             const uint SWP_NOZORDER = 0x0004;
 
-            if(this.hwndExplorer != IntPtr.Zero) {
-                Size size = this.InitialSize;
+            if(hwndExplorer != IntPtr.Zero) {
+                Size size = InitialSize;
 
-                PInvoke_QTWM.SetWindowPos(this.hwndExplorer, IntPtr.Zero, 0, 0, size.Width, size.Height, SWP_NOMOVE | SWP_NOZORDER);
+                PInvoke_QTWM.SetWindowPos(hwndExplorer, IntPtr.Zero, 0, 0, size.Width, size.Height, SWP_NOMOVE | SWP_NOZORDER);
 
-                QTWindowManager.RemoveMAXIMIZE(this.hwndExplorer);
+                QTWindowManager.RemoveMAXIMIZE(hwndExplorer);
             }
         }
 
         private void buttonGetCurLoc_Click(object sender, EventArgs e) {
             RECT rct;
-            PInvoke_QTWM.GetWindowRect(this.hwndExplorer, out rct);
+            PInvoke_QTWM.GetWindowRect(hwndExplorer, out rct);
 
-            this.nudInitialX.Value = rct.left;
-            this.nudInitialY.Value = rct.top;
+            nudInitialX.Value = rct.left;
+            nudInitialY.Value = rct.top;
         }
 
         private void buttonGetCurSize_Click(object sender, EventArgs e) {
             RECT rct;
-            PInvoke_QTWM.GetWindowRect(this.hwndExplorer, out rct);
+            PInvoke_QTWM.GetWindowRect(hwndExplorer, out rct);
 
-            this.nudInitialW.Value = rct.Width;
-            this.nudInitialH.Value = rct.Height;
+            nudInitialW.Value = rct.Width;
+            nudInitialH.Value = rct.Height;
         }
 
         private void buttonGetCurrentToPreset_Click(object sender, EventArgs e) {
             RECT rct;
-            PInvoke_QTWM.GetWindowRect(this.hwndExplorer, out rct);
+            PInvoke_QTWM.GetWindowRect(hwndExplorer, out rct);
 
-            this.nudPresets_X.Value = rct.left;
-            this.nudPresets_Y.Value = rct.top;
-            this.nudPresets_W.Value = rct.Width;
-            this.nudPresets_H.Value = rct.Height;
+            nudPresets_X.Value = rct.left;
+            nudPresets_Y.Value = rct.top;
+            nudPresets_W.Value = rct.Width;
+            nudPresets_H.Value = rct.Height;
         }
 
         private void buttonSet_Click(object sender, EventArgs e) {
-            if(this.comboBox1.SelectedIndex != -1) {
-                if(this.comboBox1.SelectedItem != null) {
-                    string name = this.comboBox1.SelectedItem.ToString();
+            if(comboBox1.SelectedIndex != -1) {
+                if(comboBox1.SelectedItem != null) {
+                    string name = comboBox1.SelectedItem.ToString();
 
-                    this.dicPresets[name] = new Rectangle((int)this.nudPresets_X.Value, (int)this.nudPresets_Y.Value, (int)this.nudPresets_W.Value, (int)this.nudPresets_H.Value);
+                    dicPresets[name] = new Rectangle((int)nudPresets_X.Value, (int)nudPresets_Y.Value, (int)nudPresets_W.Value, (int)nudPresets_H.Value);
 
                 }
             }
-            else if(this.comboBox1.Text.Length > 0) {
-                string name = this.comboBox1.Text;
+            else if(comboBox1.Text.Length > 0) {
+                string name = comboBox1.Text;
 
-                this.dicPresets[name] = new Rectangle((int)this.nudPresets_X.Value, (int)this.nudPresets_Y.Value, (int)this.nudPresets_W.Value, (int)this.nudPresets_H.Value);
+                dicPresets[name] = new Rectangle((int)nudPresets_X.Value, (int)nudPresets_Y.Value, (int)nudPresets_W.Value, (int)nudPresets_H.Value);
 
-                this.comboBox1.Items.Add(name);
+                comboBox1.Items.Add(name);
 
             }
         }
 
         private void buttonDel_Click(object sender, EventArgs e) {
-            if(this.comboBox1.SelectedItem != null) {
-                this.dicPresets.Remove(this.comboBox1.SelectedItem.ToString());
-                this.comboBox1.Items.Remove(this.comboBox1.SelectedItem);
+            if(comboBox1.SelectedItem != null) {
+                dicPresets.Remove(comboBox1.SelectedItem.ToString());
+                comboBox1.Items.Remove(comboBox1.SelectedItem);
 
-                this.comboBox1.Text = String.Empty;
+                comboBox1.Text = String.Empty;
 
             }
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e) {
-            if(this.comboBox1.SelectedItem != null) {
-                string name = this.comboBox1.SelectedItem.ToString();
+            if(comboBox1.SelectedItem != null) {
+                string name = comboBox1.SelectedItem.ToString();
 
                 Rectangle rct;
-                if(this.dicPresets.TryGetValue(name, out rct)) {
-                    this.nudPresets_X.Value = rct.X;
-                    this.nudPresets_Y.Value = rct.Y;
-                    this.nudPresets_W.Value = rct.Width;
-                    this.nudPresets_H.Value = rct.Height;
+                if(dicPresets.TryGetValue(name, out rct)) {
+                    nudPresets_X.Value = rct.X;
+                    nudPresets_Y.Value = rct.Y;
+                    nudPresets_W.Value = rct.Width;
+                    nudPresets_H.Value = rct.Height;
                 }
             }
         }

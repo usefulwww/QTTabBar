@@ -32,35 +32,35 @@ namespace QTTabBarLib {
         private static string VALUE_EMPTY = "                                ";
 
         public void EndProgress() {
-            this.fStopped = true;
-            this.progressValue = 0L;
-            if(this.calcStatus == HashCalcStatus.Aborted) {
-                base.Value = VALUE_ABORTED;
-                base.Style.ForeColor = Color.Red;
-                base.Style.SelectionForeColor = this.oldStyle.SelectionForeColor;
+            fStopped = true;
+            progressValue = 0L;
+            if(calcStatus == HashCalcStatus.Aborted) {
+                Value = VALUE_ABORTED;
+                Style.ForeColor = Color.Red;
+                Style.SelectionForeColor = oldStyle.SelectionForeColor;
             }
             else {
-                base.Style = this.oldStyle;
+                Style = oldStyle;
             }
-            this.Invalidate();
+            Invalidate();
         }
 
         private void Invalidate() {
-            if(base.DataGridView != null) {
-                base.DataGridView.InvalidateCell(this);
+            if(DataGridView != null) {
+                DataGridView.InvalidateCell(this);
             }
         }
 
         protected override void Paint(Graphics graphics, Rectangle clipBounds, Rectangle cellBounds, int rowIndex, DataGridViewElementStates cellState, object value, object formattedValue, string errorText, DataGridViewCellStyle cellStyle, DataGridViewAdvancedBorderStyle advancedBorderStyle, DataGridViewPaintParts paintParts) {
-            if(this.fNowCalculating) {
-                this.PaintBackGround(graphics, advancedBorderStyle, cellStyle, cellBounds);
+            if(fNowCalculating) {
+                PaintBackGround(graphics, advancedBorderStyle, cellStyle, cellBounds);
                 paintParts &= ~(DataGridViewPaintParts.ContentBackground | DataGridViewPaintParts.Background);
             }
             base.Paint(graphics, clipBounds, cellBounds, rowIndex, cellState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, paintParts);
         }
 
         private void PaintBackGround(Graphics graphics, DataGridViewAdvancedBorderStyle advancedBorderStyle, DataGridViewCellStyle cellStyle, Rectangle cellBounds) {
-            Rectangle rectangle = base.BorderWidths(advancedBorderStyle);
+            Rectangle rectangle = BorderWidths(advancedBorderStyle);
             Rectangle rect = cellBounds;
             rect.Offset(rectangle.X, rectangle.Y);
             rect.Width -= rectangle.Right;
@@ -68,11 +68,11 @@ namespace QTTabBarLib {
             using(SolidBrush brush = new SolidBrush(cellStyle.BackColor)) {
                 graphics.FillRectangle(brush, rect);
             }
-            if(this.lFileSize <= 0L) {
+            if(lFileSize <= 0L) {
                 return;
             }
             Rectangle bounds = rect;
-            double num = (this.progressValue) / ((double)this.lFileSize);
+            double num = (progressValue) / ((double)lFileSize);
             bounds.Width = (int)(bounds.Width * num);
             if(VisualStyleRenderer.IsSupported) {
                 try {
@@ -96,50 +96,50 @@ namespace QTTabBarLib {
         }
 
         public void Progress(int value) {
-            if(this.fNowCalculating) {
-                if(this.fStopped) {
-                    base.Value = VALUE_EMPTY;
-                    this.fStopped = false;
+            if(fNowCalculating) {
+                if(fStopped) {
+                    Value = VALUE_EMPTY;
+                    fStopped = false;
                 }
-                long num = value * this.lCallbackInterval;
-                if((this.progressValue + num) <= this.lFileSize) {
-                    this.progressValue += num;
-                    this.Invalidate();
+                long num = value * lCallbackInterval;
+                if((progressValue + num) <= lFileSize) {
+                    progressValue += num;
+                    Invalidate();
                 }
             }
         }
 
         protected override bool SetValue(int rowIndex, object value) {
-            this.fStopped = true;
-            this.progressValue = 0L;
+            fStopped = true;
+            progressValue = 0L;
             return base.SetValue(rowIndex, value);
         }
 
         public HashCalcStatus CalculatingStatus {
             get {
-                return this.calcStatus;
+                return calcStatus;
             }
             set {
-                this.fNowCalculating = value == HashCalcStatus.Calculating;
-                this.calcStatus = value;
+                fNowCalculating = value == HashCalcStatus.Calculating;
+                calcStatus = value;
             }
         }
 
         public long FileSize {
             get {
-                return this.lFileSize;
+                return lFileSize;
             }
             set {
-                this.lFileSize = value;
+                lFileSize = value;
             }
         }
 
         public DataGridViewCellStyle OldStyle {
             get {
-                return this.oldStyle;
+                return oldStyle;
             }
             set {
-                this.oldStyle = value;
+                oldStyle = value;
             }
         }
     }

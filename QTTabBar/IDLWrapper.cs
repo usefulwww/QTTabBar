@@ -114,49 +114,49 @@ namespace QTTabBarLib {
         }
 
         public IDLWrapper(IntPtr pIDL) {
-            this.attributes = 0xfffffff0;
+            attributes = 0xfffffff0;
             this.pIDL = pIDL;
         }
 
         public IDLWrapper(byte[] idl, bool fValidate = true) {
-            this.attributes = 0xfffffff0;
+            attributes = 0xfffffff0;
             this.idl = idl;
             if(this.idl != null) {
-                this.pIDL = ShellMethods.CreateIDL(idl);
-                if(fValidate && (ShellMethods.GetAttributes(this.pIDL, true) != 0)) {
+                pIDL = ShellMethods.CreateIDL(idl);
+                if(fValidate && (ShellMethods.GetAttributes(pIDL, true) != 0)) {
                     this.idl = null;
-                    this.pIDL = IntPtr.Zero;
+                    pIDL = IntPtr.Zero;
                 }
             }
         }
 
         public IDLWrapper(string path, bool fMsgModal = false) {
-            this.attributes = 0xfffffff0;
+            attributes = 0xfffffff0;
             if(!string.IsNullOrEmpty(path)) {
                 this.path = path;
-                if(path.Contains("???") && dicCacheIDLs.TryGetValue(path, out this.idl)) {
-                    this.pIDL = ShellMethods.CreateIDL(this.idl);
+                if(path.Contains("???") && dicCacheIDLs.TryGetValue(path, out idl)) {
+                    pIDL = ShellMethods.CreateIDL(idl);
                 }
                 else {
-                    this.pIDL = TranslateLocation(path);
-                    if(this.pIDL == IntPtr.Zero) {
+                    pIDL = TranslateLocation(path);
+                    if(pIDL == IntPtr.Zero) {
                         if(PathIsNetwork(this.path) && TryPing(this.path)) {
                             Application.DoEvents();
                             MessageForm.Show(IntPtr.Zero, "Timed out:    \"" + this.path + "\"", "Timed Out", MessageBoxIcon.Hand, 0x2710, fMsgModal);
                         }
                         else {
-                            this.pIDL = PInvoke.ILCreateFromPath(path);
+                            pIDL = PInvoke.ILCreateFromPath(path);
                         }
                     }
                     else {
-                        this.fSpecial = true;
+                        fSpecial = true;
                     }
                 }
             }
         }
 
         private IDLWrapper(string path, byte[] idl, IntPtr pIDL) {
-            this.attributes = 0xfffffff0;
+            attributes = 0xfffffff0;
             this.path = path;
             this.idl = idl;
             this.pIDL = pIDL;
@@ -172,12 +172,12 @@ namespace QTTabBarLib {
         }
 
         public void Dispose() {
-            if(this.pIDL != IntPtr.Zero) {
-                PInvoke.CoTaskMemFree(this.pIDL);
-                this.pIDL = IntPtr.Zero;
+            if(pIDL != IntPtr.Zero) {
+                PInvoke.CoTaskMemFree(pIDL);
+                pIDL = IntPtr.Zero;
             }
-            this.path = null;
-            this.idl = null;
+            path = null;
+            idl = null;
         }
 
         public static bool FileExists(string path) {
@@ -376,7 +376,7 @@ namespace QTTabBarLib {
 
         public bool Available {
             get {
-                return (this.pIDL != IntPtr.Zero);
+                return (pIDL != IntPtr.Zero);
             }
         }
 
@@ -400,47 +400,47 @@ namespace QTTabBarLib {
 
         public bool HasPath {
             get {
-                return ((this.Path != null) && (this.path.Length > 0));
+                return ((Path != null) && (path.Length > 0));
             }
         }
 
         public byte[] IDL {
             get {
-                if((this.idl == null) && (this.pIDL != IntPtr.Zero)) {
-                    this.idl = ShellMethods.GetIDLData(this.pIDL);
+                if((idl == null) && (pIDL != IntPtr.Zero)) {
+                    idl = ShellMethods.GetIDLData(pIDL);
                 }
-                return this.idl;
+                return idl;
             }
         }
 
         public bool IsDropTarget {
             get {
-                if(this.attributes == 0xfffffff0) {
-                    this.attributes = ShellMethods.GetAttributes(this.pIDL, false);
+                if(attributes == 0xfffffff0) {
+                    attributes = ShellMethods.GetAttributes(pIDL, false);
                 }
-                if(this.attributes == uint.MaxValue) {
+                if(attributes == uint.MaxValue) {
                     return false;
                 }
-                return ((this.attributes & 0x100) == 0x100);
+                return ((attributes & 0x100) == 0x100);
             }
         }
 
         public bool IsFileSystem {
             get {
-                if(this.attributes == 0xfffffff0) {
-                    this.attributes = ShellMethods.GetAttributes(this.pIDL, false);
+                if(attributes == 0xfffffff0) {
+                    attributes = ShellMethods.GetAttributes(pIDL, false);
                 }
-                if(this.attributes == uint.MaxValue) {
+                if(attributes == uint.MaxValue) {
                     return false;
                 }
-                return ((this.attributes & 0x40000000) == 0x40000000);
+                return ((attributes & 0x40000000) == 0x40000000);
             }
         }
 
         public bool IsFileSystemFile {
             get {
                 try {
-                    return FileExists(this.Path);
+                    return FileExists(Path);
                 }
                 catch {
                 }
@@ -451,7 +451,7 @@ namespace QTTabBarLib {
         public bool IsFileSystemFolder {
             get {
                 try {
-                    return DirectoryExists(this.Path);
+                    return DirectoryExists(Path);
                 }
                 catch {
                 }
@@ -461,25 +461,25 @@ namespace QTTabBarLib {
 
         public bool IsFolder {
             get {
-                if(this.attributes == 0xfffffff0) {
-                    this.attributes = ShellMethods.GetAttributes(this.pIDL, false);
+                if(attributes == 0xfffffff0) {
+                    attributes = ShellMethods.GetAttributes(pIDL, false);
                 }
-                if(this.attributes == uint.MaxValue) {
+                if(attributes == uint.MaxValue) {
                     return false;
                 }
-                return ((this.attributes & 0x20000000) == 0x20000000);
+                return ((attributes & 0x20000000) == 0x20000000);
             }
         }
 
         public bool IsLink {
             get {
-                if(this.attributes == 0xfffffff0) {
-                    this.attributes = ShellMethods.GetAttributes(this.pIDL, false);
+                if(attributes == 0xfffffff0) {
+                    attributes = ShellMethods.GetAttributes(pIDL, false);
                 }
-                if(this.attributes == uint.MaxValue) {
+                if(attributes == uint.MaxValue) {
                     return false;
                 }
-                return ((this.attributes & 0x10000) == 0x10000);
+                return ((attributes & 0x10000) == 0x10000);
             }
         }
 
@@ -487,10 +487,10 @@ namespace QTTabBarLib {
             get {
                 bool flag = false;
                 try {
-                    if(!this.IsLink) {
+                    if(!IsLink) {
                         return false;
                     }
-                    string linkTargetPath = ShellMethods.GetLinkTargetPath(this.Path);
+                    string linkTargetPath = ShellMethods.GetLinkTargetPath(Path);
                     if(FileExists(linkTargetPath)) {
                         return false;
                     }
@@ -504,9 +504,9 @@ namespace QTTabBarLib {
 
         public bool IsReadyIfDrive {
             get {
-                if((this.path != null) && (this.path.Length == 3)) {
+                if((path != null) && (path.Length == 3)) {
                     try {
-                        return new DriveInfo(this.path).IsReady;
+                        return new DriveInfo(path).IsReady;
                     }
                     catch {
                     }
@@ -517,22 +517,22 @@ namespace QTTabBarLib {
 
         public string Path {
             get {
-                if((this.path == null) && (this.pIDL != IntPtr.Zero)) {
-                    this.path = ShellMethods.GetPath(this.pIDL);
+                if((path == null) && (pIDL != IntPtr.Zero)) {
+                    path = ShellMethods.GetPath(pIDL);
                 }
-                return this.path;
+                return path;
             }
         }
 
         public IntPtr PIDL {
             get {
-                return this.pIDL;
+                return pIDL;
             }
         }
 
         public bool Special {
             get {
-                return this.fSpecial;
+                return fSpecial;
             }
         }
     }

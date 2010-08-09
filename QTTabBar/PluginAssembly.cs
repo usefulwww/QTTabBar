@@ -40,35 +40,35 @@ namespace QTTabBarLib {
         public string Version;
 
         public PluginAssembly(string path) {
-            this.Path = path;
-            this.Title = this.Author = this.Description = this.Version = this.Name = string.Empty;
+            Path = path;
+            Title = Author = Description = Version = Name = string.Empty;
             if(File.Exists(path)) {
                 try {
-                    this.assembly = Assembly.Load(File.ReadAllBytes(path));
-                    AssemblyName name = this.assembly.GetName();
-                    AssemblyTitleAttribute customAttribute = (AssemblyTitleAttribute)Attribute.GetCustomAttribute(this.assembly, typeof(AssemblyTitleAttribute));
-                    AssemblyCompanyAttribute attribute2 = (AssemblyCompanyAttribute)Attribute.GetCustomAttribute(this.assembly, typeof(AssemblyCompanyAttribute));
-                    AssemblyDescriptionAttribute attribute3 = (AssemblyDescriptionAttribute)Attribute.GetCustomAttribute(this.assembly, typeof(AssemblyDescriptionAttribute));
-                    this.Version = name.Version.ToString();
+                    assembly = Assembly.Load(File.ReadAllBytes(path));
+                    AssemblyName name = assembly.GetName();
+                    AssemblyTitleAttribute customAttribute = (AssemblyTitleAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyTitleAttribute));
+                    AssemblyCompanyAttribute attribute2 = (AssemblyCompanyAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyCompanyAttribute));
+                    AssemblyDescriptionAttribute attribute3 = (AssemblyDescriptionAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyDescriptionAttribute));
+                    Version = name.Version.ToString();
                     if(customAttribute != null) {
-                        this.Title = customAttribute.Title;
+                        Title = customAttribute.Title;
                     }
                     if(attribute2 != null) {
-                        this.Author = attribute2.Company;
+                        Author = attribute2.Company;
                     }
                     if(attribute3 != null) {
-                        this.Description = attribute3.Description;
+                        Description = attribute3.Description;
                     }
-                    this.Name = this.Title + this.Version + "(" + path.GetHashCode().ToString("X") + ")";
-                    foreach(Type type in this.assembly.GetTypes()) {
+                    Name = Title + Version + "(" + path.GetHashCode().ToString("X") + ")";
+                    foreach(Type type in assembly.GetTypes()) {
                         try {
                             if(ValidateType(type)) {
                                 PluginAttribute pluginAtt = Attribute.GetCustomAttribute(type, T_PLUGINATTRIBUTE) as PluginAttribute;
                                 if(pluginAtt != null) {
-                                    string pluginID = this.Name + "+" + type.FullName;
+                                    string pluginID = Name + "+" + type.FullName;
                                     PluginInformation info = new PluginInformation(pluginAtt, path, pluginID, type.FullName);
-                                    GetImageFromAssembly(this.assembly, type, info);
-                                    this.dicPluginInformations[pluginID] = info;
+                                    GetImageFromAssembly(assembly, type, info);
+                                    dicPluginInformations[pluginID] = info;
                                 }
                                 else {
                                     QTUtility2.MakeErrorLog(null, "failed attribute");
@@ -86,11 +86,11 @@ namespace QTTabBarLib {
         }
 
         public void Dispose() {
-            this.assembly = null;
-            foreach(PluginInformation information in this.dicPluginInformations.Values) {
+            assembly = null;
+            foreach(PluginInformation information in dicPluginInformations.Values) {
                 information.Dispose();
             }
-            this.dicPluginInformations.Clear();
+            dicPluginInformations.Clear();
         }
 
         private static void GetImageFromAssembly(Assembly asm, Type type, PluginInformation info) {
@@ -112,11 +112,11 @@ namespace QTTabBarLib {
         }
 
         public Plugin Load(string pluginID) {
-            if(File.Exists(this.Path)) {
+            if(File.Exists(Path)) {
                 try {
                     PluginInformation information;
-                    if(this.dicPluginInformations.TryGetValue(pluginID, out information)) {
-                        IPluginClient pluginClient = this.assembly.CreateInstance(information.TypeFullName) as IPluginClient;
+                    if(dicPluginInformations.TryGetValue(pluginID, out information)) {
+                        IPluginClient pluginClient = assembly.CreateInstance(information.TypeFullName) as IPluginClient;
                         if(pluginClient != null) {
                             Plugin plugin = new Plugin(pluginClient, information);
                             IBarButton button = pluginClient as IBarButton;
@@ -156,12 +156,12 @@ namespace QTTabBarLib {
         }
 
         public bool TryGetPluginInformation(string pluginID, out PluginInformation info) {
-            return this.dicPluginInformations.TryGetValue(pluginID, out info);
+            return dicPluginInformations.TryGetValue(pluginID, out info);
         }
 
         public void Uninstall() {
             try {
-                foreach(Type type in this.assembly.GetTypes()) {
+                foreach(Type type in assembly.GetTypes()) {
                     try {
                         if(ValidateType(type)) {
                             MethodInfo method = type.GetMethod("Uninstall", BindingFlags.Public | BindingFlags.Static);
@@ -185,13 +185,13 @@ namespace QTTabBarLib {
 
         public List<PluginInformation> PluginInformations {
             get {
-                return new List<PluginInformation>(this.dicPluginInformations.Values);
+                return new List<PluginInformation>(dicPluginInformations.Values);
             }
         }
 
         public bool PluginInfosExist {
             get {
-                return (this.dicPluginInformations.Count > 0);
+                return (dicPluginInformations.Count > 0);
             }
         }
     }

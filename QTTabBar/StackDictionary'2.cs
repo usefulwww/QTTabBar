@@ -24,71 +24,71 @@ namespace QTTabBarLib {
         private IList<S> lstKeys;
 
         public StackDictionary() {
-            this.lstKeys = new List<S>();
-            this.dictionary = new Dictionary<S, T>();
+            lstKeys = new List<S>();
+            dictionary = new Dictionary<S, T>();
         }
 
         public T Peek() {
             S local;
-            return this.popPeekInternal(false, out local);
+            return popPeekInternal(false, out local);
         }
 
         public T Peek(out S key) {
-            return this.popPeekInternal(false, out key);
+            return popPeekInternal(false, out key);
         }
 
         public T Pop() {
             S local;
-            return this.popPeekInternal(true, out local);
+            return popPeekInternal(true, out local);
         }
 
         public T Pop(out S key) {
-            return this.popPeekInternal(true, out key);
+            return popPeekInternal(true, out key);
         }
 
         private T popPeekInternal(bool fPop, out S lastKey) {
-            if(this.lstKeys.Count == 0) {
+            if(lstKeys.Count == 0) {
                 throw new InvalidOperationException("This StackDictionary is empty.");
             }
-            lastKey = this.lstKeys[this.lstKeys.Count - 1];
-            T local = this.dictionary[lastKey];
+            lastKey = lstKeys[lstKeys.Count - 1];
+            T local = dictionary[lastKey];
             if(fPop) {
-                this.lstKeys.RemoveAt(this.lstKeys.Count - 1);
-                this.dictionary.Remove(lastKey);
+                lstKeys.RemoveAt(lstKeys.Count - 1);
+                dictionary.Remove(lastKey);
             }
             return local;
         }
 
         public void Push(S key, T value) {
-            this.lstKeys.Remove(key);
-            this.lstKeys.Add(key);
-            this.dictionary[key] = value;
+            lstKeys.Remove(key);
+            lstKeys.Add(key);
+            dictionary[key] = value;
         }
 
         public bool Remove(S key) {
-            this.lstKeys.Remove(key);
-            return this.dictionary.Remove(key);
+            lstKeys.Remove(key);
+            return dictionary.Remove(key);
         }
 
         public bool TryGetValue(S key, out T value) {
-            return this.dictionary.TryGetValue(key, out value);
+            return dictionary.TryGetValue(key, out value);
         }
 
         public int Count {
             get {
-                return this.lstKeys.Count;
+                return lstKeys.Count;
             }
         }
 
         public ICollection<S> Keys {
             get {
-                return this.dictionary.Keys;
+                return dictionary.Keys;
             }
         }
 
         public ICollection<T> Values {
             get {
-                return this.dictionary.Values;
+                return dictionary.Values;
             }
         }
     }

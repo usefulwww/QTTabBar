@@ -32,13 +32,13 @@ namespace QTTabBarLib {
 
         public ArrowDirection Direction {
             get {
-                return this.arrowDir;
+                return arrowDir;
             }
         }
 
         public int RowCount {
             get {
-                return this.rowCount;
+                return rowCount;
             }
         }
     }

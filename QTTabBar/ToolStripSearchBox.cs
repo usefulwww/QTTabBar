@@ -39,9 +39,9 @@ namespace QTTabBarLib {
 
         public ToolStripSearchBox(bool fLarge, bool fLocked, string strDefText, int tbWidth)
             : base(CreateControlInstance(fLarge, strDefText, tbWidth)) {
-            base.AutoSize = false;
-            this.Padding = fLarge ? new Padding(4, 0, 4, 0) : new Padding(2, 0, 2, 0);
-            this.tb = (TextBox)base.Control;
+            AutoSize = false;
+            Padding = fLarge ? new Padding(4, 0, 4, 0) : new Padding(2, 0, 2, 0);
+            tb = (TextBox)Control;
             this.strDefText = strDefText;
             this.fLocked = fLocked;
         }
@@ -58,113 +58,113 @@ namespace QTTabBarLib {
         }
 
         private bool IsMouseOnTheEdge(Point pnt) {
-            if(pnt.X <= (this.tb.Width - 12)) {
+            if(pnt.X <= (tb.Width - 12)) {
                 return false;
             }
-            return ((pnt.Y < this.tb.Bottom) && (pnt.Y > this.tb.TabIndex));
+            return ((pnt.Y < tb.Bottom) && (pnt.Y > tb.TabIndex));
         }
 
         protected override void OnBoundsChanged() {
             base.OnBoundsChanged();
-            if((base.Parent != null) && !base.Parent.Disposing) {
-                base.Parent.Refresh();
+            if((Parent != null) && !Parent.Disposing) {
+                Parent.Refresh();
             }
         }
 
         protected override void OnGotFocus(EventArgs e) {
-            if(this.tb.Text == this.strDefText) {
-                this.tb.ForeColor = SystemColors.ControlText;
-                this.fSuppressTextChangeEvent = true;
-                this.tb.Text = string.Empty;
-                this.fSuppressTextChangeEvent = false;
+            if(tb.Text == strDefText) {
+                tb.ForeColor = SystemColors.ControlText;
+                fSuppressTextChangeEvent = true;
+                tb.Text = string.Empty;
+                fSuppressTextChangeEvent = false;
             }
             base.OnGotFocus(e);
         }
 
         protected override void OnLostFocus(EventArgs e) {
-            this.fNowDragging = false;
-            if((this.tb.Text.Length == 0) && (this.ErasingText != null)) {
+            fNowDragging = false;
+            if((tb.Text.Length == 0) && (ErasingText != null)) {
                 CancelEventArgs args = new CancelEventArgs();
-                this.ErasingText(this, args);
+                ErasingText(this, args);
                 if(!args.Cancel) {
-                    this.fSuppressTextChangeEvent = true;
-                    this.tb.ForeColor = SystemColors.GrayText;
-                    this.tb.Text = this.strDefText;
-                    this.fSuppressTextChangeEvent = false;
+                    fSuppressTextChangeEvent = true;
+                    tb.ForeColor = SystemColors.GrayText;
+                    tb.Text = strDefText;
+                    fSuppressTextChangeEvent = false;
                 }
             }
             base.OnLostFocus(e);
         }
 
         protected override void OnMouseDown(MouseEventArgs e) {
-            if((!this.fLocked && this.IsMouseOnTheEdge(e.Location)) && (e.Button == MouseButtons.Left)) {
-                this.StartDrag(true);
+            if((!fLocked && IsMouseOnTheEdge(e.Location)) && (e.Button == MouseButtons.Left)) {
+                StartDrag(true);
             }
             base.OnMouseDown(e);
         }
 
         protected override void OnMouseLeave(EventArgs e) {
-            this.fNowDragging = false;
+            fNowDragging = false;
             base.OnMouseLeave(e);
         }
 
         protected override void OnMouseMove(MouseEventArgs e) {
-            if(!this.fLocked) {
-                if(this.IsMouseOnTheEdge(e.Location)) {
-                    this.tb.Cursor = Cursors.VSplit;
+            if(!fLocked) {
+                if(IsMouseOnTheEdge(e.Location)) {
+                    tb.Cursor = Cursors.VSplit;
                 }
                 else {
-                    this.tb.Cursor = Cursors.IBeam;
+                    tb.Cursor = Cursors.IBeam;
                 }
-                if(this.fNowDragging) {
+                if(fNowDragging) {
                     int min = 32;
                     int max = 1024;
-                    ToolStrip owner = base.Owner;
+                    ToolStrip owner = Owner;
                     if(((owner != null) && !owner.Disposing) && !(owner is ToolStripOverflow)) {
-                        max = (owner.DisplayRectangle.Width - this.Bounds.X) - 24;
+                        max = (owner.DisplayRectangle.Width - Bounds.X) - 24;
                     }
-                    base.Width = Math.Max(Math.Min(e.X + 12, max), min);
+                    Width = Math.Max(Math.Min(e.X + 12, max), min);
                 }
             }
             base.OnMouseMove(e);
         }
 
         protected override void OnMouseUp(MouseEventArgs mevent) {
-            if(!this.fLocked) {
-                this.StartDrag(false);
+            if(!fLocked) {
+                StartDrag(false);
             }
             base.OnMouseUp(mevent);
         }
 
         protected override void OnTextChanged(EventArgs e) {
-            if(!this.fSuppressTextChangeEvent) {
+            if(!fSuppressTextChangeEvent) {
                 base.OnTextChanged(e);
             }
         }
 
         public void RefreshText() {
-            this.fSuppressTextChangeEvent = true;
-            if(this.tb.Focused) {
-                this.tb.ForeColor = SystemColors.ControlText;
-                this.tb.Text = string.Empty;
+            fSuppressTextChangeEvent = true;
+            if(tb.Focused) {
+                tb.ForeColor = SystemColors.ControlText;
+                tb.Text = string.Empty;
             }
             else {
-                this.tb.ForeColor = SystemColors.GrayText;
-                this.tb.Text = this.strDefText;
+                tb.ForeColor = SystemColors.GrayText;
+                tb.Text = strDefText;
             }
-            this.fSuppressTextChangeEvent = false;
+            fSuppressTextChangeEvent = false;
         }
 
         private void StartDrag(bool fStart) {
-            this.fNowDragging = fStart;
-            if(!fStart && (this.ResizeComplete != null)) {
-                this.ResizeComplete(this, EventArgs.Empty);
+            fNowDragging = fStart;
+            if(!fStart && (ResizeComplete != null)) {
+                ResizeComplete(this, EventArgs.Empty);
             }
         }
 
         public TextBox TextBox {
             get {
-                return this.tb;
+                return tb;
             }
         }
     }

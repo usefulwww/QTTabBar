@@ -35,23 +35,23 @@ namespace QTTabBarLib {
             if(container != null) {
                 container.Add(this);
             }
-            this.fDefaultShowCheckMargin = fShowCheckMargin;
-            base.ShowCheckMargin = fShowCheckMargin || (nCurrentRenderer == 2);
-            base.Renderer = menuRenderer;
-            menuRendererChanged = (EventHandler)Delegate.Combine(menuRendererChanged, new EventHandler(this.ContextMenuStripEx_menuRendererChanged));
+            fDefaultShowCheckMargin = fShowCheckMargin;
+            ShowCheckMargin = fShowCheckMargin || (nCurrentRenderer == 2);
+            Renderer = menuRenderer;
+            menuRendererChanged = (EventHandler)Delegate.Combine(menuRendererChanged, new EventHandler(ContextMenuStripEx_menuRendererChanged));
         }
 
         private void ContextMenuStripEx_menuRendererChanged(object sender, EventArgs e) {
-            if(base.InvokeRequired) {
-                base.Invoke(new MethodInvoker(this.SetRenderer));
+            if(InvokeRequired) {
+                Invoke(new MethodInvoker(SetRenderer));
             }
             else {
-                this.SetRenderer();
+                SetRenderer();
             }
         }
 
         protected override void Dispose(bool disposing) {
-            menuRendererChanged = (EventHandler)Delegate.Remove(menuRendererChanged, new EventHandler(this.ContextMenuStripEx_menuRendererChanged));
+            menuRendererChanged = (EventHandler)Delegate.Remove(menuRendererChanged, new EventHandler(ContextMenuStripEx_menuRendererChanged));
             base.Dispose(disposing);
         }
 
@@ -88,8 +88,8 @@ namespace QTTabBarLib {
         }
 
         private void SetRenderer() {
-            base.Renderer = menuRenderer;
-            base.ShowCheckMargin = (nCurrentRenderer == 2) || this.fDefaultShowCheckMargin;
+            Renderer = menuRenderer;
+            ShowCheckMargin = (nCurrentRenderer == 2) || fDefaultShowCheckMargin;
         }
     }
 }

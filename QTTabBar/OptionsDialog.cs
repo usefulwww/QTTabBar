@@ -263,172 +263,172 @@ namespace QTTabBarLib {
             InitializeStaticFields();
             this.pluginManager = pluginManager;
             this.callBack = callBack;
-            this.InitializeComponent();
-            this.tabImageSetting = new TabImageSetting();
-            this.propertyGrid1.SelectedObject = this.tabImageSetting;
-            this.propertyGrid1.ExpandAllGridItems();
-            this.fntStartUpGroup = new Font(this.treeViewGroup.Font, FontStyle.Underline);
-            this.sfPlugins = new StringFormat(StringFormatFlags.NoWrap);
-            this.sfPlugins.Alignment = StringAlignment.Near;
-            this.sfPlugins.LineAlignment = StringAlignment.Center;
-            base.SuspendLayout();
-            this.lblVer.Text = "QTTabBar ver " + QTUtility2.MakeVersionString();
-            this.tabPage1_Gnrl.Text = ResOpt_Genre[0];
-            this.tabPage2_Tabs.Text = ResOpt_Genre[1];
-            this.tabPage3_Wndw.Text = ResOpt_Genre[2];
-            this.tabPage4_View.Text = ResOpt_Genre[3];
-            this.tabPage5_Grps.Text = ResOpt_Genre[4];
-            this.tabPage6_Apps.Text = ResOpt_Genre[5];
-            this.tabPage7_Plug.Text = ResOpt_Genre[6];
-            this.tabPage8_Keys.Text = ResOpt_Genre[7];
-            this.tabPage9_Misc.Text = ResOpt_Genre[8];
-            this.tabPageA_Path.Text = ResOpt_Genre[9];
+            InitializeComponent();
+            tabImageSetting = new TabImageSetting();
+            propertyGrid1.SelectedObject = tabImageSetting;
+            propertyGrid1.ExpandAllGridItems();
+            fntStartUpGroup = new Font(treeViewGroup.Font, FontStyle.Underline);
+            sfPlugins = new StringFormat(StringFormatFlags.NoWrap);
+            sfPlugins.Alignment = StringAlignment.Near;
+            sfPlugins.LineAlignment = StringAlignment.Center;
+            SuspendLayout();
+            lblVer.Text = "QTTabBar ver " + QTUtility2.MakeVersionString();
+            tabPage1_Gnrl.Text = ResOpt_Genre[0];
+            tabPage2_Tabs.Text = ResOpt_Genre[1];
+            tabPage3_Wndw.Text = ResOpt_Genre[2];
+            tabPage4_View.Text = ResOpt_Genre[3];
+            tabPage5_Grps.Text = ResOpt_Genre[4];
+            tabPage6_Apps.Text = ResOpt_Genre[5];
+            tabPage7_Plug.Text = ResOpt_Genre[6];
+            tabPage8_Keys.Text = ResOpt_Genre[7];
+            tabPage9_Misc.Text = ResOpt_Genre[8];
+            tabPageA_Path.Text = ResOpt_Genre[9];
             string[] strArray = QTUtility.TextResourcesDic["DialogButtons"];
-            this.btnOK.Text = strArray[0];
-            this.btnCancel.Text = strArray[1];
-            this.btnApply.Text = strArray[2];
-            this.chbActivateNew.Text = ResOpt[0];
-            this.chbDontOpenSame.Text = ResOpt[1];
-            this.chbCloseWhenGroup.Text = ResOpt[2];
-            this.chbShowTooltip.Text = ResOpt[3];
-            this.chbX1X2.Text = ResOpt[4];
-            this.chbNavBtn.Text = ResOpt[5];
-            this.chbNoHistory.Text = ResOpt[6];
-            this.chbSaveExecuted.Text = ResOpt[7];
-            this.chbDD.Text = ResOpt[8];
-            this.lblLang.Text = ResOpt[9];
-            this.lblNewTabLoc.Text = ResOpt[10];
-            this.lblActvClose.Text = ResOpt[11];
-            this.lblTabDblClk.Text = ResOpt[12];
-            this.lblBGDblClik.Text = ResOpt[13];
-            this.lblAction_BarDblClick.Text = ResOpt[14];
-            this.lblMultiRows.Text = ResOpt[15];
-            this.chbAutoSubText.Text = ResOpt[0x10];
-            this.chbWhlClick.Text = ResOpt[0x11];
-            this.chbNCADblClck.Text = ResOpt[0x12];
-            this.chbWndUnresizable.Text = ResOpt[0x13];
-            this.chbWndRestrAlpha.Text = ResOpt[20];
-            this.chbBlockProcess.Text = ResOpt[0x15];
-            this.chbFoldrTree.Text = ResOpt[0x16];
-            this.chbNoTabFromOuteside.Text = ResOpt[0x17];
-            this.chbHolizontalScroll.Text = ResOpt[0x18];
-            this.chbWhlChangeView.Text = ResOpt[0x19];
-            this.chbNeverCloseWindow.Text = ResOpt[0x1a];
-            this.chbNeverCloseWndLocked.Text = ResOpt[0x1b];
-            this.chbRestoreClosed.Text = ResOpt[0x1c];
-            this.chbRestoreLocked.Text = ResOpt[0x1d];
-            this.chbUseTabSkin.Text = ResOpt[30];
-            this.btnHiliteClsc.Text = ResOpt[0x1f];
-            this.lblTabSizeTitle.Text = ResOpt[0x20];
-            this.lblTabWidth.Text = ResOpt[0x21];
-            this.lblTabHeight.Text = ResOpt[0x22];
-            this.lblTabWFix.Text = ResOpt_DropDown[0x18];
-            this.lblTabWMax.Text = ResOpt[0x23];
-            this.lblTabWMin.Text = ResOpt[0x24];
-            this.lblTabFont.Text = ResOpt[0x25];
-            this.btnTabFont.Text = ResOpt[0x25];
-            this.chbBoldActv.Text = ResOpt[0x26];
-            this.lblTabTxtClr.Text = ResOpt[0x27];
-            this.btnActTxtClr.Text = ResOpt[40];
-            this.btnShadowAct.Text = ResOpt[40];
-            this.btnInactTxtClr.Text = ResOpt[0x29];
-            this.btnShadowIna.Text = ResOpt[0x29];
-            this.btnDefTxtClr.Text = ResOpt[0x2a];
-            this.chbToolbarBGClr.Text = this.btnToolBarBGClr.Text = ResOpt[0x2b];
-            this.chbFolderIcon.Text = ResOpt[0x2c];
-            this.lblUserApps_Path.Text = ResOpt[0x2d] + ":";
-            this.lblUserApps_Args.Text = ResOpt[0x2e] + ":";
-            this.lblUserApps_Working.Text = ResOpt[0x2f] + ":";
-            this.lblUserApps_Key.Text = ResOpt_Genre[7] + ":";
-            this.lblGroupKey.Text = ResOpt_Genre[7] + ":";
-            this.lblPluginLang.Text = ResOpt[0x30];
-            this.chbHideMenu.Text = ResOpt[0x31];
-            this.chbBSUpOneLvl.Text = ResOpt[50];
-            this.chbNoFulRowSelect.Text = ResOpt[0x33];
-            this.chbGridLine.Text = ResOpt[0x34];
-            this.chbAlternateColor.Text = ResOpt[0x35];
-            this.chbShowPreview.Text = ResOpt[0x36];
-            this.chbPreviewMode.Text = ResOpt[0x37];
-            this.chbSubDirTip.Text = ResOpt[0x38];
-            this.chbSubDirTipMode.Text = ResOpt[0x37];
-            this.chbSubDirTipModeHidden.Text = ResOpt[0x39];
-            this.chbSubDirTipPreview.Text = ResOpt[0x36];
-            this.chbSubDirTipModeFile.Text = ResOpt[0x3a];
-            this.chbSelectWithoutExt.Text = ResOpt[0x3b];
-            this.chbSubDirTipModeSystem.Text = ResOpt[60];
-            this.chbSendToTray.Text = ResOpt[0x3d];
-            this.lblPreviewWidth.Text = ResOpt[0x3e];
-            this.lblPreviewHeight.Text = ResOpt[0x3f];
-            this.chbRebarBGImage.Text = ResOpt[0x40];
-            this.chbF2Selection.Text = ResOpt[0x41];
-            this.chbTabCloseButton.Text = ResOpt[0x42];
-            this.lblTabWhlClk.Text = ResOpt[0x43];
-            this.chbSubDirTipOnTab.Text = ResOpt[0x44];
-            this.clmnHeader_NoCapture.Text = ResOpt[0x45];
-            this.chbTabCloseBtnAlt.Text = ResOpt[70];
-            this.chbTabCloseBtnHover.Text = ResOpt[0x47];
-            this.btnExportSettings.Text = ResOpt[0x48];
-            this.chbCursorLoop.Text = ResOpt[0x49];
-            this.lblNetworkTimeOut.Text = ResOpt[0x4a];
-            this.chbSendToTrayOnMinimize.Text = ResOpt[0x4b];
-            this.btnPreviewFont.Text = ResOpt[0x25];
-            this.lblTabTextAlignment.Text = ResOpt[0x4c];
-            this.lblMenuRenderer.Text = ResOpt[0x4d];
+            btnOK.Text = strArray[0];
+            btnCancel.Text = strArray[1];
+            btnApply.Text = strArray[2];
+            chbActivateNew.Text = ResOpt[0];
+            chbDontOpenSame.Text = ResOpt[1];
+            chbCloseWhenGroup.Text = ResOpt[2];
+            chbShowTooltip.Text = ResOpt[3];
+            chbX1X2.Text = ResOpt[4];
+            chbNavBtn.Text = ResOpt[5];
+            chbNoHistory.Text = ResOpt[6];
+            chbSaveExecuted.Text = ResOpt[7];
+            chbDD.Text = ResOpt[8];
+            lblLang.Text = ResOpt[9];
+            lblNewTabLoc.Text = ResOpt[10];
+            lblActvClose.Text = ResOpt[11];
+            lblTabDblClk.Text = ResOpt[12];
+            lblBGDblClik.Text = ResOpt[13];
+            lblAction_BarDblClick.Text = ResOpt[14];
+            lblMultiRows.Text = ResOpt[15];
+            chbAutoSubText.Text = ResOpt[0x10];
+            chbWhlClick.Text = ResOpt[0x11];
+            chbNCADblClck.Text = ResOpt[0x12];
+            chbWndUnresizable.Text = ResOpt[0x13];
+            chbWndRestrAlpha.Text = ResOpt[20];
+            chbBlockProcess.Text = ResOpt[0x15];
+            chbFoldrTree.Text = ResOpt[0x16];
+            chbNoTabFromOuteside.Text = ResOpt[0x17];
+            chbHolizontalScroll.Text = ResOpt[0x18];
+            chbWhlChangeView.Text = ResOpt[0x19];
+            chbNeverCloseWindow.Text = ResOpt[0x1a];
+            chbNeverCloseWndLocked.Text = ResOpt[0x1b];
+            chbRestoreClosed.Text = ResOpt[0x1c];
+            chbRestoreLocked.Text = ResOpt[0x1d];
+            chbUseTabSkin.Text = ResOpt[30];
+            btnHiliteClsc.Text = ResOpt[0x1f];
+            lblTabSizeTitle.Text = ResOpt[0x20];
+            lblTabWidth.Text = ResOpt[0x21];
+            lblTabHeight.Text = ResOpt[0x22];
+            lblTabWFix.Text = ResOpt_DropDown[0x18];
+            lblTabWMax.Text = ResOpt[0x23];
+            lblTabWMin.Text = ResOpt[0x24];
+            lblTabFont.Text = ResOpt[0x25];
+            btnTabFont.Text = ResOpt[0x25];
+            chbBoldActv.Text = ResOpt[0x26];
+            lblTabTxtClr.Text = ResOpt[0x27];
+            btnActTxtClr.Text = ResOpt[40];
+            btnShadowAct.Text = ResOpt[40];
+            btnInactTxtClr.Text = ResOpt[0x29];
+            btnShadowIna.Text = ResOpt[0x29];
+            btnDefTxtClr.Text = ResOpt[0x2a];
+            chbToolbarBGClr.Text = btnToolBarBGClr.Text = ResOpt[0x2b];
+            chbFolderIcon.Text = ResOpt[0x2c];
+            lblUserApps_Path.Text = ResOpt[0x2d] + ":";
+            lblUserApps_Args.Text = ResOpt[0x2e] + ":";
+            lblUserApps_Working.Text = ResOpt[0x2f] + ":";
+            lblUserApps_Key.Text = ResOpt_Genre[7] + ":";
+            lblGroupKey.Text = ResOpt_Genre[7] + ":";
+            lblPluginLang.Text = ResOpt[0x30];
+            chbHideMenu.Text = ResOpt[0x31];
+            chbBSUpOneLvl.Text = ResOpt[50];
+            chbNoFulRowSelect.Text = ResOpt[0x33];
+            chbGridLine.Text = ResOpt[0x34];
+            chbAlternateColor.Text = ResOpt[0x35];
+            chbShowPreview.Text = ResOpt[0x36];
+            chbPreviewMode.Text = ResOpt[0x37];
+            chbSubDirTip.Text = ResOpt[0x38];
+            chbSubDirTipMode.Text = ResOpt[0x37];
+            chbSubDirTipModeHidden.Text = ResOpt[0x39];
+            chbSubDirTipPreview.Text = ResOpt[0x36];
+            chbSubDirTipModeFile.Text = ResOpt[0x3a];
+            chbSelectWithoutExt.Text = ResOpt[0x3b];
+            chbSubDirTipModeSystem.Text = ResOpt[60];
+            chbSendToTray.Text = ResOpt[0x3d];
+            lblPreviewWidth.Text = ResOpt[0x3e];
+            lblPreviewHeight.Text = ResOpt[0x3f];
+            chbRebarBGImage.Text = ResOpt[0x40];
+            chbF2Selection.Text = ResOpt[0x41];
+            chbTabCloseButton.Text = ResOpt[0x42];
+            lblTabWhlClk.Text = ResOpt[0x43];
+            chbSubDirTipOnTab.Text = ResOpt[0x44];
+            clmnHeader_NoCapture.Text = ResOpt[0x45];
+            chbTabCloseBtnAlt.Text = ResOpt[70];
+            chbTabCloseBtnHover.Text = ResOpt[0x47];
+            btnExportSettings.Text = ResOpt[0x48];
+            chbCursorLoop.Text = ResOpt[0x49];
+            lblNetworkTimeOut.Text = ResOpt[0x4a];
+            chbSendToTrayOnMinimize.Text = ResOpt[0x4b];
+            btnPreviewFont.Text = ResOpt[0x25];
+            lblTabTextAlignment.Text = ResOpt[0x4c];
+            lblMenuRenderer.Text = ResOpt[0x4d];
             string[] strArray2 = QTUtility.TextResourcesDic["TabBar_Option2"];
-            this.chbTreeShftWhlTab.Text = strArray2[0];
-            this.chbTabSwitcher.Text = strArray2[1];
-            this.chbTabTitleShadow.Text = strArray2[2];
-            this.chbAutoUpdate.Text = strArray2[3];
-            this.chbRemoveOnSeparate.Text = strArray2[4];
-            this.chbDriveLetter.Text = strArray2[5];
-            this.chbPlaySound.Text = strArray2[6];
-            this.btnBrowsePlugin.Text = strArray2[7];
+            chbTreeShftWhlTab.Text = strArray2[0];
+            chbTabSwitcher.Text = strArray2[1];
+            chbTabTitleShadow.Text = strArray2[2];
+            chbAutoUpdate.Text = strArray2[3];
+            chbRemoveOnSeparate.Text = strArray2[4];
+            chbDriveLetter.Text = strArray2[5];
+            chbPlaySound.Text = strArray2[6];
+            btnBrowsePlugin.Text = strArray2[7];
             PluginView.BTN_OPTION = strArray2[8];
             PluginView.BTN_DISABLE = strArray2[9];
             PluginView.BTN_ENABLE = strArray2[10];
             PluginView.BTN_REMOVE = strArray2[11];
             PluginView.MNU_PLUGINABOUT = strArray2[12];
             RES_REMOVEPLGIN = strArray2[13];
-            this.chbPreviewInfo.Text = strArray2[14];
+            chbPreviewInfo.Text = strArray2[14];
             string[] strArray3 = QTUtility.TextResourcesDic["TabBar_Option_Buttons"];
-            this.btnHistoryClear.Text = this.btnClearRecentFile.Text = strArray3[0];
-            this.btnUp_Grp.Text = strArray3[1];
-            this.btnUp_app.Text = strArray3[1];
-            this.btnDown_Grp.Text = strArray3[2];
-            this.btnDown_app.Text = strArray3[2];
-            this.btnAddSep_Grp.Text = strArray3[3];
-            this.btnAddSep_app.Text = strArray3[3];
-            this.btnStartUpGrp.Text = strArray3[4];
-            this.btnAlternateColor.Text = strArray3[6];
-            this.btnAlternateColor_Text.Text = strArray3[7];
-            this.btnAlternate_Default.Text = strArray3[8];
-            this.btnDefaultTextExt.Text = strArray3[8];
-            this.btnDefaultImgExt.Text = strArray3[8];
-            this.btnPreviewFontDefault.Text = strArray3[8];
-            this.btnAddTextExt.Text = strArray3[9];
-            this.btnAddImgExt.Text = strArray3[9];
-            this.btnDelTextExt.Text = strArray3[10];
-            this.btnDelImgExt.Text = strArray3[10];
-            this.btnCheckUpdates.Text = strArray3[11];
-            this.btnCopyKeys.Text = strArray3[12];
-            this.cmbNavBtn.Items.AddRange(new string[] { ResOpt_DropDown[0], ResOpt_DropDown[1] });
-            this.cmbNewTabLoc.Items.AddRange(new string[] { ResOpt_DropDown[2], ResOpt_DropDown[3], ResOpt_DropDown[1], ResOpt_DropDown[0] });
-            this.cmbActvClose.Items.AddRange(new string[] { ResOpt_DropDown[1], ResOpt_DropDown[0], ResOpt_DropDown[2], ResOpt_DropDown[3], ResOpt_DropDown[4] });
-            this.cmbTabDblClck.Items.AddRange(new string[] { ResOpt_DropDown[5], ResOpt_DropDown[6], ResOpt_DropDown[7], ResOpt_DropDown[8], ResOpt_DropDown[9], ResOpt_DropDown[10], ResOpt_DropDown[11], ResOpt_DropDown[12], ResOpt_DropDown[13] });
-            this.cmbBGDblClick.Items.AddRange(new string[] { ResOpt_DropDown[14], ResOpt_DropDown[5], ResOpt_DropDown[15], ResOpt_DropDown[0x10], ResOpt_DropDown[8], ResOpt_DropDown[0x11], ResOpt_DropDown[0x12], ResOpt_DropDown[0x13], ResOpt_DropDown[20], ResOpt_DropDown[0x16], ResOpt_DropDown[9], ResOpt_DropDown[4], ResOpt_DropDown[13] });
-            this.cmbTabWhlClck.Items.AddRange(new string[] { ResOpt_DropDown[6], ResOpt_DropDown[5], ResOpt_DropDown[7], ResOpt_DropDown[8], ResOpt_DropDown[9], ResOpt_DropDown[10], ResOpt_DropDown[11], ResOpt_DropDown[12], ResOpt_DropDown[13] });
-            this.cmbMultiRow.Items.AddRange(new string[] { ResOpt_DropDown[13], ResOpt_DropDown[0x15] + "1", ResOpt_DropDown[0x15] + "2" });
-            this.cmbWhlClick.Items.AddRange(new string[] { ResOpt_DropDown[0x16], ResOpt_DropDown[9] });
-            this.cmbTabSizeMode.Items.AddRange(new string[] { ResOpt_DropDown[0x17], ResOpt_DropDown[0x18], ResOpt_DropDown[0x19] });
-            this.cmbTabTextAlignment.Items.AddRange(new string[] { ResOpt_DropDown[0x1d], ResOpt_DropDown[30] });
-            this.cmbTextExts.Items.Add("(Text file)");
-            this.cmbTextExts.Items.AddRange(QTUtility.PreviewExtsList_Txt.ToArray());
-            this.cmbTextExts.SelectedIndex = 0;
-            this.cmbImgExts.Items.Add("(Image & movie file)");
-            this.cmbImgExts.Items.AddRange(QTUtility.PreviewExtsList_Img.ToArray());
-            this.cmbImgExts.SelectedIndex = 0;
-            this.cmbRebarBGImageMode.Items.AddRange(new string[] { ResOpt_DropDown[0x1a], ResOpt_DropDown[0x1b], ResOpt_DropDown[0x1c], ResOpt_DropDown[0x21] });
-            this.cmbMenuRenderer.Items.AddRange(new string[] { ResOpt[0x2a], ResOpt_DropDown[0x1f], ResOpt_DropDown[0x20] });
+            btnHistoryClear.Text = btnClearRecentFile.Text = strArray3[0];
+            btnUp_Grp.Text = strArray3[1];
+            btnUp_app.Text = strArray3[1];
+            btnDown_Grp.Text = strArray3[2];
+            btnDown_app.Text = strArray3[2];
+            btnAddSep_Grp.Text = strArray3[3];
+            btnAddSep_app.Text = strArray3[3];
+            btnStartUpGrp.Text = strArray3[4];
+            btnAlternateColor.Text = strArray3[6];
+            btnAlternateColor_Text.Text = strArray3[7];
+            btnAlternate_Default.Text = strArray3[8];
+            btnDefaultTextExt.Text = strArray3[8];
+            btnDefaultImgExt.Text = strArray3[8];
+            btnPreviewFontDefault.Text = strArray3[8];
+            btnAddTextExt.Text = strArray3[9];
+            btnAddImgExt.Text = strArray3[9];
+            btnDelTextExt.Text = strArray3[10];
+            btnDelImgExt.Text = strArray3[10];
+            btnCheckUpdates.Text = strArray3[11];
+            btnCopyKeys.Text = strArray3[12];
+            cmbNavBtn.Items.AddRange(new string[] { ResOpt_DropDown[0], ResOpt_DropDown[1] });
+            cmbNewTabLoc.Items.AddRange(new string[] { ResOpt_DropDown[2], ResOpt_DropDown[3], ResOpt_DropDown[1], ResOpt_DropDown[0] });
+            cmbActvClose.Items.AddRange(new string[] { ResOpt_DropDown[1], ResOpt_DropDown[0], ResOpt_DropDown[2], ResOpt_DropDown[3], ResOpt_DropDown[4] });
+            cmbTabDblClck.Items.AddRange(new string[] { ResOpt_DropDown[5], ResOpt_DropDown[6], ResOpt_DropDown[7], ResOpt_DropDown[8], ResOpt_DropDown[9], ResOpt_DropDown[10], ResOpt_DropDown[11], ResOpt_DropDown[12], ResOpt_DropDown[13] });
+            cmbBGDblClick.Items.AddRange(new string[] { ResOpt_DropDown[14], ResOpt_DropDown[5], ResOpt_DropDown[15], ResOpt_DropDown[0x10], ResOpt_DropDown[8], ResOpt_DropDown[0x11], ResOpt_DropDown[0x12], ResOpt_DropDown[0x13], ResOpt_DropDown[20], ResOpt_DropDown[0x16], ResOpt_DropDown[9], ResOpt_DropDown[4], ResOpt_DropDown[13] });
+            cmbTabWhlClck.Items.AddRange(new string[] { ResOpt_DropDown[6], ResOpt_DropDown[5], ResOpt_DropDown[7], ResOpt_DropDown[8], ResOpt_DropDown[9], ResOpt_DropDown[10], ResOpt_DropDown[11], ResOpt_DropDown[12], ResOpt_DropDown[13] });
+            cmbMultiRow.Items.AddRange(new string[] { ResOpt_DropDown[13], ResOpt_DropDown[0x15] + "1", ResOpt_DropDown[0x15] + "2" });
+            cmbWhlClick.Items.AddRange(new string[] { ResOpt_DropDown[0x16], ResOpt_DropDown[9] });
+            cmbTabSizeMode.Items.AddRange(new string[] { ResOpt_DropDown[0x17], ResOpt_DropDown[0x18], ResOpt_DropDown[0x19] });
+            cmbTabTextAlignment.Items.AddRange(new string[] { ResOpt_DropDown[0x1d], ResOpt_DropDown[30] });
+            cmbTextExts.Items.Add("(Text file)");
+            cmbTextExts.Items.AddRange(QTUtility.PreviewExtsList_Txt.ToArray());
+            cmbTextExts.SelectedIndex = 0;
+            cmbImgExts.Items.Add("(Image & movie file)");
+            cmbImgExts.Items.AddRange(QTUtility.PreviewExtsList_Img.ToArray());
+            cmbImgExts.SelectedIndex = 0;
+            cmbRebarBGImageMode.Items.AddRange(new string[] { ResOpt_DropDown[0x1a], ResOpt_DropDown[0x1b], ResOpt_DropDown[0x1c], ResOpt_DropDown[0x21] });
+            cmbMenuRenderer.Items.AddRange(new string[] { ResOpt[0x2a], ResOpt_DropDown[0x1f], ResOpt_DropDown[0x20] });
             if(arrSpecialFolderCSIDLs == null) {
                 if(QTUtility.IsVista) {
                     arrSpecialFolderCSIDLs = new int[] { 
@@ -444,49 +444,49 @@ namespace QTTabBarLib {
                     arrSpecialFolderDipNms[i] = ShellMethods.GetSpecialFolderCLSID(arrSpecialFolderCSIDLs[i], true);
                 }
             }
-            this.cmbSpclFol_NoCapture.Items.AddRange(arrSpecialFolderDipNms);
-            this.cmbSpclFol_NoCapture.SelectedIndex = 0;
-            this.cmbSpclFol_Grp.Items.AddRange(arrSpecialFolderDipNms);
-            this.cmbSpclFol_Grp.SelectedIndex = 0;
+            cmbSpclFol_NoCapture.Items.AddRange(arrSpecialFolderDipNms);
+            cmbSpclFol_NoCapture.SelectedIndex = 0;
+            cmbSpclFol_Grp.Items.AddRange(arrSpecialFolderDipNms);
+            cmbSpclFol_Grp.SelectedIndex = 0;
             using(RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Quizo\QTTabBar")) {
                 if(key != null) {
                     int[] numArray = QTUtility2.ReadRegBinary<int>("OptionWindowBounds", key);
                     if((numArray != null) && (numArray.Length == 4)) {
-                        base.StartPosition = FormStartPosition.Manual;
-                        base.SetDesktopBounds(numArray[0], numArray[1], numArray[2], numArray[3]);
+                        StartPosition = FormStartPosition.Manual;
+                        SetDesktopBounds(numArray[0], numArray[1], numArray[2], numArray[3]);
                     }
                 }
             }
-            this.SetValues();
-            this.tabControl1.SelectedIndex = QTUtility.OptionsDialogTabIndex;
-            base.ResumeLayout();
+            SetValues();
+            tabControl1.SelectedIndex = QTUtility.OptionsDialogTabIndex;
+            ResumeLayout();
         }
 
         private void btnAdd_NoCapture_Click(object sender, EventArgs e) {
-            this.listView_NoCapture.BeginUpdate();
-            this.listView_NoCapture.SelectedItems.Clear();
-            foreach(ListViewItem item in this.listView_NoCapture.Items) {
+            listView_NoCapture.BeginUpdate();
+            listView_NoCapture.SelectedItems.Clear();
+            foreach(ListViewItem item in listView_NoCapture.Items) {
                 if((item.Text.Length == 0) || (item.Text == "Enter path")) {
                     item.Selected = true;
                     item.BeginEdit();
-                    this.listView_NoCapture.EndUpdate();
+                    listView_NoCapture.EndUpdate();
                     return;
                 }
             }
             ListViewItem item2 = new ListViewItem("Enter path");
-            this.listView_NoCapture.Items.Add(item2);
-            this.listView_NoCapture.EndUpdate();
+            listView_NoCapture.Items.Add(item2);
+            listView_NoCapture.EndUpdate();
             item2.BeginEdit();
         }
 
         private void btnAddPreviewExt_Click(object sender, EventArgs e) {
-            this.EnterExtension(sender == this.btnAddTextExt);
+            EnterExtension(sender == btnAddTextExt);
         }
 
         private void btnAddSep_app_Click(object sender, EventArgs e) {
-            TreeNode selectedNode = this.treeViewUserApps.SelectedNode;
-            TreeNode parent = this.tnRoot_UserApps;
-            int count = this.tnRoot_UserApps.Nodes.Count;
+            TreeNode selectedNode = treeViewUserApps.SelectedNode;
+            TreeNode parent = tnRoot_UserApps;
+            int count = tnRoot_UserApps.Nodes.Count;
             if((selectedNode != null) && (selectedNode.Level > 0)) {
                 if(selectedNode.Tag != null) {
                     count = selectedNode.Index + 1;
@@ -502,33 +502,33 @@ namespace QTTabBarLib {
             node.Tag = new MenuItemArguments(string.Empty, string.Empty, string.Empty, 0, MenuGenre.Application);
             node.ForeColor = SystemColors.GrayText;
             parent.Nodes.Insert(count, node);
-            this.treeViewUserApps.SelectedNode = node;
+            treeViewUserApps.SelectedNode = node;
         }
 
         private void btnAddSep_Click(object sender, EventArgs e) {
-            TreeNode selectedNode = this.treeViewGroup.SelectedNode;
+            TreeNode selectedNode = treeViewGroup.SelectedNode;
             if((selectedNode != null) && (selectedNode.Level != 2)) {
                 TreeNode node = new TreeNode("----------- Separator -----------");
                 node.Tag = MIA_GROUPSEP;
                 node.ForeColor = SystemColors.GrayText;
                 node.ImageKey = node.SelectedImageKey = "noimage";
-                this.treeViewGroup.BeginUpdate();
+                treeViewGroup.BeginUpdate();
                 if(selectedNode.Level == 1) {
-                    this.tnGroupsRoot.Nodes.Insert(selectedNode.Index + 1, node);
+                    tnGroupsRoot.Nodes.Insert(selectedNode.Index + 1, node);
                 }
                 else if(selectedNode.Level == 0) {
-                    this.tnGroupsRoot.Nodes.Add(node);
+                    tnGroupsRoot.Nodes.Add(node);
                 }
-                this.treeViewGroup.EndUpdate();
+                treeViewGroup.EndUpdate();
                 node.EnsureVisible();
             }
         }
 
         private void btnAddSpcFol_Grp_Click(object sender, EventArgs e) {
-            TreeNode selectedNode = this.treeViewGroup.SelectedNode;
+            TreeNode selectedNode = treeViewGroup.SelectedNode;
             if(selectedNode != null) {
-                string selectedItem = (string)this.cmbSpclFol_Grp.SelectedItem;
-                int selectedIndex = this.cmbSpclFol_Grp.SelectedIndex;
+                string selectedItem = (string)cmbSpclFol_Grp.SelectedItem;
+                int selectedIndex = cmbSpclFol_Grp.SelectedIndex;
                 string specialFolderCLSID = ShellMethods.GetSpecialFolderCLSID(arrSpecialFolderCSIDLs[selectedIndex], false);
                 if((selectedIndex == 3) && QTUtility.IsVista) {
                     specialFolderCLSID = "::{26EE0668-A00A-44D7-9371-BEB064C98683}";
@@ -543,8 +543,8 @@ namespace QTTabBarLib {
                     node3.ImageKey = node3.SelectedImageKey = node.ImageKey;
                     node3.Nodes.Add(node);
                     node3.Tag = new MenuItemArguments(selectedItem, null, null, 0, MenuGenre.Group);
-                    this.tnGroupsRoot.Nodes.Add(node3);
-                    this.treeViewGroup.SelectedNode = node3;
+                    tnGroupsRoot.Nodes.Add(node3);
+                    treeViewGroup.SelectedNode = node3;
                     node.Expand();
                     node.BeginEdit();
                 }
@@ -560,50 +560,50 @@ namespace QTTabBarLib {
         }
 
         private void btnAddSpcFol_NoCapture_Click(object sender, EventArgs e) {
-            this.listView_NoCapture.BeginUpdate();
-            this.listView_NoCapture.SelectedItems.Clear();
-            string selectedItem = (string)this.cmbSpclFol_NoCapture.SelectedItem;
-            int selectedIndex = this.cmbSpclFol_NoCapture.SelectedIndex;
+            listView_NoCapture.BeginUpdate();
+            listView_NoCapture.SelectedItems.Clear();
+            string selectedItem = (string)cmbSpclFol_NoCapture.SelectedItem;
+            int selectedIndex = cmbSpclFol_NoCapture.SelectedIndex;
             string specialFolderCLSID = ShellMethods.GetSpecialFolderCLSID(arrSpecialFolderCSIDLs[selectedIndex], false);
             if((selectedIndex == 3) && QTUtility.IsVista) {
                 specialFolderCLSID = "::{26EE0668-A00A-44D7-9371-BEB064C98683}";
             }
-            foreach(ListViewItem item in this.listView_NoCapture.Items) {
+            foreach(ListViewItem item in listView_NoCapture.Items) {
                 if(((item.Text.Length == 0) || (item.Text == "Enter path")) || (item.Text == selectedItem)) {
                     if(item.Text != selectedItem) {
                         item.Text = selectedItem;
                         item.Name = specialFolderCLSID;
                     }
                     item.Selected = true;
-                    this.listView_NoCapture.EndUpdate();
+                    listView_NoCapture.EndUpdate();
                     return;
                 }
             }
             ListViewItem item2 = new ListViewItem(selectedItem);
             item2.Name = specialFolderCLSID;
-            this.listView_NoCapture.Items.Add(item2);
+            listView_NoCapture.Items.Add(item2);
             item2.Selected = true;
-            this.listView_NoCapture.EndUpdate();
+            listView_NoCapture.EndUpdate();
         }
 
         private void btnAddToken_Arg_Click(object sender, EventArgs e) {
-            this.CreateTokenMenu();
-            this.cmsAddToken.Items[0].Enabled = true;
-            Rectangle rectangle = this.tabPage6_Apps.RectangleToScreen(this.btnAddToken_Arg.Bounds);
-            this.cmsAddToken.Show(rectangle.Right, rectangle.Top);
+            CreateTokenMenu();
+            cmsAddToken.Items[0].Enabled = true;
+            Rectangle rectangle = tabPage6_Apps.RectangleToScreen(btnAddToken_Arg.Bounds);
+            cmsAddToken.Show(rectangle.Right, rectangle.Top);
         }
 
         private void btnAddToken_Wrk_Click(object sender, EventArgs e) {
-            this.CreateTokenMenu();
-            this.cmsAddToken.Items[0].Enabled = false;
-            Rectangle rectangle = this.tabPage6_Apps.RectangleToScreen(this.btnAddToken_Wrk.Bounds);
-            this.cmsAddToken.Show(rectangle.Right, rectangle.Top);
+            CreateTokenMenu();
+            cmsAddToken.Items[0].Enabled = false;
+            Rectangle rectangle = tabPage6_Apps.RectangleToScreen(btnAddToken_Wrk.Bounds);
+            cmsAddToken.Show(rectangle.Right, rectangle.Top);
         }
 
         private void btnAddVirtualFolder_app_Click(object sender, EventArgs e) {
-            TreeNode selectedNode = this.treeViewUserApps.SelectedNode;
-            TreeNode tnParent = this.tnRoot_UserApps;
-            int count = this.tnRoot_UserApps.Nodes.Count;
+            TreeNode selectedNode = treeViewUserApps.SelectedNode;
+            TreeNode tnParent = tnRoot_UserApps;
+            int count = tnRoot_UserApps.Nodes.Count;
             if((selectedNode != null) && (selectedNode.Level > 0)) {
                 if(selectedNode.Tag != null) {
                     count = selectedNode.Index + 1;
@@ -618,28 +618,28 @@ namespace QTTabBarLib {
             node.ImageKey = node.SelectedImageKey = "folder";
             node.Tag = null;
             tnParent.Nodes.Insert(count, node);
-            this.treeViewUserApps.SelectedNode = node;
+            treeViewUserApps.SelectedNode = node;
             node.BeginEdit();
         }
 
         private void btnAlternateColor_Click(object sender, EventArgs e) {
-            if(sender == this.btnAlternate_Default) {
+            if(sender == btnAlternate_Default) {
                 QTUtility.ShellViewRowCOLORREF_Background = 0xfaf5f1;
                 Color windowText = SystemColors.WindowText;
                 QTUtility.ShellViewRowCOLORREF_Text = QTUtility2.MakeCOLORREF(windowText);
-                this.btnAlternateColor.BackColor = QTUtility2.MakeColor(QTUtility.ShellViewRowCOLORREF_Background);
-                this.btnAlternateColor_Text.ForeColor = windowText;
+                btnAlternateColor.BackColor = QTUtility2.MakeColor(QTUtility.ShellViewRowCOLORREF_Background);
+                btnAlternateColor_Text.ForeColor = windowText;
             }
             else {
-                bool flag = sender == this.btnAlternateColor;
+                bool flag = sender == btnAlternateColor;
                 using(ColorDialogEx ex = new ColorDialogEx()) {
-                    ex.Color = flag ? this.btnAlternateColor.BackColor : this.btnAlternateColor_Text.ForeColor;
+                    ex.Color = flag ? btnAlternateColor.BackColor : btnAlternateColor_Text.ForeColor;
                     if(DialogResult.OK == ex.ShowDialog()) {
                         if(flag) {
-                            this.btnAlternateColor.BackColor = ex.Color;
+                            btnAlternateColor.BackColor = ex.Color;
                         }
                         else {
-                            this.btnAlternateColor_Text.ForeColor = ex.Color;
+                            btnAlternateColor_Text.ForeColor = ex.Color;
                         }
                     }
                 }
@@ -647,7 +647,7 @@ namespace QTTabBarLib {
         }
 
         private void btnBFD_app_Click(object sender, EventArgs e) {
-            TreeNode selectedNode = this.treeViewUserApps.SelectedNode;
+            TreeNode selectedNode = treeViewUserApps.SelectedNode;
             if((selectedNode != null) && (selectedNode.Tag != null)) {
                 using(FolderBrowserDialog dialog = new FolderBrowserDialog()) {
                     string path = ((MenuItemArguments)selectedNode.Tag).Path;
@@ -663,8 +663,8 @@ namespace QTTabBarLib {
                         dialog.SelectedPath = path;
                     }
                     if(dialog.ShowDialog() == DialogResult.OK) {
-                        this.tbPath.Text = dialog.SelectedPath;
-                        this.tbArgs.Text = this.tbWorking.Text = string.Empty;
+                        tbPath.Text = dialog.SelectedPath;
+                        tbArgs.Text = tbWorking.Text = string.Empty;
                         if(selectedNode.Text.StartsWith("New Item")) {
                             if(dialog.SelectedPath.Length == 3) {
                                 selectedNode.Text = dialog.SelectedPath;
@@ -680,9 +680,9 @@ namespace QTTabBarLib {
 
         private void btnBrowseAction_Click(object sender, EventArgs e) {
             using(FolderBrowserDialog dialog = new FolderBrowserDialog()) {
-                dialog.SelectedPath = this.textBoxAction_BarDblClck.Text;
+                dialog.SelectedPath = textBoxAction_BarDblClck.Text;
                 if(DialogResult.OK == dialog.ShowDialog()) {
-                    this.textBoxAction_BarDblClck.Text = dialog.SelectedPath;
+                    textBoxAction_BarDblClck.Text = dialog.SelectedPath;
                 }
             }
         }
@@ -697,10 +697,10 @@ namespace QTTabBarLib {
                     foreach(string str in dialog.FileNames) {
                         PluginAssembly assembly = new PluginAssembly(str);
                         if(assembly.PluginInfosExist) {
-                            this.CreatePluginViewItem(new PluginAssembly[] { assembly }, true);
+                            CreatePluginViewItem(new PluginAssembly[] { assembly }, true);
                             if(flag) {
                                 flag = false;
-                                this.SelectPluginBottom();
+                                SelectPluginBottom();
                             }
                         }
                     }
@@ -712,21 +712,21 @@ namespace QTTabBarLib {
             using(OpenFileDialog dialog = new OpenFileDialog()) {
                 dialog.Filter = "Language XML files (*.xml)|*.xml";
                 dialog.RestoreDirectory = true;
-                if(this.textBoxPluginLang.Text.Length > 0) {
-                    dialog.FileName = this.textBoxPluginLang.Text;
+                if(textBoxPluginLang.Text.Length > 0) {
+                    dialog.FileName = textBoxPluginLang.Text;
                 }
                 if(dialog.ShowDialog() == DialogResult.OK) {
-                    this.textBoxPluginLang.Text = dialog.FileName;
+                    textBoxPluginLang.Text = dialog.FileName;
                 }
             }
         }
 
         private void btnCancel_Click(object sender, EventArgs e) {
-            if(this.callBack != null) {
-                this.callBack.BeginInvoke(DialogResult.Cancel, null, null);
-                this.callBack = null;
+            if(callBack != null) {
+                callBack.BeginInvoke(DialogResult.Cancel, null, null);
+                callBack = null;
             }
-            base.Close();
+            Close();
         }
 
         private void btnCheckUpdates_Click(object sender, EventArgs e) {
@@ -747,8 +747,8 @@ namespace QTTabBarLib {
         private void btnCopyKeys_Click(object sender, EventArgs e) {
             string str = string.Empty;
             string str2 = "\t\t";
-            for(int i = 0; i < this.listViewKeyboard.Items.Count; i++) {
-                ListViewItem item = this.listViewKeyboard.Items[i];
+            for(int i = 0; i < listViewKeyboard.Items.Count; i++) {
+                ListViewItem item = listViewKeyboard.Items[i];
                 Keys tag = (Keys)item.Tag;
                 if(item.Checked && (tag != Keys.None)) {
                     if(item.Group.Name == "general") {
@@ -776,20 +776,20 @@ namespace QTTabBarLib {
         }
 
         private void btnDefaultImgExt_Click(object sender, EventArgs e) {
-            this.cmbImgExts.Items.Clear();
-            this.cmbImgExts.Items.Add("(Image & movie file)");
-            this.cmbImgExts.Items.AddRange(ThumbnailTooltipForm.MakeDefaultImgExts().ToArray());
-            this.cmbImgExts.SelectedIndex = 0;
+            cmbImgExts.Items.Clear();
+            cmbImgExts.Items.Add("(Image & movie file)");
+            cmbImgExts.Items.AddRange(ThumbnailTooltipForm.MakeDefaultImgExts().ToArray());
+            cmbImgExts.SelectedIndex = 0;
         }
 
         private void btnDefaultTextExt_Click(object sender, EventArgs e) {
-            this.cmbTextExts.Items.Clear();
-            this.cmbTextExts.Items.AddRange(new string[] { "(Text file)", ".txt", ".ini", ".inf", ".cs", ".log", ".js", ".vbs" });
-            this.cmbTextExts.SelectedIndex = 0;
+            cmbTextExts.Items.Clear();
+            cmbTextExts.Items.AddRange(new string[] { "(Text file)", ".txt", ".ini", ".inf", ".cs", ".log", ".js", ".vbs" });
+            cmbTextExts.SelectedIndex = 0;
         }
 
         private void btnDelPreiviewExt_Click(object sender, EventArgs e) {
-            ComboBox box = (sender == this.btnDelTextExt) ? this.cmbTextExts : this.cmbImgExts;
+            ComboBox box = (sender == btnDelTextExt) ? cmbTextExts : cmbImgExts;
             int selectedIndex = box.SelectedIndex;
             if(selectedIndex > 0) {
                 box.Items.RemoveAt(selectedIndex);
@@ -817,7 +817,7 @@ namespace QTTabBarLib {
                         ProcessStartInfo startInfo = new ProcessStartInfo(ShellMethods.GetFolderPath(0x24) + @"\regedit.exe");
                         startInfo.Arguments = "/e \"" + fileName + "\" HKEY_CURRENT_USER\\Software\\Quizo\\QTTabBar";
                         startInfo.ErrorDialog = true;
-                        startInfo.ErrorDialogParentHandle = base.Handle;
+                        startInfo.ErrorDialogParentHandle = Handle;
                         Process.Start(startInfo);
                     }
                     catch {
@@ -829,11 +829,11 @@ namespace QTTabBarLib {
         private void btnFont_Click(object sender, EventArgs e) {
             try {
                 using(FontDialog dialog = new FontDialog()) {
-                    dialog.Font = this.btnTabFont.Font;
+                    dialog.Font = btnTabFont.Font;
                     dialog.ShowEffects = false;
                     dialog.AllowVerticalFonts = false;
                     if(DialogResult.OK == dialog.ShowDialog()) {
-                        this.btnTabFont.Font = dialog.Font;
+                        btnTabFont.Font = dialog.Font;
                     }
                 }
             }
@@ -846,31 +846,31 @@ namespace QTTabBarLib {
             using(OpenFileDialog dialog = new OpenFileDialog()) {
                 dialog.Filter = "Language XML files (*.xml)|*.xml";
                 dialog.RestoreDirectory = true;
-                if(this.textBoxLang.Text.Length > 0) {
-                    dialog.FileName = this.textBoxLang.Text;
+                if(textBoxLang.Text.Length > 0) {
+                    dialog.FileName = textBoxLang.Text;
                 }
                 if(dialog.ShowDialog() == DialogResult.OK) {
-                    this.textBoxLang.Text = dialog.FileName;
+                    textBoxLang.Text = dialog.FileName;
                 }
             }
         }
 
         private void btnMinus_app_Click(object sender, EventArgs e) {
-            TreeNode selectedNode = this.treeViewUserApps.SelectedNode;
+            TreeNode selectedNode = treeViewUserApps.SelectedNode;
             if((selectedNode != null) && (selectedNode.Level > 0)) {
                 selectedNode.Remove();
             }
         }
 
         private void btnMinus_Click(object sender, EventArgs e) {
-            TreeNode selectedNode = this.treeViewGroup.SelectedNode;
+            TreeNode selectedNode = treeViewGroup.SelectedNode;
             if((selectedNode != null) && (selectedNode.Level != 0)) {
                 selectedNode.Remove();
             }
         }
 
         private void btnOFD_app_Click(object sender, EventArgs e) {
-            TreeNode selectedNode = this.treeViewUserApps.SelectedNode;
+            TreeNode selectedNode = treeViewUserApps.SelectedNode;
             if((selectedNode != null) && (selectedNode.Tag != null)) {
                 using(OpenFileDialog dialog = new OpenFileDialog()) {
                     dialog.RestoreDirectory = true;
@@ -880,9 +880,9 @@ namespace QTTabBarLib {
                         dialog.FileName = path;
                     }
                     if(dialog.ShowDialog() == DialogResult.OK) {
-                        this.tbPath.Text = dialog.FileName;
-                        if(this.tbWorking.Text.Length == 0) {
-                            this.tbWorking.Text = Path.GetDirectoryName(dialog.FileName);
+                        tbPath.Text = dialog.FileName;
+                        if(tbWorking.Text.Length == 0) {
+                            tbWorking.Text = Path.GetDirectoryName(dialog.FileName);
                         }
                         if(selectedNode.Text.StartsWith("New Item")) {
                             selectedNode.Text = Path.GetFileName(dialog.FileName);
@@ -895,10 +895,10 @@ namespace QTTabBarLib {
         private void btnOFD_NoCapture_Click(object sender, EventArgs e) {
             using(FolderBrowserDialog dialog = new FolderBrowserDialog()) {
                 if(DialogResult.OK == dialog.ShowDialog()) {
-                    this.listView_NoCapture.BeginUpdate();
-                    this.listView_NoCapture.SelectedItems.Clear();
+                    listView_NoCapture.BeginUpdate();
+                    listView_NoCapture.SelectedItems.Clear();
                     bool flag = false;
-                    foreach(ListViewItem item in this.listView_NoCapture.Items) {
+                    foreach(ListViewItem item in listView_NoCapture.Items) {
                         if(string.Equals(dialog.SelectedPath, item.Name, StringComparison.OrdinalIgnoreCase)) {
                             item.Selected = true;
                             flag = true;
@@ -914,9 +914,9 @@ namespace QTTabBarLib {
                     if(!flag) {
                         ListViewItem item2 = new ListViewItem(dialog.SelectedPath);
                         item2.Name = dialog.SelectedPath;
-                        this.listView_NoCapture.Items.Add(item2);
+                        listView_NoCapture.Items.Add(item2);
                     }
-                    this.listView_NoCapture.EndUpdate();
+                    listView_NoCapture.EndUpdate();
                 }
             }
         }
@@ -930,8 +930,8 @@ namespace QTTabBarLib {
         }
 
         private void btnPlus_app_Click(object sender, EventArgs e) {
-            TreeNode selectedNode = this.treeViewUserApps.SelectedNode;
-            TreeNode tnParent = this.tnRoot_UserApps;
+            TreeNode selectedNode = treeViewUserApps.SelectedNode;
+            TreeNode tnParent = tnRoot_UserApps;
             int index = 0;
             if((selectedNode != null) && (selectedNode.Level > 0)) {
                 if(selectedNode.Tag != null) {
@@ -943,7 +943,7 @@ namespace QTTabBarLib {
                 }
             }
             else {
-                selectedNode = this.tnRoot_UserApps;
+                selectedNode = tnRoot_UserApps;
             }
             TreeNode node = new TreeNode(CreateUniqueName("New Item", null, tnParent));
             node.ImageKey = node.SelectedImageKey = "noimage";
@@ -954,20 +954,20 @@ namespace QTTabBarLib {
             else {
                 tnParent.Nodes.Insert(index, node);
             }
-            this.treeViewUserApps.SelectedNode = node;
+            treeViewUserApps.SelectedNode = node;
             node.BeginEdit();
         }
 
         private void btnPlus_Click(object sender, EventArgs e) {
-            TreeNode selectedNode = this.treeViewGroup.SelectedNode;
+            TreeNode selectedNode = treeViewGroup.SelectedNode;
             if(selectedNode != null) {
                 if((selectedNode.Level == 0) || (selectedNode.Tag == MIA_GROUPSEP)) {
-                    int index = (selectedNode.Level == 0) ? this.tnGroupsRoot.Nodes.Count : (selectedNode.Index + 1);
-                    string text = CreateUniqueName("NewGroup", null, this.tnGroupsRoot);
+                    int index = (selectedNode.Level == 0) ? tnGroupsRoot.Nodes.Count : (selectedNode.Index + 1);
+                    string text = CreateUniqueName("NewGroup", null, tnGroupsRoot);
                     TreeNode node = new TreeNode(text);
                     node.Tag = new MenuItemArguments(text, null, null, 0, MenuGenre.Group);
-                    this.tnGroupsRoot.Nodes.Insert(index, node);
-                    this.treeViewGroup.SelectedNode = node;
+                    tnGroupsRoot.Nodes.Insert(index, node);
+                    treeViewGroup.SelectedNode = node;
                     node.BeginEdit();
                 }
                 else {
@@ -998,14 +998,14 @@ namespace QTTabBarLib {
         }
 
         private void btnPreviewFont_Click(object sender, EventArgs e) {
-            if(sender == this.btnPreviewFont) {
+            if(sender == btnPreviewFont) {
                 try {
                     using(FontDialog dialog = new FontDialog()) {
-                        dialog.Font = this.btnPreviewFont.Font;
+                        dialog.Font = btnPreviewFont.Font;
                         dialog.ShowEffects = false;
                         dialog.AllowVerticalFonts = false;
                         if(DialogResult.OK == dialog.ShowDialog()) {
-                            this.btnPreviewFont.Font = dialog.Font;
+                            btnPreviewFont.Font = dialog.Font;
                         }
                     }
                 }
@@ -1014,40 +1014,40 @@ namespace QTTabBarLib {
                 }
             }
             else {
-                this.btnPreviewFont.Font = null;
+                btnPreviewFont.Font = null;
             }
         }
 
         private void btnRebarImage_Click(object sender, EventArgs e) {
             using(OpenFileDialog dialog = new OpenFileDialog()) {
                 dialog.Filter = "Image Files(*.PNG;*.BMP;*.JPG;*.GIF)|*.PNG;*.BMP;*.JPG;*.GIF";
-                dialog.FileName = this.tbRebarImagePath.Text;
+                dialog.FileName = tbRebarImagePath.Text;
                 dialog.RestoreDirectory = true;
                 dialog.Title = "Toolbar background image";
                 if(DialogResult.OK == dialog.ShowDialog()) {
-                    this.tbRebarImagePath.Text = dialog.FileName;
+                    tbRebarImagePath.Text = dialog.FileName;
                 }
             }
         }
 
         private void btnRemove_NoCapture_Click(object sender, EventArgs e) {
-            int count = this.listView_NoCapture.SelectedItems.Count;
+            int count = listView_NoCapture.SelectedItems.Count;
             if(count > 0) {
-                this.listView_NoCapture.BeginUpdate();
-                int index = this.listView_NoCapture.Items.IndexOf(this.listView_NoCapture.SelectedItems[0]);
-                foreach(ListViewItem item in this.listView_NoCapture.SelectedItems) {
-                    this.listView_NoCapture.Items.Remove(item);
+                listView_NoCapture.BeginUpdate();
+                int index = listView_NoCapture.Items.IndexOf(listView_NoCapture.SelectedItems[0]);
+                foreach(ListViewItem item in listView_NoCapture.SelectedItems) {
+                    listView_NoCapture.Items.Remove(item);
                 }
                 if(count == 1) {
-                    count = this.listView_NoCapture.Items.Count;
+                    count = listView_NoCapture.Items.Count;
                     if(count > index) {
-                        this.listView_NoCapture.Items[index].Selected = true;
+                        listView_NoCapture.Items[index].Selected = true;
                     }
                     else if(count > 0) {
-                        this.listView_NoCapture.Items[count - 1].Selected = true;
+                        listView_NoCapture.Items[count - 1].Selected = true;
                     }
                 }
-                this.listView_NoCapture.EndUpdate();
+                listView_NoCapture.EndUpdate();
             }
         }
 
@@ -1061,7 +1061,7 @@ namespace QTTabBarLib {
         }
 
         private void btnStartUpGrp_Click(object sender, EventArgs e) {
-            TreeNode selectedNode = this.treeViewGroup.SelectedNode;
+            TreeNode selectedNode = treeViewGroup.SelectedNode;
             if((selectedNode != null) && (selectedNode.Level > 0)) {
                 TreeNode parent;
                 if(selectedNode.Level == 1) {
@@ -1070,11 +1070,11 @@ namespace QTTabBarLib {
                 else {
                     parent = selectedNode.Parent;
                 }
-                if(parent.NodeFont == this.fntStartUpGroup) {
-                    parent.NodeFont = this.treeViewGroup.Font;
+                if(parent.NodeFont == fntStartUpGroup) {
+                    parent.NodeFont = treeViewGroup.Font;
                 }
                 else {
-                    parent.NodeFont = this.fntStartUpGroup;
+                    parent.NodeFont = fntStartUpGroup;
                 }
             }
         }
@@ -1082,22 +1082,22 @@ namespace QTTabBarLib {
         private void btnTabImage_Click(object sender, EventArgs e) {
             using(OpenFileDialog dialog = new OpenFileDialog()) {
                 dialog.Filter = "Image Files(*.PNG;*.BMP;*.JPG;*.GIF)|*.PNG;*.BMP;*.JPG;*.GIF";
-                dialog.FileName = this.tbTabImagePath.Text;
+                dialog.FileName = tbTabImagePath.Text;
                 dialog.RestoreDirectory = true;
                 dialog.Title = "Tab image";
                 if(DialogResult.OK == dialog.ShowDialog()) {
-                    this.tbTabImagePath.Text = dialog.FileName;
+                    tbTabImagePath.Text = dialog.FileName;
                 }
             }
         }
 
         private void btnUpDown_app_Click(object sender, EventArgs e) {
-            bool flag = sender == this.btnUp_app;
-            TreeNode selectedNode = this.treeViewUserApps.SelectedNode;
-            if((selectedNode != null) && (selectedNode != this.tnRoot_UserApps)) {
+            bool flag = sender == btnUp_app;
+            TreeNode selectedNode = treeViewUserApps.SelectedNode;
+            if((selectedNode != null) && (selectedNode != tnRoot_UserApps)) {
                 TreeNode parent = selectedNode.Parent;
                 TreeNode node3 = flag ? selectedNode.PrevNode : selectedNode.NextNode;
-                this.treeViewUserApps.BeginUpdate();
+                treeViewUserApps.BeginUpdate();
                 if(node3 != null) {
                     selectedNode.Remove();
                     if(node3.Tag != null) {
@@ -1118,23 +1118,23 @@ namespace QTTabBarLib {
                         node4.Nodes.Insert(flag ? parent.Index : (parent.Index + 1), selectedNode);
                     }
                 }
-                this.treeViewUserApps.SelectedNode = selectedNode;
-                this.treeViewUserApps.EndUpdate();
+                treeViewUserApps.SelectedNode = selectedNode;
+                treeViewUserApps.EndUpdate();
                 selectedNode.EnsureVisible();
             }
         }
 
         private void buttonActClr_Click(object sender, EventArgs e) {
             using(ColorDialogEx ex = new ColorDialogEx()) {
-                ex.Color = this.btnActTxtClr.ForeColor;
+                ex.Color = btnActTxtClr.ForeColor;
                 if(DialogResult.OK == ex.ShowDialog()) {
-                    this.btnActTxtClr.ForeColor = ex.Color;
+                    btnActTxtClr.ForeColor = ex.Color;
                 }
             }
         }
 
         private void buttonApply_Click(object sender, EventArgs e) {
-            this.Save(true);
+            Save(true);
         }
 
         private void buttonHistoryClear_Click(object sender, EventArgs e) {
@@ -1150,149 +1150,149 @@ namespace QTTabBarLib {
 
         private void buttonHL_Click(object sender, EventArgs e) {
             using(ColorDialogEx ex = new ColorDialogEx()) {
-                ex.Color = this.btnHiliteClsc.ForeColor;
+                ex.Color = btnHiliteClsc.ForeColor;
                 if(DialogResult.OK == ex.ShowDialog()) {
-                    this.btnHiliteClsc.ForeColor = ex.Color;
+                    btnHiliteClsc.ForeColor = ex.Color;
                 }
             }
         }
 
         private void buttonInactClr_Click(object sender, EventArgs e) {
             using(ColorDialogEx ex = new ColorDialogEx()) {
-                ex.Color = this.btnInactTxtClr.ForeColor;
+                ex.Color = btnInactTxtClr.ForeColor;
                 if(DialogResult.OK == ex.ShowDialog()) {
-                    this.btnInactTxtClr.ForeColor = ex.Color;
+                    btnInactTxtClr.ForeColor = ex.Color;
                 }
             }
         }
 
         private void buttonOK_Click(object sender, EventArgs e) {
-            this.Save(false);
+            Save(false);
         }
 
         private void buttonRstClr_Click(object sender, EventArgs e) {
-            this.btnActTxtClr.ForeColor = this.btnInactTxtClr.ForeColor = SystemColors.ControlText;
-            this.btnHiliteClsc.ForeColor = SystemColors.Highlight;
-            this.btnTabFont.Font = null;
+            btnActTxtClr.ForeColor = btnInactTxtClr.ForeColor = SystemColors.ControlText;
+            btnHiliteClsc.ForeColor = SystemColors.Highlight;
+            btnTabFont.Font = null;
         }
 
         private void buttonToolBarBGClr_Click(object sender, EventArgs e) {
             using(ColorDialogEx ex = new ColorDialogEx()) {
-                ex.Color = this.btnToolBarBGClr.BackColor;
+                ex.Color = btnToolBarBGClr.BackColor;
                 if(DialogResult.OK == ex.ShowDialog()) {
-                    this.btnToolBarBGClr.BackColor = ex.Color;
+                    btnToolBarBGClr.BackColor = ex.Color;
                 }
             }
         }
 
         private void chbAlternateColor_CheckedChanged(object sender, EventArgs e) {
-            this.btnAlternate_Default.Enabled = this.btnAlternateColor.Enabled = this.btnAlternateColor_Text.Enabled = this.chbAlternateColor.Checked;
+            btnAlternate_Default.Enabled = btnAlternateColor.Enabled = btnAlternateColor_Text.Enabled = chbAlternateColor.Checked;
         }
 
         private void chbDrawMode_CheckedChanged(object sender, EventArgs e) {
-            this.propertyGrid1.Enabled = this.btnHiliteClsc.Enabled = this.tbTabImagePath.Enabled = this.btnTabImage.Enabled = this.chbUseTabSkin.Checked;
+            propertyGrid1.Enabled = btnHiliteClsc.Enabled = tbTabImagePath.Enabled = btnTabImage.Enabled = chbUseTabSkin.Checked;
         }
 
         private void chbFolderIcon_CheckedChanged(object sender, EventArgs e) {
-            this.chbDriveLetter.Enabled = this.chbSubDirTipOnTab.Enabled = this.chbFolderIcon.Checked;
+            chbDriveLetter.Enabled = chbSubDirTipOnTab.Enabled = chbFolderIcon.Checked;
         }
 
         private void chbGroupKey_CheckedChanged(object sender, EventArgs e) {
-            if(!this.fSuppressTextChangeEvent_Group) {
-                TreeNode selectedNode = this.treeViewGroup.SelectedNode;
+            if(!fSuppressTextChangeEvent_Group) {
+                TreeNode selectedNode = treeViewGroup.SelectedNode;
                 if(((selectedNode != null) && (selectedNode.Tag != null)) && (selectedNode.Tag is MenuItemArguments)) {
                     MenuItemArguments tag = (MenuItemArguments)selectedNode.Tag;
-                    if(this.chbGroupKey.Checked) {
+                    if(chbGroupKey.Checked) {
                         tag.KeyShortcut |= 0x100000;
                     }
                     else {
                         tag.KeyShortcut &= -1048577;
                     }
-                    this.tbGroupKey.Enabled = this.chbGroupKey.Checked;
+                    tbGroupKey.Enabled = chbGroupKey.Checked;
                 }
             }
         }
 
         private void chbMMButton_CheckedChanged(object sender, EventArgs e) {
-            this.cmbWhlClick.Enabled = this.chbWhlClick.Checked;
+            cmbWhlClick.Enabled = chbWhlClick.Checked;
         }
 
         private void chbNavBtn_CheckedChanged(object sender, EventArgs e) {
-            this.cmbNavBtn.Enabled = this.chbNavBtn.Checked;
+            cmbNavBtn.Enabled = chbNavBtn.Checked;
         }
 
         private void chbRebarBGImage_CheckedChanged(object sender, EventArgs e) {
-            this.cmbRebarBGImageMode.Enabled = this.btnRebarImage.Enabled = this.tbRebarImagePath.Enabled = this.chbRebarBGImage.Checked;
+            cmbRebarBGImageMode.Enabled = btnRebarImage.Enabled = tbRebarImagePath.Enabled = chbRebarBGImage.Checked;
         }
 
         private void chbsCloseWindow_CheckedChanged(object sender, EventArgs e) {
-            if(sender == this.chbNeverCloseWndLocked) {
-                if(this.chbNeverCloseWndLocked.Checked) {
-                    this.chbRestoreLocked.Enabled = this.chbRestoreLocked.Checked = false;
+            if(sender == chbNeverCloseWndLocked) {
+                if(chbNeverCloseWndLocked.Checked) {
+                    chbRestoreLocked.Enabled = chbRestoreLocked.Checked = false;
                 }
                 else {
-                    this.chbRestoreLocked.Enabled = true;
+                    chbRestoreLocked.Enabled = true;
                 }
             }
-            else if(sender == this.chbRestoreLocked) {
-                if(this.chbRestoreLocked.Checked) {
-                    this.chbRestoreClosed.Checked = true;
+            else if(sender == chbRestoreLocked) {
+                if(chbRestoreLocked.Checked) {
+                    chbRestoreClosed.Checked = true;
                 }
             }
-            else if((sender == this.chbRestoreClosed) && !this.chbRestoreClosed.Checked) {
-                this.chbRestoreLocked.Checked = false;
+            else if((sender == chbRestoreClosed) && !chbRestoreClosed.Checked) {
+                chbRestoreLocked.Checked = false;
             }
         }
 
         private void chbShowPreviewTooltip_CheckedChanged(object sender, EventArgs e) {
-            this.tabPage9_Misc.SuspendLayout();
-            this.nudPreviewMaxWidth.Enabled = this.nudPreviewMaxHeight.Enabled = this.cmbTextExts.Enabled = this.btnAddTextExt.Enabled = this.btnDelTextExt.Enabled = this.btnDefaultTextExt.Enabled = this.cmbImgExts.Enabled = this.btnAddImgExt.Enabled = this.btnDelImgExt.Enabled = this.btnDefaultImgExt.Enabled = this.btnPreviewFont.Enabled = this.btnPreviewFontDefault.Enabled = this.chbPreviewInfo.Enabled = this.chbPreviewMode.Enabled = this.chbShowPreview.Checked;
-            this.tabPage9_Misc.ResumeLayout();
+            tabPage9_Misc.SuspendLayout();
+            nudPreviewMaxWidth.Enabled = nudPreviewMaxHeight.Enabled = cmbTextExts.Enabled = btnAddTextExt.Enabled = btnDelTextExt.Enabled = btnDefaultTextExt.Enabled = cmbImgExts.Enabled = btnAddImgExt.Enabled = btnDelImgExt.Enabled = btnDefaultImgExt.Enabled = btnPreviewFont.Enabled = btnPreviewFontDefault.Enabled = chbPreviewInfo.Enabled = chbPreviewMode.Enabled = chbShowPreview.Checked;
+            tabPage9_Misc.ResumeLayout();
         }
 
         private void chbSubDirTip_CheckedChanged(object sender, EventArgs e) {
-            this.chbSubDirTipMode.Enabled = this.chbSubDirTipModeFile.Enabled = this.chbSubDirTipModeHidden.Enabled = this.chbSubDirTipPreview.Enabled = this.chbSubDirTipModeSystem.Enabled = this.chbSubDirTip.Checked;
+            chbSubDirTipMode.Enabled = chbSubDirTipModeFile.Enabled = chbSubDirTipModeHidden.Enabled = chbSubDirTipPreview.Enabled = chbSubDirTipModeSystem.Enabled = chbSubDirTip.Checked;
         }
 
         private void chbTabCloseBtns_CheckedChanged(object sender, EventArgs e) {
-            if((sender == this.chbTabCloseBtnHover) && this.chbTabCloseBtnHover.Checked) {
-                this.chbTabCloseBtnAlt.Checked = false;
+            if((sender == chbTabCloseBtnHover) && chbTabCloseBtnHover.Checked) {
+                chbTabCloseBtnAlt.Checked = false;
             }
-            else if((sender == this.chbTabCloseBtnAlt) && this.chbTabCloseBtnAlt.Checked) {
-                this.chbTabCloseBtnHover.Checked = false;
+            else if((sender == chbTabCloseBtnAlt) && chbTabCloseBtnAlt.Checked) {
+                chbTabCloseBtnHover.Checked = false;
             }
         }
 
         private void chbTabCloseButton_CheckedChanged(object sender, EventArgs e) {
-            this.chbTabCloseBtnAlt.Enabled = this.chbTabCloseBtnHover.Enabled = this.chbTabCloseButton.Checked;
+            chbTabCloseBtnAlt.Enabled = chbTabCloseBtnHover.Enabled = chbTabCloseButton.Checked;
         }
 
         private void chbTabTitleShadow_CheckedChanged(object sender, EventArgs e) {
-            this.btnShadowAct.Enabled = this.btnShadowIna.Enabled = this.chbTabTitleShadow.Checked;
+            btnShadowAct.Enabled = btnShadowIna.Enabled = chbTabTitleShadow.Checked;
         }
 
         private void chbToolbarBGClr_CheckedChanged(object sender, EventArgs e) {
-            this.btnToolBarBGClr.Enabled = this.chbToolbarBGClr.Checked;
+            btnToolBarBGClr.Enabled = chbToolbarBGClr.Checked;
         }
 
         private void chbUserAppKey_CheckedChanged(object sender, EventArgs e) {
-            if(!this.fSuppressTextChangeEvent_UserApps) {
-                TreeNode selectedNode = this.treeViewUserApps.SelectedNode;
+            if(!fSuppressTextChangeEvent_UserApps) {
+                TreeNode selectedNode = treeViewUserApps.SelectedNode;
                 if(((selectedNode != null) && (selectedNode.Tag != null)) && (selectedNode.Tag is MenuItemArguments)) {
                     MenuItemArguments tag = (MenuItemArguments)selectedNode.Tag;
-                    if(this.chbUserAppKey.Checked) {
+                    if(chbUserAppKey.Checked) {
                         tag.KeyShortcut |= 0x100000;
                     }
                     else {
                         tag.KeyShortcut &= -1048577;
                     }
-                    this.tbUserAppKey.Enabled = this.chbUserAppKey.Checked;
+                    tbUserAppKey.Enabled = chbUserAppKey.Checked;
                 }
             }
         }
 
         private bool CheckExistance_GroupKey(Keys keys, TreeNode tnCurrent) {
-            foreach(TreeNode node in this.tnGroupsRoot.Nodes) {
+            foreach(TreeNode node in tnGroupsRoot.Nodes) {
                 if(((node == tnCurrent) || (node.Tag == null)) || !(node.Tag is MenuItemArguments)) {
                     continue;
                 }
@@ -1303,9 +1303,9 @@ namespace QTTabBarLib {
                     string text = string.Format(strArray[0], QTUtility2.MakeKeyString(keys), node.Text);
                     if(DialogResult.OK == MessageBox.Show(text, strArray[1], MessageBoxButtons.OKCancel, MessageBoxIcon.Question)) {
                         tag.KeyShortcut = 0;
-                        if(node == this.treeViewGroup.SelectedNode) {
-                            this.chbGroupKey.Checked = false;
-                            this.tbGroupKey.Text = " - ";
+                        if(node == treeViewGroup.SelectedNode) {
+                            chbGroupKey.Checked = false;
+                            tbGroupKey.Text = " - ";
                         }
                         return true;
                     }
@@ -1316,7 +1316,7 @@ namespace QTTabBarLib {
         }
 
         private bool CheckExistance_Shortcuts(Keys keys, ListViewItem lviCurrent) {
-            foreach(ListViewItem item in this.listViewKeyboard.Items) {
+            foreach(ListViewItem item in listViewKeyboard.Items) {
                 if((keys == ((Keys)item.Tag)) && (item != lviCurrent)) {
                     string[] strArray = QTUtility.TextResourcesDic["ShortcutKeys_MsgReassign"];
                     string text = string.Format(strArray[0], QTUtility2.MakeKeyString(keys), item.SubItems[0].Text);
@@ -1342,16 +1342,16 @@ namespace QTTabBarLib {
                         string text = string.Format(strArray[0], QTUtility2.MakeKeyString(keys), node.Text);
                         if(DialogResult.OK == MessageBox.Show(text, strArray[1], MessageBoxButtons.OKCancel, MessageBoxIcon.Question)) {
                             tag.KeyShortcut = 0;
-                            if(node == this.treeViewUserApps.SelectedNode) {
-                                this.chbUserAppKey.Checked = false;
-                                this.tbUserAppKey.Text = " - ";
+                            if(node == treeViewUserApps.SelectedNode) {
+                                chbUserAppKey.Checked = false;
+                                tbUserAppKey.Text = " - ";
                             }
                             return true;
                         }
                         return false;
                     }
                 }
-                if(!this.CheckExistance_UserAppKey(keys, node, tnCurrent)) {
+                if(!CheckExistance_UserAppKey(keys, node, tnCurrent)) {
                     return false;
                 }
             }
@@ -1359,45 +1359,45 @@ namespace QTTabBarLib {
         }
 
         private void cmsAddToken_ItemClicked(object sender, ToolStripItemClickedEventArgs e) {
-            if(this.cmsAddToken.Items[0].Enabled) {
-                this.tbArgs.Paste(e.ClickedItem.Name);
+            if(cmsAddToken.Items[0].Enabled) {
+                tbArgs.Paste(e.ClickedItem.Name);
             }
             else {
-                this.tbWorking.Paste(e.ClickedItem.Name);
+                tbWorking.Paste(e.ClickedItem.Name);
             }
         }
 
         private void comboBoxes_SelectedIndexChanged(object sender, EventArgs e) {
-            if(sender == this.cmbBGDblClick) {
-                this.lblAction_BarDblClick.Enabled = this.textBoxAction_BarDblClck.Enabled = this.btnBrowseAction_BarDblClck.Enabled = (this.cmbBGDblClick.SelectedIndex == 9) || (this.cmbBGDblClick.SelectedIndex == 10);
+            if(sender == cmbBGDblClick) {
+                lblAction_BarDblClick.Enabled = textBoxAction_BarDblClck.Enabled = btnBrowseAction_BarDblClck.Enabled = (cmbBGDblClick.SelectedIndex == 9) || (cmbBGDblClick.SelectedIndex == 10);
             }
-            else if(sender == this.cmbTabSizeMode) {
-                this.nudTabWidth.Enabled = this.cmbTabSizeMode.SelectedIndex == 1;
-                this.nudTabWidthMax.Enabled = this.nudTabWidthMin.Enabled = this.cmbTabSizeMode.SelectedIndex == 2;
+            else if(sender == cmbTabSizeMode) {
+                nudTabWidth.Enabled = cmbTabSizeMode.SelectedIndex == 1;
+                nudTabWidthMax.Enabled = nudTabWidthMin.Enabled = cmbTabSizeMode.SelectedIndex == 2;
             }
-            else if(sender == this.cmbTextExts) {
-                this.iComboBoxTextPreview = this.cmbTextExts.SelectedIndex;
+            else if(sender == cmbTextExts) {
+                iComboBoxTextPreview = cmbTextExts.SelectedIndex;
             }
-            else if(sender == this.cmbImgExts) {
-                this.iConboBoxImagPreview = this.cmbImgExts.SelectedIndex;
+            else if(sender == cmbImgExts) {
+                iConboBoxImagPreview = cmbImgExts.SelectedIndex;
             }
         }
 
         private void comboBoxPreviewExts_KeyPress(object sender, KeyPressEventArgs e) {
             if(e.KeyChar == '\r') {
                 e.Handled = true;
-                this.EnterExtension(sender == this.cmbTextExts);
+                EnterExtension(sender == cmbTextExts);
             }
             else {
                 ComboBox box = (ComboBox)sender;
-                if((box.SelectedIndex == 0) && (box.Text == ((sender == this.cmbTextExts) ? "(Text file)" : "(Image & movie file)"))) {
+                if((box.SelectedIndex == 0) && (box.Text == ((sender == cmbTextExts) ? "(Text file)" : "(Image & movie file)"))) {
                     box.Text = string.Empty;
                 }
             }
         }
 
         private void CreateNoCapturePaths() {
-            this.listView_NoCapture.BeginUpdate();
+            listView_NoCapture.BeginUpdate();
             foreach(string str in QTUtility.NoCapturePathsList) {
                 ListViewItem item = new ListViewItem(str);
                 if(str.StartsWith("::")) {
@@ -1407,16 +1407,16 @@ namespace QTTabBarLib {
                     }
                 }
                 item.Name = str;
-                this.listView_NoCapture.Items.Add(item);
+                listView_NoCapture.Items.Add(item);
             }
-            this.listView_NoCapture.EndUpdate();
+            listView_NoCapture.EndUpdate();
         }
 
         private void CreatePluginViewItem(PluginAssembly[] pluginAssemblies, bool fAddedByUser) {
             foreach(PluginAssembly assembly in pluginAssemblies) {
                 if(assembly.PluginInfosExist) {
                     bool flag = false;
-                    foreach(PluginViewItem item in this.pluginView.PluginViewItems) {
+                    foreach(PluginViewItem item in pluginView.PluginViewItems) {
                         if(assembly.Path == item.PluginInfo.Path) {
                             flag = true;
                             break;
@@ -1428,11 +1428,11 @@ namespace QTTabBarLib {
                             if(fAddedByUser || information.Enabled) {
                                 information.Enabled = assembly.Enabled = true;
                             }
-                            this.pluginView.AddPluginViewItem(information, assembly);
+                            pluginView.AddPluginViewItem(information, assembly);
                             num++;
                         }
                         if((num > 0) && fAddedByUser) {
-                            this.lstPluginAssembliesUserAdded.Add(assembly);
+                            lstPluginAssembliesUserAdded.Add(assembly);
                         }
                     }
                 }
@@ -1442,8 +1442,8 @@ namespace QTTabBarLib {
         private void CreateShortcutItems() {
             string[] strArray = QTUtility.TextResourcesDic["ShortcutKeys_ActionNames"];
             string[] strArray2 = QTUtility.TextResourcesDic["ShortcutKeys_Groups"];
-            ListViewGroup group = this.listViewKeyboard.Groups.Add("general", strArray2[0]);
-            this.listViewKeyboard.BeginUpdate();
+            ListViewGroup group = listViewKeyboard.Groups.Add("general", strArray2[0]);
+            listViewKeyboard.BeginUpdate();
             for(int i = 0; i < QTUtility.ShortcutKeys.Length; i++) {
                 bool flag = (QTUtility.ShortcutKeys[i] & 0x100000) == 0x100000;
                 Keys key = ((Keys)QTUtility.ShortcutKeys[i]) & ((Keys)(-1048577));
@@ -1451,13 +1451,13 @@ namespace QTTabBarLib {
                 item.Checked = flag;
                 item.Group = group;
                 item.Tag = key;
-                this.listViewKeyboard.Items.Add(item);
+                listViewKeyboard.Items.Add(item);
             }
             foreach(string str in QTUtility.dicPluginShortcutKeys.Keys) {
                 Plugin plugin;
                 int[] numArray = QTUtility.dicPluginShortcutKeys[str];
-                if(this.pluginManager.TryGetPlugin(str, out plugin) && (plugin.PluginInformation.ShortcutKeyActions != null)) {
-                    ListViewGroup group2 = this.listViewKeyboard.Groups.Add(plugin.PluginInformation.PluginID, plugin.PluginInformation.Name + " (" + strArray2[1] + ")");
+                if(pluginManager.TryGetPlugin(str, out plugin) && (plugin.PluginInformation.ShortcutKeyActions != null)) {
+                    ListViewGroup group2 = listViewKeyboard.Groups.Add(plugin.PluginInformation.PluginID, plugin.PluginInformation.Name + " (" + strArray2[1] + ")");
                     if((numArray != null) && (plugin.PluginInformation.ShortcutKeyActions.Length == numArray.Length)) {
                         for(int k = 0; k < numArray.Length; k++) {
                             bool flag2 = (numArray[k] & 0x100000) == 0x100000;
@@ -1468,7 +1468,7 @@ namespace QTTabBarLib {
                             item2.Tag = keys2;
                             item2.Name = str;
                             item2.ToolTipText = plugin.PluginInformation.Name + " ver:" + plugin.PluginInformation.Version;
-                            this.listViewKeyboard.Items.Add(item2);
+                            listViewKeyboard.Items.Add(item2);
                         }
                         continue;
                     }
@@ -1478,15 +1478,15 @@ namespace QTTabBarLib {
                         item3.Group = group2;
                         item3.Tag = 0;
                         item3.Name = str;
-                        this.listViewKeyboard.Items.Add(item3);
+                        listViewKeyboard.Items.Add(item3);
                     }
                 }
             }
-            this.listViewKeyboard.EndUpdate();
+            listViewKeyboard.EndUpdate();
         }
 
         private void CreateTokenMenu() {
-            if(this.cmsAddToken.Items.Count == 0) {
+            if(cmsAddToken.Items.Count == 0) {
                 ToolStripMenuItem item = new ToolStripMenuItem("%f%   selected file");
                 ToolStripMenuItem item2 = new ToolStripMenuItem("%d%   selected folder");
                 ToolStripMenuItem item3 = new ToolStripMenuItem("%s%   selected item");
@@ -1497,7 +1497,7 @@ namespace QTTabBarLib {
                 item3.Name = "%s%";
                 item4.Name = "%c%";
                 item5.Name = "%cd%";
-                this.cmsAddToken.Items.AddRange(new ToolStripItem[] { item, item2, item3, item4, item5 });
+                cmsAddToken.Items.AddRange(new ToolStripItem[] { item, item2, item3, item4, item5 });
             }
         }
 
@@ -1580,30 +1580,30 @@ namespace QTTabBarLib {
 
         private void DeletePluginAssembly(PluginAssembly pa) {
             foreach(PluginInformation information in pa.PluginInformations) {
-                this.RemovePluginShortcutKeys(information.PluginID);
+                RemovePluginShortcutKeys(information.PluginID);
             }
-            if(this.lstPluginAssembliesUserAdded.Contains(pa)) {
+            if(lstPluginAssembliesUserAdded.Contains(pa)) {
                 pa.Dispose();
-                this.lstPluginAssembliesUserAdded.Remove(pa);
+                lstPluginAssembliesUserAdded.Remove(pa);
             }
         }
 
         protected override void Dispose(bool disposing) {
-            this.fntStartUpGroup.Dispose();
-            this.sfPlugins.Dispose();
-            this.cmsAddToken.Dispose();
-            this.pluginManager = null;
-            foreach(PluginAssembly assembly in this.lstPluginAssembliesUserAdded) {
+            fntStartUpGroup.Dispose();
+            sfPlugins.Dispose();
+            cmsAddToken.Dispose();
+            pluginManager = null;
+            foreach(PluginAssembly assembly in lstPluginAssembliesUserAdded) {
                 assembly.Dispose();
             }
-            this.lstPluginAssembliesUserAdded.Clear();
+            lstPluginAssembliesUserAdded.Clear();
             base.Dispose(disposing);
         }
 
         private void EnterExtension(bool fText) {
-            ComboBox box = fText ? this.cmbTextExts : this.cmbImgExts;
+            ComboBox box = fText ? cmbTextExts : cmbImgExts;
             string str = fText ? "(Text file)" : "(Image & movie file)";
-            int index = fText ? this.iComboBoxTextPreview : this.iConboBoxImagPreview;
+            int index = fText ? iComboBoxTextPreview : iConboBoxImagPreview;
             if(box.Text.Length > 0) {
                 if((box.SelectedIndex != 0) || (box.Text != str)) {
                     string b = box.Text.ToLower();
@@ -1634,1451 +1634,1451 @@ namespace QTTabBarLib {
         }
 
         private void InitializeComponent() {
-            this.btnOK = new Button();
-            this.btnApply = new Button();
-            this.btnCancel = new Button();
-            this.lblVer = new LinkLabel();
-            this.tabControl1 = new TabControl();
-            this.tabPage1_Gnrl = new TabPage();
-            this.tabPage2_Tabs = new TabPage();
-            this.tabPage3_Wndw = new TabPage();
-            this.tabPage4_View = new TabPage();
-            this.tabPage5_Grps = new TabPage();
-            this.tabPage6_Apps = new TabPage();
-            this.tabPage7_Plug = new TabPage();
-            this.tabPage8_Keys = new TabPage();
-            this.tabPage9_Misc = new TabPage();
-            this.tabPageA_Path = new TabPage();
-            this.chbActivateNew = new CheckBox();
-            this.chbDontOpenSame = new CheckBox();
-            this.chbCloseWhenGroup = new CheckBox();
-            this.chbShowTooltip = new CheckBox();
-            this.chbX1X2 = new CheckBox();
-            this.chbNavBtn = new CheckBox();
-            this.chbNoHistory = new CheckBox();
-            this.chbSaveExecuted = new CheckBox();
-            this.chbDD = new CheckBox();
-            this.chbAutoUpdate = new CheckBox();
-            this.chbPlaySound = new CheckBox();
-            this.cmbNavBtn = new ComboBox();
-            this.btnHistoryClear = new Button();
-            this.btnClearRecentFile = new Button();
-            this.nudMaxUndo = new NumericUpDown();
-            this.nudMaxRecentFile = new NumericUpDown();
-            this.lblLang = new Label();
-            this.lblNetworkTimeOut = new Label();
-            this.textBoxLang = new TextBox();
-            this.btnLangBrowse = new Button();
-            this.btnCheckUpdates = new Button();
-            this.btnExportSettings = new Button();
-            this.nudNetworkTimeOut = new NumericUpDown();
-            this.lblNewTabLoc = new Label();
-            this.lblActvClose = new Label();
-            this.lblTabDblClk = new Label();
-            this.lblBGDblClik = new Label();
-            this.lblTabWhlClk = new Label();
-            this.lblAction_BarDblClick = new Label();
-            this.lblMultiRows = new Label();
-            this.cmbNewTabLoc = new ComboBox();
-            this.cmbActvClose = new ComboBox();
-            this.cmbTabDblClck = new ComboBox();
-            this.cmbBGDblClick = new ComboBox();
-            this.cmbTabWhlClck = new ComboBox();
-            this.cmbMultiRow = new ComboBox();
-            this.textBoxAction_BarDblClck = new TextBox();
-            this.btnBrowseAction_BarDblClck = new Button();
-            this.chbAutoSubText = new CheckBox();
-            this.chbTabCloseButton = new CheckBox();
-            this.chbTabCloseBtnAlt = new CheckBox();
-            this.chbTabCloseBtnHover = new CheckBox();
-            this.chbSubDirTipOnTab = new CheckBox();
-            this.chbTreeShftWhlTab = new CheckBox();
-            this.chbTabSwitcher = new CheckBox();
-            this.chbRemoveOnSeparate = new CheckBox();
-            this.chbDriveLetter = new CheckBox();
-            this.chbWhlClick = new CheckBox();
-            this.chbNCADblClck = new CheckBox();
-            this.chbBlockProcess = new CheckBox();
-            this.chbFoldrTree = new CheckBox();
-            this.chbWndUnresizable = new CheckBox();
-            this.chbWndRestrAlpha = new CheckBox();
-            this.chbNoTabFromOuteside = new CheckBox();
-            this.chbHolizontalScroll = new CheckBox();
-            this.chbWhlChangeView = new CheckBox();
-            this.chbNeverCloseWindow = new CheckBox();
-            this.chbNeverCloseWndLocked = new CheckBox();
-            this.chbRestoreClosed = new CheckBox();
-            this.chbRestoreLocked = new CheckBox();
-            this.chbSendToTray = new CheckBox();
-            this.chbSendToTrayOnMinimize = new CheckBox();
-            this.cmbWhlClick = new ComboBox();
-            this.lblSep = new Label();
-            this.chbUseTabSkin = new CheckBox();
-            this.chbToolbarBGClr = new CheckBox();
-            this.chbFolderIcon = new CheckBox();
-            this.chbBoldActv = new CheckBox();
-            this.chbRebarBGImage = new CheckBox();
-            this.chbTabTitleShadow = new CheckBox();
-            this.propertyGrid1 = new PropertyGrid();
-            this.nudTabWidth = new NumericUpDown();
-            this.nudTabHeight = new NumericUpDown();
-            this.nudTabWidthMax = new NumericUpDown();
-            this.nudTabWidthMin = new NumericUpDown();
-            this.lblTabSizeTitle = new Label();
-            this.lblTabWidth = new Label();
-            this.lblTabHeight = new Label();
-            this.lblTabWMin = new Label();
-            this.lblTabWMax = new Label();
-            this.lblTabWFix = new Label();
-            this.lblTabFont = new Label();
-            this.lblMenuRenderer = new Label();
-            this.lblTabTextAlignment = new Label();
-            this.lblTabTxtClr = new Label();
-            this.cmbTabSizeMode = new ComboBox();
-            this.cmbTabTextAlignment = new ComboBox();
-            this.cmbRebarBGImageMode = new ComboBox();
-            this.cmbMenuRenderer = new ComboBox();
-            this.btnHiliteClsc = new Button();
-            this.btnTabFont = new Button();
-            this.btnActTxtClr = new Button();
-            this.btnInactTxtClr = new Button();
-            this.btnDefTxtClr = new Button();
-            this.btnToolBarBGClr = new Button();
-            this.btnRebarImage = new Button();
-            this.btnShadowAct = new Button();
-            this.btnShadowIna = new Button();
-            this.btnTabImage = new Button();
-            this.tbRebarImagePath = new TextBox();
-            this.tbTabImagePath = new TextBox();
-            this.treeViewGroup = new TreeView();
-            this.btnUp_Grp = new Button();
-            this.btnDown_Grp = new Button();
-            this.btnMinus_Grp = new Button();
-            this.btnPlus_Grp = new Button();
-            this.btnStartUpGrp = new Button();
-            this.btnAddSep_Grp = new Button();
-            this.cmbSpclFol_Grp = new ComboBox();
-            this.btnAddSpcFol_Grp = new Button();
-            this.lblGroupKey = new Label();
-            this.tbGroupKey = new TextBox();
-            this.chbGroupKey = new CheckBox();
-            this.treeViewUserApps = new TreeView();
-            this.btnUp_app = new Button();
-            this.btnDown_app = new Button();
-            this.btnAddSep_app = new Button();
-            this.btnAddVFolder_app = new Button();
-            this.btnPlus_app = new Button();
-            this.btnMinus_app = new Button();
-            this.lblUserApps_Path = new Label();
-            this.lblUserApps_Args = new Label();
-            this.lblUserApps_Working = new Label();
-            this.tbPath = new TextBox();
-            this.tbArgs = new TextBox();
-            this.tbWorking = new TextBox();
-            this.tbUserAppKey = new TextBox();
-            this.chbUserAppKey = new CheckBox();
-            this.lblUserApps_Key = new Label();
-            this.btnOFD_app = new Button();
-            this.btnBFD_app = new Button();
-            this.btnAddToken_Arg = new Button();
-            this.btnAddToken_Wrk = new Button();
-            this.cmsAddToken = new ContextMenuStrip();
-            this.chbHideMenu = new CheckBox();
-            this.chbBSUpOneLvl = new CheckBox();
-            this.chbNoFulRowSelect = new CheckBox();
-            this.chbGridLine = new CheckBox();
-            this.chbAlternateColor = new CheckBox();
-            this.chbShowPreview = new CheckBox();
-            this.chbPreviewMode = new CheckBox();
-            this.chbPreviewInfo = new CheckBox();
-            this.chbSubDirTip = new CheckBox();
-            this.chbSubDirTipMode = new CheckBox();
-            this.chbSubDirTipModeHidden = new CheckBox();
-            this.chbSubDirTipModeSystem = new CheckBox();
-            this.chbSubDirTipModeFile = new CheckBox();
-            this.chbSubDirTipPreview = new CheckBox();
-            this.chbSelectWithoutExt = new CheckBox();
-            this.chbF2Selection = new CheckBox();
-            this.chbCursorLoop = new CheckBox();
-            this.btnAlternateColor = new Button();
-            this.btnAlternateColor_Text = new Button();
-            this.btnAlternate_Default = new Button();
-            this.btnAddTextExt = new Button();
-            this.btnDelTextExt = new Button();
-            this.btnDefaultTextExt = new Button();
-            this.btnAddImgExt = new Button();
-            this.btnDelImgExt = new Button();
-            this.btnDefaultImgExt = new Button();
-            this.btnPreviewFont = new Button();
-            this.btnPreviewFontDefault = new Button();
-            this.btnPayPal = new Button();
-            this.nudPreviewMaxHeight = new NumericUpDown();
-            this.nudPreviewMaxWidth = new NumericUpDown();
-            this.lblPreviewHeight = new Label();
-            this.lblPreviewWidth = new Label();
-            this.cmbTextExts = new ComboBox();
-            this.cmbImgExts = new ComboBox();
-            this.pluginView = new PluginView();
-            this.btnBrowsePlugin = new Button();
-            this.lblPluginLang = new Label();
-            this.textBoxPluginLang = new TextBox();
-            this.btnBrowsePluginLang = new Button();
-            this.listViewKeyboard = new ListViewEx();
-            this.clmKeys_Action = new ColumnHeader();
-            this.clmKeys_Key = new ColumnHeader();
-            this.btnCopyKeys = new Button();
-            this.listView_NoCapture = new ListView();
-            this.btnOFD_NoCapture = new Button();
-            this.btnAdd_NoCapture = new Button();
-            this.btnRemove_NoCapture = new Button();
-            this.clmnHeader_NoCapture = new ColumnHeader();
-            this.cmbSpclFol_NoCapture = new ComboBox();
-            this.btnAddSpcFol_NoCapture = new Button();
-            this.tabControl1.SuspendLayout();
-            this.tabPage1_Gnrl.SuspendLayout();
-            this.tabPage2_Tabs.SuspendLayout();
-            this.tabPage3_Wndw.SuspendLayout();
-            this.tabPage4_View.SuspendLayout();
-            this.tabPage5_Grps.SuspendLayout();
-            this.tabPage6_Apps.SuspendLayout();
-            this.tabPage7_Plug.SuspendLayout();
-            this.tabPage8_Keys.SuspendLayout();
-            this.tabPage9_Misc.SuspendLayout();
-            this.tabPageA_Path.SuspendLayout();
-            this.nudMaxUndo.BeginInit();
-            this.nudMaxRecentFile.BeginInit();
-            this.nudNetworkTimeOut.BeginInit();
-            this.nudTabWidthMin.BeginInit();
-            this.nudTabWidthMax.BeginInit();
-            this.nudTabHeight.BeginInit();
-            this.nudTabWidth.BeginInit();
-            this.nudPreviewMaxWidth.BeginInit();
-            this.nudPreviewMaxHeight.BeginInit();
-            base.SuspendLayout();
-            this.btnOK.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
-            this.btnOK.Location = new Point(0xf1, 0x246);
-            this.btnOK.Size = new Size(0x58, 0x17);
-            this.btnOK.TabIndex = 4;
-            this.btnOK.Click += this.buttonOK_Click;
-            this.btnApply.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
-            this.btnApply.Location = new Point(0x1ad, 0x246);
-            this.btnApply.Size = new Size(0x58, 0x17);
-            this.btnApply.TabIndex = 6;
-            this.btnApply.Click += this.buttonApply_Click;
-            this.btnCancel.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
-            this.btnCancel.Location = new Point(0x14f, 0x246);
-            this.btnCancel.Size = new Size(0x58, 0x17);
-            this.btnCancel.TabIndex = 5;
-            this.btnCancel.Click += this.btnCancel_Click;
-            this.lblVer.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
-            this.lblVer.AutoSize = true;
-            this.lblVer.LinkColor = Color.Blue;
-            this.lblVer.ActiveLinkColor = Color.Red;
-            this.lblVer.VisitedLinkColor = Color.Purple;
-            this.lblVer.Location = new Point(12, 0x24b);
-            this.lblVer.Click += this.lblVer_Click;
-            this.tabControl1.Controls.Add(this.tabPage1_Gnrl);
-            this.tabControl1.Controls.Add(this.tabPage2_Tabs);
-            this.tabControl1.Controls.Add(this.tabPage3_Wndw);
-            this.tabControl1.Controls.Add(this.tabPage4_View);
-            this.tabControl1.Controls.Add(this.tabPage5_Grps);
-            this.tabControl1.Controls.Add(this.tabPage6_Apps);
-            this.tabControl1.Controls.Add(this.tabPage7_Plug);
-            this.tabControl1.Controls.Add(this.tabPage8_Keys);
-            this.tabControl1.Controls.Add(this.tabPage9_Misc);
-            this.tabControl1.Controls.Add(this.tabPageA_Path);
-            this.tabControl1.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Top;
-            this.tabControl1.Location = new Point(9, 9);
-            this.tabControl1.Margin = new Padding(0);
-            this.tabControl1.Multiline = true;
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new Size(0x207, 0x238);
-            this.tabControl1.TabIndex = 0;
-            this.tabControl1.SelectedIndexChanged += this.tabControl1_SelectedIndexChanged;
-            this.tabPage1_Gnrl.Controls.Add(this.chbActivateNew);
-            this.tabPage1_Gnrl.Controls.Add(this.chbDontOpenSame);
-            this.tabPage1_Gnrl.Controls.Add(this.chbCloseWhenGroup);
-            this.tabPage1_Gnrl.Controls.Add(this.chbShowTooltip);
-            this.tabPage1_Gnrl.Controls.Add(this.chbX1X2);
-            this.tabPage1_Gnrl.Controls.Add(this.chbNavBtn);
-            this.tabPage1_Gnrl.Controls.Add(this.chbNoHistory);
-            this.tabPage1_Gnrl.Controls.Add(this.chbSaveExecuted);
-            this.tabPage1_Gnrl.Controls.Add(this.chbDD);
-            this.tabPage1_Gnrl.Controls.Add(this.chbPlaySound);
-            this.tabPage1_Gnrl.Controls.Add(this.cmbNavBtn);
-            this.tabPage1_Gnrl.Controls.Add(this.btnHistoryClear);
-            this.tabPage1_Gnrl.Controls.Add(this.nudMaxUndo);
-            this.tabPage1_Gnrl.Controls.Add(this.nudMaxRecentFile);
-            this.tabPage1_Gnrl.Controls.Add(this.btnClearRecentFile);
-            this.tabPage1_Gnrl.Controls.Add(this.lblLang);
-            this.tabPage1_Gnrl.Controls.Add(this.textBoxLang);
-            this.tabPage1_Gnrl.Controls.Add(this.btnLangBrowse);
-            this.tabPage1_Gnrl.Controls.Add(this.btnExportSettings);
-            this.tabPage1_Gnrl.Controls.Add(this.btnCheckUpdates);
-            this.tabPage1_Gnrl.Controls.Add(this.lblNetworkTimeOut);
-            this.tabPage1_Gnrl.Controls.Add(this.nudNetworkTimeOut);
-            this.tabPage1_Gnrl.Controls.Add(this.chbAutoUpdate);
-            this.tabPage1_Gnrl.Location = new Point(4, 0x16);
-            this.tabPage1_Gnrl.Padding = new Padding(3);
-            this.tabPage1_Gnrl.Size = new Size(0x1ff, 0x1d7);
-            this.tabPage1_Gnrl.TabIndex = 0;
-            this.tabPage1_Gnrl.UseVisualStyleBackColor = true;
-            this.btnCheckUpdates.AutoSize = true;
-            this.btnCheckUpdates.Anchor = AnchorStyles.Left | AnchorStyles.Top;
-            this.btnCheckUpdates.Location = new Point(0x12a, 0x1f1);
-            this.btnCheckUpdates.TabIndex = 20;
-            this.btnCheckUpdates.Click += this.btnCheckUpdates_Click;
-            this.chbAutoUpdate.AutoSize = true;
-            this.chbAutoUpdate.Location = new Point(0x1b, 0x1f3);
-            this.chbAutoUpdate.TabIndex = 0x13;
-            this.btnExportSettings.AutoSize = true;
-            this.btnExportSettings.Anchor = AnchorStyles.Left | AnchorStyles.Top;
-            this.btnExportSettings.Location = new Point(0x1b, 0x1c7);
-            this.btnExportSettings.TabIndex = 0x12;
-            this.btnExportSettings.Click += this.btnExportSettings_Click;
-            this.lblNetworkTimeOut.AutoSize = true;
-            this.lblNetworkTimeOut.Anchor = AnchorStyles.Left | AnchorStyles.Top;
-            this.lblNetworkTimeOut.Location = new Point(0x1b, 0x1a5);
-            this.nudNetworkTimeOut.Location = new Point(0x194, 420);
+            btnOK = new Button();
+            btnApply = new Button();
+            btnCancel = new Button();
+            lblVer = new LinkLabel();
+            tabControl1 = new TabControl();
+            tabPage1_Gnrl = new TabPage();
+            tabPage2_Tabs = new TabPage();
+            tabPage3_Wndw = new TabPage();
+            tabPage4_View = new TabPage();
+            tabPage5_Grps = new TabPage();
+            tabPage6_Apps = new TabPage();
+            tabPage7_Plug = new TabPage();
+            tabPage8_Keys = new TabPage();
+            tabPage9_Misc = new TabPage();
+            tabPageA_Path = new TabPage();
+            chbActivateNew = new CheckBox();
+            chbDontOpenSame = new CheckBox();
+            chbCloseWhenGroup = new CheckBox();
+            chbShowTooltip = new CheckBox();
+            chbX1X2 = new CheckBox();
+            chbNavBtn = new CheckBox();
+            chbNoHistory = new CheckBox();
+            chbSaveExecuted = new CheckBox();
+            chbDD = new CheckBox();
+            chbAutoUpdate = new CheckBox();
+            chbPlaySound = new CheckBox();
+            cmbNavBtn = new ComboBox();
+            btnHistoryClear = new Button();
+            btnClearRecentFile = new Button();
+            nudMaxUndo = new NumericUpDown();
+            nudMaxRecentFile = new NumericUpDown();
+            lblLang = new Label();
+            lblNetworkTimeOut = new Label();
+            textBoxLang = new TextBox();
+            btnLangBrowse = new Button();
+            btnCheckUpdates = new Button();
+            btnExportSettings = new Button();
+            nudNetworkTimeOut = new NumericUpDown();
+            lblNewTabLoc = new Label();
+            lblActvClose = new Label();
+            lblTabDblClk = new Label();
+            lblBGDblClik = new Label();
+            lblTabWhlClk = new Label();
+            lblAction_BarDblClick = new Label();
+            lblMultiRows = new Label();
+            cmbNewTabLoc = new ComboBox();
+            cmbActvClose = new ComboBox();
+            cmbTabDblClck = new ComboBox();
+            cmbBGDblClick = new ComboBox();
+            cmbTabWhlClck = new ComboBox();
+            cmbMultiRow = new ComboBox();
+            textBoxAction_BarDblClck = new TextBox();
+            btnBrowseAction_BarDblClck = new Button();
+            chbAutoSubText = new CheckBox();
+            chbTabCloseButton = new CheckBox();
+            chbTabCloseBtnAlt = new CheckBox();
+            chbTabCloseBtnHover = new CheckBox();
+            chbSubDirTipOnTab = new CheckBox();
+            chbTreeShftWhlTab = new CheckBox();
+            chbTabSwitcher = new CheckBox();
+            chbRemoveOnSeparate = new CheckBox();
+            chbDriveLetter = new CheckBox();
+            chbWhlClick = new CheckBox();
+            chbNCADblClck = new CheckBox();
+            chbBlockProcess = new CheckBox();
+            chbFoldrTree = new CheckBox();
+            chbWndUnresizable = new CheckBox();
+            chbWndRestrAlpha = new CheckBox();
+            chbNoTabFromOuteside = new CheckBox();
+            chbHolizontalScroll = new CheckBox();
+            chbWhlChangeView = new CheckBox();
+            chbNeverCloseWindow = new CheckBox();
+            chbNeverCloseWndLocked = new CheckBox();
+            chbRestoreClosed = new CheckBox();
+            chbRestoreLocked = new CheckBox();
+            chbSendToTray = new CheckBox();
+            chbSendToTrayOnMinimize = new CheckBox();
+            cmbWhlClick = new ComboBox();
+            lblSep = new Label();
+            chbUseTabSkin = new CheckBox();
+            chbToolbarBGClr = new CheckBox();
+            chbFolderIcon = new CheckBox();
+            chbBoldActv = new CheckBox();
+            chbRebarBGImage = new CheckBox();
+            chbTabTitleShadow = new CheckBox();
+            propertyGrid1 = new PropertyGrid();
+            nudTabWidth = new NumericUpDown();
+            nudTabHeight = new NumericUpDown();
+            nudTabWidthMax = new NumericUpDown();
+            nudTabWidthMin = new NumericUpDown();
+            lblTabSizeTitle = new Label();
+            lblTabWidth = new Label();
+            lblTabHeight = new Label();
+            lblTabWMin = new Label();
+            lblTabWMax = new Label();
+            lblTabWFix = new Label();
+            lblTabFont = new Label();
+            lblMenuRenderer = new Label();
+            lblTabTextAlignment = new Label();
+            lblTabTxtClr = new Label();
+            cmbTabSizeMode = new ComboBox();
+            cmbTabTextAlignment = new ComboBox();
+            cmbRebarBGImageMode = new ComboBox();
+            cmbMenuRenderer = new ComboBox();
+            btnHiliteClsc = new Button();
+            btnTabFont = new Button();
+            btnActTxtClr = new Button();
+            btnInactTxtClr = new Button();
+            btnDefTxtClr = new Button();
+            btnToolBarBGClr = new Button();
+            btnRebarImage = new Button();
+            btnShadowAct = new Button();
+            btnShadowIna = new Button();
+            btnTabImage = new Button();
+            tbRebarImagePath = new TextBox();
+            tbTabImagePath = new TextBox();
+            treeViewGroup = new TreeView();
+            btnUp_Grp = new Button();
+            btnDown_Grp = new Button();
+            btnMinus_Grp = new Button();
+            btnPlus_Grp = new Button();
+            btnStartUpGrp = new Button();
+            btnAddSep_Grp = new Button();
+            cmbSpclFol_Grp = new ComboBox();
+            btnAddSpcFol_Grp = new Button();
+            lblGroupKey = new Label();
+            tbGroupKey = new TextBox();
+            chbGroupKey = new CheckBox();
+            treeViewUserApps = new TreeView();
+            btnUp_app = new Button();
+            btnDown_app = new Button();
+            btnAddSep_app = new Button();
+            btnAddVFolder_app = new Button();
+            btnPlus_app = new Button();
+            btnMinus_app = new Button();
+            lblUserApps_Path = new Label();
+            lblUserApps_Args = new Label();
+            lblUserApps_Working = new Label();
+            tbPath = new TextBox();
+            tbArgs = new TextBox();
+            tbWorking = new TextBox();
+            tbUserAppKey = new TextBox();
+            chbUserAppKey = new CheckBox();
+            lblUserApps_Key = new Label();
+            btnOFD_app = new Button();
+            btnBFD_app = new Button();
+            btnAddToken_Arg = new Button();
+            btnAddToken_Wrk = new Button();
+            cmsAddToken = new ContextMenuStrip();
+            chbHideMenu = new CheckBox();
+            chbBSUpOneLvl = new CheckBox();
+            chbNoFulRowSelect = new CheckBox();
+            chbGridLine = new CheckBox();
+            chbAlternateColor = new CheckBox();
+            chbShowPreview = new CheckBox();
+            chbPreviewMode = new CheckBox();
+            chbPreviewInfo = new CheckBox();
+            chbSubDirTip = new CheckBox();
+            chbSubDirTipMode = new CheckBox();
+            chbSubDirTipModeHidden = new CheckBox();
+            chbSubDirTipModeSystem = new CheckBox();
+            chbSubDirTipModeFile = new CheckBox();
+            chbSubDirTipPreview = new CheckBox();
+            chbSelectWithoutExt = new CheckBox();
+            chbF2Selection = new CheckBox();
+            chbCursorLoop = new CheckBox();
+            btnAlternateColor = new Button();
+            btnAlternateColor_Text = new Button();
+            btnAlternate_Default = new Button();
+            btnAddTextExt = new Button();
+            btnDelTextExt = new Button();
+            btnDefaultTextExt = new Button();
+            btnAddImgExt = new Button();
+            btnDelImgExt = new Button();
+            btnDefaultImgExt = new Button();
+            btnPreviewFont = new Button();
+            btnPreviewFontDefault = new Button();
+            btnPayPal = new Button();
+            nudPreviewMaxHeight = new NumericUpDown();
+            nudPreviewMaxWidth = new NumericUpDown();
+            lblPreviewHeight = new Label();
+            lblPreviewWidth = new Label();
+            cmbTextExts = new ComboBox();
+            cmbImgExts = new ComboBox();
+            pluginView = new PluginView();
+            btnBrowsePlugin = new Button();
+            lblPluginLang = new Label();
+            textBoxPluginLang = new TextBox();
+            btnBrowsePluginLang = new Button();
+            listViewKeyboard = new ListViewEx();
+            clmKeys_Action = new ColumnHeader();
+            clmKeys_Key = new ColumnHeader();
+            btnCopyKeys = new Button();
+            listView_NoCapture = new ListView();
+            btnOFD_NoCapture = new Button();
+            btnAdd_NoCapture = new Button();
+            btnRemove_NoCapture = new Button();
+            clmnHeader_NoCapture = new ColumnHeader();
+            cmbSpclFol_NoCapture = new ComboBox();
+            btnAddSpcFol_NoCapture = new Button();
+            tabControl1.SuspendLayout();
+            tabPage1_Gnrl.SuspendLayout();
+            tabPage2_Tabs.SuspendLayout();
+            tabPage3_Wndw.SuspendLayout();
+            tabPage4_View.SuspendLayout();
+            tabPage5_Grps.SuspendLayout();
+            tabPage6_Apps.SuspendLayout();
+            tabPage7_Plug.SuspendLayout();
+            tabPage8_Keys.SuspendLayout();
+            tabPage9_Misc.SuspendLayout();
+            tabPageA_Path.SuspendLayout();
+            nudMaxUndo.BeginInit();
+            nudMaxRecentFile.BeginInit();
+            nudNetworkTimeOut.BeginInit();
+            nudTabWidthMin.BeginInit();
+            nudTabWidthMax.BeginInit();
+            nudTabHeight.BeginInit();
+            nudTabWidth.BeginInit();
+            nudPreviewMaxWidth.BeginInit();
+            nudPreviewMaxHeight.BeginInit();
+            SuspendLayout();
+            btnOK.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
+            btnOK.Location = new Point(0xf1, 0x246);
+            btnOK.Size = new Size(0x58, 0x17);
+            btnOK.TabIndex = 4;
+            btnOK.Click += buttonOK_Click;
+            btnApply.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
+            btnApply.Location = new Point(0x1ad, 0x246);
+            btnApply.Size = new Size(0x58, 0x17);
+            btnApply.TabIndex = 6;
+            btnApply.Click += buttonApply_Click;
+            btnCancel.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
+            btnCancel.Location = new Point(0x14f, 0x246);
+            btnCancel.Size = new Size(0x58, 0x17);
+            btnCancel.TabIndex = 5;
+            btnCancel.Click += btnCancel_Click;
+            lblVer.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            lblVer.AutoSize = true;
+            lblVer.LinkColor = Color.Blue;
+            lblVer.ActiveLinkColor = Color.Red;
+            lblVer.VisitedLinkColor = Color.Purple;
+            lblVer.Location = new Point(12, 0x24b);
+            lblVer.Click += lblVer_Click;
+            tabControl1.Controls.Add(tabPage1_Gnrl);
+            tabControl1.Controls.Add(tabPage2_Tabs);
+            tabControl1.Controls.Add(tabPage3_Wndw);
+            tabControl1.Controls.Add(tabPage4_View);
+            tabControl1.Controls.Add(tabPage5_Grps);
+            tabControl1.Controls.Add(tabPage6_Apps);
+            tabControl1.Controls.Add(tabPage7_Plug);
+            tabControl1.Controls.Add(tabPage8_Keys);
+            tabControl1.Controls.Add(tabPage9_Misc);
+            tabControl1.Controls.Add(tabPageA_Path);
+            tabControl1.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Top;
+            tabControl1.Location = new Point(9, 9);
+            tabControl1.Margin = new Padding(0);
+            tabControl1.Multiline = true;
+            tabControl1.SelectedIndex = 0;
+            tabControl1.Size = new Size(0x207, 0x238);
+            tabControl1.TabIndex = 0;
+            tabControl1.SelectedIndexChanged += tabControl1_SelectedIndexChanged;
+            tabPage1_Gnrl.Controls.Add(chbActivateNew);
+            tabPage1_Gnrl.Controls.Add(chbDontOpenSame);
+            tabPage1_Gnrl.Controls.Add(chbCloseWhenGroup);
+            tabPage1_Gnrl.Controls.Add(chbShowTooltip);
+            tabPage1_Gnrl.Controls.Add(chbX1X2);
+            tabPage1_Gnrl.Controls.Add(chbNavBtn);
+            tabPage1_Gnrl.Controls.Add(chbNoHistory);
+            tabPage1_Gnrl.Controls.Add(chbSaveExecuted);
+            tabPage1_Gnrl.Controls.Add(chbDD);
+            tabPage1_Gnrl.Controls.Add(chbPlaySound);
+            tabPage1_Gnrl.Controls.Add(cmbNavBtn);
+            tabPage1_Gnrl.Controls.Add(btnHistoryClear);
+            tabPage1_Gnrl.Controls.Add(nudMaxUndo);
+            tabPage1_Gnrl.Controls.Add(nudMaxRecentFile);
+            tabPage1_Gnrl.Controls.Add(btnClearRecentFile);
+            tabPage1_Gnrl.Controls.Add(lblLang);
+            tabPage1_Gnrl.Controls.Add(textBoxLang);
+            tabPage1_Gnrl.Controls.Add(btnLangBrowse);
+            tabPage1_Gnrl.Controls.Add(btnExportSettings);
+            tabPage1_Gnrl.Controls.Add(btnCheckUpdates);
+            tabPage1_Gnrl.Controls.Add(lblNetworkTimeOut);
+            tabPage1_Gnrl.Controls.Add(nudNetworkTimeOut);
+            tabPage1_Gnrl.Controls.Add(chbAutoUpdate);
+            tabPage1_Gnrl.Location = new Point(4, 0x16);
+            tabPage1_Gnrl.Padding = new Padding(3);
+            tabPage1_Gnrl.Size = new Size(0x1ff, 0x1d7);
+            tabPage1_Gnrl.TabIndex = 0;
+            tabPage1_Gnrl.UseVisualStyleBackColor = true;
+            btnCheckUpdates.AutoSize = true;
+            btnCheckUpdates.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+            btnCheckUpdates.Location = new Point(0x12a, 0x1f1);
+            btnCheckUpdates.TabIndex = 20;
+            btnCheckUpdates.Click += btnCheckUpdates_Click;
+            chbAutoUpdate.AutoSize = true;
+            chbAutoUpdate.Location = new Point(0x1b, 0x1f3);
+            chbAutoUpdate.TabIndex = 0x13;
+            btnExportSettings.AutoSize = true;
+            btnExportSettings.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+            btnExportSettings.Location = new Point(0x1b, 0x1c7);
+            btnExportSettings.TabIndex = 0x12;
+            btnExportSettings.Click += btnExportSettings_Click;
+            lblNetworkTimeOut.AutoSize = true;
+            lblNetworkTimeOut.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+            lblNetworkTimeOut.Location = new Point(0x1b, 0x1a5);
+            nudNetworkTimeOut.Location = new Point(0x194, 420);
             int[] bits = new int[4];
             bits[0] = 60;
-            this.nudNetworkTimeOut.Maximum = new decimal(bits);
+            nudNetworkTimeOut.Maximum = new decimal(bits);
             int[] numArray2 = new int[4];
-            this.nudNetworkTimeOut.Minimum = new decimal(numArray2);
-            this.nudNetworkTimeOut.Size = new Size(0x33, 0x15);
-            this.nudNetworkTimeOut.TabIndex = 0x11;
-            this.nudNetworkTimeOut.TextAlign = HorizontalAlignment.Right;
+            nudNetworkTimeOut.Minimum = new decimal(numArray2);
+            nudNetworkTimeOut.Size = new Size(0x33, 0x15);
+            nudNetworkTimeOut.TabIndex = 0x11;
+            nudNetworkTimeOut.TextAlign = HorizontalAlignment.Right;
             int[] numArray3 = new int[4];
             numArray3[0] = 6;
-            this.nudNetworkTimeOut.Value = new decimal(numArray3);
-            this.btnLangBrowse.Anchor = AnchorStyles.Right | AnchorStyles.Top;
-            this.btnLangBrowse.Location = new Point(0x1a7, 0x175);
-            this.btnLangBrowse.Size = new Size(0x22, 0x19);
-            this.btnLangBrowse.TabIndex = 0x10;
-            this.btnLangBrowse.Text = "...";
-            this.btnLangBrowse.Click += this.btnLangBrowse_Click;
-            this.textBoxLang.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top;
-            this.textBoxLang.Location = new Point(0x2d, 0x178);
-            this.textBoxLang.Size = new Size(0x174, 0x15);
-            this.textBoxLang.MaxLength = 260;
-            this.textBoxLang.TabIndex = 15;
-            this.textBoxLang.KeyPress += this.textBoxesPath_KeyPress;
-            this.lblLang.Anchor = AnchorStyles.Left | AnchorStyles.Top;
-            this.lblLang.AutoSize = true;
-            this.lblLang.Location = new Point(0x1b, 0x160);
-            this.chbPlaySound.AutoSize = true;
-            this.chbPlaySound.Location = new Point(0x1b, 0x111);
-            this.chbPlaySound.TabIndex = 14;
-            this.chbDD.AutoSize = true;
-            this.chbDD.Location = new Point(0x1b, 0xf5);
-            this.chbDD.TabIndex = 13;
-            this.btnClearRecentFile.Location = new Point(0x163, 0xd7);
-            this.btnClearRecentFile.Size = new Size(100, 0x17);
-            this.btnClearRecentFile.TabIndex = 12;
-            this.btnClearRecentFile.Text = "Clear";
-            this.btnClearRecentFile.Click += this.btnClearRecentFile_Click;
-            this.nudMaxRecentFile.Location = new Point(0x12a, 0xd8);
+            nudNetworkTimeOut.Value = new decimal(numArray3);
+            btnLangBrowse.Anchor = AnchorStyles.Right | AnchorStyles.Top;
+            btnLangBrowse.Location = new Point(0x1a7, 0x175);
+            btnLangBrowse.Size = new Size(0x22, 0x19);
+            btnLangBrowse.TabIndex = 0x10;
+            btnLangBrowse.Text = "...";
+            btnLangBrowse.Click += btnLangBrowse_Click;
+            textBoxLang.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top;
+            textBoxLang.Location = new Point(0x2d, 0x178);
+            textBoxLang.Size = new Size(0x174, 0x15);
+            textBoxLang.MaxLength = 260;
+            textBoxLang.TabIndex = 15;
+            textBoxLang.KeyPress += textBoxesPath_KeyPress;
+            lblLang.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+            lblLang.AutoSize = true;
+            lblLang.Location = new Point(0x1b, 0x160);
+            chbPlaySound.AutoSize = true;
+            chbPlaySound.Location = new Point(0x1b, 0x111);
+            chbPlaySound.TabIndex = 14;
+            chbDD.AutoSize = true;
+            chbDD.Location = new Point(0x1b, 0xf5);
+            chbDD.TabIndex = 13;
+            btnClearRecentFile.Location = new Point(0x163, 0xd7);
+            btnClearRecentFile.Size = new Size(100, 0x17);
+            btnClearRecentFile.TabIndex = 12;
+            btnClearRecentFile.Text = "Clear";
+            btnClearRecentFile.Click += btnClearRecentFile_Click;
+            nudMaxRecentFile.Location = new Point(0x12a, 0xd8);
             int[] numArray4 = new int[4];
             numArray4[0] = 0x40;
-            this.nudMaxRecentFile.Maximum = new decimal(numArray4);
+            nudMaxRecentFile.Maximum = new decimal(numArray4);
             int[] numArray5 = new int[4];
             numArray5[0] = 1;
-            this.nudMaxRecentFile.Minimum = new decimal(numArray5);
-            this.nudMaxRecentFile.Size = new Size(0x33, 0x15);
-            this.nudMaxRecentFile.TabIndex = 11;
-            this.nudMaxRecentFile.TextAlign = HorizontalAlignment.Right;
+            nudMaxRecentFile.Minimum = new decimal(numArray5);
+            nudMaxRecentFile.Size = new Size(0x33, 0x15);
+            nudMaxRecentFile.TabIndex = 11;
+            nudMaxRecentFile.TextAlign = HorizontalAlignment.Right;
             int[] numArray6 = new int[4];
             numArray6[0] = 1;
-            this.nudMaxRecentFile.Value = new decimal(numArray6);
-            this.chbSaveExecuted.AutoSize = true;
-            this.chbSaveExecuted.Location = new Point(0x1b, 0xd9);
-            this.chbSaveExecuted.ThreeState = true;
-            this.chbSaveExecuted.TabIndex = 10;
-            this.btnHistoryClear.Location = new Point(0x163, 0xbb);
-            this.btnHistoryClear.Size = new Size(100, 0x17);
-            this.btnHistoryClear.TabIndex = 9;
-            this.btnHistoryClear.Text = "Clear";
-            this.btnHistoryClear.Click += this.buttonHistoryClear_Click;
-            this.nudMaxUndo.Location = new Point(0x12a, 0xbc);
+            nudMaxRecentFile.Value = new decimal(numArray6);
+            chbSaveExecuted.AutoSize = true;
+            chbSaveExecuted.Location = new Point(0x1b, 0xd9);
+            chbSaveExecuted.ThreeState = true;
+            chbSaveExecuted.TabIndex = 10;
+            btnHistoryClear.Location = new Point(0x163, 0xbb);
+            btnHistoryClear.Size = new Size(100, 0x17);
+            btnHistoryClear.TabIndex = 9;
+            btnHistoryClear.Text = "Clear";
+            btnHistoryClear.Click += buttonHistoryClear_Click;
+            nudMaxUndo.Location = new Point(0x12a, 0xbc);
             int[] numArray7 = new int[4];
             numArray7[0] = 0x40;
-            this.nudMaxUndo.Maximum = new decimal(numArray7);
+            nudMaxUndo.Maximum = new decimal(numArray7);
             int[] numArray8 = new int[4];
             numArray8[0] = 1;
-            this.nudMaxUndo.Minimum = new decimal(numArray8);
-            this.nudMaxUndo.Size = new Size(0x33, 0x15);
-            this.nudMaxUndo.TabIndex = 8;
-            this.nudMaxUndo.TextAlign = HorizontalAlignment.Right;
+            nudMaxUndo.Minimum = new decimal(numArray8);
+            nudMaxUndo.Size = new Size(0x33, 0x15);
+            nudMaxUndo.TabIndex = 8;
+            nudMaxUndo.TextAlign = HorizontalAlignment.Right;
             int[] numArray9 = new int[4];
             numArray9[0] = 1;
-            this.nudMaxUndo.Value = new decimal(numArray9);
-            this.chbNoHistory.AutoSize = true;
-            this.chbNoHistory.Location = new Point(0x1b, 0xbd);
-            this.chbNoHistory.TabIndex = 7;
-            this.cmbNavBtn.DropDownStyle = ComboBoxStyle.DropDownList;
-            this.cmbNavBtn.Location = new Point(0x176, 0x9f);
-            this.cmbNavBtn.Size = new Size(0x51, 0x15);
-            this.cmbNavBtn.TabIndex = 6;
-            this.chbNavBtn.AutoSize = true;
-            this.chbNavBtn.Location = new Point(0x1b, 0xa1);
-            this.chbNavBtn.TabIndex = 5;
-            this.chbNavBtn.CheckedChanged += this.chbNavBtn_CheckedChanged;
-            this.chbX1X2.AutoSize = true;
-            this.chbX1X2.Location = new Point(0x1b, 0x85);
-            this.chbX1X2.TabIndex = 4;
-            this.chbShowTooltip.AutoSize = true;
-            this.chbShowTooltip.Location = new Point(0x1b, 0x69);
-            this.chbShowTooltip.TabIndex = 3;
-            this.chbCloseWhenGroup.AutoSize = true;
-            this.chbCloseWhenGroup.Location = new Point(0x1b, 0x4d);
-            this.chbCloseWhenGroup.TabIndex = 2;
-            this.chbDontOpenSame.AutoSize = true;
-            this.chbDontOpenSame.Location = new Point(0x1b, 0x31);
-            this.chbDontOpenSame.TabIndex = 1;
-            this.chbActivateNew.AutoSize = true;
-            this.chbActivateNew.Location = new Point(0x1b, 0x15);
-            this.chbActivateNew.TabIndex = 0;
-            this.tabPage2_Tabs.Controls.Add(this.lblNewTabLoc);
-            this.tabPage2_Tabs.Controls.Add(this.lblActvClose);
-            this.tabPage2_Tabs.Controls.Add(this.lblTabDblClk);
-            this.tabPage2_Tabs.Controls.Add(this.lblBGDblClik);
-            this.tabPage2_Tabs.Controls.Add(this.lblTabWhlClk);
-            this.tabPage2_Tabs.Controls.Add(this.lblAction_BarDblClick);
-            this.tabPage2_Tabs.Controls.Add(this.lblMultiRows);
-            this.tabPage2_Tabs.Controls.Add(this.cmbNewTabLoc);
-            this.tabPage2_Tabs.Controls.Add(this.cmbActvClose);
-            this.tabPage2_Tabs.Controls.Add(this.cmbTabDblClck);
-            this.tabPage2_Tabs.Controls.Add(this.cmbBGDblClick);
-            this.tabPage2_Tabs.Controls.Add(this.cmbTabWhlClck);
-            this.tabPage2_Tabs.Controls.Add(this.cmbMultiRow);
-            this.tabPage2_Tabs.Controls.Add(this.textBoxAction_BarDblClck);
-            this.tabPage2_Tabs.Controls.Add(this.btnBrowseAction_BarDblClck);
-            this.tabPage2_Tabs.Controls.Add(this.chbAutoSubText);
-            this.tabPage2_Tabs.Controls.Add(this.chbTabCloseButton);
-            this.tabPage2_Tabs.Controls.Add(this.chbTabCloseBtnAlt);
-            this.tabPage2_Tabs.Controls.Add(this.chbTabCloseBtnHover);
-            this.tabPage2_Tabs.Controls.Add(this.chbFolderIcon);
-            this.tabPage2_Tabs.Controls.Add(this.chbSubDirTipOnTab);
-            this.tabPage2_Tabs.Controls.Add(this.chbDriveLetter);
-            this.tabPage2_Tabs.Controls.Add(this.chbTabSwitcher);
-            this.tabPage2_Tabs.Controls.Add(this.chbTreeShftWhlTab);
-            this.tabPage2_Tabs.Controls.Add(this.chbRemoveOnSeparate);
-            this.tabPage2_Tabs.Location = new Point(4, 0x16);
-            this.tabPage2_Tabs.Padding = new Padding(3);
-            this.tabPage2_Tabs.Size = new Size(0x1ff, 0x1d7);
-            this.tabPage2_Tabs.TabIndex = 1;
-            this.tabPage2_Tabs.UseVisualStyleBackColor = true;
-            this.chbRemoveOnSeparate.AutoSize = true;
-            this.chbRemoveOnSeparate.Location = new Point(0x1b, 0x1f2);
-            this.chbRemoveOnSeparate.TabIndex = 0x11;
-            this.chbTreeShftWhlTab.AutoSize = true;
-            this.chbTreeShftWhlTab.Location = new Point(0x1b, 0x1da);
-            this.chbTreeShftWhlTab.TabIndex = 0x10;
-            this.chbTabSwitcher.AutoSize = true;
-            this.chbTabSwitcher.Location = new Point(0x1b, 450);
-            this.chbTabSwitcher.TabIndex = 15;
-            this.chbDriveLetter.AutoSize = true;
-            this.chbDriveLetter.Location = new Point(0x36, 0x1aa);
-            this.chbDriveLetter.TabIndex = 14;
-            this.chbSubDirTipOnTab.AutoSize = true;
-            this.chbSubDirTipOnTab.Location = new Point(0x36, 0x196);
-            this.chbSubDirTipOnTab.TabIndex = 13;
-            this.chbFolderIcon.AutoSize = true;
-            this.chbFolderIcon.Location = new Point(0x1b, 0x182);
-            this.chbFolderIcon.TabIndex = 12;
-            this.chbFolderIcon.CheckedChanged += this.chbFolderIcon_CheckedChanged;
-            this.chbTabCloseBtnHover.AutoSize = true;
-            this.chbTabCloseBtnHover.Location = new Point(0x36, 0x16a);
-            this.chbTabCloseBtnHover.TabIndex = 11;
-            this.chbTabCloseBtnHover.CheckedChanged += this.chbTabCloseBtns_CheckedChanged;
-            this.chbTabCloseBtnAlt.AutoSize = true;
-            this.chbTabCloseBtnAlt.Location = new Point(0x36, 0x156);
-            this.chbTabCloseBtnAlt.TabIndex = 10;
-            this.chbTabCloseBtnAlt.CheckedChanged += this.chbTabCloseBtns_CheckedChanged;
-            this.chbTabCloseButton.AutoSize = true;
-            this.chbTabCloseButton.Location = new Point(0x1b, 0x142);
-            this.chbTabCloseButton.TabIndex = 9;
-            this.chbTabCloseButton.CheckedChanged += this.chbTabCloseButton_CheckedChanged;
-            this.chbAutoSubText.AutoSize = true;
-            this.chbAutoSubText.Location = new Point(0x1b, 0x12a);
-            this.chbAutoSubText.TabIndex = 8;
-            this.cmbMultiRow.DropDownStyle = ComboBoxStyle.DropDownList;
-            this.cmbMultiRow.Location = new Point(0x11d, 0x102);
-            this.cmbMultiRow.Size = new Size(0xa8, 0x15);
-            this.cmbMultiRow.TabIndex = 7;
-            this.lblMultiRows.AutoSize = true;
-            this.lblMultiRows.Location = new Point(0x19, 0x105);
-            this.btnBrowseAction_BarDblClck.Location = new Point(0x1a3, 0xd5);
-            this.btnBrowseAction_BarDblClck.Size = new Size(0x22, 0x19);
-            this.btnBrowseAction_BarDblClck.TabIndex = 6;
-            this.btnBrowseAction_BarDblClck.Text = "...";
-            this.btnBrowseAction_BarDblClck.Click += this.btnBrowseAction_Click;
-            this.textBoxAction_BarDblClck.Location = new Point(0x97, 0xd7);
-            this.textBoxAction_BarDblClck.Size = new Size(0x107, 0x15);
-            this.textBoxAction_BarDblClck.MaxLength = 260;
-            this.textBoxAction_BarDblClck.TabIndex = 5;
-            this.lblAction_BarDblClick.AutoSize = true;
-            this.lblAction_BarDblClick.Location = new Point(0x2e, 0xda);
-            this.cmbBGDblClick.DropDownStyle = ComboBoxStyle.DropDownList;
-            this.cmbBGDblClick.Location = new Point(0x11d, 0xb1);
-            this.cmbBGDblClick.Size = new Size(0xa8, 0x15);
-            this.cmbBGDblClick.TabIndex = 4;
-            this.cmbBGDblClick.SelectedIndexChanged += this.comboBoxes_SelectedIndexChanged;
-            this.lblBGDblClik.AutoSize = true;
-            this.lblBGDblClik.Location = new Point(0x19, 0xb5);
-            this.cmbTabWhlClck.DropDownStyle = ComboBoxStyle.DropDownList;
-            this.cmbTabWhlClck.Location = new Point(0x11d, 0x89);
-            this.cmbTabWhlClck.Size = new Size(0xa8, 0x15);
-            this.cmbTabWhlClck.TabIndex = 3;
-            this.lblTabWhlClk.AutoSize = true;
-            this.lblTabWhlClk.Location = new Point(0x19, 0x8d);
-            this.cmbTabDblClck.DropDownStyle = ComboBoxStyle.DropDownList;
-            this.cmbTabDblClck.Location = new Point(0x11d, 0x61);
-            this.cmbTabDblClck.Size = new Size(0xa8, 0x15);
-            this.cmbTabDblClck.TabIndex = 2;
-            this.lblTabDblClk.AutoSize = true;
-            this.lblTabDblClk.Location = new Point(0x19, 0x65);
-            this.cmbActvClose.DropDownStyle = ComboBoxStyle.DropDownList;
-            this.cmbActvClose.Location = new Point(0x11d, 0x39);
-            this.cmbActvClose.Size = new Size(0xa8, 0x15);
-            this.cmbActvClose.TabIndex = 1;
-            this.lblActvClose.AutoSize = true;
-            this.lblActvClose.Location = new Point(0x19, 0x3d);
-            this.cmbNewTabLoc.DropDownStyle = ComboBoxStyle.DropDownList;
-            this.cmbNewTabLoc.Location = new Point(0x11d, 0x11);
-            this.cmbNewTabLoc.Size = new Size(0xa8, 0x15);
-            this.cmbNewTabLoc.TabIndex = 0;
-            this.lblNewTabLoc.AutoSize = true;
-            this.lblNewTabLoc.Location = new Point(0x19, 0x15);
-            this.tabPage3_Wndw.Controls.Add(this.chbWhlClick);
-            this.tabPage3_Wndw.Controls.Add(this.chbNCADblClck);
-            this.tabPage3_Wndw.Controls.Add(this.chbBlockProcess);
-            this.tabPage3_Wndw.Controls.Add(this.chbFoldrTree);
-            this.tabPage3_Wndw.Controls.Add(this.chbWndUnresizable);
-            this.tabPage3_Wndw.Controls.Add(this.chbWndRestrAlpha);
-            this.tabPage3_Wndw.Controls.Add(this.chbNoTabFromOuteside);
-            this.tabPage3_Wndw.Controls.Add(this.chbHolizontalScroll);
-            this.tabPage3_Wndw.Controls.Add(this.chbWhlChangeView);
-            this.tabPage3_Wndw.Controls.Add(this.chbNeverCloseWindow);
-            this.tabPage3_Wndw.Controls.Add(this.chbNeverCloseWndLocked);
-            this.tabPage3_Wndw.Controls.Add(this.chbRestoreClosed);
-            this.tabPage3_Wndw.Controls.Add(this.chbRestoreLocked);
-            this.tabPage3_Wndw.Controls.Add(this.chbSendToTray);
-            this.tabPage3_Wndw.Controls.Add(this.chbSendToTrayOnMinimize);
-            this.tabPage3_Wndw.Controls.Add(this.cmbWhlClick);
-            this.tabPage3_Wndw.Controls.Add(this.lblSep);
-            this.tabPage3_Wndw.Location = new Point(4, 0x16);
-            this.tabPage3_Wndw.Padding = new Padding(3);
-            this.tabPage3_Wndw.Size = new Size(0x1ff, 0x1d7);
-            this.tabPage3_Wndw.TabIndex = 4;
-            this.tabPage3_Wndw.UseVisualStyleBackColor = true;
-            this.lblSep.BorderStyle = BorderStyle.Fixed3D;
-            this.lblSep.Location = new Point(0x1a, 0x115);
-            this.lblSep.Margin = new Padding(0);
-            this.lblSep.Size = new Size(0x149, 2);
-            this.cmbWhlClick.DropDownStyle = ComboBoxStyle.DropDownList;
-            this.cmbWhlClick.Location = new Point(0x11d, 0x11);
-            this.cmbWhlClick.Size = new Size(0x6f, 0x15);
-            this.cmbWhlClick.TabIndex = 1;
-            this.chbSendToTrayOnMinimize.AutoSize = true;
-            this.chbSendToTrayOnMinimize.Location = new Point(0x1b, 0x1b3);
-            this.chbSendToTrayOnMinimize.TabIndex = 13;
-            this.chbSendToTray.AutoSize = true;
-            this.chbSendToTray.Location = new Point(0x1b, 0x197);
-            this.chbSendToTray.TabIndex = 12;
-            this.chbRestoreLocked.AutoSize = true;
-            this.chbRestoreLocked.Location = new Point(0x1b, 0x17b);
-            this.chbRestoreLocked.TabIndex = 11;
-            this.chbRestoreLocked.CheckedChanged += this.chbsCloseWindow_CheckedChanged;
-            this.chbRestoreClosed.AutoSize = true;
-            this.chbRestoreClosed.Location = new Point(0x1b, 0x15f);
-            this.chbRestoreClosed.TabIndex = 10;
-            this.chbRestoreClosed.CheckedChanged += this.chbsCloseWindow_CheckedChanged;
-            this.chbNeverCloseWndLocked.AutoSize = true;
-            this.chbNeverCloseWndLocked.Location = new Point(0x1b, 0x143);
-            this.chbNeverCloseWndLocked.TabIndex = 9;
-            this.chbNeverCloseWndLocked.CheckedChanged += this.chbsCloseWindow_CheckedChanged;
-            this.chbNeverCloseWindow.AutoSize = true;
-            this.chbNeverCloseWindow.Location = new Point(0x1b, 0x127);
-            this.chbNeverCloseWindow.TabIndex = 8;
-            this.chbWhlChangeView.AutoSize = true;
-            this.chbWhlChangeView.Location = new Point(0x1b, 0xf5);
-            this.chbWhlChangeView.TabIndex = 9;
-            this.chbHolizontalScroll.AutoSize = true;
-            this.chbHolizontalScroll.Location = new Point(0x1b, 0xd9);
-            this.chbHolizontalScroll.TabIndex = 8;
-            this.chbNoTabFromOuteside.AutoSize = true;
-            this.chbNoTabFromOuteside.Location = new Point(0x1b, 0xbd);
-            this.chbNoTabFromOuteside.TabIndex = 7;
-            this.chbFoldrTree.AutoSize = true;
-            this.chbFoldrTree.Location = new Point(0x1b, 0xa1);
-            this.chbFoldrTree.TabIndex = 6;
-            this.chbBlockProcess.AutoSize = true;
-            this.chbBlockProcess.Location = new Point(0x1b, 0x85);
-            this.chbBlockProcess.TabIndex = 5;
-            this.chbWndRestrAlpha.AutoSize = true;
-            this.chbWndRestrAlpha.Location = new Point(0x1b, 0x69);
-            this.chbWndRestrAlpha.TabIndex = 4;
-            this.chbWndUnresizable.AutoSize = true;
-            this.chbWndUnresizable.Location = new Point(0x1b, 0x4d);
-            this.chbWndUnresizable.TabIndex = 3;
-            this.chbNCADblClck.AutoSize = true;
-            this.chbNCADblClck.Location = new Point(0x1b, 0x31);
-            this.chbNCADblClck.TabIndex = 2;
-            this.chbWhlClick.AutoSize = true;
-            this.chbWhlClick.Location = new Point(0x1b, 0x15);
-            this.chbWhlClick.TabIndex = 0;
-            this.chbWhlClick.CheckedChanged += this.chbMMButton_CheckedChanged;
-            this.tabPage4_View.Controls.Add(this.chbUseTabSkin);
-            this.tabPage4_View.Controls.Add(this.chbBoldActv);
-            this.tabPage4_View.Controls.Add(this.chbToolbarBGClr);
-            this.tabPage4_View.Controls.Add(this.chbRebarBGImage);
-            this.tabPage4_View.Controls.Add(this.chbTabTitleShadow);
-            this.tabPage4_View.Controls.Add(this.propertyGrid1);
-            this.tabPage4_View.Controls.Add(this.nudTabWidth);
-            this.tabPage4_View.Controls.Add(this.nudTabHeight);
-            this.tabPage4_View.Controls.Add(this.nudTabWidthMax);
-            this.tabPage4_View.Controls.Add(this.nudTabWidthMin);
-            this.tabPage4_View.Controls.Add(this.lblTabSizeTitle);
-            this.tabPage4_View.Controls.Add(this.lblTabWidth);
-            this.tabPage4_View.Controls.Add(this.lblTabHeight);
-            this.tabPage4_View.Controls.Add(this.lblTabWFix);
-            this.tabPage4_View.Controls.Add(this.lblTabWMax);
-            this.tabPage4_View.Controls.Add(this.lblTabWMin);
-            this.tabPage4_View.Controls.Add(this.lblTabFont);
-            this.tabPage4_View.Controls.Add(this.lblTabTxtClr);
-            this.tabPage4_View.Controls.Add(this.lblTabTextAlignment);
-            this.tabPage4_View.Controls.Add(this.lblMenuRenderer);
-            this.tabPage4_View.Controls.Add(this.cmbTabSizeMode);
-            this.tabPage4_View.Controls.Add(this.cmbTabTextAlignment);
-            this.tabPage4_View.Controls.Add(this.cmbRebarBGImageMode);
-            this.tabPage4_View.Controls.Add(this.cmbMenuRenderer);
-            this.tabPage4_View.Controls.Add(this.btnHiliteClsc);
-            this.tabPage4_View.Controls.Add(this.btnTabFont);
-            this.tabPage4_View.Controls.Add(this.btnActTxtClr);
-            this.tabPage4_View.Controls.Add(this.btnInactTxtClr);
-            this.tabPage4_View.Controls.Add(this.btnDefTxtClr);
-            this.tabPage4_View.Controls.Add(this.btnToolBarBGClr);
-            this.tabPage4_View.Controls.Add(this.btnRebarImage);
-            this.tabPage4_View.Controls.Add(this.btnShadowAct);
-            this.tabPage4_View.Controls.Add(this.btnShadowIna);
-            this.tabPage4_View.Controls.Add(this.btnTabImage);
-            this.tabPage4_View.Controls.Add(this.tbRebarImagePath);
-            this.tabPage4_View.Controls.Add(this.tbTabImagePath);
-            this.tabPage4_View.Location = new Point(4, 0x16);
-            this.tabPage4_View.Size = new Size(0x1ff, 0x1d7);
-            this.tabPage4_View.TabIndex = 3;
-            this.tabPage4_View.UseVisualStyleBackColor = true;
-            this.cmbMenuRenderer.DropDownStyle = ComboBoxStyle.DropDownList;
-            this.cmbMenuRenderer.Location = new Point(0x99, 0x1df);
-            this.cmbMenuRenderer.Size = new Size(100, 0x15);
-            this.cmbMenuRenderer.TabIndex = 0x19;
-            this.lblMenuRenderer.AutoSize = true;
-            this.lblMenuRenderer.Location = new Point(13, 0x1e1);
-            this.cmbRebarBGImageMode.DropDownStyle = ComboBoxStyle.DropDownList;
-            this.cmbRebarBGImageMode.Location = new Point(0xdf, 0x1c0);
-            this.cmbRebarBGImageMode.Size = new Size(180, 0x15);
-            this.cmbRebarBGImageMode.TabIndex = 0x18;
-            this.btnRebarImage.Location = new Point(440, 0x1a6);
-            this.btnRebarImage.Size = new Size(0x22, 0x19);
-            this.btnRebarImage.TabIndex = 0x17;
-            this.btnRebarImage.Text = "...";
-            this.btnRebarImage.Click += this.btnRebarImage_Click;
-            this.tbRebarImagePath.Location = new Point(0xdf, 0x1a7);
-            this.tbRebarImagePath.Size = new Size(0xd5, 0x15);
-            this.tbRebarImagePath.MaxLength = 260;
-            this.tbRebarImagePath.TabIndex = 0x16;
-            this.tbRebarImagePath.KeyPress += this.textBoxesPath_KeyPress;
-            this.chbRebarBGImage.AutoSize = true;
-            this.chbRebarBGImage.Location = new Point(0x10, 0x1a9);
-            this.chbRebarBGImage.TabIndex = 0x15;
-            this.chbRebarBGImage.CheckedChanged += this.chbRebarBGImage_CheckedChanged;
-            this.btnToolBarBGClr.Location = new Point(0xdf, 0x18b);
-            this.btnToolBarBGClr.Size = new Size(180, 0x17);
-            this.btnToolBarBGClr.TabIndex = 20;
-            this.btnToolBarBGClr.Click += this.buttonToolBarBGClr_Click;
-            this.chbToolbarBGClr.AutoSize = true;
-            this.chbToolbarBGClr.Location = new Point(0x10, 400);
-            this.chbToolbarBGClr.TabIndex = 0x13;
-            this.chbToolbarBGClr.CheckedChanged += this.chbToolbarBGClr_CheckedChanged;
-            this.btnShadowIna.AutoSize = true;
-            this.btnShadowIna.Location = new Point(0x107, 0x160);
-            this.btnShadowIna.Size = new Size(100, 0x17);
-            this.btnShadowIna.TabIndex = 0x12;
-            this.btnShadowIna.Click += this.btnShadowClrs_Click;
-            this.btnShadowAct.AutoSize = true;
-            this.btnShadowAct.Location = new Point(0x99, 0x160);
-            this.btnShadowAct.Size = new Size(100, 0x17);
-            this.btnShadowAct.TabIndex = 0x11;
-            this.btnShadowAct.Click += this.btnShadowClrs_Click;
-            this.chbTabTitleShadow.AutoSize = true;
-            this.chbTabTitleShadow.Location = new Point(0x10, 0x165);
-            this.chbTabTitleShadow.TabIndex = 0x10;
-            this.chbTabTitleShadow.CheckedChanged += this.chbTabTitleShadow_CheckedChanged;
-            this.btnDefTxtClr.AutoSize = true;
-            this.btnDefTxtClr.Location = new Point(0x175, 0x13f);
-            this.btnDefTxtClr.Size = new Size(100, 0x17);
-            this.btnDefTxtClr.TabIndex = 15;
-            this.btnDefTxtClr.Click += this.buttonRstClr_Click;
-            this.btnInactTxtClr.AutoSize = true;
-            this.btnInactTxtClr.Location = new Point(0x107, 0x13f);
-            this.btnInactTxtClr.Size = new Size(100, 0x17);
-            this.btnInactTxtClr.TabIndex = 14;
-            this.btnInactTxtClr.Click += this.buttonInactClr_Click;
-            this.btnActTxtClr.AutoSize = true;
-            this.btnActTxtClr.Location = new Point(0x99, 0x13f);
-            this.btnActTxtClr.Size = new Size(100, 0x17);
-            this.btnActTxtClr.TabIndex = 13;
-            this.btnActTxtClr.Click += this.buttonActClr_Click;
-            this.lblTabTxtClr.AutoSize = true;
-            this.lblTabTxtClr.Location = new Point(13, 0x144);
-            this.chbBoldActv.AutoSize = true;
-            this.chbBoldActv.Location = new Point(0x109, 0x121);
-            this.chbBoldActv.TabIndex = 12;
-            this.btnTabFont.Location = new Point(0x99, 0x11c);
-            this.btnTabFont.Size = new Size(100, 0x19);
-            this.btnTabFont.TabIndex = 11;
-            this.btnTabFont.Click += this.btnFont_Click;
-            this.lblTabFont.AutoSize = true;
-            this.lblTabFont.Location = new Point(13, 290);
-            this.cmbTabTextAlignment.DropDownStyle = ComboBoxStyle.DropDownList;
-            this.cmbTabTextAlignment.Location = new Point(0x99, 0xfe);
-            this.cmbTabTextAlignment.Size = new Size(100, 0x15);
-            this.cmbTabTextAlignment.TabIndex = 10;
-            this.lblTabTextAlignment.Location = new Point(13, 0x100);
-            this.lblTabTextAlignment.AutoSize = true;
-            this.nudTabWidthMin.Location = new Point(0x152, 0xdf);
+            nudMaxUndo.Value = new decimal(numArray9);
+            chbNoHistory.AutoSize = true;
+            chbNoHistory.Location = new Point(0x1b, 0xbd);
+            chbNoHistory.TabIndex = 7;
+            cmbNavBtn.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbNavBtn.Location = new Point(0x176, 0x9f);
+            cmbNavBtn.Size = new Size(0x51, 0x15);
+            cmbNavBtn.TabIndex = 6;
+            chbNavBtn.AutoSize = true;
+            chbNavBtn.Location = new Point(0x1b, 0xa1);
+            chbNavBtn.TabIndex = 5;
+            chbNavBtn.CheckedChanged += chbNavBtn_CheckedChanged;
+            chbX1X2.AutoSize = true;
+            chbX1X2.Location = new Point(0x1b, 0x85);
+            chbX1X2.TabIndex = 4;
+            chbShowTooltip.AutoSize = true;
+            chbShowTooltip.Location = new Point(0x1b, 0x69);
+            chbShowTooltip.TabIndex = 3;
+            chbCloseWhenGroup.AutoSize = true;
+            chbCloseWhenGroup.Location = new Point(0x1b, 0x4d);
+            chbCloseWhenGroup.TabIndex = 2;
+            chbDontOpenSame.AutoSize = true;
+            chbDontOpenSame.Location = new Point(0x1b, 0x31);
+            chbDontOpenSame.TabIndex = 1;
+            chbActivateNew.AutoSize = true;
+            chbActivateNew.Location = new Point(0x1b, 0x15);
+            chbActivateNew.TabIndex = 0;
+            tabPage2_Tabs.Controls.Add(lblNewTabLoc);
+            tabPage2_Tabs.Controls.Add(lblActvClose);
+            tabPage2_Tabs.Controls.Add(lblTabDblClk);
+            tabPage2_Tabs.Controls.Add(lblBGDblClik);
+            tabPage2_Tabs.Controls.Add(lblTabWhlClk);
+            tabPage2_Tabs.Controls.Add(lblAction_BarDblClick);
+            tabPage2_Tabs.Controls.Add(lblMultiRows);
+            tabPage2_Tabs.Controls.Add(cmbNewTabLoc);
+            tabPage2_Tabs.Controls.Add(cmbActvClose);
+            tabPage2_Tabs.Controls.Add(cmbTabDblClck);
+            tabPage2_Tabs.Controls.Add(cmbBGDblClick);
+            tabPage2_Tabs.Controls.Add(cmbTabWhlClck);
+            tabPage2_Tabs.Controls.Add(cmbMultiRow);
+            tabPage2_Tabs.Controls.Add(textBoxAction_BarDblClck);
+            tabPage2_Tabs.Controls.Add(btnBrowseAction_BarDblClck);
+            tabPage2_Tabs.Controls.Add(chbAutoSubText);
+            tabPage2_Tabs.Controls.Add(chbTabCloseButton);
+            tabPage2_Tabs.Controls.Add(chbTabCloseBtnAlt);
+            tabPage2_Tabs.Controls.Add(chbTabCloseBtnHover);
+            tabPage2_Tabs.Controls.Add(chbFolderIcon);
+            tabPage2_Tabs.Controls.Add(chbSubDirTipOnTab);
+            tabPage2_Tabs.Controls.Add(chbDriveLetter);
+            tabPage2_Tabs.Controls.Add(chbTabSwitcher);
+            tabPage2_Tabs.Controls.Add(chbTreeShftWhlTab);
+            tabPage2_Tabs.Controls.Add(chbRemoveOnSeparate);
+            tabPage2_Tabs.Location = new Point(4, 0x16);
+            tabPage2_Tabs.Padding = new Padding(3);
+            tabPage2_Tabs.Size = new Size(0x1ff, 0x1d7);
+            tabPage2_Tabs.TabIndex = 1;
+            tabPage2_Tabs.UseVisualStyleBackColor = true;
+            chbRemoveOnSeparate.AutoSize = true;
+            chbRemoveOnSeparate.Location = new Point(0x1b, 0x1f2);
+            chbRemoveOnSeparate.TabIndex = 0x11;
+            chbTreeShftWhlTab.AutoSize = true;
+            chbTreeShftWhlTab.Location = new Point(0x1b, 0x1da);
+            chbTreeShftWhlTab.TabIndex = 0x10;
+            chbTabSwitcher.AutoSize = true;
+            chbTabSwitcher.Location = new Point(0x1b, 450);
+            chbTabSwitcher.TabIndex = 15;
+            chbDriveLetter.AutoSize = true;
+            chbDriveLetter.Location = new Point(0x36, 0x1aa);
+            chbDriveLetter.TabIndex = 14;
+            chbSubDirTipOnTab.AutoSize = true;
+            chbSubDirTipOnTab.Location = new Point(0x36, 0x196);
+            chbSubDirTipOnTab.TabIndex = 13;
+            chbFolderIcon.AutoSize = true;
+            chbFolderIcon.Location = new Point(0x1b, 0x182);
+            chbFolderIcon.TabIndex = 12;
+            chbFolderIcon.CheckedChanged += chbFolderIcon_CheckedChanged;
+            chbTabCloseBtnHover.AutoSize = true;
+            chbTabCloseBtnHover.Location = new Point(0x36, 0x16a);
+            chbTabCloseBtnHover.TabIndex = 11;
+            chbTabCloseBtnHover.CheckedChanged += chbTabCloseBtns_CheckedChanged;
+            chbTabCloseBtnAlt.AutoSize = true;
+            chbTabCloseBtnAlt.Location = new Point(0x36, 0x156);
+            chbTabCloseBtnAlt.TabIndex = 10;
+            chbTabCloseBtnAlt.CheckedChanged += chbTabCloseBtns_CheckedChanged;
+            chbTabCloseButton.AutoSize = true;
+            chbTabCloseButton.Location = new Point(0x1b, 0x142);
+            chbTabCloseButton.TabIndex = 9;
+            chbTabCloseButton.CheckedChanged += chbTabCloseButton_CheckedChanged;
+            chbAutoSubText.AutoSize = true;
+            chbAutoSubText.Location = new Point(0x1b, 0x12a);
+            chbAutoSubText.TabIndex = 8;
+            cmbMultiRow.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbMultiRow.Location = new Point(0x11d, 0x102);
+            cmbMultiRow.Size = new Size(0xa8, 0x15);
+            cmbMultiRow.TabIndex = 7;
+            lblMultiRows.AutoSize = true;
+            lblMultiRows.Location = new Point(0x19, 0x105);
+            btnBrowseAction_BarDblClck.Location = new Point(0x1a3, 0xd5);
+            btnBrowseAction_BarDblClck.Size = new Size(0x22, 0x19);
+            btnBrowseAction_BarDblClck.TabIndex = 6;
+            btnBrowseAction_BarDblClck.Text = "...";
+            btnBrowseAction_BarDblClck.Click += btnBrowseAction_Click;
+            textBoxAction_BarDblClck.Location = new Point(0x97, 0xd7);
+            textBoxAction_BarDblClck.Size = new Size(0x107, 0x15);
+            textBoxAction_BarDblClck.MaxLength = 260;
+            textBoxAction_BarDblClck.TabIndex = 5;
+            lblAction_BarDblClick.AutoSize = true;
+            lblAction_BarDblClick.Location = new Point(0x2e, 0xda);
+            cmbBGDblClick.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbBGDblClick.Location = new Point(0x11d, 0xb1);
+            cmbBGDblClick.Size = new Size(0xa8, 0x15);
+            cmbBGDblClick.TabIndex = 4;
+            cmbBGDblClick.SelectedIndexChanged += comboBoxes_SelectedIndexChanged;
+            lblBGDblClik.AutoSize = true;
+            lblBGDblClik.Location = new Point(0x19, 0xb5);
+            cmbTabWhlClck.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbTabWhlClck.Location = new Point(0x11d, 0x89);
+            cmbTabWhlClck.Size = new Size(0xa8, 0x15);
+            cmbTabWhlClck.TabIndex = 3;
+            lblTabWhlClk.AutoSize = true;
+            lblTabWhlClk.Location = new Point(0x19, 0x8d);
+            cmbTabDblClck.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbTabDblClck.Location = new Point(0x11d, 0x61);
+            cmbTabDblClck.Size = new Size(0xa8, 0x15);
+            cmbTabDblClck.TabIndex = 2;
+            lblTabDblClk.AutoSize = true;
+            lblTabDblClk.Location = new Point(0x19, 0x65);
+            cmbActvClose.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbActvClose.Location = new Point(0x11d, 0x39);
+            cmbActvClose.Size = new Size(0xa8, 0x15);
+            cmbActvClose.TabIndex = 1;
+            lblActvClose.AutoSize = true;
+            lblActvClose.Location = new Point(0x19, 0x3d);
+            cmbNewTabLoc.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbNewTabLoc.Location = new Point(0x11d, 0x11);
+            cmbNewTabLoc.Size = new Size(0xa8, 0x15);
+            cmbNewTabLoc.TabIndex = 0;
+            lblNewTabLoc.AutoSize = true;
+            lblNewTabLoc.Location = new Point(0x19, 0x15);
+            tabPage3_Wndw.Controls.Add(chbWhlClick);
+            tabPage3_Wndw.Controls.Add(chbNCADblClck);
+            tabPage3_Wndw.Controls.Add(chbBlockProcess);
+            tabPage3_Wndw.Controls.Add(chbFoldrTree);
+            tabPage3_Wndw.Controls.Add(chbWndUnresizable);
+            tabPage3_Wndw.Controls.Add(chbWndRestrAlpha);
+            tabPage3_Wndw.Controls.Add(chbNoTabFromOuteside);
+            tabPage3_Wndw.Controls.Add(chbHolizontalScroll);
+            tabPage3_Wndw.Controls.Add(chbWhlChangeView);
+            tabPage3_Wndw.Controls.Add(chbNeverCloseWindow);
+            tabPage3_Wndw.Controls.Add(chbNeverCloseWndLocked);
+            tabPage3_Wndw.Controls.Add(chbRestoreClosed);
+            tabPage3_Wndw.Controls.Add(chbRestoreLocked);
+            tabPage3_Wndw.Controls.Add(chbSendToTray);
+            tabPage3_Wndw.Controls.Add(chbSendToTrayOnMinimize);
+            tabPage3_Wndw.Controls.Add(cmbWhlClick);
+            tabPage3_Wndw.Controls.Add(lblSep);
+            tabPage3_Wndw.Location = new Point(4, 0x16);
+            tabPage3_Wndw.Padding = new Padding(3);
+            tabPage3_Wndw.Size = new Size(0x1ff, 0x1d7);
+            tabPage3_Wndw.TabIndex = 4;
+            tabPage3_Wndw.UseVisualStyleBackColor = true;
+            lblSep.BorderStyle = BorderStyle.Fixed3D;
+            lblSep.Location = new Point(0x1a, 0x115);
+            lblSep.Margin = new Padding(0);
+            lblSep.Size = new Size(0x149, 2);
+            cmbWhlClick.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbWhlClick.Location = new Point(0x11d, 0x11);
+            cmbWhlClick.Size = new Size(0x6f, 0x15);
+            cmbWhlClick.TabIndex = 1;
+            chbSendToTrayOnMinimize.AutoSize = true;
+            chbSendToTrayOnMinimize.Location = new Point(0x1b, 0x1b3);
+            chbSendToTrayOnMinimize.TabIndex = 13;
+            chbSendToTray.AutoSize = true;
+            chbSendToTray.Location = new Point(0x1b, 0x197);
+            chbSendToTray.TabIndex = 12;
+            chbRestoreLocked.AutoSize = true;
+            chbRestoreLocked.Location = new Point(0x1b, 0x17b);
+            chbRestoreLocked.TabIndex = 11;
+            chbRestoreLocked.CheckedChanged += chbsCloseWindow_CheckedChanged;
+            chbRestoreClosed.AutoSize = true;
+            chbRestoreClosed.Location = new Point(0x1b, 0x15f);
+            chbRestoreClosed.TabIndex = 10;
+            chbRestoreClosed.CheckedChanged += chbsCloseWindow_CheckedChanged;
+            chbNeverCloseWndLocked.AutoSize = true;
+            chbNeverCloseWndLocked.Location = new Point(0x1b, 0x143);
+            chbNeverCloseWndLocked.TabIndex = 9;
+            chbNeverCloseWndLocked.CheckedChanged += chbsCloseWindow_CheckedChanged;
+            chbNeverCloseWindow.AutoSize = true;
+            chbNeverCloseWindow.Location = new Point(0x1b, 0x127);
+            chbNeverCloseWindow.TabIndex = 8;
+            chbWhlChangeView.AutoSize = true;
+            chbWhlChangeView.Location = new Point(0x1b, 0xf5);
+            chbWhlChangeView.TabIndex = 9;
+            chbHolizontalScroll.AutoSize = true;
+            chbHolizontalScroll.Location = new Point(0x1b, 0xd9);
+            chbHolizontalScroll.TabIndex = 8;
+            chbNoTabFromOuteside.AutoSize = true;
+            chbNoTabFromOuteside.Location = new Point(0x1b, 0xbd);
+            chbNoTabFromOuteside.TabIndex = 7;
+            chbFoldrTree.AutoSize = true;
+            chbFoldrTree.Location = new Point(0x1b, 0xa1);
+            chbFoldrTree.TabIndex = 6;
+            chbBlockProcess.AutoSize = true;
+            chbBlockProcess.Location = new Point(0x1b, 0x85);
+            chbBlockProcess.TabIndex = 5;
+            chbWndRestrAlpha.AutoSize = true;
+            chbWndRestrAlpha.Location = new Point(0x1b, 0x69);
+            chbWndRestrAlpha.TabIndex = 4;
+            chbWndUnresizable.AutoSize = true;
+            chbWndUnresizable.Location = new Point(0x1b, 0x4d);
+            chbWndUnresizable.TabIndex = 3;
+            chbNCADblClck.AutoSize = true;
+            chbNCADblClck.Location = new Point(0x1b, 0x31);
+            chbNCADblClck.TabIndex = 2;
+            chbWhlClick.AutoSize = true;
+            chbWhlClick.Location = new Point(0x1b, 0x15);
+            chbWhlClick.TabIndex = 0;
+            chbWhlClick.CheckedChanged += chbMMButton_CheckedChanged;
+            tabPage4_View.Controls.Add(chbUseTabSkin);
+            tabPage4_View.Controls.Add(chbBoldActv);
+            tabPage4_View.Controls.Add(chbToolbarBGClr);
+            tabPage4_View.Controls.Add(chbRebarBGImage);
+            tabPage4_View.Controls.Add(chbTabTitleShadow);
+            tabPage4_View.Controls.Add(propertyGrid1);
+            tabPage4_View.Controls.Add(nudTabWidth);
+            tabPage4_View.Controls.Add(nudTabHeight);
+            tabPage4_View.Controls.Add(nudTabWidthMax);
+            tabPage4_View.Controls.Add(nudTabWidthMin);
+            tabPage4_View.Controls.Add(lblTabSizeTitle);
+            tabPage4_View.Controls.Add(lblTabWidth);
+            tabPage4_View.Controls.Add(lblTabHeight);
+            tabPage4_View.Controls.Add(lblTabWFix);
+            tabPage4_View.Controls.Add(lblTabWMax);
+            tabPage4_View.Controls.Add(lblTabWMin);
+            tabPage4_View.Controls.Add(lblTabFont);
+            tabPage4_View.Controls.Add(lblTabTxtClr);
+            tabPage4_View.Controls.Add(lblTabTextAlignment);
+            tabPage4_View.Controls.Add(lblMenuRenderer);
+            tabPage4_View.Controls.Add(cmbTabSizeMode);
+            tabPage4_View.Controls.Add(cmbTabTextAlignment);
+            tabPage4_View.Controls.Add(cmbRebarBGImageMode);
+            tabPage4_View.Controls.Add(cmbMenuRenderer);
+            tabPage4_View.Controls.Add(btnHiliteClsc);
+            tabPage4_View.Controls.Add(btnTabFont);
+            tabPage4_View.Controls.Add(btnActTxtClr);
+            tabPage4_View.Controls.Add(btnInactTxtClr);
+            tabPage4_View.Controls.Add(btnDefTxtClr);
+            tabPage4_View.Controls.Add(btnToolBarBGClr);
+            tabPage4_View.Controls.Add(btnRebarImage);
+            tabPage4_View.Controls.Add(btnShadowAct);
+            tabPage4_View.Controls.Add(btnShadowIna);
+            tabPage4_View.Controls.Add(btnTabImage);
+            tabPage4_View.Controls.Add(tbRebarImagePath);
+            tabPage4_View.Controls.Add(tbTabImagePath);
+            tabPage4_View.Location = new Point(4, 0x16);
+            tabPage4_View.Size = new Size(0x1ff, 0x1d7);
+            tabPage4_View.TabIndex = 3;
+            tabPage4_View.UseVisualStyleBackColor = true;
+            cmbMenuRenderer.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbMenuRenderer.Location = new Point(0x99, 0x1df);
+            cmbMenuRenderer.Size = new Size(100, 0x15);
+            cmbMenuRenderer.TabIndex = 0x19;
+            lblMenuRenderer.AutoSize = true;
+            lblMenuRenderer.Location = new Point(13, 0x1e1);
+            cmbRebarBGImageMode.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbRebarBGImageMode.Location = new Point(0xdf, 0x1c0);
+            cmbRebarBGImageMode.Size = new Size(180, 0x15);
+            cmbRebarBGImageMode.TabIndex = 0x18;
+            btnRebarImage.Location = new Point(440, 0x1a6);
+            btnRebarImage.Size = new Size(0x22, 0x19);
+            btnRebarImage.TabIndex = 0x17;
+            btnRebarImage.Text = "...";
+            btnRebarImage.Click += btnRebarImage_Click;
+            tbRebarImagePath.Location = new Point(0xdf, 0x1a7);
+            tbRebarImagePath.Size = new Size(0xd5, 0x15);
+            tbRebarImagePath.MaxLength = 260;
+            tbRebarImagePath.TabIndex = 0x16;
+            tbRebarImagePath.KeyPress += textBoxesPath_KeyPress;
+            chbRebarBGImage.AutoSize = true;
+            chbRebarBGImage.Location = new Point(0x10, 0x1a9);
+            chbRebarBGImage.TabIndex = 0x15;
+            chbRebarBGImage.CheckedChanged += chbRebarBGImage_CheckedChanged;
+            btnToolBarBGClr.Location = new Point(0xdf, 0x18b);
+            btnToolBarBGClr.Size = new Size(180, 0x17);
+            btnToolBarBGClr.TabIndex = 20;
+            btnToolBarBGClr.Click += buttonToolBarBGClr_Click;
+            chbToolbarBGClr.AutoSize = true;
+            chbToolbarBGClr.Location = new Point(0x10, 400);
+            chbToolbarBGClr.TabIndex = 0x13;
+            chbToolbarBGClr.CheckedChanged += chbToolbarBGClr_CheckedChanged;
+            btnShadowIna.AutoSize = true;
+            btnShadowIna.Location = new Point(0x107, 0x160);
+            btnShadowIna.Size = new Size(100, 0x17);
+            btnShadowIna.TabIndex = 0x12;
+            btnShadowIna.Click += btnShadowClrs_Click;
+            btnShadowAct.AutoSize = true;
+            btnShadowAct.Location = new Point(0x99, 0x160);
+            btnShadowAct.Size = new Size(100, 0x17);
+            btnShadowAct.TabIndex = 0x11;
+            btnShadowAct.Click += btnShadowClrs_Click;
+            chbTabTitleShadow.AutoSize = true;
+            chbTabTitleShadow.Location = new Point(0x10, 0x165);
+            chbTabTitleShadow.TabIndex = 0x10;
+            chbTabTitleShadow.CheckedChanged += chbTabTitleShadow_CheckedChanged;
+            btnDefTxtClr.AutoSize = true;
+            btnDefTxtClr.Location = new Point(0x175, 0x13f);
+            btnDefTxtClr.Size = new Size(100, 0x17);
+            btnDefTxtClr.TabIndex = 15;
+            btnDefTxtClr.Click += buttonRstClr_Click;
+            btnInactTxtClr.AutoSize = true;
+            btnInactTxtClr.Location = new Point(0x107, 0x13f);
+            btnInactTxtClr.Size = new Size(100, 0x17);
+            btnInactTxtClr.TabIndex = 14;
+            btnInactTxtClr.Click += buttonInactClr_Click;
+            btnActTxtClr.AutoSize = true;
+            btnActTxtClr.Location = new Point(0x99, 0x13f);
+            btnActTxtClr.Size = new Size(100, 0x17);
+            btnActTxtClr.TabIndex = 13;
+            btnActTxtClr.Click += buttonActClr_Click;
+            lblTabTxtClr.AutoSize = true;
+            lblTabTxtClr.Location = new Point(13, 0x144);
+            chbBoldActv.AutoSize = true;
+            chbBoldActv.Location = new Point(0x109, 0x121);
+            chbBoldActv.TabIndex = 12;
+            btnTabFont.Location = new Point(0x99, 0x11c);
+            btnTabFont.Size = new Size(100, 0x19);
+            btnTabFont.TabIndex = 11;
+            btnTabFont.Click += btnFont_Click;
+            lblTabFont.AutoSize = true;
+            lblTabFont.Location = new Point(13, 290);
+            cmbTabTextAlignment.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbTabTextAlignment.Location = new Point(0x99, 0xfe);
+            cmbTabTextAlignment.Size = new Size(100, 0x15);
+            cmbTabTextAlignment.TabIndex = 10;
+            lblTabTextAlignment.Location = new Point(13, 0x100);
+            lblTabTextAlignment.AutoSize = true;
+            nudTabWidthMin.Location = new Point(0x152, 0xdf);
             int[] numArray10 = new int[4];
             numArray10[0] = 0x200;
-            this.nudTabWidthMin.Maximum = new decimal(numArray10);
+            nudTabWidthMin.Maximum = new decimal(numArray10);
             int[] numArray11 = new int[4];
             numArray11[0] = 10;
-            this.nudTabWidthMin.Minimum = new decimal(numArray11);
-            this.nudTabWidthMin.Size = new Size(0x33, 0x15);
-            this.nudTabWidthMin.TabIndex = 9;
-            this.nudTabWidthMin.TextAlign = HorizontalAlignment.Center;
+            nudTabWidthMin.Minimum = new decimal(numArray11);
+            nudTabWidthMin.Size = new Size(0x33, 0x15);
+            nudTabWidthMin.TabIndex = 9;
+            nudTabWidthMin.TextAlign = HorizontalAlignment.Center;
             int[] numArray12 = new int[4];
             numArray12[0] = 0x19;
-            this.nudTabWidthMin.Value = new decimal(numArray12);
-            this.nudTabWidthMin.ValueChanged += this.numericUpDownMax_ValueChanged;
-            this.lblTabWMin.Location = new Point(0xfc, 0xdf);
-            this.lblTabWMin.Size = new Size(0x4c, 0x15);
-            this.lblTabWMin.TextAlign = ContentAlignment.MiddleRight;
-            this.nudTabWidthMax.Location = new Point(0x152, 0xc5);
+            nudTabWidthMin.Value = new decimal(numArray12);
+            nudTabWidthMin.ValueChanged += numericUpDownMax_ValueChanged;
+            lblTabWMin.Location = new Point(0xfc, 0xdf);
+            lblTabWMin.Size = new Size(0x4c, 0x15);
+            lblTabWMin.TextAlign = ContentAlignment.MiddleRight;
+            nudTabWidthMax.Location = new Point(0x152, 0xc5);
             int[] numArray13 = new int[4];
             numArray13[0] = 0x200;
-            this.nudTabWidthMax.Maximum = new decimal(numArray13);
+            nudTabWidthMax.Maximum = new decimal(numArray13);
             int[] numArray14 = new int[4];
             numArray14[0] = 10;
-            this.nudTabWidthMax.Minimum = new decimal(numArray14);
-            this.nudTabWidthMax.Size = new Size(0x33, 0x15);
-            this.nudTabWidthMax.TabIndex = 8;
-            this.nudTabWidthMax.TextAlign = HorizontalAlignment.Center;
+            nudTabWidthMax.Minimum = new decimal(numArray14);
+            nudTabWidthMax.Size = new Size(0x33, 0x15);
+            nudTabWidthMax.TabIndex = 8;
+            nudTabWidthMax.TextAlign = HorizontalAlignment.Center;
             int[] numArray15 = new int[4];
             numArray15[0] = 0x19;
-            this.nudTabWidthMax.Value = new decimal(numArray15);
-            this.nudTabWidthMax.ValueChanged += this.numericUpDownMax_ValueChanged;
-            this.lblTabWMax.Location = new Point(0xfc, 0xc5);
-            this.lblTabWMax.Size = new Size(0x4c, 0x15);
-            this.lblTabWMax.TextAlign = ContentAlignment.MiddleRight;
-            this.nudTabWidth.Location = new Point(0x152, 0xab);
+            nudTabWidthMax.Value = new decimal(numArray15);
+            nudTabWidthMax.ValueChanged += numericUpDownMax_ValueChanged;
+            lblTabWMax.Location = new Point(0xfc, 0xc5);
+            lblTabWMax.Size = new Size(0x4c, 0x15);
+            lblTabWMax.TextAlign = ContentAlignment.MiddleRight;
+            nudTabWidth.Location = new Point(0x152, 0xab);
             int[] numArray16 = new int[4];
             numArray16[0] = 0x200;
-            this.nudTabWidth.Maximum = new decimal(numArray16);
+            nudTabWidth.Maximum = new decimal(numArray16);
             int[] numArray17 = new int[4];
             numArray17[0] = 10;
-            this.nudTabWidth.Minimum = new decimal(numArray17);
-            this.nudTabWidth.Size = new Size(0x33, 0x15);
-            this.nudTabWidth.TabIndex = 7;
-            this.nudTabWidth.TextAlign = HorizontalAlignment.Center;
+            nudTabWidth.Minimum = new decimal(numArray17);
+            nudTabWidth.Size = new Size(0x33, 0x15);
+            nudTabWidth.TabIndex = 7;
+            nudTabWidth.TextAlign = HorizontalAlignment.Center;
             int[] numArray18 = new int[4];
             numArray18[0] = 0x18;
-            this.nudTabWidth.Value = new decimal(numArray18);
-            this.lblTabWFix.Location = new Point(0x102, 0xab);
-            this.lblTabWFix.Size = new Size(70, 0x15);
-            this.lblTabWFix.TextAlign = ContentAlignment.MiddleRight;
-            this.cmbTabSizeMode.DropDownStyle = ComboBoxStyle.DropDownList;
-            this.cmbTabSizeMode.Location = new Point(0x99, 170);
-            this.cmbTabSizeMode.Size = new Size(100, 0x15);
-            this.cmbTabSizeMode.TabIndex = 6;
-            this.cmbTabSizeMode.SelectedIndexChanged += this.comboBoxes_SelectedIndexChanged;
-            this.nudTabHeight.Location = new Point(0x99, 140);
+            nudTabWidth.Value = new decimal(numArray18);
+            lblTabWFix.Location = new Point(0x102, 0xab);
+            lblTabWFix.Size = new Size(70, 0x15);
+            lblTabWFix.TextAlign = ContentAlignment.MiddleRight;
+            cmbTabSizeMode.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbTabSizeMode.Location = new Point(0x99, 170);
+            cmbTabSizeMode.Size = new Size(100, 0x15);
+            cmbTabSizeMode.TabIndex = 6;
+            cmbTabSizeMode.SelectedIndexChanged += comboBoxes_SelectedIndexChanged;
+            nudTabHeight.Location = new Point(0x99, 140);
             int[] numArray19 = new int[4];
             numArray19[0] = 50;
-            this.nudTabHeight.Maximum = new decimal(numArray19);
+            nudTabHeight.Maximum = new decimal(numArray19);
             int[] numArray20 = new int[4];
             numArray20[0] = 10;
-            this.nudTabHeight.Minimum = new decimal(numArray20);
-            this.nudTabHeight.Size = new Size(0x33, 0x15);
-            this.nudTabHeight.TabIndex = 5;
-            this.nudTabHeight.TextAlign = HorizontalAlignment.Center;
+            nudTabHeight.Minimum = new decimal(numArray20);
+            nudTabHeight.Size = new Size(0x33, 0x15);
+            nudTabHeight.TabIndex = 5;
+            nudTabHeight.TextAlign = HorizontalAlignment.Center;
             int[] numArray21 = new int[4];
             numArray21[0] = 0x18;
-            this.nudTabHeight.Value = new decimal(numArray21);
-            this.lblTabWidth.AutoSize = true;
-            this.lblTabWidth.Location = new Point(0x4a, 0xac);
-            this.lblTabHeight.AutoSize = true;
-            this.lblTabHeight.Location = new Point(0x4a, 0x8f);
-            this.lblTabSizeTitle.AutoSize = true;
-            this.lblTabSizeTitle.Location = new Point(13, 0x79);
-            this.propertyGrid1.HelpVisible = false;
-            this.propertyGrid1.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top;
-            this.propertyGrid1.Location = new Point(15, 0x26);
-            this.propertyGrid1.PropertySort = PropertySort.NoSort;
-            this.propertyGrid1.Size = new Size(0x176, 0x48);
-            this.propertyGrid1.TabIndex = 3;
-            this.propertyGrid1.ToolbarVisible = false;
-            this.btnHiliteClsc.Anchor = AnchorStyles.Right | AnchorStyles.Top;
-            this.btnHiliteClsc.AutoSize = true;
-            this.btnHiliteClsc.Location = new Point(0x1a3, 0x26);
-            this.btnHiliteClsc.Size = new Size(0x4b, 0x17);
-            this.btnHiliteClsc.TabIndex = 4;
-            this.btnHiliteClsc.Click += this.buttonHL_Click;
-            this.btnTabImage.Location = new Point(440, 11);
-            this.btnTabImage.Size = new Size(0x22, 0x19);
-            this.btnTabImage.TabIndex = 2;
-            this.btnTabImage.Text = "...";
-            this.btnTabImage.Click += this.btnTabImage_Click;
-            this.tbTabImagePath.Location = new Point(0xdf, 12);
-            this.tbTabImagePath.Size = new Size(0xd5, 0x15);
-            this.tbTabImagePath.MaxLength = 260;
-            this.tbTabImagePath.TabIndex = 1;
-            this.tbTabImagePath.KeyPress += this.textBoxesPath_KeyPress;
-            this.chbUseTabSkin.AutoSize = true;
-            this.chbUseTabSkin.Location = new Point(15, 14);
-            this.chbUseTabSkin.TabIndex = 0;
-            this.chbUseTabSkin.CheckedChanged += this.chbDrawMode_CheckedChanged;
-            this.tabPage5_Grps.Controls.Add(this.btnUp_Grp);
-            this.tabPage5_Grps.Controls.Add(this.btnDown_Grp);
-            this.tabPage5_Grps.Controls.Add(this.btnAddSep_Grp);
-            this.tabPage5_Grps.Controls.Add(this.btnStartUpGrp);
-            this.tabPage5_Grps.Controls.Add(this.btnPlus_Grp);
-            this.tabPage5_Grps.Controls.Add(this.btnMinus_Grp);
-            this.tabPage5_Grps.Controls.Add(this.treeViewGroup);
-            this.tabPage5_Grps.Controls.Add(this.cmbSpclFol_Grp);
-            this.tabPage5_Grps.Controls.Add(this.btnAddSpcFol_Grp);
-            this.tabPage5_Grps.Controls.Add(this.lblGroupKey);
-            this.tabPage5_Grps.Controls.Add(this.tbGroupKey);
-            this.tabPage5_Grps.Controls.Add(this.chbGroupKey);
-            this.tabPage5_Grps.Location = new Point(4, 0x16);
-            this.tabPage5_Grps.Padding = new Padding(3);
-            this.tabPage5_Grps.Size = new Size(0x1ff, 0x1d7);
-            this.tabPage5_Grps.TabIndex = 2;
-            this.tabPage5_Grps.UseVisualStyleBackColor = true;
-            this.treeViewGroup.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Top;
-            this.treeViewGroup.HideSelection = false;
-            this.treeViewGroup.ImageKey = "noimage";
-            this.treeViewGroup.SelectedImageKey = "noimage";
-            this.treeViewGroup.ImageList = QTUtility.ImageListGlobal;
-            this.treeViewGroup.LabelEdit = true;
-            this.treeViewGroup.Location = new Point(5, 0x2d);
-            this.treeViewGroup.ShowNodeToolTips = true;
-            this.treeViewGroup.Size = new Size(0x1ed, 0x156);
-            this.treeViewGroup.TabIndex = 6;
-            this.treeViewGroup.AfterSelect += this.treeViewGroup_AfterSelect;
-            this.treeViewGroup.BeforeLabelEdit += this.treeViewGroup_BeforeLabelEdit;
-            this.treeViewGroup.AfterLabelEdit += this.treeViewGroup_AfterLabelEdit;
-            this.treeViewGroup.KeyDown += this.treeViewGroup_KeyDown;
-            this.btnUp_Grp.Enabled = false;
-            this.btnUp_Grp.Location = new Point(5, 0x10);
-            this.btnUp_Grp.Size = new Size(50, 0x17);
-            this.btnUp_Grp.TabIndex = 0;
-            this.btnUp_Grp.Click += this.UpDownButtons_Click;
-            this.btnDown_Grp.Enabled = false;
-            this.btnDown_Grp.Location = new Point(0x3d, 0x10);
-            this.btnDown_Grp.Size = new Size(50, 0x17);
-            this.btnDown_Grp.TabIndex = 1;
-            this.btnDown_Grp.Click += this.UpDownButtons_Click;
-            this.btnAddSep_Grp.Location = new Point(0x75, 0x10);
-            this.btnAddSep_Grp.Size = new Size(120, 0x17);
-            this.btnAddSep_Grp.TabIndex = 2;
-            this.btnAddSep_Grp.Click += this.btnAddSep_Click;
-            this.btnStartUpGrp.Anchor = AnchorStyles.Right | AnchorStyles.Top;
-            this.btnStartUpGrp.Location = new Point(0x150, 0x10);
-            this.btnStartUpGrp.Size = new Size(100, 0x17);
-            this.btnStartUpGrp.TabIndex = 3;
-            this.btnStartUpGrp.Click += this.btnStartUpGrp_Click;
-            this.btnPlus_Grp.Anchor = AnchorStyles.Right | AnchorStyles.Top;
-            this.btnPlus_Grp.Location = new Point(0x1ba, 0x10);
-            this.btnPlus_Grp.Size = new Size(0x19, 0x17);
-            this.btnPlus_Grp.TabIndex = 4;
-            this.btnPlus_Grp.Text = "+";
-            this.btnPlus_Grp.Click += this.btnPlus_Click;
-            this.btnMinus_Grp.Anchor = AnchorStyles.Right | AnchorStyles.Top;
-            this.btnMinus_Grp.Location = new Point(0x1d9, 0x10);
-            this.btnMinus_Grp.Size = new Size(0x19, 0x17);
-            this.btnMinus_Grp.TabIndex = 5;
-            this.btnMinus_Grp.Text = "-";
-            this.btnMinus_Grp.Click += this.btnMinus_Click;
-            this.cmbSpclFol_Grp.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
-            this.cmbSpclFol_Grp.Enabled = false;
-            this.cmbSpclFol_Grp.DropDownStyle = ComboBoxStyle.DropDownList;
-            this.cmbSpclFol_Grp.Location = new Point(5, 0x187);
-            this.cmbSpclFol_Grp.Size = new Size(150, 0x15);
-            this.cmbSpclFol_Grp.TabIndex = 7;
-            this.btnAddSpcFol_Grp.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
-            this.btnAddSpcFol_Grp.Enabled = false;
-            this.btnAddSpcFol_Grp.Location = new Point(0x9e, 390);
-            this.btnAddSpcFol_Grp.Size = new Size(0x19, 0x17);
-            this.btnAddSpcFol_Grp.TabIndex = 8;
-            this.btnAddSpcFol_Grp.Text = "+";
-            this.btnAddSpcFol_Grp.Click += this.btnAddSpcFol_Grp_Click;
-            this.lblGroupKey.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
-            this.lblGroupKey.AutoSize = true;
-            this.lblGroupKey.Location = new Point(6, 0x1ac);
-            this.lblGroupKey.Size = new Size(0x61, 13);
-            this.chbGroupKey.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
-            this.chbGroupKey.AutoSize = true;
-            this.chbGroupKey.Enabled = false;
-            this.chbGroupKey.Location = new Point(0x6b, 420);
-            this.chbGroupKey.TabIndex = 9;
-            this.chbGroupKey.CheckedChanged += this.chbGroupKey_CheckedChanged;
-            this.tbGroupKey.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom;
-            this.tbGroupKey.Enabled = false;
-            this.tbGroupKey.Location = new Point(0x7f, 0x1a9);
-            this.tbGroupKey.Size = new Size(340, 0x15);
-            this.tbGroupKey.TextAlign = HorizontalAlignment.Center;
-            this.tbGroupKey.TabIndex = 10;
-            this.tbGroupKey.PreviewKeyDown += this.tbGroupKey_PreviewKeyDown;
-            this.tbGroupKey.KeyPress += this.tbGroupKey_KeyPress;
-            this.tabPage6_Apps.Controls.Add(this.treeViewUserApps);
-            this.tabPage6_Apps.Controls.Add(this.btnUp_app);
-            this.tabPage6_Apps.Controls.Add(this.btnDown_app);
-            this.tabPage6_Apps.Controls.Add(this.btnAddSep_app);
-            this.tabPage6_Apps.Controls.Add(this.btnAddVFolder_app);
-            this.tabPage6_Apps.Controls.Add(this.btnPlus_app);
-            this.tabPage6_Apps.Controls.Add(this.btnMinus_app);
-            this.tabPage6_Apps.Controls.Add(this.lblUserApps_Path);
-            this.tabPage6_Apps.Controls.Add(this.lblUserApps_Args);
-            this.tabPage6_Apps.Controls.Add(this.lblUserApps_Working);
-            this.tabPage6_Apps.Controls.Add(this.lblUserApps_Key);
-            this.tabPage6_Apps.Controls.Add(this.tbPath);
-            this.tabPage6_Apps.Controls.Add(this.tbArgs);
-            this.tabPage6_Apps.Controls.Add(this.tbWorking);
-            this.tabPage6_Apps.Controls.Add(this.chbUserAppKey);
-            this.tabPage6_Apps.Controls.Add(this.tbUserAppKey);
-            this.tabPage6_Apps.Controls.Add(this.btnOFD_app);
-            this.tabPage6_Apps.Controls.Add(this.btnBFD_app);
-            this.tabPage6_Apps.Controls.Add(this.btnAddToken_Arg);
-            this.tabPage6_Apps.Controls.Add(this.btnAddToken_Wrk);
-            this.tabPage6_Apps.Location = new Point(4, 0x16);
-            this.tabPage6_Apps.Padding = new Padding(3);
-            this.tabPage6_Apps.Size = new Size(0x1ff, 0x1d7);
-            this.tabPage6_Apps.TabIndex = 5;
-            this.tabPage6_Apps.UseVisualStyleBackColor = true;
-            this.treeViewUserApps.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Top;
-            this.treeViewUserApps.HideSelection = false;
-            this.treeViewUserApps.ImageKey = "noimage";
-            this.treeViewUserApps.SelectedImageKey = "noimage";
-            this.treeViewUserApps.ImageList = QTUtility.ImageListGlobal;
-            this.treeViewUserApps.LabelEdit = true;
-            this.treeViewUserApps.Location = new Point(5, 0x2d);
-            this.treeViewUserApps.Size = new Size(0x1ed, 0x12e);
-            this.treeViewUserApps.TabIndex = 6;
-            this.treeViewUserApps.AfterLabelEdit += this.treeViewUserApps_AfterLabelEdit;
-            this.treeViewUserApps.AfterSelect += this.treeViewUserApps_AfterSelect;
-            this.treeViewUserApps.BeforeLabelEdit += this.treeViewUserApps_BeforeLabelEdit;
-            this.treeViewUserApps.KeyDown += this.treeViewUserApps_KeyDown;
-            this.btnUp_app.Enabled = false;
-            this.btnUp_app.Location = new Point(5, 0x10);
-            this.btnUp_app.Size = new Size(50, 0x17);
-            this.btnUp_app.TabIndex = 0;
-            this.btnUp_app.Click += this.btnUpDown_app_Click;
-            this.btnDown_app.Enabled = false;
-            this.btnDown_app.Location = new Point(0x3d, 0x10);
-            this.btnDown_app.Size = new Size(50, 0x17);
-            this.btnDown_app.TabIndex = 1;
-            this.btnDown_app.Click += this.btnUpDown_app_Click;
-            this.btnAddSep_app.Location = new Point(0x75, 0x10);
-            this.btnAddSep_app.Size = new Size(120, 0x17);
-            this.btnAddSep_app.TabIndex = 2;
-            this.btnAddSep_app.Click += this.btnAddSep_app_Click;
-            this.btnAddVFolder_app.Anchor = AnchorStyles.Right | AnchorStyles.Top;
-            this.btnAddVFolder_app.Location = new Point(0x182, 0x10);
-            this.btnAddVFolder_app.Size = new Size(50, 0x18);
-            this.btnAddVFolder_app.TabIndex = 3;
-            this.btnAddVFolder_app.Text = "+";
-            this.btnAddVFolder_app.TextImageRelation = TextImageRelation.ImageBeforeText;
-            this.btnAddVFolder_app.ImageAlign = ContentAlignment.TopLeft;
-            this.btnAddVFolder_app.Click += this.btnAddVirtualFolder_app_Click;
-            this.btnPlus_app.Anchor = AnchorStyles.Right | AnchorStyles.Top;
-            this.btnPlus_app.Location = new Point(0x1ba, 0x10);
-            this.btnPlus_app.Size = new Size(0x19, 0x17);
-            this.btnPlus_app.TabIndex = 4;
-            this.btnPlus_app.Text = "+";
-            this.btnPlus_app.Click += this.btnPlus_app_Click;
-            this.btnMinus_app.Anchor = AnchorStyles.Right | AnchorStyles.Top;
-            this.btnMinus_app.Location = new Point(0x1d9, 0x10);
-            this.btnMinus_app.Size = new Size(0x19, 0x17);
-            this.btnMinus_app.TabIndex = 5;
-            this.btnMinus_app.Text = "-";
-            this.btnMinus_app.Click += this.btnMinus_app_Click;
-            this.lblUserApps_Path.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
-            this.lblUserApps_Path.AutoSize = true;
-            this.lblUserApps_Path.Location = new Point(6, 0x164);
-            this.lblUserApps_Path.Size = new Size(0x21, 13);
-            this.lblUserApps_Args.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
-            this.lblUserApps_Args.AutoSize = true;
-            this.lblUserApps_Args.Location = new Point(6, 380);
-            this.lblUserApps_Args.Size = new Size(0x3f, 13);
-            this.lblUserApps_Working.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
-            this.lblUserApps_Working.AutoSize = true;
-            this.lblUserApps_Working.Location = new Point(6, 0x194);
-            this.lblUserApps_Working.Size = new Size(0x61, 13);
-            this.lblUserApps_Key.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
-            this.lblUserApps_Key.AutoSize = true;
-            this.lblUserApps_Key.Location = new Point(6, 0x1ac);
-            this.lblUserApps_Key.Size = new Size(0x61, 13);
-            this.tbPath.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom;
-            this.tbPath.Enabled = false;
-            this.tbPath.Location = new Point(0x6b, 0x161);
-            this.tbPath.Size = new Size(0x149, 0x15);
-            this.tbPath.MaxLength = 260;
-            this.tbPath.TabIndex = 7;
-            this.tbPath.TextChanged += this.tbsUserApps_TextChanged;
-            this.tbPath.KeyPress += this.textBoxesPath_KeyPress;
-            this.tbArgs.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom;
-            this.tbArgs.Enabled = false;
-            this.tbArgs.Location = new Point(0x6b, 0x179);
-            this.tbArgs.Size = new Size(360, 0x15);
-            this.tbArgs.MaxLength = 260;
-            this.tbArgs.TabIndex = 10;
-            this.tbArgs.TextChanged += this.tbsUserApps_TextChanged;
-            this.tbWorking.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom;
-            this.tbWorking.Enabled = false;
-            this.tbWorking.Location = new Point(0x6b, 0x191);
-            this.tbWorking.Size = new Size(360, 0x15);
-            this.tbWorking.MaxLength = 260;
-            this.tbWorking.TabIndex = 12;
-            this.tbWorking.TextChanged += this.tbsUserApps_TextChanged;
-            this.tbWorking.KeyPress += this.textBoxesPath_KeyPress;
-            this.chbUserAppKey.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
-            this.chbUserAppKey.AutoSize = true;
-            this.chbUserAppKey.Enabled = false;
-            this.chbUserAppKey.Location = new Point(0x6b, 420);
-            this.chbUserAppKey.TabIndex = 14;
-            this.chbUserAppKey.CheckedChanged += this.chbUserAppKey_CheckedChanged;
-            this.tbUserAppKey.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom;
-            this.tbUserAppKey.Enabled = false;
-            this.tbUserAppKey.Location = new Point(0x7f, 0x1a9);
-            this.tbUserAppKey.Size = new Size(340, 0x15);
-            this.tbUserAppKey.TextAlign = HorizontalAlignment.Center;
-            this.tbUserAppKey.TabIndex = 15;
-            this.tbUserAppKey.PreviewKeyDown += this.tbUserAppKey_PreviewKeyDown;
-            this.tbUserAppKey.KeyPress += this.tbUserAppKey_KeyPress;
-            this.btnOFD_app.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
-            this.btnOFD_app.Enabled = false;
-            this.btnOFD_app.Location = new Point(0x1ba, 0x161);
-            this.btnOFD_app.Size = new Size(0x19, 0x15);
-            this.btnOFD_app.TabIndex = 8;
-            this.btnOFD_app.Text = "...";
-            this.btnOFD_app.UseVisualStyleBackColor = true;
-            this.btnOFD_app.Click += this.btnOFD_app_Click;
-            this.btnBFD_app.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
-            this.btnBFD_app.Enabled = false;
-            this.btnBFD_app.Location = new Point(0x1d9, 0x161);
-            this.btnBFD_app.Size = new Size(0x19, 0x15);
-            this.btnBFD_app.TabIndex = 9;
-            this.btnBFD_app.Text = ".";
-            this.btnBFD_app.UseVisualStyleBackColor = true;
-            this.btnBFD_app.Click += this.btnBFD_app_Click;
-            this.btnAddToken_Arg.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
-            this.btnAddToken_Arg.Location = new Point(0x1d9, 0x179);
-            this.btnAddToken_Arg.Enabled = false;
-            this.btnAddToken_Arg.Size = new Size(0x19, 0x15);
-            this.btnAddToken_Arg.TabIndex = 11;
-            this.btnAddToken_Arg.Text = "%";
-            this.btnAddToken_Arg.UseVisualStyleBackColor = true;
-            this.btnAddToken_Arg.Click += this.btnAddToken_Arg_Click;
-            this.btnAddToken_Wrk.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
-            this.btnAddToken_Wrk.Enabled = false;
-            this.btnAddToken_Wrk.Location = new Point(0x1d9, 0x191);
-            this.btnAddToken_Wrk.Size = new Size(0x19, 0x15);
-            this.btnAddToken_Wrk.TabIndex = 13;
-            this.btnAddToken_Wrk.Text = "%";
-            this.btnAddToken_Wrk.UseVisualStyleBackColor = true;
-            this.btnAddToken_Wrk.Click += this.btnAddToken_Wrk_Click;
-            this.cmsAddToken.ShowImageMargin = false;
-            this.cmsAddToken.ItemClicked += this.cmsAddToken_ItemClicked;
-            this.tabPage9_Misc.Controls.Add(this.chbHideMenu);
-            this.tabPage9_Misc.Controls.Add(this.chbBSUpOneLvl);
-            this.tabPage9_Misc.Controls.Add(this.chbNoFulRowSelect);
-            this.tabPage9_Misc.Controls.Add(this.chbGridLine);
-            this.tabPage9_Misc.Controls.Add(this.chbAlternateColor);
-            this.tabPage9_Misc.Controls.Add(this.chbShowPreview);
-            this.tabPage9_Misc.Controls.Add(this.chbPreviewMode);
-            this.tabPage9_Misc.Controls.Add(this.chbPreviewInfo);
-            this.tabPage9_Misc.Controls.Add(this.chbSubDirTip);
-            this.tabPage9_Misc.Controls.Add(this.chbSubDirTipMode);
-            this.tabPage9_Misc.Controls.Add(this.chbSubDirTipModeHidden);
-            this.tabPage9_Misc.Controls.Add(this.chbSubDirTipModeSystem);
-            this.tabPage9_Misc.Controls.Add(this.chbSubDirTipModeFile);
-            this.tabPage9_Misc.Controls.Add(this.chbSubDirTipPreview);
-            this.tabPage9_Misc.Controls.Add(this.chbSelectWithoutExt);
-            this.tabPage9_Misc.Controls.Add(this.chbF2Selection);
-            this.tabPage9_Misc.Controls.Add(this.chbCursorLoop);
-            this.tabPage9_Misc.Controls.Add(this.btnAlternateColor);
-            this.tabPage9_Misc.Controls.Add(this.btnAlternateColor_Text);
-            this.tabPage9_Misc.Controls.Add(this.btnAlternate_Default);
-            this.tabPage9_Misc.Controls.Add(this.btnAddImgExt);
-            this.tabPage9_Misc.Controls.Add(this.btnDelImgExt);
-            this.tabPage9_Misc.Controls.Add(this.btnDefaultImgExt);
-            this.tabPage9_Misc.Controls.Add(this.btnPreviewFont);
-            this.tabPage9_Misc.Controls.Add(this.btnPreviewFontDefault);
-            this.tabPage9_Misc.Controls.Add(this.cmbImgExts);
-            this.tabPage9_Misc.Controls.Add(this.btnAddTextExt);
-            this.tabPage9_Misc.Controls.Add(this.btnDelTextExt);
-            this.tabPage9_Misc.Controls.Add(this.btnDefaultTextExt);
-            this.tabPage9_Misc.Controls.Add(this.cmbTextExts);
-            this.tabPage9_Misc.Controls.Add(this.btnPayPal);
-            this.tabPage9_Misc.Controls.Add(this.nudPreviewMaxHeight);
-            this.tabPage9_Misc.Controls.Add(this.nudPreviewMaxWidth);
-            this.tabPage9_Misc.Controls.Add(this.lblPreviewHeight);
-            this.tabPage9_Misc.Controls.Add(this.lblPreviewWidth);
-            this.tabPage9_Misc.Location = new Point(4, 0x16);
-            this.tabPage9_Misc.Padding = new Padding(3);
-            this.tabPage9_Misc.Size = new Size(0x1ff, 0x1d7);
-            this.tabPage9_Misc.TabIndex = 6;
-            this.tabPage9_Misc.UseVisualStyleBackColor = true;
-            this.btnPayPal.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
-            this.btnPayPal.BackgroundImage = Resources_String.paypalBtn;
-            this.btnPayPal.BackgroundImageLayout = ImageLayout.Center;
-            this.btnPayPal.Location = new Point(0x1a8, 0x17b);
-            this.btnPayPal.Size = new Size(0x47, 0x4c);
-            this.btnPayPal.Cursor = Cursors.Hand;
-            this.btnPayPal.TabIndex = 0x20;
-            this.btnPayPal.UseVisualStyleBackColor = false;
-            this.btnPayPal.Click += this.btnPayPal_Click;
-            this.chbCursorLoop.AutoSize = true;
-            this.chbCursorLoop.Location = new Point(0x1b, 0x1e1);
-            this.chbCursorLoop.TabIndex = 0x1f;
-            this.chbF2Selection.AutoSize = true;
-            this.chbF2Selection.Location = new Point(0x1b, 0x1c9);
-            this.chbF2Selection.TabIndex = 30;
-            this.chbSelectWithoutExt.AutoSize = true;
-            this.chbSelectWithoutExt.Location = new Point(0x1b, 0x1b1);
-            this.chbSelectWithoutExt.TabIndex = 0x1d;
-            this.chbSubDirTipModeSystem.AutoSize = true;
-            this.chbSubDirTipModeSystem.Location = new Point(0x2d, 0x193);
-            this.chbSubDirTipModeSystem.TabIndex = 0x1c;
-            this.chbSubDirTipModeFile.AutoSize = true;
-            this.chbSubDirTipModeFile.Location = new Point(0xd7, 0x179);
-            this.chbSubDirTipModeFile.TabIndex = 0x1b;
-            this.chbSubDirTipModeHidden.AutoSize = true;
-            this.chbSubDirTipModeHidden.Location = new Point(0x2d, 0x179);
-            this.chbSubDirTipModeHidden.TabIndex = 0x1a;
-            this.chbSubDirTipPreview.AutoSize = true;
-            this.chbSubDirTipPreview.Location = new Point(0xd7, 0x15f);
-            this.chbSubDirTipPreview.TabIndex = 0x19;
-            this.chbSubDirTipMode.AutoSize = true;
-            this.chbSubDirTipMode.Location = new Point(0x2d, 0x15f);
-            this.chbSubDirTipMode.TabIndex = 0x18;
-            this.chbSubDirTip.AutoSize = true;
-            this.chbSubDirTip.Location = new Point(0x1b, 330);
-            this.chbSubDirTip.TabIndex = 0x17;
-            this.chbSubDirTip.CheckedChanged += this.chbSubDirTip_CheckedChanged;
-            this.btnPreviewFontDefault.Location = new Point(0x191, 0x127);
-            this.btnPreviewFontDefault.Size = new Size(100, 0x17);
-            this.btnPreviewFontDefault.TabIndex = 0x16;
-            this.btnPreviewFontDefault.Click += this.btnPreviewFont_Click;
-            this.btnPreviewFont.Location = new Point(0x123, 0x127);
-            this.btnPreviewFont.Size = new Size(100, 0x17);
-            this.btnPreviewFont.TabIndex = 0x15;
-            this.btnPreviewFont.Click += this.btnPreviewFont_Click;
-            this.btnDefaultTextExt.Location = new Point(0x191, 0x10d);
-            this.btnDefaultTextExt.Size = new Size(100, 0x17);
-            this.btnDefaultTextExt.TabIndex = 20;
-            this.btnDefaultTextExt.Click += this.btnDefaultTextExt_Click;
-            this.btnDelTextExt.Location = new Point(0x123, 0x10d);
-            this.btnDelTextExt.Size = new Size(100, 0x17);
-            this.btnDelTextExt.TabIndex = 0x13;
-            this.btnDelTextExt.Click += this.btnDelPreiviewExt_Click;
-            this.btnAddTextExt.Location = new Point(0xb5, 0x10d);
-            this.btnAddTextExt.Size = new Size(100, 0x17);
-            this.btnAddTextExt.TabIndex = 0x12;
-            this.btnAddTextExt.Click += this.btnAddPreviewExt_Click;
-            this.cmbTextExts.Location = new Point(0x2d, 0x10d);
-            this.cmbTextExts.Size = new Size(130, 0x17);
-            this.cmbTextExts.TabIndex = 0x11;
-            this.cmbTextExts.SelectedIndexChanged += this.comboBoxes_SelectedIndexChanged;
-            this.cmbTextExts.KeyPress += this.comboBoxPreviewExts_KeyPress;
-            this.btnDefaultImgExt.Location = new Point(0x191, 0xf3);
-            this.btnDefaultImgExt.Size = new Size(100, 0x17);
-            this.btnDefaultImgExt.TabIndex = 0x10;
-            this.btnDefaultImgExt.Click += this.btnDefaultImgExt_Click;
-            this.btnDelImgExt.Location = new Point(0x123, 0xf3);
-            this.btnDelImgExt.Size = new Size(100, 0x17);
-            this.btnDelImgExt.TabIndex = 15;
-            this.btnDelImgExt.Click += this.btnDelPreiviewExt_Click;
-            this.btnAddImgExt.Location = new Point(0xb5, 0xf3);
-            this.btnAddImgExt.Size = new Size(100, 0x17);
-            this.btnAddImgExt.TabIndex = 14;
-            this.btnAddImgExt.Click += this.btnAddPreviewExt_Click;
-            this.cmbImgExts.Location = new Point(0x2d, 0xf3);
-            this.cmbImgExts.Size = new Size(130, 0x17);
-            this.cmbImgExts.TabIndex = 13;
-            this.cmbImgExts.SelectedIndexChanged += this.comboBoxes_SelectedIndexChanged;
-            this.cmbImgExts.KeyPress += this.comboBoxPreviewExts_KeyPress;
-            this.lblPreviewWidth.Location = new Point(0x129, 0xbf);
-            this.lblPreviewWidth.Size = new Size(0x62, 0x15);
-            this.lblPreviewWidth.TextAlign = ContentAlignment.MiddleRight;
-            this.lblPreviewHeight.Location = new Point(0x129, 0xd9);
-            this.lblPreviewHeight.Size = new Size(0x62, 0x15);
-            this.lblPreviewHeight.TextAlign = ContentAlignment.MiddleRight;
-            this.nudPreviewMaxWidth.Location = new Point(0x191, 0xbf);
+            nudTabHeight.Value = new decimal(numArray21);
+            lblTabWidth.AutoSize = true;
+            lblTabWidth.Location = new Point(0x4a, 0xac);
+            lblTabHeight.AutoSize = true;
+            lblTabHeight.Location = new Point(0x4a, 0x8f);
+            lblTabSizeTitle.AutoSize = true;
+            lblTabSizeTitle.Location = new Point(13, 0x79);
+            propertyGrid1.HelpVisible = false;
+            propertyGrid1.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top;
+            propertyGrid1.Location = new Point(15, 0x26);
+            propertyGrid1.PropertySort = PropertySort.NoSort;
+            propertyGrid1.Size = new Size(0x176, 0x48);
+            propertyGrid1.TabIndex = 3;
+            propertyGrid1.ToolbarVisible = false;
+            btnHiliteClsc.Anchor = AnchorStyles.Right | AnchorStyles.Top;
+            btnHiliteClsc.AutoSize = true;
+            btnHiliteClsc.Location = new Point(0x1a3, 0x26);
+            btnHiliteClsc.Size = new Size(0x4b, 0x17);
+            btnHiliteClsc.TabIndex = 4;
+            btnHiliteClsc.Click += buttonHL_Click;
+            btnTabImage.Location = new Point(440, 11);
+            btnTabImage.Size = new Size(0x22, 0x19);
+            btnTabImage.TabIndex = 2;
+            btnTabImage.Text = "...";
+            btnTabImage.Click += btnTabImage_Click;
+            tbTabImagePath.Location = new Point(0xdf, 12);
+            tbTabImagePath.Size = new Size(0xd5, 0x15);
+            tbTabImagePath.MaxLength = 260;
+            tbTabImagePath.TabIndex = 1;
+            tbTabImagePath.KeyPress += textBoxesPath_KeyPress;
+            chbUseTabSkin.AutoSize = true;
+            chbUseTabSkin.Location = new Point(15, 14);
+            chbUseTabSkin.TabIndex = 0;
+            chbUseTabSkin.CheckedChanged += chbDrawMode_CheckedChanged;
+            tabPage5_Grps.Controls.Add(btnUp_Grp);
+            tabPage5_Grps.Controls.Add(btnDown_Grp);
+            tabPage5_Grps.Controls.Add(btnAddSep_Grp);
+            tabPage5_Grps.Controls.Add(btnStartUpGrp);
+            tabPage5_Grps.Controls.Add(btnPlus_Grp);
+            tabPage5_Grps.Controls.Add(btnMinus_Grp);
+            tabPage5_Grps.Controls.Add(treeViewGroup);
+            tabPage5_Grps.Controls.Add(cmbSpclFol_Grp);
+            tabPage5_Grps.Controls.Add(btnAddSpcFol_Grp);
+            tabPage5_Grps.Controls.Add(lblGroupKey);
+            tabPage5_Grps.Controls.Add(tbGroupKey);
+            tabPage5_Grps.Controls.Add(chbGroupKey);
+            tabPage5_Grps.Location = new Point(4, 0x16);
+            tabPage5_Grps.Padding = new Padding(3);
+            tabPage5_Grps.Size = new Size(0x1ff, 0x1d7);
+            tabPage5_Grps.TabIndex = 2;
+            tabPage5_Grps.UseVisualStyleBackColor = true;
+            treeViewGroup.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Top;
+            treeViewGroup.HideSelection = false;
+            treeViewGroup.ImageKey = "noimage";
+            treeViewGroup.SelectedImageKey = "noimage";
+            treeViewGroup.ImageList = QTUtility.ImageListGlobal;
+            treeViewGroup.LabelEdit = true;
+            treeViewGroup.Location = new Point(5, 0x2d);
+            treeViewGroup.ShowNodeToolTips = true;
+            treeViewGroup.Size = new Size(0x1ed, 0x156);
+            treeViewGroup.TabIndex = 6;
+            treeViewGroup.AfterSelect += treeViewGroup_AfterSelect;
+            treeViewGroup.BeforeLabelEdit += treeViewGroup_BeforeLabelEdit;
+            treeViewGroup.AfterLabelEdit += treeViewGroup_AfterLabelEdit;
+            treeViewGroup.KeyDown += treeViewGroup_KeyDown;
+            btnUp_Grp.Enabled = false;
+            btnUp_Grp.Location = new Point(5, 0x10);
+            btnUp_Grp.Size = new Size(50, 0x17);
+            btnUp_Grp.TabIndex = 0;
+            btnUp_Grp.Click += UpDownButtons_Click;
+            btnDown_Grp.Enabled = false;
+            btnDown_Grp.Location = new Point(0x3d, 0x10);
+            btnDown_Grp.Size = new Size(50, 0x17);
+            btnDown_Grp.TabIndex = 1;
+            btnDown_Grp.Click += UpDownButtons_Click;
+            btnAddSep_Grp.Location = new Point(0x75, 0x10);
+            btnAddSep_Grp.Size = new Size(120, 0x17);
+            btnAddSep_Grp.TabIndex = 2;
+            btnAddSep_Grp.Click += btnAddSep_Click;
+            btnStartUpGrp.Anchor = AnchorStyles.Right | AnchorStyles.Top;
+            btnStartUpGrp.Location = new Point(0x150, 0x10);
+            btnStartUpGrp.Size = new Size(100, 0x17);
+            btnStartUpGrp.TabIndex = 3;
+            btnStartUpGrp.Click += btnStartUpGrp_Click;
+            btnPlus_Grp.Anchor = AnchorStyles.Right | AnchorStyles.Top;
+            btnPlus_Grp.Location = new Point(0x1ba, 0x10);
+            btnPlus_Grp.Size = new Size(0x19, 0x17);
+            btnPlus_Grp.TabIndex = 4;
+            btnPlus_Grp.Text = "+";
+            btnPlus_Grp.Click += btnPlus_Click;
+            btnMinus_Grp.Anchor = AnchorStyles.Right | AnchorStyles.Top;
+            btnMinus_Grp.Location = new Point(0x1d9, 0x10);
+            btnMinus_Grp.Size = new Size(0x19, 0x17);
+            btnMinus_Grp.TabIndex = 5;
+            btnMinus_Grp.Text = "-";
+            btnMinus_Grp.Click += btnMinus_Click;
+            cmbSpclFol_Grp.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            cmbSpclFol_Grp.Enabled = false;
+            cmbSpclFol_Grp.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbSpclFol_Grp.Location = new Point(5, 0x187);
+            cmbSpclFol_Grp.Size = new Size(150, 0x15);
+            cmbSpclFol_Grp.TabIndex = 7;
+            btnAddSpcFol_Grp.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            btnAddSpcFol_Grp.Enabled = false;
+            btnAddSpcFol_Grp.Location = new Point(0x9e, 390);
+            btnAddSpcFol_Grp.Size = new Size(0x19, 0x17);
+            btnAddSpcFol_Grp.TabIndex = 8;
+            btnAddSpcFol_Grp.Text = "+";
+            btnAddSpcFol_Grp.Click += btnAddSpcFol_Grp_Click;
+            lblGroupKey.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            lblGroupKey.AutoSize = true;
+            lblGroupKey.Location = new Point(6, 0x1ac);
+            lblGroupKey.Size = new Size(0x61, 13);
+            chbGroupKey.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            chbGroupKey.AutoSize = true;
+            chbGroupKey.Enabled = false;
+            chbGroupKey.Location = new Point(0x6b, 420);
+            chbGroupKey.TabIndex = 9;
+            chbGroupKey.CheckedChanged += chbGroupKey_CheckedChanged;
+            tbGroupKey.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom;
+            tbGroupKey.Enabled = false;
+            tbGroupKey.Location = new Point(0x7f, 0x1a9);
+            tbGroupKey.Size = new Size(340, 0x15);
+            tbGroupKey.TextAlign = HorizontalAlignment.Center;
+            tbGroupKey.TabIndex = 10;
+            tbGroupKey.PreviewKeyDown += tbGroupKey_PreviewKeyDown;
+            tbGroupKey.KeyPress += tbGroupKey_KeyPress;
+            tabPage6_Apps.Controls.Add(treeViewUserApps);
+            tabPage6_Apps.Controls.Add(btnUp_app);
+            tabPage6_Apps.Controls.Add(btnDown_app);
+            tabPage6_Apps.Controls.Add(btnAddSep_app);
+            tabPage6_Apps.Controls.Add(btnAddVFolder_app);
+            tabPage6_Apps.Controls.Add(btnPlus_app);
+            tabPage6_Apps.Controls.Add(btnMinus_app);
+            tabPage6_Apps.Controls.Add(lblUserApps_Path);
+            tabPage6_Apps.Controls.Add(lblUserApps_Args);
+            tabPage6_Apps.Controls.Add(lblUserApps_Working);
+            tabPage6_Apps.Controls.Add(lblUserApps_Key);
+            tabPage6_Apps.Controls.Add(tbPath);
+            tabPage6_Apps.Controls.Add(tbArgs);
+            tabPage6_Apps.Controls.Add(tbWorking);
+            tabPage6_Apps.Controls.Add(chbUserAppKey);
+            tabPage6_Apps.Controls.Add(tbUserAppKey);
+            tabPage6_Apps.Controls.Add(btnOFD_app);
+            tabPage6_Apps.Controls.Add(btnBFD_app);
+            tabPage6_Apps.Controls.Add(btnAddToken_Arg);
+            tabPage6_Apps.Controls.Add(btnAddToken_Wrk);
+            tabPage6_Apps.Location = new Point(4, 0x16);
+            tabPage6_Apps.Padding = new Padding(3);
+            tabPage6_Apps.Size = new Size(0x1ff, 0x1d7);
+            tabPage6_Apps.TabIndex = 5;
+            tabPage6_Apps.UseVisualStyleBackColor = true;
+            treeViewUserApps.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Top;
+            treeViewUserApps.HideSelection = false;
+            treeViewUserApps.ImageKey = "noimage";
+            treeViewUserApps.SelectedImageKey = "noimage";
+            treeViewUserApps.ImageList = QTUtility.ImageListGlobal;
+            treeViewUserApps.LabelEdit = true;
+            treeViewUserApps.Location = new Point(5, 0x2d);
+            treeViewUserApps.Size = new Size(0x1ed, 0x12e);
+            treeViewUserApps.TabIndex = 6;
+            treeViewUserApps.AfterLabelEdit += treeViewUserApps_AfterLabelEdit;
+            treeViewUserApps.AfterSelect += treeViewUserApps_AfterSelect;
+            treeViewUserApps.BeforeLabelEdit += treeViewUserApps_BeforeLabelEdit;
+            treeViewUserApps.KeyDown += treeViewUserApps_KeyDown;
+            btnUp_app.Enabled = false;
+            btnUp_app.Location = new Point(5, 0x10);
+            btnUp_app.Size = new Size(50, 0x17);
+            btnUp_app.TabIndex = 0;
+            btnUp_app.Click += btnUpDown_app_Click;
+            btnDown_app.Enabled = false;
+            btnDown_app.Location = new Point(0x3d, 0x10);
+            btnDown_app.Size = new Size(50, 0x17);
+            btnDown_app.TabIndex = 1;
+            btnDown_app.Click += btnUpDown_app_Click;
+            btnAddSep_app.Location = new Point(0x75, 0x10);
+            btnAddSep_app.Size = new Size(120, 0x17);
+            btnAddSep_app.TabIndex = 2;
+            btnAddSep_app.Click += btnAddSep_app_Click;
+            btnAddVFolder_app.Anchor = AnchorStyles.Right | AnchorStyles.Top;
+            btnAddVFolder_app.Location = new Point(0x182, 0x10);
+            btnAddVFolder_app.Size = new Size(50, 0x18);
+            btnAddVFolder_app.TabIndex = 3;
+            btnAddVFolder_app.Text = "+";
+            btnAddVFolder_app.TextImageRelation = TextImageRelation.ImageBeforeText;
+            btnAddVFolder_app.ImageAlign = ContentAlignment.TopLeft;
+            btnAddVFolder_app.Click += btnAddVirtualFolder_app_Click;
+            btnPlus_app.Anchor = AnchorStyles.Right | AnchorStyles.Top;
+            btnPlus_app.Location = new Point(0x1ba, 0x10);
+            btnPlus_app.Size = new Size(0x19, 0x17);
+            btnPlus_app.TabIndex = 4;
+            btnPlus_app.Text = "+";
+            btnPlus_app.Click += btnPlus_app_Click;
+            btnMinus_app.Anchor = AnchorStyles.Right | AnchorStyles.Top;
+            btnMinus_app.Location = new Point(0x1d9, 0x10);
+            btnMinus_app.Size = new Size(0x19, 0x17);
+            btnMinus_app.TabIndex = 5;
+            btnMinus_app.Text = "-";
+            btnMinus_app.Click += btnMinus_app_Click;
+            lblUserApps_Path.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            lblUserApps_Path.AutoSize = true;
+            lblUserApps_Path.Location = new Point(6, 0x164);
+            lblUserApps_Path.Size = new Size(0x21, 13);
+            lblUserApps_Args.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            lblUserApps_Args.AutoSize = true;
+            lblUserApps_Args.Location = new Point(6, 380);
+            lblUserApps_Args.Size = new Size(0x3f, 13);
+            lblUserApps_Working.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            lblUserApps_Working.AutoSize = true;
+            lblUserApps_Working.Location = new Point(6, 0x194);
+            lblUserApps_Working.Size = new Size(0x61, 13);
+            lblUserApps_Key.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            lblUserApps_Key.AutoSize = true;
+            lblUserApps_Key.Location = new Point(6, 0x1ac);
+            lblUserApps_Key.Size = new Size(0x61, 13);
+            tbPath.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom;
+            tbPath.Enabled = false;
+            tbPath.Location = new Point(0x6b, 0x161);
+            tbPath.Size = new Size(0x149, 0x15);
+            tbPath.MaxLength = 260;
+            tbPath.TabIndex = 7;
+            tbPath.TextChanged += tbsUserApps_TextChanged;
+            tbPath.KeyPress += textBoxesPath_KeyPress;
+            tbArgs.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom;
+            tbArgs.Enabled = false;
+            tbArgs.Location = new Point(0x6b, 0x179);
+            tbArgs.Size = new Size(360, 0x15);
+            tbArgs.MaxLength = 260;
+            tbArgs.TabIndex = 10;
+            tbArgs.TextChanged += tbsUserApps_TextChanged;
+            tbWorking.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom;
+            tbWorking.Enabled = false;
+            tbWorking.Location = new Point(0x6b, 0x191);
+            tbWorking.Size = new Size(360, 0x15);
+            tbWorking.MaxLength = 260;
+            tbWorking.TabIndex = 12;
+            tbWorking.TextChanged += tbsUserApps_TextChanged;
+            tbWorking.KeyPress += textBoxesPath_KeyPress;
+            chbUserAppKey.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            chbUserAppKey.AutoSize = true;
+            chbUserAppKey.Enabled = false;
+            chbUserAppKey.Location = new Point(0x6b, 420);
+            chbUserAppKey.TabIndex = 14;
+            chbUserAppKey.CheckedChanged += chbUserAppKey_CheckedChanged;
+            tbUserAppKey.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom;
+            tbUserAppKey.Enabled = false;
+            tbUserAppKey.Location = new Point(0x7f, 0x1a9);
+            tbUserAppKey.Size = new Size(340, 0x15);
+            tbUserAppKey.TextAlign = HorizontalAlignment.Center;
+            tbUserAppKey.TabIndex = 15;
+            tbUserAppKey.PreviewKeyDown += tbUserAppKey_PreviewKeyDown;
+            tbUserAppKey.KeyPress += tbUserAppKey_KeyPress;
+            btnOFD_app.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
+            btnOFD_app.Enabled = false;
+            btnOFD_app.Location = new Point(0x1ba, 0x161);
+            btnOFD_app.Size = new Size(0x19, 0x15);
+            btnOFD_app.TabIndex = 8;
+            btnOFD_app.Text = "...";
+            btnOFD_app.UseVisualStyleBackColor = true;
+            btnOFD_app.Click += btnOFD_app_Click;
+            btnBFD_app.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
+            btnBFD_app.Enabled = false;
+            btnBFD_app.Location = new Point(0x1d9, 0x161);
+            btnBFD_app.Size = new Size(0x19, 0x15);
+            btnBFD_app.TabIndex = 9;
+            btnBFD_app.Text = ".";
+            btnBFD_app.UseVisualStyleBackColor = true;
+            btnBFD_app.Click += btnBFD_app_Click;
+            btnAddToken_Arg.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
+            btnAddToken_Arg.Location = new Point(0x1d9, 0x179);
+            btnAddToken_Arg.Enabled = false;
+            btnAddToken_Arg.Size = new Size(0x19, 0x15);
+            btnAddToken_Arg.TabIndex = 11;
+            btnAddToken_Arg.Text = "%";
+            btnAddToken_Arg.UseVisualStyleBackColor = true;
+            btnAddToken_Arg.Click += btnAddToken_Arg_Click;
+            btnAddToken_Wrk.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
+            btnAddToken_Wrk.Enabled = false;
+            btnAddToken_Wrk.Location = new Point(0x1d9, 0x191);
+            btnAddToken_Wrk.Size = new Size(0x19, 0x15);
+            btnAddToken_Wrk.TabIndex = 13;
+            btnAddToken_Wrk.Text = "%";
+            btnAddToken_Wrk.UseVisualStyleBackColor = true;
+            btnAddToken_Wrk.Click += btnAddToken_Wrk_Click;
+            cmsAddToken.ShowImageMargin = false;
+            cmsAddToken.ItemClicked += cmsAddToken_ItemClicked;
+            tabPage9_Misc.Controls.Add(chbHideMenu);
+            tabPage9_Misc.Controls.Add(chbBSUpOneLvl);
+            tabPage9_Misc.Controls.Add(chbNoFulRowSelect);
+            tabPage9_Misc.Controls.Add(chbGridLine);
+            tabPage9_Misc.Controls.Add(chbAlternateColor);
+            tabPage9_Misc.Controls.Add(chbShowPreview);
+            tabPage9_Misc.Controls.Add(chbPreviewMode);
+            tabPage9_Misc.Controls.Add(chbPreviewInfo);
+            tabPage9_Misc.Controls.Add(chbSubDirTip);
+            tabPage9_Misc.Controls.Add(chbSubDirTipMode);
+            tabPage9_Misc.Controls.Add(chbSubDirTipModeHidden);
+            tabPage9_Misc.Controls.Add(chbSubDirTipModeSystem);
+            tabPage9_Misc.Controls.Add(chbSubDirTipModeFile);
+            tabPage9_Misc.Controls.Add(chbSubDirTipPreview);
+            tabPage9_Misc.Controls.Add(chbSelectWithoutExt);
+            tabPage9_Misc.Controls.Add(chbF2Selection);
+            tabPage9_Misc.Controls.Add(chbCursorLoop);
+            tabPage9_Misc.Controls.Add(btnAlternateColor);
+            tabPage9_Misc.Controls.Add(btnAlternateColor_Text);
+            tabPage9_Misc.Controls.Add(btnAlternate_Default);
+            tabPage9_Misc.Controls.Add(btnAddImgExt);
+            tabPage9_Misc.Controls.Add(btnDelImgExt);
+            tabPage9_Misc.Controls.Add(btnDefaultImgExt);
+            tabPage9_Misc.Controls.Add(btnPreviewFont);
+            tabPage9_Misc.Controls.Add(btnPreviewFontDefault);
+            tabPage9_Misc.Controls.Add(cmbImgExts);
+            tabPage9_Misc.Controls.Add(btnAddTextExt);
+            tabPage9_Misc.Controls.Add(btnDelTextExt);
+            tabPage9_Misc.Controls.Add(btnDefaultTextExt);
+            tabPage9_Misc.Controls.Add(cmbTextExts);
+            tabPage9_Misc.Controls.Add(btnPayPal);
+            tabPage9_Misc.Controls.Add(nudPreviewMaxHeight);
+            tabPage9_Misc.Controls.Add(nudPreviewMaxWidth);
+            tabPage9_Misc.Controls.Add(lblPreviewHeight);
+            tabPage9_Misc.Controls.Add(lblPreviewWidth);
+            tabPage9_Misc.Location = new Point(4, 0x16);
+            tabPage9_Misc.Padding = new Padding(3);
+            tabPage9_Misc.Size = new Size(0x1ff, 0x1d7);
+            tabPage9_Misc.TabIndex = 6;
+            tabPage9_Misc.UseVisualStyleBackColor = true;
+            btnPayPal.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
+            btnPayPal.BackgroundImage = Resources_String.paypalBtn;
+            btnPayPal.BackgroundImageLayout = ImageLayout.Center;
+            btnPayPal.Location = new Point(0x1a8, 0x17b);
+            btnPayPal.Size = new Size(0x47, 0x4c);
+            btnPayPal.Cursor = Cursors.Hand;
+            btnPayPal.TabIndex = 0x20;
+            btnPayPal.UseVisualStyleBackColor = false;
+            btnPayPal.Click += btnPayPal_Click;
+            chbCursorLoop.AutoSize = true;
+            chbCursorLoop.Location = new Point(0x1b, 0x1e1);
+            chbCursorLoop.TabIndex = 0x1f;
+            chbF2Selection.AutoSize = true;
+            chbF2Selection.Location = new Point(0x1b, 0x1c9);
+            chbF2Selection.TabIndex = 30;
+            chbSelectWithoutExt.AutoSize = true;
+            chbSelectWithoutExt.Location = new Point(0x1b, 0x1b1);
+            chbSelectWithoutExt.TabIndex = 0x1d;
+            chbSubDirTipModeSystem.AutoSize = true;
+            chbSubDirTipModeSystem.Location = new Point(0x2d, 0x193);
+            chbSubDirTipModeSystem.TabIndex = 0x1c;
+            chbSubDirTipModeFile.AutoSize = true;
+            chbSubDirTipModeFile.Location = new Point(0xd7, 0x179);
+            chbSubDirTipModeFile.TabIndex = 0x1b;
+            chbSubDirTipModeHidden.AutoSize = true;
+            chbSubDirTipModeHidden.Location = new Point(0x2d, 0x179);
+            chbSubDirTipModeHidden.TabIndex = 0x1a;
+            chbSubDirTipPreview.AutoSize = true;
+            chbSubDirTipPreview.Location = new Point(0xd7, 0x15f);
+            chbSubDirTipPreview.TabIndex = 0x19;
+            chbSubDirTipMode.AutoSize = true;
+            chbSubDirTipMode.Location = new Point(0x2d, 0x15f);
+            chbSubDirTipMode.TabIndex = 0x18;
+            chbSubDirTip.AutoSize = true;
+            chbSubDirTip.Location = new Point(0x1b, 330);
+            chbSubDirTip.TabIndex = 0x17;
+            chbSubDirTip.CheckedChanged += chbSubDirTip_CheckedChanged;
+            btnPreviewFontDefault.Location = new Point(0x191, 0x127);
+            btnPreviewFontDefault.Size = new Size(100, 0x17);
+            btnPreviewFontDefault.TabIndex = 0x16;
+            btnPreviewFontDefault.Click += btnPreviewFont_Click;
+            btnPreviewFont.Location = new Point(0x123, 0x127);
+            btnPreviewFont.Size = new Size(100, 0x17);
+            btnPreviewFont.TabIndex = 0x15;
+            btnPreviewFont.Click += btnPreviewFont_Click;
+            btnDefaultTextExt.Location = new Point(0x191, 0x10d);
+            btnDefaultTextExt.Size = new Size(100, 0x17);
+            btnDefaultTextExt.TabIndex = 20;
+            btnDefaultTextExt.Click += btnDefaultTextExt_Click;
+            btnDelTextExt.Location = new Point(0x123, 0x10d);
+            btnDelTextExt.Size = new Size(100, 0x17);
+            btnDelTextExt.TabIndex = 0x13;
+            btnDelTextExt.Click += btnDelPreiviewExt_Click;
+            btnAddTextExt.Location = new Point(0xb5, 0x10d);
+            btnAddTextExt.Size = new Size(100, 0x17);
+            btnAddTextExt.TabIndex = 0x12;
+            btnAddTextExt.Click += btnAddPreviewExt_Click;
+            cmbTextExts.Location = new Point(0x2d, 0x10d);
+            cmbTextExts.Size = new Size(130, 0x17);
+            cmbTextExts.TabIndex = 0x11;
+            cmbTextExts.SelectedIndexChanged += comboBoxes_SelectedIndexChanged;
+            cmbTextExts.KeyPress += comboBoxPreviewExts_KeyPress;
+            btnDefaultImgExt.Location = new Point(0x191, 0xf3);
+            btnDefaultImgExt.Size = new Size(100, 0x17);
+            btnDefaultImgExt.TabIndex = 0x10;
+            btnDefaultImgExt.Click += btnDefaultImgExt_Click;
+            btnDelImgExt.Location = new Point(0x123, 0xf3);
+            btnDelImgExt.Size = new Size(100, 0x17);
+            btnDelImgExt.TabIndex = 15;
+            btnDelImgExt.Click += btnDelPreiviewExt_Click;
+            btnAddImgExt.Location = new Point(0xb5, 0xf3);
+            btnAddImgExt.Size = new Size(100, 0x17);
+            btnAddImgExt.TabIndex = 14;
+            btnAddImgExt.Click += btnAddPreviewExt_Click;
+            cmbImgExts.Location = new Point(0x2d, 0xf3);
+            cmbImgExts.Size = new Size(130, 0x17);
+            cmbImgExts.TabIndex = 13;
+            cmbImgExts.SelectedIndexChanged += comboBoxes_SelectedIndexChanged;
+            cmbImgExts.KeyPress += comboBoxPreviewExts_KeyPress;
+            lblPreviewWidth.Location = new Point(0x129, 0xbf);
+            lblPreviewWidth.Size = new Size(0x62, 0x15);
+            lblPreviewWidth.TextAlign = ContentAlignment.MiddleRight;
+            lblPreviewHeight.Location = new Point(0x129, 0xd9);
+            lblPreviewHeight.Size = new Size(0x62, 0x15);
+            lblPreviewHeight.TextAlign = ContentAlignment.MiddleRight;
+            nudPreviewMaxWidth.Location = new Point(0x191, 0xbf);
             int[] numArray22 = new int[4];
             numArray22[0] = 0x780;
-            this.nudPreviewMaxWidth.Maximum = new decimal(numArray22);
+            nudPreviewMaxWidth.Maximum = new decimal(numArray22);
             int[] numArray23 = new int[4];
             numArray23[0] = 0x80;
-            this.nudPreviewMaxWidth.Minimum = new decimal(numArray23);
-            this.nudPreviewMaxWidth.Size = new Size(0x3e, 0x15);
-            this.nudPreviewMaxWidth.TabIndex = 11;
-            this.nudPreviewMaxWidth.TextAlign = HorizontalAlignment.Center;
+            nudPreviewMaxWidth.Minimum = new decimal(numArray23);
+            nudPreviewMaxWidth.Size = new Size(0x3e, 0x15);
+            nudPreviewMaxWidth.TabIndex = 11;
+            nudPreviewMaxWidth.TextAlign = HorizontalAlignment.Center;
             int[] numArray24 = new int[4];
             numArray24[0] = 0x200;
-            this.nudPreviewMaxWidth.Value = new decimal(numArray24);
-            this.nudPreviewMaxHeight.Location = new Point(0x191, 0xd9);
+            nudPreviewMaxWidth.Value = new decimal(numArray24);
+            nudPreviewMaxHeight.Location = new Point(0x191, 0xd9);
             int[] numArray25 = new int[4];
             numArray25[0] = 0x4b0;
-            this.nudPreviewMaxHeight.Maximum = new decimal(numArray25);
+            nudPreviewMaxHeight.Maximum = new decimal(numArray25);
             int[] numArray26 = new int[4];
             numArray26[0] = 0x60;
-            this.nudPreviewMaxHeight.Minimum = new decimal(numArray26);
-            this.nudPreviewMaxHeight.Size = new Size(0x3e, 0x15);
-            this.nudPreviewMaxHeight.TabIndex = 12;
-            this.nudPreviewMaxHeight.TextAlign = HorizontalAlignment.Center;
+            nudPreviewMaxHeight.Minimum = new decimal(numArray26);
+            nudPreviewMaxHeight.Size = new Size(0x3e, 0x15);
+            nudPreviewMaxHeight.TabIndex = 12;
+            nudPreviewMaxHeight.TextAlign = HorizontalAlignment.Center;
             int[] numArray27 = new int[4];
             numArray27[0] = 0x100;
-            this.nudPreviewMaxHeight.Value = new decimal(numArray27);
-            this.chbPreviewInfo.AutoSize = true;
-            this.chbPreviewInfo.Location = new Point(0x2d, 0xd7);
-            this.chbPreviewInfo.TabIndex = 10;
-            this.chbPreviewMode.AutoSize = true;
-            this.chbPreviewMode.Location = new Point(0x2d, 0xbf);
-            this.chbPreviewMode.TabIndex = 9;
-            this.chbShowPreview.AutoSize = true;
-            this.chbShowPreview.Location = new Point(0x1b, 170);
-            this.chbShowPreview.TabIndex = 8;
-            this.chbShowPreview.CheckedChanged += this.chbShowPreviewTooltip_CheckedChanged;
-            this.btnAlternate_Default.Enabled = false;
-            this.btnAlternate_Default.Location = new Point(0x191, 0x87);
-            this.btnAlternate_Default.Size = new Size(100, 0x17);
-            this.btnAlternate_Default.TabIndex = 7;
-            this.btnAlternate_Default.Click += this.btnAlternateColor_Click;
-            this.btnAlternateColor_Text.Enabled = false;
-            this.btnAlternateColor_Text.Location = new Point(0x123, 0x87);
-            this.btnAlternateColor_Text.Size = new Size(100, 0x17);
-            this.btnAlternateColor_Text.TabIndex = 6;
-            this.btnAlternateColor_Text.Click += this.btnAlternateColor_Click;
-            this.btnAlternateColor.Enabled = false;
-            this.btnAlternateColor.Location = new Point(0xb5, 0x87);
-            this.btnAlternateColor.Size = new Size(100, 0x17);
-            this.btnAlternateColor.TabIndex = 5;
-            this.btnAlternateColor.Click += this.btnAlternateColor_Click;
-            this.chbAlternateColor.AutoSize = true;
-            this.chbAlternateColor.Location = new Point(0x1b, 0x70);
-            this.chbAlternateColor.TabIndex = 4;
-            this.chbAlternateColor.CheckedChanged += this.chbAlternateColor_CheckedChanged;
-            this.chbGridLine.AutoSize = true;
-            this.chbGridLine.Location = new Point(0x1b, 0x58);
-            this.chbGridLine.TabIndex = 3;
-            this.chbNoFulRowSelect.AutoSize = true;
-            this.chbNoFulRowSelect.Location = new Point(0x1b, 0x40);
-            this.chbNoFulRowSelect.TabIndex = 2;
-            this.chbBSUpOneLvl.AutoSize = true;
-            this.chbBSUpOneLvl.Location = new Point(0x1b, 40);
-            this.chbBSUpOneLvl.TabIndex = 1;
-            this.chbHideMenu.AutoSize = true;
-            this.chbHideMenu.Location = new Point(0x1b, 0x10);
-            this.chbHideMenu.TabIndex = 0;
-            this.tabPage7_Plug.Controls.Add(this.btnBrowsePlugin);
-            this.tabPage7_Plug.Controls.Add(this.pluginView);
-            this.tabPage7_Plug.Controls.Add(this.lblPluginLang);
-            this.tabPage7_Plug.Controls.Add(this.textBoxPluginLang);
-            this.tabPage7_Plug.Controls.Add(this.btnBrowsePluginLang);
-            this.tabPage7_Plug.Location = new Point(4, 0x16);
-            this.tabPage7_Plug.Padding = new Padding(3);
-            this.tabPage7_Plug.Size = new Size(0x1ff, 0x1d7);
-            this.tabPage7_Plug.TabIndex = 2;
-            this.tabPage7_Plug.UseVisualStyleBackColor = true;
-            this.btnBrowsePlugin.AutoSize = true;
-            this.btnBrowsePlugin.Location = new Point(5, 0x10);
-            this.btnBrowsePlugin.TabIndex = 0;
-            this.btnBrowsePlugin.UseVisualStyleBackColor = true;
-            this.btnBrowsePlugin.Click += this.btnBrowsePlugin_Click;
-            this.pluginView.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Top;
-            this.pluginView.ColumnCount = 1;
-            this.pluginView.ColumnStyles.Add(new ColumnStyle());
-            this.pluginView.Location = new Point(5, 0x2d);
-            this.pluginView.Size = new Size(0x1ed, 0x156);
-            this.pluginView.TabIndex = 1;
-            this.lblPluginLang.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
-            this.lblPluginLang.AutoSize = true;
-            this.lblPluginLang.Location = new Point(0x1b, 0x194);
-            this.textBoxPluginLang.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom;
-            this.textBoxPluginLang.Location = new Point(0x2d, 0x1ac);
-            this.textBoxPluginLang.Size = new Size(0x174, 0x15);
-            this.textBoxPluginLang.MaxLength = 260;
-            this.textBoxPluginLang.TabIndex = 2;
-            this.textBoxPluginLang.KeyPress += this.textBoxesPath_KeyPress;
-            this.btnBrowsePluginLang.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
-            this.btnBrowsePluginLang.Location = new Point(0x1a7, 0x1a9);
-            this.btnBrowsePluginLang.Size = new Size(0x22, 0x19);
-            this.btnBrowsePluginLang.TabIndex = 3;
-            this.btnBrowsePluginLang.Text = "...";
-            this.btnBrowsePluginLang.Click += this.btnBrowsePluginLang_Click;
-            this.tabPage8_Keys.Controls.Add(this.btnCopyKeys);
-            this.tabPage8_Keys.Controls.Add(this.listViewKeyboard);
-            this.tabPage8_Keys.Location = new Point(4, 0x16);
-            this.tabPage8_Keys.Padding = new Padding(3);
-            this.tabPage8_Keys.Size = new Size(0x1ff, 0x1d7);
-            this.tabPage8_Keys.TabIndex = 2;
-            this.tabPage8_Keys.UseVisualStyleBackColor = true;
-            this.btnCopyKeys.Anchor = AnchorStyles.Left | AnchorStyles.Top;
-            this.btnCopyKeys.Location = new Point(5, 0x10);
-            this.btnCopyKeys.AutoSize = true;
-            this.btnCopyKeys.TabIndex = 0;
-            this.btnCopyKeys.UseVisualStyleBackColor = true;
-            this.btnCopyKeys.Click += this.btnCopyKeys_Click;
-            this.listViewKeyboard.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Top;
-            this.listViewKeyboard.CheckBoxes = true;
-            this.listViewKeyboard.Columns.AddRange(new ColumnHeader[] { this.clmKeys_Action, this.clmKeys_Key });
-            this.listViewKeyboard.FullRowSelect = true;
-            this.listViewKeyboard.GridLines = true;
-            this.listViewKeyboard.HeaderStyle = ColumnHeaderStyle.Nonclickable;
-            this.listViewKeyboard.Location = new Point(5, 0x2d);
-            this.listViewKeyboard.MultiSelect = false;
-            this.listViewKeyboard.Size = new Size(0x1ed, 0x191);
-            this.listViewKeyboard.ShowItemToolTips = true;
-            this.listViewKeyboard.TabIndex = 1;
-            this.listViewKeyboard.UseCompatibleStateImageBehavior = false;
-            this.listViewKeyboard.View = View.Details;
-            this.listViewKeyboard.PreviewKeyDown += this.listViewKeyboard_PreviewKeyDown;
-            this.listViewKeyboard.KeyPress += this.listViewKeyboard_KeyPress;
-            this.clmKeys_Action.Text = "Action";
-            this.clmKeys_Action.Width = 0x15c;
-            this.clmKeys_Key.Text = "Key";
-            this.clmKeys_Key.TextAlign = HorizontalAlignment.Center;
-            this.clmKeys_Key.Width = 120;
-            this.tabPageA_Path.Controls.Add(this.listView_NoCapture);
-            this.tabPageA_Path.Controls.Add(this.btnOFD_NoCapture);
-            this.tabPageA_Path.Controls.Add(this.btnAdd_NoCapture);
-            this.tabPageA_Path.Controls.Add(this.btnRemove_NoCapture);
-            this.tabPageA_Path.Controls.Add(this.cmbSpclFol_NoCapture);
-            this.tabPageA_Path.Controls.Add(this.btnAddSpcFol_NoCapture);
-            this.tabPageA_Path.Location = new Point(4, 0x16);
-            this.tabPageA_Path.Padding = new Padding(3);
-            this.tabPageA_Path.Size = new Size(0x1ff, 0x1d7);
-            this.tabPageA_Path.TabIndex = 2;
-            this.tabPageA_Path.UseVisualStyleBackColor = true;
-            this.listView_NoCapture.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top;
-            this.listView_NoCapture.Columns.AddRange(new ColumnHeader[] { this.clmnHeader_NoCapture });
-            this.listView_NoCapture.HeaderStyle = ColumnHeaderStyle.Nonclickable;
-            this.listView_NoCapture.HideSelection = false;
-            this.listView_NoCapture.LabelEdit = true;
-            this.listView_NoCapture.Location = new Point(5, 0x2d);
-            this.listView_NoCapture.Size = new Size(0x1ed, 0xa3);
-            this.listView_NoCapture.FullRowSelect = true;
-            this.listView_NoCapture.TabIndex = 8;
-            this.listView_NoCapture.UseCompatibleStateImageBehavior = false;
-            this.listView_NoCapture.View = View.Details;
-            this.listView_NoCapture.ItemActivate += this.listView_NoCapture_ItemActivate;
-            this.listView_NoCapture.SelectedIndexChanged += this.listView_NoCapture_SelectedIndexChanged;
-            this.listView_NoCapture.KeyDown += this.listView_NoCapture_KeyDown;
-            this.listView_NoCapture.BeforeLabelEdit += this.listView_NoCapture_BeforeLabelEdit;
-            this.listView_NoCapture.AfterLabelEdit += this.listView_NoCapture_AfterLabelEdit;
-            this.clmnHeader_NoCapture.Width = 0x1d8;
-            this.btnOFD_NoCapture.Anchor = AnchorStyles.Right | AnchorStyles.Top;
-            this.btnOFD_NoCapture.Location = new Point(0x19b, 0x10);
-            this.btnOFD_NoCapture.Size = new Size(0x19, 0x17);
-            this.btnOFD_NoCapture.TabIndex = 0;
-            this.btnOFD_NoCapture.Text = "...";
-            this.btnOFD_NoCapture.UseVisualStyleBackColor = true;
-            this.btnOFD_NoCapture.Click += this.btnOFD_NoCapture_Click;
-            this.btnAdd_NoCapture.Anchor = AnchorStyles.Right | AnchorStyles.Top;
-            this.btnAdd_NoCapture.Location = new Point(0x1ba, 0x10);
-            this.btnAdd_NoCapture.Size = new Size(0x19, 0x17);
-            this.btnAdd_NoCapture.TabIndex = 1;
-            this.btnAdd_NoCapture.Text = "+";
-            this.btnAdd_NoCapture.UseVisualStyleBackColor = true;
-            this.btnAdd_NoCapture.Click += this.btnAdd_NoCapture_Click;
-            this.btnRemove_NoCapture.Anchor = AnchorStyles.Right | AnchorStyles.Top;
-            this.btnRemove_NoCapture.Enabled = false;
-            this.btnRemove_NoCapture.Location = new Point(0x1d9, 0x10);
-            this.btnRemove_NoCapture.Size = new Size(0x19, 0x17);
-            this.btnRemove_NoCapture.TabIndex = 2;
-            this.btnRemove_NoCapture.Text = "-";
-            this.btnRemove_NoCapture.UseVisualStyleBackColor = true;
-            this.btnRemove_NoCapture.Click += this.btnRemove_NoCapture_Click;
-            this.cmbSpclFol_NoCapture.Anchor = AnchorStyles.Left | AnchorStyles.Top;
-            this.cmbSpclFol_NoCapture.DropDownStyle = ComboBoxStyle.DropDownList;
-            this.cmbSpclFol_NoCapture.Location = new Point(5, 0xd4);
-            this.cmbSpclFol_NoCapture.Size = new Size(150, 0x15);
-            this.cmbSpclFol_NoCapture.TabIndex = 3;
-            this.btnAddSpcFol_NoCapture.Anchor = AnchorStyles.Left | AnchorStyles.Top;
-            this.btnAddSpcFol_NoCapture.Location = new Point(0x9e, 0xd3);
-            this.btnAddSpcFol_NoCapture.Size = new Size(0x19, 0x17);
-            this.btnAddSpcFol_NoCapture.Text = "+";
-            this.btnAddSpcFol_NoCapture.TabIndex = 4;
-            this.btnAddSpcFol_NoCapture.Click += this.btnAddSpcFol_NoCapture_Click;
-            base.AutoScaleDimensions = new SizeF(6f, 13f);
-            base.AutoScaleMode = AutoScaleMode.Font;
-            base.ClientSize = new Size(0x211, 0x269);
-            this.MinimumSize = new Size(0x221, 0x28e);
-            base.Controls.Add(this.tabControl1);
-            base.Controls.Add(this.lblVer);
-            base.Controls.Add(this.btnOK);
-            base.Controls.Add(this.btnCancel);
-            base.Controls.Add(this.btnApply);
-            base.MaximizeBox = false;
-            base.ShowIcon = false;
-            base.StartPosition = FormStartPosition.CenterParent;
-            this.Text = "QTTabBar Options";
-            base.FormClosing += this.OptionsDialog_FormClosing;
-            this.tabControl1.ResumeLayout(false);
-            this.tabPage1_Gnrl.ResumeLayout(false);
-            this.tabPage1_Gnrl.PerformLayout();
-            this.tabPage2_Tabs.ResumeLayout(false);
-            this.tabPage2_Tabs.PerformLayout();
-            this.tabPage3_Wndw.ResumeLayout(false);
-            this.tabPage3_Wndw.PerformLayout();
-            this.tabPage4_View.ResumeLayout(false);
-            this.tabPage4_View.PerformLayout();
-            this.tabPage5_Grps.ResumeLayout(false);
-            this.tabPage5_Grps.PerformLayout();
-            this.tabPage6_Apps.ResumeLayout(false);
-            this.tabPage6_Apps.PerformLayout();
-            this.tabPage7_Plug.ResumeLayout(false);
-            this.tabPage7_Plug.PerformLayout();
-            this.tabPage8_Keys.ResumeLayout(false);
-            this.tabPage8_Keys.PerformLayout();
-            this.tabPage9_Misc.ResumeLayout(false);
-            this.tabPage9_Misc.PerformLayout();
-            this.tabPageA_Path.ResumeLayout(false);
-            this.tabPageA_Path.PerformLayout();
-            this.nudMaxRecentFile.EndInit();
-            this.nudMaxUndo.EndInit();
-            this.nudNetworkTimeOut.EndInit();
-            this.nudTabWidthMin.EndInit();
-            this.nudTabWidthMax.EndInit();
-            this.nudTabHeight.EndInit();
-            this.nudTabWidth.EndInit();
-            this.nudPreviewMaxHeight.EndInit();
-            this.nudPreviewMaxWidth.EndInit();
-            base.ResumeLayout(false);
-            base.PerformLayout();
+            nudPreviewMaxHeight.Value = new decimal(numArray27);
+            chbPreviewInfo.AutoSize = true;
+            chbPreviewInfo.Location = new Point(0x2d, 0xd7);
+            chbPreviewInfo.TabIndex = 10;
+            chbPreviewMode.AutoSize = true;
+            chbPreviewMode.Location = new Point(0x2d, 0xbf);
+            chbPreviewMode.TabIndex = 9;
+            chbShowPreview.AutoSize = true;
+            chbShowPreview.Location = new Point(0x1b, 170);
+            chbShowPreview.TabIndex = 8;
+            chbShowPreview.CheckedChanged += chbShowPreviewTooltip_CheckedChanged;
+            btnAlternate_Default.Enabled = false;
+            btnAlternate_Default.Location = new Point(0x191, 0x87);
+            btnAlternate_Default.Size = new Size(100, 0x17);
+            btnAlternate_Default.TabIndex = 7;
+            btnAlternate_Default.Click += btnAlternateColor_Click;
+            btnAlternateColor_Text.Enabled = false;
+            btnAlternateColor_Text.Location = new Point(0x123, 0x87);
+            btnAlternateColor_Text.Size = new Size(100, 0x17);
+            btnAlternateColor_Text.TabIndex = 6;
+            btnAlternateColor_Text.Click += btnAlternateColor_Click;
+            btnAlternateColor.Enabled = false;
+            btnAlternateColor.Location = new Point(0xb5, 0x87);
+            btnAlternateColor.Size = new Size(100, 0x17);
+            btnAlternateColor.TabIndex = 5;
+            btnAlternateColor.Click += btnAlternateColor_Click;
+            chbAlternateColor.AutoSize = true;
+            chbAlternateColor.Location = new Point(0x1b, 0x70);
+            chbAlternateColor.TabIndex = 4;
+            chbAlternateColor.CheckedChanged += chbAlternateColor_CheckedChanged;
+            chbGridLine.AutoSize = true;
+            chbGridLine.Location = new Point(0x1b, 0x58);
+            chbGridLine.TabIndex = 3;
+            chbNoFulRowSelect.AutoSize = true;
+            chbNoFulRowSelect.Location = new Point(0x1b, 0x40);
+            chbNoFulRowSelect.TabIndex = 2;
+            chbBSUpOneLvl.AutoSize = true;
+            chbBSUpOneLvl.Location = new Point(0x1b, 40);
+            chbBSUpOneLvl.TabIndex = 1;
+            chbHideMenu.AutoSize = true;
+            chbHideMenu.Location = new Point(0x1b, 0x10);
+            chbHideMenu.TabIndex = 0;
+            tabPage7_Plug.Controls.Add(btnBrowsePlugin);
+            tabPage7_Plug.Controls.Add(pluginView);
+            tabPage7_Plug.Controls.Add(lblPluginLang);
+            tabPage7_Plug.Controls.Add(textBoxPluginLang);
+            tabPage7_Plug.Controls.Add(btnBrowsePluginLang);
+            tabPage7_Plug.Location = new Point(4, 0x16);
+            tabPage7_Plug.Padding = new Padding(3);
+            tabPage7_Plug.Size = new Size(0x1ff, 0x1d7);
+            tabPage7_Plug.TabIndex = 2;
+            tabPage7_Plug.UseVisualStyleBackColor = true;
+            btnBrowsePlugin.AutoSize = true;
+            btnBrowsePlugin.Location = new Point(5, 0x10);
+            btnBrowsePlugin.TabIndex = 0;
+            btnBrowsePlugin.UseVisualStyleBackColor = true;
+            btnBrowsePlugin.Click += btnBrowsePlugin_Click;
+            pluginView.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Top;
+            pluginView.ColumnCount = 1;
+            pluginView.ColumnStyles.Add(new ColumnStyle());
+            pluginView.Location = new Point(5, 0x2d);
+            pluginView.Size = new Size(0x1ed, 0x156);
+            pluginView.TabIndex = 1;
+            lblPluginLang.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            lblPluginLang.AutoSize = true;
+            lblPluginLang.Location = new Point(0x1b, 0x194);
+            textBoxPluginLang.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom;
+            textBoxPluginLang.Location = new Point(0x2d, 0x1ac);
+            textBoxPluginLang.Size = new Size(0x174, 0x15);
+            textBoxPluginLang.MaxLength = 260;
+            textBoxPluginLang.TabIndex = 2;
+            textBoxPluginLang.KeyPress += textBoxesPath_KeyPress;
+            btnBrowsePluginLang.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
+            btnBrowsePluginLang.Location = new Point(0x1a7, 0x1a9);
+            btnBrowsePluginLang.Size = new Size(0x22, 0x19);
+            btnBrowsePluginLang.TabIndex = 3;
+            btnBrowsePluginLang.Text = "...";
+            btnBrowsePluginLang.Click += btnBrowsePluginLang_Click;
+            tabPage8_Keys.Controls.Add(btnCopyKeys);
+            tabPage8_Keys.Controls.Add(listViewKeyboard);
+            tabPage8_Keys.Location = new Point(4, 0x16);
+            tabPage8_Keys.Padding = new Padding(3);
+            tabPage8_Keys.Size = new Size(0x1ff, 0x1d7);
+            tabPage8_Keys.TabIndex = 2;
+            tabPage8_Keys.UseVisualStyleBackColor = true;
+            btnCopyKeys.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+            btnCopyKeys.Location = new Point(5, 0x10);
+            btnCopyKeys.AutoSize = true;
+            btnCopyKeys.TabIndex = 0;
+            btnCopyKeys.UseVisualStyleBackColor = true;
+            btnCopyKeys.Click += btnCopyKeys_Click;
+            listViewKeyboard.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Top;
+            listViewKeyboard.CheckBoxes = true;
+            listViewKeyboard.Columns.AddRange(new ColumnHeader[] { clmKeys_Action, clmKeys_Key });
+            listViewKeyboard.FullRowSelect = true;
+            listViewKeyboard.GridLines = true;
+            listViewKeyboard.HeaderStyle = ColumnHeaderStyle.Nonclickable;
+            listViewKeyboard.Location = new Point(5, 0x2d);
+            listViewKeyboard.MultiSelect = false;
+            listViewKeyboard.Size = new Size(0x1ed, 0x191);
+            listViewKeyboard.ShowItemToolTips = true;
+            listViewKeyboard.TabIndex = 1;
+            listViewKeyboard.UseCompatibleStateImageBehavior = false;
+            listViewKeyboard.View = View.Details;
+            listViewKeyboard.PreviewKeyDown += listViewKeyboard_PreviewKeyDown;
+            listViewKeyboard.KeyPress += listViewKeyboard_KeyPress;
+            clmKeys_Action.Text = "Action";
+            clmKeys_Action.Width = 0x15c;
+            clmKeys_Key.Text = "Key";
+            clmKeys_Key.TextAlign = HorizontalAlignment.Center;
+            clmKeys_Key.Width = 120;
+            tabPageA_Path.Controls.Add(listView_NoCapture);
+            tabPageA_Path.Controls.Add(btnOFD_NoCapture);
+            tabPageA_Path.Controls.Add(btnAdd_NoCapture);
+            tabPageA_Path.Controls.Add(btnRemove_NoCapture);
+            tabPageA_Path.Controls.Add(cmbSpclFol_NoCapture);
+            tabPageA_Path.Controls.Add(btnAddSpcFol_NoCapture);
+            tabPageA_Path.Location = new Point(4, 0x16);
+            tabPageA_Path.Padding = new Padding(3);
+            tabPageA_Path.Size = new Size(0x1ff, 0x1d7);
+            tabPageA_Path.TabIndex = 2;
+            tabPageA_Path.UseVisualStyleBackColor = true;
+            listView_NoCapture.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top;
+            listView_NoCapture.Columns.AddRange(new ColumnHeader[] { clmnHeader_NoCapture });
+            listView_NoCapture.HeaderStyle = ColumnHeaderStyle.Nonclickable;
+            listView_NoCapture.HideSelection = false;
+            listView_NoCapture.LabelEdit = true;
+            listView_NoCapture.Location = new Point(5, 0x2d);
+            listView_NoCapture.Size = new Size(0x1ed, 0xa3);
+            listView_NoCapture.FullRowSelect = true;
+            listView_NoCapture.TabIndex = 8;
+            listView_NoCapture.UseCompatibleStateImageBehavior = false;
+            listView_NoCapture.View = View.Details;
+            listView_NoCapture.ItemActivate += listView_NoCapture_ItemActivate;
+            listView_NoCapture.SelectedIndexChanged += listView_NoCapture_SelectedIndexChanged;
+            listView_NoCapture.KeyDown += listView_NoCapture_KeyDown;
+            listView_NoCapture.BeforeLabelEdit += listView_NoCapture_BeforeLabelEdit;
+            listView_NoCapture.AfterLabelEdit += listView_NoCapture_AfterLabelEdit;
+            clmnHeader_NoCapture.Width = 0x1d8;
+            btnOFD_NoCapture.Anchor = AnchorStyles.Right | AnchorStyles.Top;
+            btnOFD_NoCapture.Location = new Point(0x19b, 0x10);
+            btnOFD_NoCapture.Size = new Size(0x19, 0x17);
+            btnOFD_NoCapture.TabIndex = 0;
+            btnOFD_NoCapture.Text = "...";
+            btnOFD_NoCapture.UseVisualStyleBackColor = true;
+            btnOFD_NoCapture.Click += btnOFD_NoCapture_Click;
+            btnAdd_NoCapture.Anchor = AnchorStyles.Right | AnchorStyles.Top;
+            btnAdd_NoCapture.Location = new Point(0x1ba, 0x10);
+            btnAdd_NoCapture.Size = new Size(0x19, 0x17);
+            btnAdd_NoCapture.TabIndex = 1;
+            btnAdd_NoCapture.Text = "+";
+            btnAdd_NoCapture.UseVisualStyleBackColor = true;
+            btnAdd_NoCapture.Click += btnAdd_NoCapture_Click;
+            btnRemove_NoCapture.Anchor = AnchorStyles.Right | AnchorStyles.Top;
+            btnRemove_NoCapture.Enabled = false;
+            btnRemove_NoCapture.Location = new Point(0x1d9, 0x10);
+            btnRemove_NoCapture.Size = new Size(0x19, 0x17);
+            btnRemove_NoCapture.TabIndex = 2;
+            btnRemove_NoCapture.Text = "-";
+            btnRemove_NoCapture.UseVisualStyleBackColor = true;
+            btnRemove_NoCapture.Click += btnRemove_NoCapture_Click;
+            cmbSpclFol_NoCapture.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+            cmbSpclFol_NoCapture.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbSpclFol_NoCapture.Location = new Point(5, 0xd4);
+            cmbSpclFol_NoCapture.Size = new Size(150, 0x15);
+            cmbSpclFol_NoCapture.TabIndex = 3;
+            btnAddSpcFol_NoCapture.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+            btnAddSpcFol_NoCapture.Location = new Point(0x9e, 0xd3);
+            btnAddSpcFol_NoCapture.Size = new Size(0x19, 0x17);
+            btnAddSpcFol_NoCapture.Text = "+";
+            btnAddSpcFol_NoCapture.TabIndex = 4;
+            btnAddSpcFol_NoCapture.Click += btnAddSpcFol_NoCapture_Click;
+            AutoScaleDimensions = new SizeF(6f, 13f);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(0x211, 0x269);
+            MinimumSize = new Size(0x221, 0x28e);
+            Controls.Add(tabControl1);
+            Controls.Add(lblVer);
+            Controls.Add(btnOK);
+            Controls.Add(btnCancel);
+            Controls.Add(btnApply);
+            MaximizeBox = false;
+            ShowIcon = false;
+            StartPosition = FormStartPosition.CenterParent;
+            Text = "QTTabBar Options";
+            FormClosing += OptionsDialog_FormClosing;
+            tabControl1.ResumeLayout(false);
+            tabPage1_Gnrl.ResumeLayout(false);
+            tabPage1_Gnrl.PerformLayout();
+            tabPage2_Tabs.ResumeLayout(false);
+            tabPage2_Tabs.PerformLayout();
+            tabPage3_Wndw.ResumeLayout(false);
+            tabPage3_Wndw.PerformLayout();
+            tabPage4_View.ResumeLayout(false);
+            tabPage4_View.PerformLayout();
+            tabPage5_Grps.ResumeLayout(false);
+            tabPage5_Grps.PerformLayout();
+            tabPage6_Apps.ResumeLayout(false);
+            tabPage6_Apps.PerformLayout();
+            tabPage7_Plug.ResumeLayout(false);
+            tabPage7_Plug.PerformLayout();
+            tabPage8_Keys.ResumeLayout(false);
+            tabPage8_Keys.PerformLayout();
+            tabPage9_Misc.ResumeLayout(false);
+            tabPage9_Misc.PerformLayout();
+            tabPageA_Path.ResumeLayout(false);
+            tabPageA_Path.PerformLayout();
+            nudMaxRecentFile.EndInit();
+            nudMaxUndo.EndInit();
+            nudNetworkTimeOut.EndInit();
+            nudTabWidthMin.EndInit();
+            nudTabWidthMax.EndInit();
+            nudTabHeight.EndInit();
+            nudTabWidth.EndInit();
+            nudPreviewMaxHeight.EndInit();
+            nudPreviewMaxWidth.EndInit();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         private void InitializePluginView() {
-            this.pluginView.SuspendLayout();
-            this.CreatePluginViewItem(PluginManager.PluginAssemblies.ToArray(), false);
-            this.pluginView.ResumeLayout();
-            this.pluginView.PluginRemoved += this.pluginView_PluginRemoved;
-            this.pluginView.PluginOptionRequired += this.pluginView_PluginOptionRequired;
-            this.pluginView.PluginAboutRequired += this.pluginView_PluginAboutRequired;
-            this.pluginView.QueryPluginInfoHasOption += this.pluginView_QueryPluginInfoHasOption;
-            this.pluginView.DragDropEx += this.pluginView_DragDropEx;
+            pluginView.SuspendLayout();
+            CreatePluginViewItem(PluginManager.PluginAssemblies.ToArray(), false);
+            pluginView.ResumeLayout();
+            pluginView.PluginRemoved += pluginView_PluginRemoved;
+            pluginView.PluginOptionRequired += pluginView_PluginOptionRequired;
+            pluginView.PluginAboutRequired += pluginView_PluginAboutRequired;
+            pluginView.QueryPluginInfoHasOption += pluginView_QueryPluginInfoHasOption;
+            pluginView.DragDropEx += pluginView_DragDropEx;
         }
 
         private static void InitializeStaticFields() {
@@ -3093,15 +3093,15 @@ namespace QTTabBarLib {
         }
 
         private void InitializeTreeView_Group() {
-            this.tnGroupsRoot = new TreeNode(ResOpt_Genre[4]);
-            this.tnGroupsRoot.ImageKey = this.tnGroupsRoot.SelectedImageKey = "groupRoot";
-            this.treeViewGroup.BeginUpdate();
+            tnGroupsRoot = new TreeNode(ResOpt_Genre[4]);
+            tnGroupsRoot.ImageKey = tnGroupsRoot.SelectedImageKey = "groupRoot";
+            treeViewGroup.BeginUpdate();
             foreach(string str in QTUtility.GroupPathsDic.Keys) {
                 string str2 = QTUtility.GroupPathsDic[str];
                 if(str2.Length > 0) {
                     TreeNode node = new TreeNode(str);
                     if(QTUtility.StartUpGroupList.Contains(str)) {
-                        node.NodeFont = this.fntStartUpGroup;
+                        node.NodeFont = fntStartUpGroup;
                     }
                     bool flag = true;
                     foreach(string str3 in str2.Split(QTUtility.SEPARATOR_CHAR)) {
@@ -3117,7 +3117,7 @@ namespace QTTabBarLib {
                         }
                     }
                     if(node.Nodes.Count > 0) {
-                        this.tnGroupsRoot.Nodes.Add(node);
+                        tnGroupsRoot.Nodes.Add(node);
                         int keyShortcut = 0;
                         if(QTUtility.dicGroupNamesAndKeys.ContainsKey(str)) {
                             keyShortcut = QTUtility.dicGroupNamesAndKeys[str];
@@ -3130,38 +3130,38 @@ namespace QTTabBarLib {
                 node3.Tag = MIA_GROUPSEP;
                 node3.ForeColor = SystemColors.GrayText;
                 node3.ImageKey = node3.SelectedImageKey = "noimage";
-                this.tnGroupsRoot.Nodes.Add(node3);
+                tnGroupsRoot.Nodes.Add(node3);
             }
-            this.treeViewGroup.Nodes.Add(this.tnGroupsRoot);
-            this.treeViewGroup.SelectedNode = this.tnGroupsRoot;
-            this.tnGroupsRoot.Expand();
-            this.treeViewGroup.EndUpdate();
+            treeViewGroup.Nodes.Add(tnGroupsRoot);
+            treeViewGroup.SelectedNode = tnGroupsRoot;
+            tnGroupsRoot.Expand();
+            treeViewGroup.EndUpdate();
         }
 
         private void InitializeTreeView_UserApps() {
-            this.btnAddVFolder_app.Image = QTUtility.ImageListGlobal.Images["folder"];
-            this.tnRoot_UserApps = new TreeNode(ResOpt_Genre[5]);
-            this.tnRoot_UserApps.ImageKey = this.tnRoot_UserApps.SelectedImageKey = "userAppsRoot";
-            this.treeViewUserApps.BeginUpdate();
+            btnAddVFolder_app.Image = QTUtility.ImageListGlobal.Images["folder"];
+            tnRoot_UserApps = new TreeNode(ResOpt_Genre[5]);
+            tnRoot_UserApps.ImageKey = tnRoot_UserApps.SelectedImageKey = "userAppsRoot";
+            treeViewUserApps.BeginUpdate();
             foreach(string str in QTUtility.UserAppsDic.Keys) {
                 string[] appVals = QTUtility.UserAppsDic[str];
                 if(appVals != null) {
                     if((appVals.Length == 3) || (appVals.Length == 4)) {
-                        this.tnRoot_UserApps.Nodes.Add(CreateUserAppNode(str, appVals));
+                        tnRoot_UserApps.Nodes.Add(CreateUserAppNode(str, appVals));
                     }
                     continue;
                 }
                 using(RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Quizo\QTTabBar\UserApps\" + str)) {
                     TreeNode node;
                     if((key != null) && CreateUserAppNode_Sub(str, key, out node)) {
-                        this.tnRoot_UserApps.Nodes.Add(node);
+                        tnRoot_UserApps.Nodes.Add(node);
                     }
                     continue;
                 }
             }
-            this.treeViewUserApps.Nodes.Add(this.tnRoot_UserApps);
-            this.tnRoot_UserApps.Expand();
-            this.treeViewUserApps.EndUpdate();
+            treeViewUserApps.Nodes.Add(tnRoot_UserApps);
+            tnRoot_UserApps.Expand();
+            treeViewUserApps.EndUpdate();
         }
 
         private static bool IsInvalidShortcutKey(Keys key, Keys modKeys) {
@@ -3217,8 +3217,8 @@ namespace QTTabBarLib {
         }
 
         private void listView_NoCapture_AfterLabelEdit(object sender, LabelEditEventArgs e) {
-            this.fNowListViewItemEditing = false;
-            ListViewItem item = this.listView_NoCapture.Items[e.Item];
+            fNowListViewItemEditing = false;
+            ListViewItem item = listView_NoCapture.Items[e.Item];
             item.Selected = true;
             if(e.Label != null) {
                 bool flag = false;
@@ -3250,19 +3250,19 @@ namespace QTTabBarLib {
         }
 
         private void listView_NoCapture_BeforeLabelEdit(object sender, LabelEditEventArgs e) {
-            this.fNowListViewItemEditing = true;
+            fNowListViewItemEditing = true;
         }
 
         private void listView_NoCapture_ItemActivate(object sender, EventArgs e) {
-            if(this.listView_NoCapture.SelectedItems.Count > 0) {
-                ListViewItem item = this.listView_NoCapture.SelectedItems[0];
-                this.listView_NoCapture.SelectedItems.Clear();
+            if(listView_NoCapture.SelectedItems.Count > 0) {
+                ListViewItem item = listView_NoCapture.SelectedItems[0];
+                listView_NoCapture.SelectedItems.Clear();
                 item.BeginEdit();
             }
         }
 
         private void listView_NoCapture_KeyDown(object sender, KeyEventArgs e) {
-            if(this.listView_NoCapture.SelectedItems.Count > 0) {
+            if(listView_NoCapture.SelectedItems.Count > 0) {
                 Keys keyCode = e.KeyCode;
                 if(keyCode != Keys.Delete) {
                     if(keyCode != Keys.F2) {
@@ -3270,19 +3270,19 @@ namespace QTTabBarLib {
                     }
                 }
                 else {
-                    foreach(ListViewItem item in this.listView_NoCapture.SelectedItems) {
-                        this.listView_NoCapture.Items.Remove(item);
+                    foreach(ListViewItem item in listView_NoCapture.SelectedItems) {
+                        listView_NoCapture.Items.Remove(item);
                     }
                     return;
                 }
-                ListViewItem item2 = this.listView_NoCapture.SelectedItems[0];
-                this.listView_NoCapture.SelectedItems.Clear();
+                ListViewItem item2 = listView_NoCapture.SelectedItems[0];
+                listView_NoCapture.SelectedItems.Clear();
                 item2.BeginEdit();
             }
         }
 
         private void listView_NoCapture_SelectedIndexChanged(object sender, EventArgs e) {
-            this.btnRemove_NoCapture.Enabled = this.listView_NoCapture.SelectedItems.Count > 0;
+            btnRemove_NoCapture.Enabled = listView_NoCapture.SelectedItems.Count > 0;
         }
 
         private void listViewKeyboard_KeyPress(object sender, KeyPressEventArgs e) {
@@ -3290,14 +3290,14 @@ namespace QTTabBarLib {
         }
 
         private void listViewKeyboard_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e) {
-            if(!IsInvalidShortcutKey(e.KeyCode, e.Modifiers) && (this.listViewKeyboard.SelectedItems.Count == 1)) {
-                ListViewItem lviCurrent = this.listViewKeyboard.SelectedItems[0];
+            if(!IsInvalidShortcutKey(e.KeyCode, e.Modifiers) && (listViewKeyboard.SelectedItems.Count == 1)) {
+                ListViewItem lviCurrent = listViewKeyboard.SelectedItems[0];
                 if((lviCurrent.Tag != null) && (((Keys)lviCurrent.Tag) != e.KeyData)) {
                     if(e.KeyCode == Keys.Escape) {
                         lviCurrent.SubItems[1].Text = " - ";
                         lviCurrent.Tag = Keys.None;
                     }
-                    else if(((e.Modifiers != Keys.None) || ((Keys.F1 <= e.KeyCode) && (e.KeyCode <= Keys.F24))) && ((this.CheckExistance_Shortcuts(e.KeyData, lviCurrent) && this.CheckExistance_UserAppKey(e.KeyData, this.tnRoot_UserApps, null)) && this.CheckExistance_GroupKey(e.KeyData, null))) {
+                    else if(((e.Modifiers != Keys.None) || ((Keys.F1 <= e.KeyCode) && (e.KeyCode <= Keys.F24))) && ((CheckExistance_Shortcuts(e.KeyData, lviCurrent) && CheckExistance_UserAppKey(e.KeyData, tnRoot_UserApps, null)) && CheckExistance_GroupKey(e.KeyData, null))) {
                         lviCurrent.SubItems[1].Text = QTUtility2.MakeKeyString(e.KeyData);
                         lviCurrent.Tag = e.KeyData;
                     }
@@ -3307,19 +3307,19 @@ namespace QTTabBarLib {
         }
 
         private void numericUpDownMax_ValueChanged(object sender, EventArgs e) {
-            if(sender == this.nudTabWidthMax) {
-                if(this.nudTabWidthMax.Value < this.nudTabWidthMin.Value) {
-                    this.nudTabWidthMax.Value = this.nudTabWidthMin.Value;
+            if(sender == nudTabWidthMax) {
+                if(nudTabWidthMax.Value < nudTabWidthMin.Value) {
+                    nudTabWidthMax.Value = nudTabWidthMin.Value;
                 }
             }
-            else if(this.nudTabWidthMin.Value > this.nudTabWidthMax.Value) {
-                this.nudTabWidthMin.Value = this.nudTabWidthMax.Value;
+            else if(nudTabWidthMin.Value > nudTabWidthMax.Value) {
+                nudTabWidthMin.Value = nudTabWidthMax.Value;
             }
         }
 
         protected override void OnResize(EventArgs e) {
             base.OnResize(e);
-            TabPage selectedTab = this.tabControl1.SelectedTab;
+            TabPage selectedTab = tabControl1.SelectedTab;
             if(selectedTab != null) {
                 selectedTab.Invalidate();
             }
@@ -3328,35 +3328,35 @@ namespace QTTabBarLib {
         private void OptionsDialog_FormClosing(object sender, FormClosingEventArgs e) {
             using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
                 if(key != null) {
-                    Rectangle bounds = base.Bounds;
-                    if(base.WindowState == FormWindowState.Minimized) {
-                        bounds = base.RestoreBounds;
+                    Rectangle bounds = Bounds;
+                    if(WindowState == FormWindowState.Minimized) {
+                        bounds = RestoreBounds;
                     }
                     int[] array = new int[] { bounds.Left, bounds.Top, bounds.Width, bounds.Height };
                     QTUtility2.WriteRegBinary(array, "OptionWindowBounds", key);
                 }
             }
-            if(this.callBack != null) {
-                this.callBack.BeginInvoke(DialogResult.Cancel, null, null);
-                this.callBack = null;
+            if(callBack != null) {
+                callBack.BeginInvoke(DialogResult.Cancel, null, null);
+                callBack = null;
             }
         }
 
         public void OwnerWindowClosing() {
-            this.callBack = null;
-            base.Close();
+            callBack = null;
+            Close();
         }
 
         private void pluginView_DragDropEx(object sender, EventArgs e) {
             bool flag = true;
-            foreach(string str in this.pluginView.DroppedFiles) {
+            foreach(string str in pluginView.DroppedFiles) {
                 if(!string.IsNullOrEmpty(str)) {
                     PluginAssembly assembly = new PluginAssembly(str);
                     if(assembly.PluginInfosExist) {
-                        this.CreatePluginViewItem(new PluginAssembly[] { assembly }, true);
+                        CreatePluginViewItem(new PluginAssembly[] { assembly }, true);
                         if(flag) {
                             flag = false;
-                            this.SelectPluginBottom();
+                            SelectPluginBottom();
                         }
                     }
                 }
@@ -3366,17 +3366,17 @@ namespace QTTabBarLib {
         private void pluginView_PluginAboutRequired(object sender, PluginOptionEventArgs e) {
             PluginInformation pluginInfo = e.PluginViewItem.PluginInfo;
             string strMessage = pluginInfo.Name + Environment.NewLine + pluginInfo.Version + Environment.NewLine + pluginInfo.Author + Environment.NewLine + Environment.NewLine + "\"" + pluginInfo.Path + "\"";
-            MessageForm.Show(base.Handle, strMessage, string.Format(PluginView.MNU_PLUGINABOUT, pluginInfo.Name), MessageBoxIcon.Asterisk, 0xea60);
+            MessageForm.Show(Handle, strMessage, string.Format(PluginView.MNU_PLUGINABOUT, pluginInfo.Name), MessageBoxIcon.Asterisk, 0xea60);
         }
 
         private void pluginView_PluginOptionRequired(object sender, PluginOptionEventArgs e) {
             Plugin plugin;
-            if((this.pluginManager.TryGetPlugin(e.PluginViewItem.PluginInfo.PluginID, out plugin) && (plugin != null)) && (plugin.Instance != null)) {
+            if((pluginManager.TryGetPlugin(e.PluginViewItem.PluginInfo.PluginID, out plugin) && (plugin != null)) && (plugin.Instance != null)) {
                 try {
                     plugin.Instance.OnOption();
                 }
                 catch(Exception exception) {
-                    PluginManager.HandlePluginException(exception, base.Handle, plugin.PluginInformation.Name, "Open plugin option.");
+                    PluginManager.HandlePluginException(exception, Handle, plugin.PluginInformation.Name, "Open plugin option.");
                     QTUtility2.MakeErrorLog(exception, "Error at Plugin: " + e.PluginViewItem.PluginInfo.Name, true);
                 }
             }
@@ -3394,19 +3394,19 @@ namespace QTTabBarLib {
                     e.Cancel = true;
                     return;
                 }
-                this.pluginView.RemovePluginsRange(pluingAssembly.PluginInformations.ToArray());
+                pluginView.RemovePluginsRange(pluingAssembly.PluginInformations.ToArray());
             }
-            this.DeletePluginAssembly(pluingAssembly);
+            DeletePluginAssembly(pluingAssembly);
         }
 
         private bool pluginView_QueryPluginInfoHasOption(PluginInformation pi) {
             Plugin plugin;
-            if(this.pluginManager.TryGetPlugin(pi.PluginID, out plugin)) {
+            if(pluginManager.TryGetPlugin(pi.PluginID, out plugin)) {
                 try {
                     return plugin.Instance.HasOption;
                 }
                 catch(Exception exception) {
-                    PluginManager.HandlePluginException(exception, base.Handle, pi.Name, "Checking if the plugin has option.");
+                    PluginManager.HandlePluginException(exception, Handle, pi.Name, "Checking if the plugin has option.");
                     QTUtility2.MakeErrorLog(exception, "Error at Plugin: " + pi.Name, true);
                 }
             }
@@ -3414,7 +3414,7 @@ namespace QTTabBarLib {
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
-            if((this.tabControl1.SelectedIndex == 7) && this.listViewKeyboard.Focused) {
+            if((tabControl1.SelectedIndex == 7) && listViewKeyboard.Focused) {
                 bool flag = (keyData & Keys.Control) == Keys.Control;
                 bool flag2 = (keyData & Keys.Shift) == Keys.Shift;
                 bool flag3 = (keyData & Keys.Alt) == Keys.Alt;
@@ -3433,65 +3433,65 @@ namespace QTTabBarLib {
                     }
                 }
             }
-            if((base.ActiveControl == this.tbUserAppKey) || (base.ActiveControl == this.tbGroupKey)) {
+            if((ActiveControl == tbUserAppKey) || (ActiveControl == tbGroupKey)) {
                 return ((keyData != Keys.Tab) && (keyData != (Keys.Shift | Keys.Tab)));
             }
-            if((keyData == Keys.Return) && (base.ActiveControl is Button)) {
-                ((Button)base.ActiveControl).PerformClick();
+            if((keyData == Keys.Return) && (ActiveControl is Button)) {
+                ((Button)ActiveControl).PerformClick();
                 return true;
             }
             if((keyData != Keys.Escape) && (keyData != Keys.Return)) {
                 return base.ProcessCmdKey(ref msg, keyData);
             }
-            switch(this.tabControl1.SelectedIndex) {
+            switch(tabControl1.SelectedIndex) {
                 case 4:
-                    if(!this.fNowTreeNodeEditing) {
+                    if(!fNowTreeNodeEditing) {
                         break;
                     }
                     return base.ProcessCmdKey(ref msg, keyData);
 
                 case 5:
-                    if(!this.fNowTreeNodeEditing) {
+                    if(!fNowTreeNodeEditing) {
                         if(keyData != Keys.Return) {
                             break;
                         }
-                        if(base.ActiveControl == this.tbPath) {
-                            this.tbArgs.Focus();
+                        if(ActiveControl == tbPath) {
+                            tbArgs.Focus();
                             return true;
                         }
-                        if(base.ActiveControl == this.tbArgs) {
-                            this.tbWorking.Focus();
+                        if(ActiveControl == tbArgs) {
+                            tbWorking.Focus();
                             return true;
                         }
-                        if(base.ActiveControl == this.tbWorking) {
-                            this.tbPath.Focus();
+                        if(ActiveControl == tbWorking) {
+                            tbPath.Focus();
                             return true;
                         }
-                        if(base.ActiveControl != this.treeViewUserApps) {
+                        if(ActiveControl != treeViewUserApps) {
                             break;
                         }
-                        if(this.tbPath.Enabled) {
-                            this.tbPath.Focus();
+                        if(tbPath.Enabled) {
+                            tbPath.Focus();
                         }
                         return true;
                     }
                     return base.ProcessCmdKey(ref msg, keyData);
 
                 case 7:
-                    if(!this.listViewKeyboard.Focused) {
+                    if(!listViewKeyboard.Focused) {
                         break;
                     }
                     return true;
 
                 case 8:
-                    if((base.ActiveControl != this.cmbTextExts) && (base.ActiveControl != this.cmbImgExts)) {
+                    if((ActiveControl != cmbTextExts) && (ActiveControl != cmbImgExts)) {
                         break;
                     }
                     return false;
 
                 case 9:
-                    if(!this.fNowListViewItemEditing) {
-                        if((keyData == Keys.Return) && this.listView_NoCapture.Focused) {
+                    if(!fNowListViewItemEditing) {
+                        if((keyData == Keys.Return) && listView_NoCapture.Focused) {
                             return base.ProcessCmdKey(ref msg, keyData);
                         }
                         break;
@@ -3499,10 +3499,10 @@ namespace QTTabBarLib {
                     return base.ProcessCmdKey(ref msg, keyData);
             }
             if(keyData == Keys.Escape) {
-                base.Close();
+                Close();
             }
             else {
-                this.Save(false);
+                Save(false);
             }
             return true;
         }
@@ -3514,29 +3514,29 @@ namespace QTTabBarLib {
         }
 
         private void RemovePluginShortcutKeys(string pluginID) {
-            this.listViewKeyboard.BeginUpdate();
-            ListViewGroup group = this.listViewKeyboard.Groups[pluginID];
+            listViewKeyboard.BeginUpdate();
+            ListViewGroup group = listViewKeyboard.Groups[pluginID];
             if(group != null) {
                 List<ListViewItem> list = new List<ListViewItem>();
                 foreach(ListViewItem item in group.Items) {
                     list.Add(item);
                 }
                 foreach(ListViewItem item2 in list) {
-                    this.listViewKeyboard.Items.Remove(item2);
+                    listViewKeyboard.Items.Remove(item2);
                 }
-                this.listViewKeyboard.Groups.Remove(group);
+                listViewKeyboard.Groups.Remove(group);
             }
-            this.listViewKeyboard.EndUpdate();
+            listViewKeyboard.EndUpdate();
         }
 
         private void Save(bool fApply) {
-            this.SaveSettings(fApply);
-            if(this.callBack != null) {
-                this.callBack.BeginInvoke(fApply ? DialogResult.Yes : DialogResult.OK, null, null);
+            SaveSettings(fApply);
+            if(callBack != null) {
+                callBack.BeginInvoke(fApply ? DialogResult.Yes : DialogResult.OK, null, null);
             }
             if(!fApply) {
-                this.callBack = null;
-                base.Close();
+                callBack = null;
+                Close();
             }
         }
 
@@ -3547,7 +3547,7 @@ namespace QTTabBarLib {
             QTUtility.dicGroupNamesAndKeys.Clear();
             List<PluginKey> list = new List<PluginKey>();
             int num = 1;
-            foreach(TreeNode node in this.tnGroupsRoot.Nodes) {
+            foreach(TreeNode node in tnGroupsRoot.Nodes) {
                 MenuItemArguments tag = (MenuItemArguments)node.Tag;
                 if(tag == MIA_GROUPSEP) {
                     QTUtility.GroupPathsDic["Separator" + num++] = string.Empty;
@@ -3565,7 +3565,7 @@ namespace QTTabBarLib {
                             str2 = str2.TrimEnd(QTUtility.SEPARATOR_CHAR);
                             string item = text.Replace(";", "_");
                             QTUtility.GroupPathsDic[item] = str2;
-                            if(node.NodeFont == this.fntStartUpGroup) {
+                            if(node.NodeFont == fntStartUpGroup) {
                                 QTUtility.StartUpGroupList.Add(item);
                             }
                             if(tag.KeyShortcut != 0) {
@@ -3596,7 +3596,7 @@ namespace QTTabBarLib {
         private void SaveNoCapturePaths(RegistryKey rkUser) {
             string str = string.Empty;
             QTUtility.NoCapturePathsList.Clear();
-            foreach(ListViewItem item in this.listView_NoCapture.Items) {
+            foreach(ListViewItem item in listView_NoCapture.Items) {
                 if(item.Name.Length > 0) {
                     string str2 = item.Name.Trim();
                     if((str2.Length > 0) && (str2 != "Enter path")) {
@@ -3610,15 +3610,15 @@ namespace QTTabBarLib {
         }
 
         private void SavePlugins(bool fApply) {
-            this.lstPluginAssembliesUserAdded.Clear();
-            if(File.Exists(this.textBoxPluginLang.Text)) {
-                QTUtility.Path_PluginLangFile = this.textBoxPluginLang.Text;
+            lstPluginAssembliesUserAdded.Clear();
+            if(File.Exists(textBoxPluginLang.Text)) {
+                QTUtility.Path_PluginLangFile = textBoxPluginLang.Text;
             }
             else {
                 QTUtility.Path_PluginLangFile = string.Empty;
             }
             List<PluginAssembly> list = new List<PluginAssembly>();
-            foreach(PluginViewItem item in this.pluginView.PluginViewItems) {
+            foreach(PluginViewItem item in pluginView.PluginViewItems) {
                 PluginAssembly pluingAssembly = item.PluingAssembly;
                 if(!list.Contains(pluingAssembly)) {
                     pluingAssembly.Enabled = false;
@@ -3630,28 +3630,28 @@ namespace QTTabBarLib {
                     pluingAssembly.Enabled = true;
                 }
                 else {
-                    this.RemovePluginShortcutKeys(pluginInfo.PluginID);
+                    RemovePluginShortcutKeys(pluginInfo.PluginID);
                 }
             }
-            if(this.callBack != null) {
-                this.callBack(list);
+            if(callBack != null) {
+                callBack(list);
             }
             if(fApply) {
-                this.pluginView.NotifyApplied();
+                pluginView.NotifyApplied();
                 string[] strArray = QTUtility.TextResourcesDic["ShortcutKeys_Groups"];
-                foreach(Plugin plugin in this.pluginManager.Plugins) {
+                foreach(Plugin plugin in pluginManager.Plugins) {
                     PluginInformation pluginInformation = plugin.PluginInformation;
-                    if((((pluginInformation != null) && pluginInformation.Enabled) && ((pluginInformation.PluginType == PluginType.Background) || (pluginInformation.PluginType == PluginType.BackgroundMultiple))) && (this.listViewKeyboard.Groups[pluginInformation.PluginID] == null)) {
+                    if((((pluginInformation != null) && pluginInformation.Enabled) && ((pluginInformation.PluginType == PluginType.Background) || (pluginInformation.PluginType == PluginType.BackgroundMultiple))) && (listViewKeyboard.Groups[pluginInformation.PluginID] == null)) {
                         string[] shortcutKeyActions = pluginInformation.ShortcutKeyActions;
                         if((shortcutKeyActions != null) && (shortcutKeyActions.Length > 0)) {
-                            ListViewGroup group2 = this.listViewKeyboard.Groups.Add(pluginInformation.PluginID, pluginInformation.Name + " (" + strArray[1] + ")");
+                            ListViewGroup group2 = listViewKeyboard.Groups.Add(pluginInformation.PluginID, pluginInformation.Name + " (" + strArray[1] + ")");
                             foreach(string action in shortcutKeyActions) {
                                 ListViewItem item2 = new ListViewItem(new string[] { action, " - " });
                                 item2.Checked = false;
                                 item2.Group = group2;
                                 item2.Tag = 0;
                                 item2.Name = pluginInformation.PluginID;
-                                this.listViewKeyboard.Items.Add(item2);
+                                listViewKeyboard.Items.Add(item2);
                             }
                         }
                     }
@@ -3674,194 +3674,194 @@ namespace QTTabBarLib {
             QTUtility.ConfigValues[11] = 0;
             QTUtility.ConfigValues[13] = 0;
             QTUtility.ConfigValues[14] = 0;
-            if(this.chbActivateNew.Checked) {
+            if(chbActivateNew.Checked) {
                 QTUtility.SetConfigAt(Settings.ActivateNewTab, true);
             }
-            if(this.chbDontOpenSame.Checked) {
+            if(chbDontOpenSame.Checked) {
                 QTUtility.SetConfigAt(Settings.DontOpenSame, true);
             }
-            if(this.chbCloseWhenGroup.Checked) {
+            if(chbCloseWhenGroup.Checked) {
                 QTUtility.SetConfigAt(Settings.CloseWhenGroup, true);
             }
-            if(this.chbRestoreClosed.Checked) {
+            if(chbRestoreClosed.Checked) {
                 QTUtility.SetConfigAt(Settings.RestoreTabs, true);
             }
-            if(this.chbShowTooltip.Checked) {
+            if(chbShowTooltip.Checked) {
                 QTUtility.SetConfigAt(Settings.ShowTooltips, true);
             }
-            if(this.chbNeverCloseWindow.Checked) {
+            if(chbNeverCloseWindow.Checked) {
                 QTUtility.SetConfigAt(Settings.NeverCloseWindow, true);
             }
-            if(this.chbNeverCloseWndLocked.Checked) {
+            if(chbNeverCloseWndLocked.Checked) {
                 QTUtility.SetConfigAt(Settings.NeverCloseWndLocked, true);
             }
-            QTUtility.ConfigValues[1] = (byte)this.cmbNewTabLoc.SelectedIndex;
-            QTUtility.ConfigValues[2] = (byte)this.cmbActvClose.SelectedIndex;
-            QTUtility.ConfigValues[3] = (byte)this.cmbTabDblClck.SelectedIndex;
-            QTUtility.ConfigValues[4] = (byte)this.cmbBGDblClick.SelectedIndex;
-            QTUtility.ConfigValues[12] = (byte)this.cmbTabWhlClck.SelectedIndex;
-            QTUtility.Action_BarDblClick = this.textBoxAction_BarDblClck.Text;
-            if(this.cmbTabSizeMode.SelectedIndex == 1) {
+            QTUtility.ConfigValues[1] = (byte)cmbNewTabLoc.SelectedIndex;
+            QTUtility.ConfigValues[2] = (byte)cmbActvClose.SelectedIndex;
+            QTUtility.ConfigValues[3] = (byte)cmbTabDblClck.SelectedIndex;
+            QTUtility.ConfigValues[4] = (byte)cmbBGDblClick.SelectedIndex;
+            QTUtility.ConfigValues[12] = (byte)cmbTabWhlClck.SelectedIndex;
+            QTUtility.Action_BarDblClick = textBoxAction_BarDblClck.Text;
+            if(cmbTabSizeMode.SelectedIndex == 1) {
                 QTUtility.SetConfigAt(Settings.FixedWidthTabs, true);
             }
-            else if(this.cmbTabSizeMode.SelectedIndex == 2) {
+            else if(cmbTabSizeMode.SelectedIndex == 2) {
                 QTUtility.SetConfigAt(Settings.LimitedWidthTabs, true);
             }
-            QTUtility.TabWidth = (int)this.nudTabWidth.Value;
-            QTUtility.TabHeight = (int)this.nudTabHeight.Value;
-            QTUtility.MaxTabWidth = (int)this.nudTabWidthMax.Value;
-            QTUtility.MinTabWidth = (int)this.nudTabWidthMin.Value;
-            if(this.chbNavBtn.Checked) {
+            QTUtility.TabWidth = (int)nudTabWidth.Value;
+            QTUtility.TabHeight = (int)nudTabHeight.Value;
+            QTUtility.MaxTabWidth = (int)nudTabWidthMax.Value;
+            QTUtility.MinTabWidth = (int)nudTabWidthMin.Value;
+            if(chbNavBtn.Checked) {
                 QTUtility.SetConfigAt(Settings.ShowNavButtons, true);
             }
-            if(this.cmbNavBtn.SelectedIndex == 1) {
+            if(cmbNavBtn.SelectedIndex == 1) {
                 QTUtility.SetConfigAt(Settings.NavButtonsOnRight, true);
             }
-            if(this.chbX1X2.Checked) {
+            if(chbX1X2.Checked) {
                 QTUtility.SetConfigAt(Settings.CaptureX1X2, true);
             }
-            if(this.chbBoldActv.Checked) {
+            if(chbBoldActv.Checked) {
                 QTUtility.SetConfigAt(Settings.ActiveTabInBold, true);
             }
-            if(this.chbUseTabSkin.Checked) {
+            if(chbUseTabSkin.Checked) {
                 QTUtility.SetConfigAt(Settings.UseTabSkin, true);
             }
-            if(!this.chbNoHistory.Checked) {
+            if(!chbNoHistory.Checked) {
                 QTUtility.SetConfigAt(Settings.NoHistory, true);
             }
-            if(!this.chbWhlClick.Checked) {
+            if(!chbWhlClick.Checked) {
                 QTUtility.SetConfigAt(Settings.NoCaptureMidClick, true);
             }
-            if(this.cmbWhlClick.SelectedIndex == 1) {
+            if(cmbWhlClick.SelectedIndex == 1) {
                 QTUtility.SetConfigAt(Settings.MidClickNewWindow, true);
             }
-            if(!this.chbNCADblClck.Checked) {
+            if(!chbNCADblClck.Checked) {
                 QTUtility.SetConfigAt(Settings.NoDblClickUpLevel, true);
             }
-            if(this.chbSaveExecuted.CheckState != CheckState.Unchecked) {
-                if(this.chbSaveExecuted.CheckState == CheckState.Checked) {
+            if(chbSaveExecuted.CheckState != CheckState.Unchecked) {
+                if(chbSaveExecuted.CheckState == CheckState.Checked) {
                     QTUtility.SetConfigAt(Settings.AllRecentFiles, true);
                 }
             }
             else {
                 QTUtility.SetConfigAt(Settings.NoRecentFiles, true);
             }
-            if(!this.chbBlockProcess.Checked) {
+            if(!chbBlockProcess.Checked) {
                 QTUtility.SetConfigAt(Settings.DontCaptureNewWnds, true);
             }
-            if(this.chbRestoreLocked.Checked) {
+            if(chbRestoreLocked.Checked) {
                 QTUtility.SetConfigAt(Settings.RestoreLockedTabs, true);
             }
-            if(!this.chbFoldrTree.Checked) {
+            if(!chbFoldrTree.Checked) {
                 QTUtility.SetConfigAt(Settings.NoNewWndFolderTree, true);
             }
-            if(this.chbWndUnresizable.Checked) {
+            if(chbWndUnresizable.Checked) {
                 QTUtility.SetConfigAt(Settings.NoWindowResizing, true);
             }
             if(flag3) {
                 QTUtility.SetConfigAt(Settings.ShowHashResult, true);
             }
-            QTUtility.TabTextColor_Active = this.btnActTxtClr.ForeColor;
-            QTUtility.TabTextColor_Inactv = this.btnInactTxtClr.ForeColor;
-            QTUtility.TabHiliteColor = this.btnHiliteClsc.ForeColor;
-            QTUtility.RebarBGColor = this.btnToolBarBGClr.BackColor;
-            QTUtility.TabTextColor_ActivShdw = this.btnShadowAct.ForeColor;
-            QTUtility.TabTextColor_InAtvShdw = this.btnShadowIna.ForeColor;
+            QTUtility.TabTextColor_Active = btnActTxtClr.ForeColor;
+            QTUtility.TabTextColor_Inactv = btnInactTxtClr.ForeColor;
+            QTUtility.TabHiliteColor = btnHiliteClsc.ForeColor;
+            QTUtility.RebarBGColor = btnToolBarBGClr.BackColor;
+            QTUtility.TabTextColor_ActivShdw = btnShadowAct.ForeColor;
+            QTUtility.TabTextColor_InAtvShdw = btnShadowIna.ForeColor;
             if(flag4) {
                 QTUtility.SetConfigAt(Settings.HashTopMost, true);
             }
-            if(this.cmbMultiRow.SelectedIndex == 1) {
+            if(cmbMultiRow.SelectedIndex == 1) {
                 QTUtility.SetConfigAt(Settings.MultipleRow1, true);
             }
-            else if(this.cmbMultiRow.SelectedIndex == 2) {
+            else if(cmbMultiRow.SelectedIndex == 2) {
                 QTUtility.SetConfigAt(Settings.MultipleRow2, true);
             }
-            if(this.chbHideMenu.Checked) {
+            if(chbHideMenu.Checked) {
                 QTUtility.SetConfigAt(Settings.HideMenuBar, true);
             }
-            if(this.chbToolbarBGClr.Checked) {
+            if(chbToolbarBGClr.Checked) {
                 QTUtility.SetConfigAt(Settings.ToolbarBGColor, true);
             }
-            if(this.chbFolderIcon.Checked) {
+            if(chbFolderIcon.Checked) {
                 QTUtility.SetConfigAt(Settings.FolderIcon, true);
             }
-            if(this.chbBSUpOneLvl.Checked) {
+            if(chbBSUpOneLvl.Checked) {
                 QTUtility.SetConfigAt(Settings.BackspaceUpLevel, true);
             }
-            QTUtility.Path_TabImage = this.tbTabImagePath.Text;
-            QTUtility.TabImageSizingMargin = this.tabImageSetting.SizingMargin;
-            if(this.chbGridLine.Checked) {
+            QTUtility.Path_TabImage = tbTabImagePath.Text;
+            QTUtility.TabImageSizingMargin = tabImageSetting.SizingMargin;
+            if(chbGridLine.Checked) {
                 QTUtility.SetConfigAt(Settings.DetailsGridLines, true);
             }
-            if(this.chbNoFulRowSelect.Checked ^ QTUtility.IsVista) {
+            if(chbNoFulRowSelect.Checked ^ QTUtility.IsVista) {
                 QTUtility.SetConfigAt(Settings.ToggleFullRowSelect, true);
             }
-            if(!QTUtility.IsVista && !this.chbSelectWithoutExt.Checked) {
+            if(!QTUtility.IsVista && !chbSelectWithoutExt.Checked) {
                 QTUtility.SetConfigAt(Settings.ExtWhileRenaming, true);
             }
             if(flag) {
                 QTUtility.SetConfigAt(Settings.HashFullPath, true);
             }
-            if(this.chbAlternateColor.Checked) {
+            if(chbAlternateColor.Checked) {
                 QTUtility.SetConfigAt(Settings.AlternateRowColors, true);
             }
-            QTUtility.ShellViewRowCOLORREF_Background = QTUtility2.MakeCOLORREF(this.btnAlternateColor.BackColor);
-            QTUtility.ShellViewRowCOLORREF_Text = QTUtility2.MakeCOLORREF(this.btnAlternateColor_Text.ForeColor);
-            if(this.chbWndRestrAlpha.Checked) {
+            QTUtility.ShellViewRowCOLORREF_Background = QTUtility2.MakeCOLORREF(btnAlternateColor.BackColor);
+            QTUtility.ShellViewRowCOLORREF_Text = QTUtility2.MakeCOLORREF(btnAlternateColor_Text.ForeColor);
+            if(chbWndRestrAlpha.Checked) {
                 QTUtility.SetConfigAt(Settings.SaveTransparency, true);
             }
-            if(this.chbShowPreview.Checked) {
+            if(chbShowPreview.Checked) {
                 QTUtility.SetConfigAt(Settings.ShowTooltipPreviews, true);
             }
-            if(this.chbPreviewMode.Checked) {
+            if(chbPreviewMode.Checked) {
                 QTUtility.SetConfigAt(Settings.PreviewsWithShift, true);
             }
-            if(!this.chbSubDirTip.Checked) {
+            if(!chbSubDirTip.Checked) {
                 QTUtility.SetConfigAt(Settings.NoShowSubDirTips, true);
             }
-            if(this.chbSubDirTipMode.Checked) {
+            if(chbSubDirTipMode.Checked) {
                 QTUtility.SetConfigAt(Settings.SubDirTipsWithShift, true);
             }
-            if(this.chbSubDirTipModeHidden.Checked) {
+            if(chbSubDirTipModeHidden.Checked) {
                 QTUtility.SetConfigAt(Settings.SubDirTipsHidden, true);
             }
-            if(this.chbSubDirTipModeFile.Checked) {
+            if(chbSubDirTipModeFile.Checked) {
                 QTUtility.SetConfigAt(Settings.SubDirTipsFiles, true);
             }
-            if(!this.chbSubDirTipPreview.Checked) {
+            if(!chbSubDirTipPreview.Checked) {
                 QTUtility.SetConfigAt(Settings.SubDirTipsPreview, true);
             }
             if(flag2) {
                 QTUtility.SetConfigAt(Settings.HashClearOnClose, true);
             }
-            if(this.chbDD.Checked) {
+            if(chbDD.Checked) {
                 QTUtility.SetConfigAt(Settings.DragDropOntoTabs, true);
             }
-            if(this.chbNoTabFromOuteside.Checked) {
+            if(chbNoTabFromOuteside.Checked) {
                 QTUtility.SetConfigAt(Settings.NoTabsFromOutside, true);
             }
-            if(!this.chbAutoSubText.Checked) {
+            if(!chbAutoSubText.Checked) {
                 QTUtility.SetConfigAt(Settings.NoRenameAmbTabs, true);
             }
-            if(!this.chbHolizontalScroll.Checked) {
+            if(!chbHolizontalScroll.Checked) {
                 QTUtility.SetConfigAt(Settings.HorizontalScroll, true);
             }
-            if(!this.chbWhlChangeView.Checked) {
+            if(!chbWhlChangeView.Checked) {
                 QTUtility.SetConfigAt(Settings.CtrlWheelChangeView, true);
             }
-            if(this.chbSubDirTipModeSystem.Checked) {
+            if(chbSubDirTipModeSystem.Checked) {
                 QTUtility.SetConfigAt(Settings.SubDirTipsSystem, true);
             }
-            if(this.chbSendToTray.Checked) {
+            if(chbSendToTray.Checked) {
                 QTUtility.SetConfigAt(Settings.TrayOnClose, true);
             }
-            if(!this.chbF2Selection.Checked) {
+            if(!chbF2Selection.Checked) {
                 QTUtility.SetConfigAt(Settings.F2Selection, true);
             }
-            if(this.chbRebarBGImage.Checked) {
+            if(chbRebarBGImage.Checked) {
                 QTUtility.SetConfigAt(Settings.RebarImage, true);
             }
-            switch(this.cmbRebarBGImageMode.SelectedIndex) {
+            switch(cmbRebarBGImageMode.SelectedIndex) {
                 case 1:
                     QTUtility.SetConfigAt(Settings.RebarImageTile, true);
                     break;
@@ -3874,100 +3874,100 @@ namespace QTTabBarLib {
                     QTUtility.SetConfigAt(Settings.RebarImageStretch2, true);
                     break;
             }
-            QTUtility.Path_RebarImage = this.tbRebarImagePath.Text;
-            if(this.chbTabCloseButton.Checked) {
+            QTUtility.Path_RebarImage = tbRebarImagePath.Text;
+            if(chbTabCloseButton.Checked) {
                 QTUtility.SetConfigAt(Settings.ShowTabCloseButtons, true);
             }
-            if(this.chbSubDirTipOnTab.Checked) {
+            if(chbSubDirTipOnTab.Checked) {
                 QTUtility.SetConfigAt(Settings.ShowSubDirTipOnTab, true);
             }
-            if(this.chbTabCloseBtnAlt.Checked) {
+            if(chbTabCloseBtnAlt.Checked) {
                 QTUtility.SetConfigAt(Settings.TabCloseBtnsWithAlt, true);
             }
-            if(this.chbCursorLoop.Checked) {
+            if(chbCursorLoop.Checked) {
                 QTUtility.SetConfigAt(Settings.CursorLoop, true);
             }
-            if(this.chbTabCloseBtnHover.Checked) {
+            if(chbTabCloseBtnHover.Checked) {
                 QTUtility.SetConfigAt(Settings.TabCloseBtnsOnHover, true);
             }
-            if(this.chbSendToTrayOnMinimize.Checked) {
+            if(chbSendToTrayOnMinimize.Checked) {
                 QTUtility.SetConfigAt(Settings.TrayOnMinimize, true);
             }
-            if(this.cmbTabTextAlignment.SelectedIndex == 1) {
+            if(cmbTabTextAlignment.SelectedIndex == 1) {
                 QTUtility.SetConfigAt(Settings.AlignTabTextCenter, true);
             }
-            if(this.cmbMenuRenderer.SelectedIndex != 0) {
+            if(cmbMenuRenderer.SelectedIndex != 0) {
                 QTUtility.SetConfigAt(Settings.NonDefaultMenu, true);
-                if(this.cmbMenuRenderer.SelectedIndex == 2) {
+                if(cmbMenuRenderer.SelectedIndex == 2) {
                     QTUtility.SetConfigAt(Settings.XPStyleMenus, true);
                 }
             }
-            if(!this.chbTreeShftWhlTab.Checked) {
+            if(!chbTreeShftWhlTab.Checked) {
                 QTUtility.SetConfigAt(Settings.NoMidClickTree, true);
             }
-            if(!this.chbTabSwitcher.Checked) {
+            if(!chbTabSwitcher.Checked) {
                 QTUtility.SetConfigAt(Settings.NoTabSwitcher, true);
             }
-            if(this.chbTabTitleShadow.Checked) {
+            if(chbTabTitleShadow.Checked) {
                 QTUtility.SetConfigAt(Settings.TabTitleShadows, true);
             }
-            if(this.chbAutoUpdate.Checked) {
+            if(chbAutoUpdate.Checked) {
                 QTUtility.SetConfigAt(Settings.AutoUpdate, true);
             }
-            if(!this.chbRemoveOnSeparate.Checked) {
+            if(!chbRemoveOnSeparate.Checked) {
                 QTUtility.SetConfigAt(Settings.KeepOnSeparate, true);
             }
-            if(this.chbDriveLetter.Checked) {
+            if(chbDriveLetter.Checked) {
                 QTUtility.SetConfigAt(Settings.ShowDriveLetters, true);
             }
-            if(!this.chbPlaySound.Checked) {
+            if(!chbPlaySound.Checked) {
                 QTUtility.SetConfigAt(Settings.DisableSound, true);
             }
-            if(!this.chbPreviewInfo.Checked) {
+            if(!chbPreviewInfo.Checked) {
                 QTUtility.SetConfigAt(Settings.PreviewInfo, true);
             }
-            QTUtility.MaxCount_History = (int)this.nudMaxUndo.Value;
-            QTUtility.MaxCount_Executed = (int)this.nudMaxRecentFile.Value;
-            if(File.Exists(this.textBoxLang.Text)) {
-                QTUtility.Path_LanguageFile = this.textBoxLang.Text;
+            QTUtility.MaxCount_History = (int)nudMaxUndo.Value;
+            QTUtility.MaxCount_Executed = (int)nudMaxRecentFile.Value;
+            if(File.Exists(textBoxLang.Text)) {
+                QTUtility.Path_LanguageFile = textBoxLang.Text;
             }
             else {
                 QTUtility.Path_LanguageFile = string.Empty;
             }
-            QTUtility.PreviewMaxWidth = (int)this.nudPreviewMaxWidth.Value;
-            QTUtility.PreviewMaxHeight = (int)this.nudPreviewMaxHeight.Value;
-            if(this.btnPreviewFont.Font != this.Font) {
-                QTUtility.PreviewFontName = this.btnPreviewFont.Font.Name;
-                QTUtility.PreviewFontSize = this.btnPreviewFont.Font.SizeInPoints;
+            QTUtility.PreviewMaxWidth = (int)nudPreviewMaxWidth.Value;
+            QTUtility.PreviewMaxHeight = (int)nudPreviewMaxHeight.Value;
+            if(btnPreviewFont.Font != Font) {
+                QTUtility.PreviewFontName = btnPreviewFont.Font.Name;
+                QTUtility.PreviewFontSize = btnPreviewFont.Font.SizeInPoints;
             }
             else {
                 QTUtility.PreviewFontName = null;
                 QTUtility.PreviewFontSize = 0f;
             }
-            IDLWrapper.iPingTimeOutMS = ((int)this.nudNetworkTimeOut.Value) * 0x3e8;
+            IDLWrapper.iPingTimeOutMS = ((int)nudNetworkTimeOut.Value) * 0x3e8;
             using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
-                this.SaveGroupTreeView(key);
-                this.SaveUserAppsTreeView(key);
-                this.SavePlugins(fApply);
-                this.SaveShortcuts();
-                this.SaveNoCapturePaths(key);
+                SaveGroupTreeView(key);
+                SaveUserAppsTreeView(key);
+                SavePlugins(fApply);
+                SaveShortcuts();
+                SaveNoCapturePaths(key);
             }
             List<string> list = new List<string>();
             List<string> list2 = new List<string>();
-            for(int i = 1; i < this.cmbTextExts.Items.Count; i++) {
-                list.Add(this.cmbTextExts.Items[i].ToString());
+            for(int i = 1; i < cmbTextExts.Items.Count; i++) {
+                list.Add(cmbTextExts.Items[i].ToString());
             }
-            for(int j = 1; j < this.cmbImgExts.Items.Count; j++) {
-                list2.Add(this.cmbImgExts.Items[j].ToString());
+            for(int j = 1; j < cmbImgExts.Items.Count; j++) {
+                list2.Add(cmbImgExts.Items[j].ToString());
             }
-            WriteRegistry(this.btnTabFont.Font, list.ToArray(), list2.ToArray());
+            WriteRegistry(btnTabFont.Font, list.ToArray(), list2.ToArray());
         }
 
         private void SaveShortcuts() {
             List<int> list = new List<int>();
             Dictionary<string, List<int>> dictionary = new Dictionary<string, List<int>>();
-            for(int i = 0; i < this.listViewKeyboard.Items.Count; i++) {
-                ListViewItem item = this.listViewKeyboard.Items[i];
+            for(int i = 0; i < listViewKeyboard.Items.Count; i++) {
+                ListViewItem item = listViewKeyboard.Items[i];
                 bool flag = item.Checked;
                 int num2 = ((int)((Keys)item.Tag)) | (flag ? 0x100000 : 0);
                 if(item.Group.Name == "general") {
@@ -3975,7 +3975,7 @@ namespace QTTabBarLib {
                 }
                 else {
                     string name = item.Name;
-                    if(this.pluginManager.PluginInstantialized(name)) {
+                    if(pluginManager.PluginInstantialized(name)) {
                         if(!dictionary.ContainsKey(name)) {
                             dictionary[name] = new List<int>();
                         }
@@ -4057,7 +4057,7 @@ namespace QTTabBarLib {
             catch {
             }
             using(RegistryKey key2 = rkUser.CreateSubKey("UserApps")) {
-                foreach(TreeNode node in this.tnRoot_UserApps.Nodes) {
+                foreach(TreeNode node in tnRoot_UserApps.Nodes) {
                     if(node.Tag != null) {
                         SaveUserAppsRegistry(node, key2, ref separatorIndex, true);
                     }
@@ -4070,228 +4070,228 @@ namespace QTTabBarLib {
         }
 
         private void SelectPluginBottom() {
-            int index = this.pluginView.ItemsCount - 1;
+            int index = pluginView.ItemsCount - 1;
             if(index > 0) {
-                this.pluginView.SelectPlugin(index);
+                pluginView.SelectPlugin(index);
             }
         }
 
         private void SetValues() {
             bool isSupported = VisualStyleRenderer.IsSupported;
-            this.chbActivateNew.Checked = (QTUtility.ConfigValues[0] & 0x80) == 0x80;
-            this.chbDontOpenSame.Checked = (QTUtility.ConfigValues[0] & 0x40) == 0x40;
-            this.chbCloseWhenGroup.Checked = (QTUtility.ConfigValues[0] & 0x20) == 0x20;
-            this.chbRestoreClosed.Checked = (QTUtility.ConfigValues[0] & 0x10) == 0x10;
-            this.chbShowTooltip.Checked = (QTUtility.ConfigValues[0] & 8) == 8;
-            this.chbNeverCloseWindow.Checked = (QTUtility.ConfigValues[0] & 2) == 2;
-            this.chbNeverCloseWndLocked.Checked = (QTUtility.ConfigValues[0] & 1) == 1;
-            this.cmbNewTabLoc.SelectedIndex = QTUtility.ConfigValues[1];
-            this.cmbActvClose.SelectedIndex = QTUtility.ConfigValues[2];
-            if(QTUtility.ConfigValues[3] > (this.cmbTabDblClck.Items.Count - 1)) {
-                QTUtility.ConfigValues[3] = (byte)(this.cmbTabDblClck.Items.Count - 1);
+            chbActivateNew.Checked = (QTUtility.ConfigValues[0] & 0x80) == 0x80;
+            chbDontOpenSame.Checked = (QTUtility.ConfigValues[0] & 0x40) == 0x40;
+            chbCloseWhenGroup.Checked = (QTUtility.ConfigValues[0] & 0x20) == 0x20;
+            chbRestoreClosed.Checked = (QTUtility.ConfigValues[0] & 0x10) == 0x10;
+            chbShowTooltip.Checked = (QTUtility.ConfigValues[0] & 8) == 8;
+            chbNeverCloseWindow.Checked = (QTUtility.ConfigValues[0] & 2) == 2;
+            chbNeverCloseWndLocked.Checked = (QTUtility.ConfigValues[0] & 1) == 1;
+            cmbNewTabLoc.SelectedIndex = QTUtility.ConfigValues[1];
+            cmbActvClose.SelectedIndex = QTUtility.ConfigValues[2];
+            if(QTUtility.ConfigValues[3] > (cmbTabDblClck.Items.Count - 1)) {
+                QTUtility.ConfigValues[3] = (byte)(cmbTabDblClck.Items.Count - 1);
             }
-            if(QTUtility.ConfigValues[4] > (this.cmbBGDblClick.Items.Count - 1)) {
-                QTUtility.ConfigValues[4] = (byte)(this.cmbBGDblClick.Items.Count - 1);
+            if(QTUtility.ConfigValues[4] > (cmbBGDblClick.Items.Count - 1)) {
+                QTUtility.ConfigValues[4] = (byte)(cmbBGDblClick.Items.Count - 1);
             }
-            if(QTUtility.ConfigValues[12] > (this.cmbTabWhlClck.Items.Count - 1)) {
+            if(QTUtility.ConfigValues[12] > (cmbTabWhlClck.Items.Count - 1)) {
                 QTUtility.ConfigValues[12] = 0;
             }
-            this.cmbTabDblClck.SelectedIndex = QTUtility.ConfigValues[3];
-            this.cmbBGDblClick.SelectedIndex = QTUtility.ConfigValues[4];
-            this.cmbTabWhlClck.SelectedIndex = QTUtility.ConfigValues[12];
-            this.cmbTabTextAlignment.SelectedIndex = QTUtility.CheckConfig(Settings.AlignTabTextCenter) ? 1 : 0;
-            this.chbNavBtn.Checked = (QTUtility.ConfigValues[5] & 0x80) == 0x80;
+            cmbTabDblClck.SelectedIndex = QTUtility.ConfigValues[3];
+            cmbBGDblClick.SelectedIndex = QTUtility.ConfigValues[4];
+            cmbTabWhlClck.SelectedIndex = QTUtility.ConfigValues[12];
+            cmbTabTextAlignment.SelectedIndex = QTUtility.CheckConfig(Settings.AlignTabTextCenter) ? 1 : 0;
+            chbNavBtn.Checked = (QTUtility.ConfigValues[5] & 0x80) == 0x80;
             if((QTUtility.ConfigValues[5] & 0x40) == 0x40) {
-                this.cmbNavBtn.SelectedIndex = 1;
+                cmbNavBtn.SelectedIndex = 1;
             }
             else {
-                this.cmbNavBtn.SelectedIndex = 0;
+                cmbNavBtn.SelectedIndex = 0;
             }
             if((QTUtility.ConfigValues[5] & 0x80) == 0) {
-                this.cmbNavBtn.Enabled = false;
+                cmbNavBtn.Enabled = false;
             }
-            this.chbX1X2.Checked = (QTUtility.ConfigValues[5] & 0x20) == 0x20;
-            this.chbBoldActv.Checked = (QTUtility.ConfigValues[5] & 0x10) == 0x10;
-            this.chbUseTabSkin.Checked = (QTUtility.ConfigValues[5] & 8) == 8;
-            this.chbNoHistory.Checked = (QTUtility.ConfigValues[5] & 2) == 0;
-            this.chbWhlClick.Checked = (QTUtility.ConfigValues[5] & 1) == 0;
-            this.propertyGrid1.Enabled = this.btnHiliteClsc.Enabled = this.tbTabImagePath.Enabled = this.btnTabImage.Enabled = this.chbUseTabSkin.Checked;
+            chbX1X2.Checked = (QTUtility.ConfigValues[5] & 0x20) == 0x20;
+            chbBoldActv.Checked = (QTUtility.ConfigValues[5] & 0x10) == 0x10;
+            chbUseTabSkin.Checked = (QTUtility.ConfigValues[5] & 8) == 8;
+            chbNoHistory.Checked = (QTUtility.ConfigValues[5] & 2) == 0;
+            chbWhlClick.Checked = (QTUtility.ConfigValues[5] & 1) == 0;
+            propertyGrid1.Enabled = btnHiliteClsc.Enabled = tbTabImagePath.Enabled = btnTabImage.Enabled = chbUseTabSkin.Checked;
             if(!isSupported) {
-                this.chbUseTabSkin.Checked = this.btnHiliteClsc.Enabled = this.tbTabImagePath.Enabled = this.btnTabImage.Enabled = true;
-                this.chbUseTabSkin.Enabled = false;
+                chbUseTabSkin.Checked = btnHiliteClsc.Enabled = tbTabImagePath.Enabled = btnTabImage.Enabled = true;
+                chbUseTabSkin.Enabled = false;
             }
-            this.tbTabImagePath.Text = QTUtility.Path_TabImage;
-            this.tabImageSetting.SizingMargin = QTUtility.TabImageSizingMargin;
-            this.cmbWhlClick.SelectedIndex = ((QTUtility.ConfigValues[6] & 0x80) == 0x80) ? 1 : 0;
-            this.cmbWhlClick.Enabled = this.chbWhlClick.Checked;
-            this.chbNCADblClck.Checked = (QTUtility.ConfigValues[6] & 0x40) == 0;
-            this.chbBlockProcess.Checked = (QTUtility.ConfigValues[6] & 0x10) == 0;
-            this.chbRestoreLocked.Checked = (QTUtility.ConfigValues[6] & 8) == 8;
-            this.chbFoldrTree.Checked = (QTUtility.ConfigValues[6] & 4) == 0;
-            this.chbWndUnresizable.Checked = (QTUtility.ConfigValues[6] & 2) == 2;
+            tbTabImagePath.Text = QTUtility.Path_TabImage;
+            tabImageSetting.SizingMargin = QTUtility.TabImageSizingMargin;
+            cmbWhlClick.SelectedIndex = ((QTUtility.ConfigValues[6] & 0x80) == 0x80) ? 1 : 0;
+            cmbWhlClick.Enabled = chbWhlClick.Checked;
+            chbNCADblClck.Checked = (QTUtility.ConfigValues[6] & 0x40) == 0;
+            chbBlockProcess.Checked = (QTUtility.ConfigValues[6] & 0x10) == 0;
+            chbRestoreLocked.Checked = (QTUtility.ConfigValues[6] & 8) == 8;
+            chbFoldrTree.Checked = (QTUtility.ConfigValues[6] & 4) == 0;
+            chbWndUnresizable.Checked = (QTUtility.ConfigValues[6] & 2) == 2;
             if(!QTUtility.CheckConfig(Settings.NoRecentFiles)) {
                 if(QTUtility.CheckConfig(Settings.AllRecentFiles)) {
-                    this.chbSaveExecuted.CheckState = CheckState.Checked;
+                    chbSaveExecuted.CheckState = CheckState.Checked;
                 }
                 else {
-                    this.chbSaveExecuted.CheckState = CheckState.Indeterminate;
+                    chbSaveExecuted.CheckState = CheckState.Indeterminate;
                 }
             }
             else {
-                this.chbSaveExecuted.CheckState = CheckState.Unchecked;
+                chbSaveExecuted.CheckState = CheckState.Unchecked;
             }
-            if(this.chbNeverCloseWndLocked.Checked) {
-                this.chbRestoreLocked.Checked = false;
+            if(chbNeverCloseWndLocked.Checked) {
+                chbRestoreLocked.Checked = false;
             }
             if((QTUtility.ConfigValues[7] & 0x20) == 0x20) {
-                this.cmbMultiRow.SelectedIndex = 1;
+                cmbMultiRow.SelectedIndex = 1;
             }
             else if((QTUtility.ConfigValues[7] & 0x10) == 0x10) {
-                this.cmbMultiRow.SelectedIndex = 2;
+                cmbMultiRow.SelectedIndex = 2;
             }
             else {
-                this.cmbMultiRow.SelectedIndex = 0;
+                cmbMultiRow.SelectedIndex = 0;
             }
             if((QTUtility.ConfigValues[0] & 4) == 4) {
-                this.cmbTabSizeMode.SelectedIndex = 1;
-                this.nudTabWidthMax.Enabled = this.nudTabWidthMin.Enabled = false;
+                cmbTabSizeMode.SelectedIndex = 1;
+                nudTabWidthMax.Enabled = nudTabWidthMin.Enabled = false;
             }
             else if((QTUtility.ConfigValues[5] & 4) == 4) {
-                this.cmbTabSizeMode.SelectedIndex = 2;
+                cmbTabSizeMode.SelectedIndex = 2;
             }
             else {
-                this.cmbTabSizeMode.SelectedIndex = 0;
-                this.nudTabWidth.Enabled = this.nudTabWidthMax.Enabled = this.nudTabWidthMin.Enabled = false;
+                cmbTabSizeMode.SelectedIndex = 0;
+                nudTabWidth.Enabled = nudTabWidthMax.Enabled = nudTabWidthMin.Enabled = false;
             }
-            this.nudTabWidthMax.Value = QTUtility.MaxTabWidth;
-            this.nudTabWidthMin.Value = QTUtility.MinTabWidth;
-            this.nudTabHeight.Value = QTUtility.TabHeight;
-            if(QTUtility.TabWidth > this.nudTabWidth.Maximum) {
-                this.nudTabWidth.Value = this.nudTabWidth.Maximum;
+            nudTabWidthMax.Value = QTUtility.MaxTabWidth;
+            nudTabWidthMin.Value = QTUtility.MinTabWidth;
+            nudTabHeight.Value = QTUtility.TabHeight;
+            if(QTUtility.TabWidth > nudTabWidth.Maximum) {
+                nudTabWidth.Value = nudTabWidth.Maximum;
             }
-            else if(QTUtility.TabWidth < this.nudTabWidth.Minimum) {
-                this.nudTabWidth.Value = this.nudTabWidth.Minimum;
+            else if(QTUtility.TabWidth < nudTabWidth.Minimum) {
+                nudTabWidth.Value = nudTabWidth.Minimum;
             }
             else {
-                this.nudTabWidth.Value = QTUtility.TabWidth;
+                nudTabWidth.Value = QTUtility.TabWidth;
             }
-            this.btnActTxtClr.ForeColor = QTUtility.TabTextColor_Active;
-            this.btnInactTxtClr.ForeColor = QTUtility.TabTextColor_Inactv;
-            this.btnHiliteClsc.ForeColor = QTUtility.TabHiliteColor;
-            this.btnShadowAct.ForeColor = QTUtility.TabTextColor_ActivShdw;
-            this.btnShadowIna.ForeColor = QTUtility.TabTextColor_InAtvShdw;
-            this.chbTabTitleShadow.Checked = QTUtility.CheckConfig(Settings.TabTitleShadows);
-            this.btnShadowAct.Enabled = this.btnShadowIna.Enabled = this.chbTabTitleShadow.Checked;
-            this.textBoxAction_BarDblClck.Text = QTUtility.Action_BarDblClick;
+            btnActTxtClr.ForeColor = QTUtility.TabTextColor_Active;
+            btnInactTxtClr.ForeColor = QTUtility.TabTextColor_Inactv;
+            btnHiliteClsc.ForeColor = QTUtility.TabHiliteColor;
+            btnShadowAct.ForeColor = QTUtility.TabTextColor_ActivShdw;
+            btnShadowIna.ForeColor = QTUtility.TabTextColor_InAtvShdw;
+            chbTabTitleShadow.Checked = QTUtility.CheckConfig(Settings.TabTitleShadows);
+            btnShadowAct.Enabled = btnShadowIna.Enabled = chbTabTitleShadow.Checked;
+            textBoxAction_BarDblClck.Text = QTUtility.Action_BarDblClick;
             QTUtility.RefreshGroupsDic();
-            this.InitializeTreeView_Group();
+            InitializeTreeView_Group();
             QTUtility.RefreshUserAppDic(false);
-            this.InitializeTreeView_UserApps();
-            this.btnTabFont.Font = QTUtility.TabFont;
+            InitializeTreeView_UserApps();
+            btnTabFont.Font = QTUtility.TabFont;
             if(QTUtility.CheckConfig(Settings.HideMenuBar)) {
-                this.chbHideMenu.Checked = true;
+                chbHideMenu.Checked = true;
             }
             if(QTUtility.IsVista) {
-                this.chbBSUpOneLvl.Checked = (QTUtility.ConfigValues[7] & 1) == 1;
-                this.chbWhlChangeView.Enabled = this.chbSelectWithoutExt.Enabled = this.chbTreeShftWhlTab.Enabled = false;
+                chbBSUpOneLvl.Checked = (QTUtility.ConfigValues[7] & 1) == 1;
+                chbWhlChangeView.Enabled = chbSelectWithoutExt.Enabled = chbTreeShftWhlTab.Enabled = false;
             }
             else {
-                this.chbBSUpOneLvl.Enabled = false;
-                this.chbSelectWithoutExt.Checked = (QTUtility.ConfigValues[8] & 0x20) == 0;
-                this.chbTreeShftWhlTab.Checked = !QTUtility.CheckConfig(Settings.NoMidClickTree);
+                chbBSUpOneLvl.Enabled = false;
+                chbSelectWithoutExt.Checked = (QTUtility.ConfigValues[8] & 0x20) == 0;
+                chbTreeShftWhlTab.Checked = !QTUtility.CheckConfig(Settings.NoMidClickTree);
             }
-            this.btnToolBarBGClr.Enabled = this.chbToolbarBGClr.Checked = (QTUtility.ConfigValues[7] & 4) == 4;
-            this.btnToolBarBGClr.BackColor = QTUtility.RebarBGColor;
-            this.chbFolderIcon.Checked = (QTUtility.ConfigValues[7] & 2) == 2;
-            this.chbGridLine.Checked = (QTUtility.ConfigValues[8] & 0x80) == 0x80;
-            this.chbNoFulRowSelect.Checked = ((QTUtility.ConfigValues[8] & 0x40) == 0x40) ^ QTUtility.IsVista;
-            this.chbAlternateColor.Checked = (QTUtility.ConfigValues[8] & 8) == 8;
-            this.btnAlternateColor.BackColor = QTUtility2.MakeColor(QTUtility.ShellViewRowCOLORREF_Background);
-            this.btnAlternateColor_Text.ForeColor = QTUtility2.MakeColor(QTUtility.ShellViewRowCOLORREF_Text);
-            this.btnAlternate_Default.Enabled = this.btnAlternateColor.Enabled = this.btnAlternateColor_Text.Enabled = this.chbAlternateColor.Checked;
+            btnToolBarBGClr.Enabled = chbToolbarBGClr.Checked = (QTUtility.ConfigValues[7] & 4) == 4;
+            btnToolBarBGClr.BackColor = QTUtility.RebarBGColor;
+            chbFolderIcon.Checked = (QTUtility.ConfigValues[7] & 2) == 2;
+            chbGridLine.Checked = (QTUtility.ConfigValues[8] & 0x80) == 0x80;
+            chbNoFulRowSelect.Checked = ((QTUtility.ConfigValues[8] & 0x40) == 0x40) ^ QTUtility.IsVista;
+            chbAlternateColor.Checked = (QTUtility.ConfigValues[8] & 8) == 8;
+            btnAlternateColor.BackColor = QTUtility2.MakeColor(QTUtility.ShellViewRowCOLORREF_Background);
+            btnAlternateColor_Text.ForeColor = QTUtility2.MakeColor(QTUtility.ShellViewRowCOLORREF_Text);
+            btnAlternate_Default.Enabled = btnAlternateColor.Enabled = btnAlternateColor_Text.Enabled = chbAlternateColor.Checked;
             if(isSupported) {
-                this.chbRebarBGImage.Checked = (QTUtility.ConfigValues[11] & 0x80) == 0x80;
-                this.tbRebarImagePath.Text = QTUtility.Path_RebarImage;
+                chbRebarBGImage.Checked = (QTUtility.ConfigValues[11] & 0x80) == 0x80;
+                tbRebarImagePath.Text = QTUtility.Path_RebarImage;
                 if((QTUtility.ConfigValues[11] & 0x40) == 0x40) {
-                    this.cmbRebarBGImageMode.SelectedIndex = 1;
+                    cmbRebarBGImageMode.SelectedIndex = 1;
                 }
                 else if((QTUtility.ConfigValues[11] & 0x20) == 0x20) {
-                    this.cmbRebarBGImageMode.SelectedIndex = 2;
+                    cmbRebarBGImageMode.SelectedIndex = 2;
                 }
                 else if(QTUtility.CheckConfig(Settings.RebarImageStretch2)) {
-                    this.cmbRebarBGImageMode.SelectedIndex = 3;
+                    cmbRebarBGImageMode.SelectedIndex = 3;
                 }
                 else {
-                    this.cmbRebarBGImageMode.SelectedIndex = 0;
+                    cmbRebarBGImageMode.SelectedIndex = 0;
                 }
-                this.cmbRebarBGImageMode.Enabled = this.btnRebarImage.Enabled = this.tbRebarImagePath.Enabled = this.chbRebarBGImage.Checked;
+                cmbRebarBGImageMode.Enabled = btnRebarImage.Enabled = tbRebarImagePath.Enabled = chbRebarBGImage.Checked;
             }
             else {
-                this.chbRebarBGImage.Enabled = this.tbRebarImagePath.Enabled = this.btnRebarImage.Enabled = this.cmbRebarBGImageMode.Enabled = false;
+                chbRebarBGImage.Enabled = tbRebarImagePath.Enabled = btnRebarImage.Enabled = cmbRebarBGImageMode.Enabled = false;
             }
-            this.chbWndRestrAlpha.Checked = (QTUtility.ConfigValues[8] & 4) == 4;
-            this.chbShowPreview.Checked = QTUtility.CheckConfig(Settings.ShowTooltipPreviews);
-            this.chbPreviewMode.Checked = QTUtility.CheckConfig(Settings.PreviewsWithShift);
-            this.chbPreviewInfo.Checked = !QTUtility.CheckConfig(Settings.PreviewInfo);
-            this.nudPreviewMaxWidth.Enabled = this.nudPreviewMaxHeight.Enabled = this.cmbTextExts.Enabled = this.btnAddTextExt.Enabled = this.btnDelTextExt.Enabled = this.btnDefaultTextExt.Enabled = this.cmbImgExts.Enabled = this.btnAddImgExt.Enabled = this.btnDelImgExt.Enabled = this.btnDefaultImgExt.Enabled = this.btnPreviewFont.Enabled = this.btnPreviewFontDefault.Enabled = this.chbPreviewInfo.Enabled = this.chbPreviewMode.Enabled = this.chbShowPreview.Checked;
-            this.nudPreviewMaxWidth.Value = QTUtility.PreviewMaxWidth;
-            this.nudPreviewMaxHeight.Value = QTUtility.PreviewMaxHeight;
+            chbWndRestrAlpha.Checked = (QTUtility.ConfigValues[8] & 4) == 4;
+            chbShowPreview.Checked = QTUtility.CheckConfig(Settings.ShowTooltipPreviews);
+            chbPreviewMode.Checked = QTUtility.CheckConfig(Settings.PreviewsWithShift);
+            chbPreviewInfo.Checked = !QTUtility.CheckConfig(Settings.PreviewInfo);
+            nudPreviewMaxWidth.Enabled = nudPreviewMaxHeight.Enabled = cmbTextExts.Enabled = btnAddTextExt.Enabled = btnDelTextExt.Enabled = btnDefaultTextExt.Enabled = cmbImgExts.Enabled = btnAddImgExt.Enabled = btnDelImgExt.Enabled = btnDefaultImgExt.Enabled = btnPreviewFont.Enabled = btnPreviewFontDefault.Enabled = chbPreviewInfo.Enabled = chbPreviewMode.Enabled = chbShowPreview.Checked;
+            nudPreviewMaxWidth.Value = QTUtility.PreviewMaxWidth;
+            nudPreviewMaxHeight.Value = QTUtility.PreviewMaxHeight;
             if(QTUtility.PreviewFontName != null) {
                 try {
-                    this.btnPreviewFont.Font = new Font(QTUtility.PreviewFontName, QTUtility.PreviewFontSize);
+                    btnPreviewFont.Font = new Font(QTUtility.PreviewFontName, QTUtility.PreviewFontSize);
                 }
                 catch {
                 }
             }
-            this.chbSubDirTip.Checked = !QTUtility.CheckConfig(Settings.NoShowSubDirTips);
-            this.chbSubDirTipMode.Checked = QTUtility.CheckConfig(Settings.SubDirTipsWithShift);
-            this.chbSubDirTipModeHidden.Checked = QTUtility.CheckConfig(Settings.SubDirTipsHidden);
-            this.chbSubDirTipModeFile.Checked = QTUtility.CheckConfig(Settings.SubDirTipsFiles);
-            this.chbSubDirTipPreview.Checked = !QTUtility.CheckConfig(Settings.SubDirTipsPreview);
-            this.chbSubDirTipMode.Enabled = this.chbSubDirTipModeHidden.Enabled = this.chbSubDirTipModeFile.Enabled = this.chbSubDirTipPreview.Enabled = this.chbSubDirTip.Checked;
-            this.chbSubDirTipModeSystem.Checked = QTUtility.CheckConfig(Settings.SubDirTipsSystem);
-            this.nudMaxUndo.Value = QTUtility.MaxCount_History;
-            this.nudMaxRecentFile.Value = QTUtility.MaxCount_Executed;
-            this.chbDD.Checked = QTUtility.CheckConfig(Settings.DragDropOntoTabs);
-            this.chbNoTabFromOuteside.Checked = QTUtility.CheckConfig(Settings.NoTabsFromOutside);
-            this.chbHolizontalScroll.Checked = !QTUtility.CheckConfig(Settings.HorizontalScroll);
-            this.chbWhlChangeView.Checked = !QTUtility.CheckConfig(Settings.CtrlWheelChangeView);
-            this.chbAutoSubText.Checked = !QTUtility.CheckConfig(Settings.NoRenameAmbTabs);
-            this.chbSendToTray.Checked = QTUtility.CheckConfig(Settings.TrayOnClose);
-            this.chbSendToTrayOnMinimize.Checked = QTUtility.CheckConfig(Settings.TrayOnMinimize);
-            this.chbF2Selection.Checked = !QTUtility.CheckConfig(Settings.F2Selection);
-            this.chbTabCloseBtnAlt.Enabled = this.chbTabCloseBtnHover.Enabled = this.chbTabCloseButton.Checked = QTUtility.CheckConfig(Settings.ShowTabCloseButtons);
-            this.chbTabCloseBtnAlt.Checked = QTUtility.CheckConfig(Settings.TabCloseBtnsWithAlt);
-            this.chbTabCloseBtnHover.Checked = QTUtility.CheckConfig(Settings.TabCloseBtnsOnHover);
-            this.chbCursorLoop.Checked = QTUtility.CheckConfig(Settings.CursorLoop);
-            this.chbDriveLetter.Enabled = this.chbSubDirTipOnTab.Enabled = this.chbFolderIcon.Checked;
-            this.chbSubDirTipOnTab.Checked = QTUtility.CheckConfig(Settings.ShowSubDirTipOnTab);
-            this.nudNetworkTimeOut.Value = IDLWrapper.iPingTimeOutMS / 0x3e8;
-            this.textBoxLang.Text = QTUtility.Path_LanguageFile;
+            chbSubDirTip.Checked = !QTUtility.CheckConfig(Settings.NoShowSubDirTips);
+            chbSubDirTipMode.Checked = QTUtility.CheckConfig(Settings.SubDirTipsWithShift);
+            chbSubDirTipModeHidden.Checked = QTUtility.CheckConfig(Settings.SubDirTipsHidden);
+            chbSubDirTipModeFile.Checked = QTUtility.CheckConfig(Settings.SubDirTipsFiles);
+            chbSubDirTipPreview.Checked = !QTUtility.CheckConfig(Settings.SubDirTipsPreview);
+            chbSubDirTipMode.Enabled = chbSubDirTipModeHidden.Enabled = chbSubDirTipModeFile.Enabled = chbSubDirTipPreview.Enabled = chbSubDirTip.Checked;
+            chbSubDirTipModeSystem.Checked = QTUtility.CheckConfig(Settings.SubDirTipsSystem);
+            nudMaxUndo.Value = QTUtility.MaxCount_History;
+            nudMaxRecentFile.Value = QTUtility.MaxCount_Executed;
+            chbDD.Checked = QTUtility.CheckConfig(Settings.DragDropOntoTabs);
+            chbNoTabFromOuteside.Checked = QTUtility.CheckConfig(Settings.NoTabsFromOutside);
+            chbHolizontalScroll.Checked = !QTUtility.CheckConfig(Settings.HorizontalScroll);
+            chbWhlChangeView.Checked = !QTUtility.CheckConfig(Settings.CtrlWheelChangeView);
+            chbAutoSubText.Checked = !QTUtility.CheckConfig(Settings.NoRenameAmbTabs);
+            chbSendToTray.Checked = QTUtility.CheckConfig(Settings.TrayOnClose);
+            chbSendToTrayOnMinimize.Checked = QTUtility.CheckConfig(Settings.TrayOnMinimize);
+            chbF2Selection.Checked = !QTUtility.CheckConfig(Settings.F2Selection);
+            chbTabCloseBtnAlt.Enabled = chbTabCloseBtnHover.Enabled = chbTabCloseButton.Checked = QTUtility.CheckConfig(Settings.ShowTabCloseButtons);
+            chbTabCloseBtnAlt.Checked = QTUtility.CheckConfig(Settings.TabCloseBtnsWithAlt);
+            chbTabCloseBtnHover.Checked = QTUtility.CheckConfig(Settings.TabCloseBtnsOnHover);
+            chbCursorLoop.Checked = QTUtility.CheckConfig(Settings.CursorLoop);
+            chbDriveLetter.Enabled = chbSubDirTipOnTab.Enabled = chbFolderIcon.Checked;
+            chbSubDirTipOnTab.Checked = QTUtility.CheckConfig(Settings.ShowSubDirTipOnTab);
+            nudNetworkTimeOut.Value = IDLWrapper.iPingTimeOutMS / 0x3e8;
+            textBoxLang.Text = QTUtility.Path_LanguageFile;
             if(QTUtility.CheckConfig(Settings.NonDefaultMenu)) {
                 if(QTUtility.CheckConfig(Settings.XPStyleMenus)) {
-                    this.cmbMenuRenderer.SelectedIndex = 2;
+                    cmbMenuRenderer.SelectedIndex = 2;
                 }
                 else {
-                    this.cmbMenuRenderer.SelectedIndex = 1;
+                    cmbMenuRenderer.SelectedIndex = 1;
                 }
             }
             else {
-                this.cmbMenuRenderer.SelectedIndex = 0;
+                cmbMenuRenderer.SelectedIndex = 0;
             }
-            this.chbTabSwitcher.Checked = !QTUtility.CheckConfig(Settings.NoTabSwitcher);
-            this.chbAutoUpdate.Checked = QTUtility.CheckConfig(Settings.AutoUpdate);
-            this.chbRemoveOnSeparate.Checked = !QTUtility.CheckConfig(Settings.KeepOnSeparate);
-            this.chbDriveLetter.Checked = QTUtility.CheckConfig(Settings.ShowDriveLetters);
-            this.chbPlaySound.Checked = !QTUtility.CheckConfig(Settings.DisableSound);
-            this.InitializePluginView();
-            this.textBoxPluginLang.Text = QTUtility.Path_PluginLangFile;
-            this.CreateShortcutItems();
-            this.CreateNoCapturePaths();
+            chbTabSwitcher.Checked = !QTUtility.CheckConfig(Settings.NoTabSwitcher);
+            chbAutoUpdate.Checked = QTUtility.CheckConfig(Settings.AutoUpdate);
+            chbRemoveOnSeparate.Checked = !QTUtility.CheckConfig(Settings.KeepOnSeparate);
+            chbDriveLetter.Checked = QTUtility.CheckConfig(Settings.ShowDriveLetters);
+            chbPlaySound.Checked = !QTUtility.CheckConfig(Settings.DisableSound);
+            InitializePluginView();
+            textBoxPluginLang.Text = QTUtility.Path_PluginLangFile;
+            CreateShortcutItems();
+            CreateNoCapturePaths();
         }
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e) {
-            QTUtility.OptionsDialogTabIndex = this.tabControl1.SelectedIndex;
+            QTUtility.OptionsDialogTabIndex = tabControl1.SelectedIndex;
         }
 
         private void tbGroupKey_KeyPress(object sender, KeyPressEventArgs e) {
@@ -4299,28 +4299,28 @@ namespace QTTabBarLib {
         }
 
         private void tbGroupKey_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e) {
-            TreeNode selectedNode = this.treeViewGroup.SelectedNode;
+            TreeNode selectedNode = treeViewGroup.SelectedNode;
             if((((selectedNode != null) && (selectedNode.Tag != null)) && (selectedNode.Tag is MenuItemArguments)) && !IsInvalidShortcutKey(e.KeyCode, e.Modifiers)) {
                 MenuItemArguments tag = (MenuItemArguments)selectedNode.Tag;
-                int num = this.chbGroupKey.Checked ? 0x100000 : 0;
+                int num = chbGroupKey.Checked ? 0x100000 : 0;
                 if(e.KeyCode == Keys.Escape) {
-                    this.tbGroupKey.Text = " - ";
+                    tbGroupKey.Text = " - ";
                     tag.KeyShortcut = num;
                 }
-                else if(((e.Modifiers != Keys.None) && this.CheckExistance_Shortcuts(e.KeyData, null)) && (this.CheckExistance_UserAppKey(e.KeyData, this.tnRoot_UserApps, null) && this.CheckExistance_GroupKey(e.KeyData, selectedNode))) {
-                    this.tbGroupKey.Text = QTUtility2.MakeKeyString(e.KeyData);
+                else if(((e.Modifiers != Keys.None) && CheckExistance_Shortcuts(e.KeyData, null)) && (CheckExistance_UserAppKey(e.KeyData, tnRoot_UserApps, null) && CheckExistance_GroupKey(e.KeyData, selectedNode))) {
+                    tbGroupKey.Text = QTUtility2.MakeKeyString(e.KeyData);
                     tag.KeyShortcut = num | (int)e.KeyData;
                 }
             }
         }
 
         private void tbsUserApps_TextChanged(object sender, EventArgs e) {
-            if(!this.fSuppressTextChangeEvent_UserApps) {
-                TreeNode selectedNode = this.treeViewUserApps.SelectedNode;
+            if(!fSuppressTextChangeEvent_UserApps) {
+                TreeNode selectedNode = treeViewUserApps.SelectedNode;
                 if(((selectedNode != null) && (selectedNode.Tag != null)) && (selectedNode.Tag is MenuItemArguments)) {
                     MenuItemArguments tag = (MenuItemArguments)selectedNode.Tag;
-                    if(sender == this.tbPath) {
-                        string str = QTUtility2.SanitizePathString(this.tbPath.Text);
+                    if(sender == tbPath) {
+                        string str = QTUtility2.SanitizePathString(tbPath.Text);
                         tag.Path = str;
                         if(str.Length > 2) {
                             string name = str;
@@ -4336,11 +4336,11 @@ namespace QTTabBarLib {
                         }
                         selectedNode.ImageKey = selectedNode.SelectedImageKey = "noimage";
                     }
-                    else if(sender == this.tbArgs) {
-                        tag.Argument = tag.OriginalArgument = this.tbArgs.Text;
+                    else if(sender == tbArgs) {
+                        tag.Argument = tag.OriginalArgument = tbArgs.Text;
                     }
-                    else if(sender == this.tbWorking) {
-                        tag.WorkingDirectory = tag.OriginalWorkingDirectory = QTUtility2.SanitizePathString(this.tbWorking.Text);
+                    else if(sender == tbWorking) {
+                        tag.WorkingDirectory = tag.OriginalWorkingDirectory = QTUtility2.SanitizePathString(tbWorking.Text);
                     }
                 }
             }
@@ -4351,16 +4351,16 @@ namespace QTTabBarLib {
         }
 
         private void tbUserAppKey_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e) {
-            TreeNode selectedNode = this.treeViewUserApps.SelectedNode;
+            TreeNode selectedNode = treeViewUserApps.SelectedNode;
             if((((selectedNode != null) && (selectedNode.Tag != null)) && (selectedNode.Tag is MenuItemArguments)) && !IsInvalidShortcutKey(e.KeyCode, e.Modifiers)) {
                 MenuItemArguments tag = (MenuItemArguments)selectedNode.Tag;
-                int num = this.chbUserAppKey.Checked ? 0x100000 : 0;
+                int num = chbUserAppKey.Checked ? 0x100000 : 0;
                 if(e.KeyCode == Keys.Escape) {
-                    this.tbUserAppKey.Text = " - ";
+                    tbUserAppKey.Text = " - ";
                     tag.KeyShortcut = num;
                 }
-                else if(((e.Modifiers != Keys.None) && this.CheckExistance_Shortcuts(e.KeyData, null)) && (this.CheckExistance_UserAppKey(e.KeyData, this.tnRoot_UserApps, selectedNode) && this.CheckExistance_GroupKey(e.KeyData, null))) {
-                    this.tbUserAppKey.Text = QTUtility2.MakeKeyString(e.KeyData);
+                else if(((e.Modifiers != Keys.None) && CheckExistance_Shortcuts(e.KeyData, null)) && (CheckExistance_UserAppKey(e.KeyData, tnRoot_UserApps, selectedNode) && CheckExistance_GroupKey(e.KeyData, null))) {
+                    tbUserAppKey.Text = QTUtility2.MakeKeyString(e.KeyData);
                     tag.KeyShortcut = num | (int)e.KeyData;
                 }
             }
@@ -4374,7 +4374,7 @@ namespace QTTabBarLib {
         }
 
         private void treeViewGroup_AfterLabelEdit(object sender, NodeLabelEditEventArgs e) {
-            this.fNowTreeNodeEditing = false;
+            fNowTreeNodeEditing = false;
             if(e.Label != null) {
                 if(((e.Label.Length == 0) || ((e.Node.Level == 1) && (e.Label.Length > 0x40))) || ((e.Node.Level == 2) && (e.Label.Length > 260))) {
                     SystemSounds.Beep.Play();
@@ -4416,60 +4416,60 @@ namespace QTTabBarLib {
         }
 
         private void treeViewGroup_AfterSelect(object sender, TreeViewEventArgs e) {
-            this.fSuppressTextChangeEvent_Group = true;
+            fSuppressTextChangeEvent_Group = true;
             int level = e.Node.Level;
             if(level != 1) {
-                this.chbGroupKey.Checked = false;
-                this.tbGroupKey.Clear();
-                this.chbGroupKey.Enabled = this.tbGroupKey.Enabled = false;
+                chbGroupKey.Checked = false;
+                tbGroupKey.Clear();
+                chbGroupKey.Enabled = tbGroupKey.Enabled = false;
             }
             if(level == 0) {
-                this.btnMinus_Grp.Enabled = this.btnStartUpGrp.Enabled = this.btnUp_Grp.Enabled = this.btnDown_Grp.Enabled = false;
-                this.cmbSpclFol_Grp.Enabled = this.btnAddSpcFol_Grp.Enabled = this.btnPlus_Grp.Enabled = true;
-                this.fSuppressTextChangeEvent_Group = false;
+                btnMinus_Grp.Enabled = btnStartUpGrp.Enabled = btnUp_Grp.Enabled = btnDown_Grp.Enabled = false;
+                cmbSpclFol_Grp.Enabled = btnAddSpcFol_Grp.Enabled = btnPlus_Grp.Enabled = true;
+                fSuppressTextChangeEvent_Group = false;
             }
             else {
                 MenuItemArguments tag = (MenuItemArguments)e.Node.Tag;
                 if(tag == MIA_GROUPSEP) {
-                    this.cmbSpclFol_Grp.Enabled = this.btnAddSpcFol_Grp.Enabled = this.btnStartUpGrp.Enabled = false;
-                    this.tbGroupKey.Clear();
-                    this.chbGroupKey.Checked = this.chbGroupKey.Enabled = this.tbGroupKey.Enabled = false;
-                    this.btnPlus_Grp.Enabled = this.btnUp_Grp.Enabled = this.btnDown_Grp.Enabled = this.btnMinus_Grp.Enabled = true;
+                    cmbSpclFol_Grp.Enabled = btnAddSpcFol_Grp.Enabled = btnStartUpGrp.Enabled = false;
+                    tbGroupKey.Clear();
+                    chbGroupKey.Checked = chbGroupKey.Enabled = tbGroupKey.Enabled = false;
+                    btnPlus_Grp.Enabled = btnUp_Grp.Enabled = btnDown_Grp.Enabled = btnMinus_Grp.Enabled = true;
                 }
                 else {
                     if(level == 1) {
-                        this.chbGroupKey.Enabled = true;
+                        chbGroupKey.Enabled = true;
                         if(tag != null) {
-                            this.chbGroupKey.Checked = (tag.KeyShortcut & 0x100000) != 0;
-                            this.tbGroupKey.Text = QTUtility2.MakeKeyString(((Keys)tag.KeyShortcut) & ((Keys)(-1048577)));
+                            chbGroupKey.Checked = (tag.KeyShortcut & 0x100000) != 0;
+                            tbGroupKey.Text = QTUtility2.MakeKeyString(((Keys)tag.KeyShortcut) & ((Keys)(-1048577)));
                         }
                         else {
-                            this.chbGroupKey.Checked = false;
-                            this.tbGroupKey.Text = string.Empty;
+                            chbGroupKey.Checked = false;
+                            tbGroupKey.Text = string.Empty;
                         }
-                        this.tbGroupKey.Enabled = this.chbGroupKey.Checked;
+                        tbGroupKey.Enabled = chbGroupKey.Checked;
                     }
-                    this.cmbSpclFol_Grp.Enabled = this.btnAddSpcFol_Grp.Enabled = this.btnStartUpGrp.Enabled = this.btnPlus_Grp.Enabled = this.btnMinus_Grp.Enabled = true;
+                    cmbSpclFol_Grp.Enabled = btnAddSpcFol_Grp.Enabled = btnStartUpGrp.Enabled = btnPlus_Grp.Enabled = btnMinus_Grp.Enabled = true;
                 }
-                this.btnAddSep_Grp.Enabled = level != 2;
+                btnAddSep_Grp.Enabled = level != 2;
                 int count = e.Node.Parent.Nodes.Count;
                 if(count > 1) {
                     if(e.Node.Index == 0) {
-                        this.btnUp_Grp.Enabled = false;
-                        this.btnDown_Grp.Enabled = true;
+                        btnUp_Grp.Enabled = false;
+                        btnDown_Grp.Enabled = true;
                     }
                     else if(e.Node.Index == (count - 1)) {
-                        this.btnUp_Grp.Enabled = true;
-                        this.btnDown_Grp.Enabled = false;
+                        btnUp_Grp.Enabled = true;
+                        btnDown_Grp.Enabled = false;
                     }
                     else {
-                        this.btnUp_Grp.Enabled = this.btnDown_Grp.Enabled = true;
+                        btnUp_Grp.Enabled = btnDown_Grp.Enabled = true;
                     }
                 }
                 else {
-                    this.btnUp_Grp.Enabled = this.btnDown_Grp.Enabled = false;
+                    btnUp_Grp.Enabled = btnDown_Grp.Enabled = false;
                 }
-                this.fSuppressTextChangeEvent_Group = false;
+                fSuppressTextChangeEvent_Group = false;
             }
         }
 
@@ -4478,19 +4478,19 @@ namespace QTTabBarLib {
                 e.CancelEdit = true;
             }
             else {
-                this.fNowTreeNodeEditing = true;
+                fNowTreeNodeEditing = true;
             }
         }
 
         private void treeViewGroup_KeyDown(object sender, KeyEventArgs e) {
-            TreeNode selectedNode = this.treeViewGroup.SelectedNode;
+            TreeNode selectedNode = treeViewGroup.SelectedNode;
             if((selectedNode != null) && (selectedNode.Level > 0)) {
                 Keys keyCode = e.KeyCode;
                 if(keyCode <= Keys.Down) {
                     switch(keyCode) {
                         case Keys.Up:
-                            if(((e.Modifiers == Keys.Alt) || (e.Modifiers == Keys.Control)) && this.btnUp_Grp.Enabled) {
-                                this.btnUp_Grp.PerformClick();
+                            if(((e.Modifiers == Keys.Alt) || (e.Modifiers == Keys.Control)) && btnUp_Grp.Enabled) {
+                                btnUp_Grp.PerformClick();
                                 e.Handled = true;
                             }
                             return;
@@ -4499,15 +4499,15 @@ namespace QTTabBarLib {
                             return;
 
                         case Keys.Down:
-                            if(((e.Modifiers == Keys.Alt) || (e.Modifiers == Keys.Control)) && this.btnDown_Grp.Enabled) {
-                                this.btnDown_Grp.PerformClick();
+                            if(((e.Modifiers == Keys.Alt) || (e.Modifiers == Keys.Control)) && btnDown_Grp.Enabled) {
+                                btnDown_Grp.PerformClick();
                                 e.Handled = true;
                             }
                             return;
 
                         case Keys.Return:
-                            if(this.btnPlus_Grp.Enabled) {
-                                this.btnPlus_Grp.PerformClick();
+                            if(btnPlus_Grp.Enabled) {
+                                btnPlus_Grp.PerformClick();
                                 e.Handled = true;
                             }
                             return;
@@ -4529,7 +4529,7 @@ namespace QTTabBarLib {
         }
 
         private void treeViewUserApps_AfterLabelEdit(object sender, NodeLabelEditEventArgs e) {
-            this.fNowTreeNodeEditing = false;
+            fNowTreeNodeEditing = false;
             if(e.Label != null) {
                 if((e.Label.Length == 0) || (e.Label.Length > 0x20)) {
                     SystemSounds.Beep.Play();
@@ -4546,45 +4546,45 @@ namespace QTTabBarLib {
         }
 
         private void treeViewUserApps_AfterSelect(object sender, TreeViewEventArgs e) {
-            this.fSuppressTextChangeEvent_UserApps = true;
-            this.btnAddVFolder_app.Enabled = e.Node.Level < 10;
+            fSuppressTextChangeEvent_UserApps = true;
+            btnAddVFolder_app.Enabled = e.Node.Level < 10;
             if(e.Node.Level == 0) {
-                this.btnMinus_app.Enabled = this.btnUp_app.Enabled = this.btnDown_app.Enabled = false;
+                btnMinus_app.Enabled = btnUp_app.Enabled = btnDown_app.Enabled = false;
             }
             else {
                 if(e.Node.Level == 1) {
                     if(e.Node.Index == 0) {
-                        this.btnUp_app.Enabled = false;
-                        this.btnDown_app.Enabled = this.tnRoot_UserApps.Nodes.Count > 1;
+                        btnUp_app.Enabled = false;
+                        btnDown_app.Enabled = tnRoot_UserApps.Nodes.Count > 1;
                     }
-                    else if(e.Node.Index == (this.tnRoot_UserApps.Nodes.Count - 1)) {
-                        this.btnUp_app.Enabled = true;
-                        this.btnDown_app.Enabled = false;
+                    else if(e.Node.Index == (tnRoot_UserApps.Nodes.Count - 1)) {
+                        btnUp_app.Enabled = true;
+                        btnDown_app.Enabled = false;
                     }
                     else {
-                        this.btnUp_app.Enabled = this.btnDown_app.Enabled = true;
+                        btnUp_app.Enabled = btnDown_app.Enabled = true;
                     }
                 }
                 else {
-                    this.btnUp_app.Enabled = this.btnDown_app.Enabled = true;
+                    btnUp_app.Enabled = btnDown_app.Enabled = true;
                 }
-                this.btnMinus_app.Enabled = true;
+                btnMinus_app.Enabled = true;
             }
             if((e.Node.Tag == null) || (e.Node.Text == "----------- Separator -----------")) {
-                this.tbPath.Text = this.tbArgs.Text = this.tbWorking.Text = this.tbUserAppKey.Text = string.Empty;
-                this.btnOFD_app.Enabled = this.btnBFD_app.Enabled = this.btnAddToken_Arg.Enabled = this.btnAddToken_Wrk.Enabled = this.tbPath.Enabled = this.tbArgs.Enabled = this.tbWorking.Enabled = this.chbUserAppKey.Enabled = this.chbUserAppKey.Checked = this.tbUserAppKey.Enabled = false;
+                tbPath.Text = tbArgs.Text = tbWorking.Text = tbUserAppKey.Text = string.Empty;
+                btnOFD_app.Enabled = btnBFD_app.Enabled = btnAddToken_Arg.Enabled = btnAddToken_Wrk.Enabled = tbPath.Enabled = tbArgs.Enabled = tbWorking.Enabled = chbUserAppKey.Enabled = chbUserAppKey.Checked = tbUserAppKey.Enabled = false;
             }
             else {
                 MenuItemArguments tag = (MenuItemArguments)e.Node.Tag;
-                this.tbPath.Text = tag.Path;
-                this.tbArgs.Text = tag.Argument;
-                this.tbWorking.Text = tag.WorkingDirectory;
-                this.tbUserAppKey.Text = QTUtility2.MakeKeyString(((Keys)tag.KeyShortcut) & ((Keys)(-1048577)));
-                this.chbUserAppKey.Checked = (tag.KeyShortcut & 0x100000) != 0;
-                this.btnOFD_app.Enabled = this.btnBFD_app.Enabled = this.btnAddToken_Arg.Enabled = this.btnAddToken_Wrk.Enabled = this.tbPath.Enabled = this.tbArgs.Enabled = this.tbWorking.Enabled = this.chbUserAppKey.Enabled = true;
-                this.tbUserAppKey.Enabled = this.chbUserAppKey.Checked;
+                tbPath.Text = tag.Path;
+                tbArgs.Text = tag.Argument;
+                tbWorking.Text = tag.WorkingDirectory;
+                tbUserAppKey.Text = QTUtility2.MakeKeyString(((Keys)tag.KeyShortcut) & ((Keys)(-1048577)));
+                chbUserAppKey.Checked = (tag.KeyShortcut & 0x100000) != 0;
+                btnOFD_app.Enabled = btnBFD_app.Enabled = btnAddToken_Arg.Enabled = btnAddToken_Wrk.Enabled = tbPath.Enabled = tbArgs.Enabled = tbWorking.Enabled = chbUserAppKey.Enabled = true;
+                tbUserAppKey.Enabled = chbUserAppKey.Checked;
             }
-            this.fSuppressTextChangeEvent_UserApps = false;
+            fSuppressTextChangeEvent_UserApps = false;
         }
 
         private void treeViewUserApps_BeforeLabelEdit(object sender, NodeLabelEditEventArgs e) {
@@ -4592,17 +4592,17 @@ namespace QTTabBarLib {
                 e.CancelEdit = true;
             }
             else {
-                this.fNowTreeNodeEditing = true;
+                fNowTreeNodeEditing = true;
             }
         }
 
         private void treeViewUserApps_KeyDown(object sender, KeyEventArgs e) {
-            TreeNode selectedNode = this.treeViewUserApps.SelectedNode;
+            TreeNode selectedNode = treeViewUserApps.SelectedNode;
             if((selectedNode != null) && (selectedNode.Level > 0)) {
                 switch(e.KeyCode) {
                     case Keys.Up:
-                        if(((e.Modifiers == Keys.Alt) || (e.Modifiers == Keys.Control)) && this.btnUp_app.Enabled) {
-                            this.btnUp_app.PerformClick();
+                        if(((e.Modifiers == Keys.Alt) || (e.Modifiers == Keys.Control)) && btnUp_app.Enabled) {
+                            btnUp_app.PerformClick();
                             e.Handled = true;
                             Application.DoEvents();
                         }
@@ -4612,8 +4612,8 @@ namespace QTTabBarLib {
                         return;
 
                     case Keys.Down:
-                        if(((e.Modifiers == Keys.Alt) || (e.Modifiers == Keys.Control)) && this.btnDown_app.Enabled) {
-                            this.btnDown_app.PerformClick();
+                        if(((e.Modifiers == Keys.Alt) || (e.Modifiers == Keys.Control)) && btnDown_app.Enabled) {
+                            btnDown_app.PerformClick();
                             e.Handled = true;
                             Application.DoEvents();
                         }
@@ -4631,18 +4631,18 @@ namespace QTTabBarLib {
         }
 
         private void UpDownButtons_Click(object sender, EventArgs e) {
-            bool flag = sender == this.btnUp_Grp;
-            TreeNode selectedNode = this.treeViewGroup.SelectedNode;
+            bool flag = sender == btnUp_Grp;
+            TreeNode selectedNode = treeViewGroup.SelectedNode;
             if(selectedNode != null) {
                 int index = selectedNode.Index;
                 int level = selectedNode.Level;
                 if(level != 0) {
                     TreeNode parent = selectedNode.Parent;
-                    this.treeViewGroup.BeginUpdate();
+                    treeViewGroup.BeginUpdate();
                     if(flag && (index != 0)) {
                         selectedNode.Remove();
                         parent.Nodes.Insert(index - 1, selectedNode);
-                        this.treeViewGroup.SelectedNode = selectedNode;
+                        treeViewGroup.SelectedNode = selectedNode;
                         if((level == 2) && ((index - 1) == 0)) {
                             parent.ImageKey = parent.SelectedImageKey = selectedNode.ImageKey;
                         }
@@ -4650,12 +4650,12 @@ namespace QTTabBarLib {
                     else if(!flag && (index != (parent.Nodes.Count - 1))) {
                         selectedNode.Remove();
                         parent.Nodes.Insert(index + 1, selectedNode);
-                        this.treeViewGroup.SelectedNode = selectedNode;
+                        treeViewGroup.SelectedNode = selectedNode;
                         if((level == 2) && (index == 0)) {
                             parent.ImageKey = parent.SelectedImageKey = parent.Nodes[0].ImageKey;
                         }
                     }
-                    this.treeViewGroup.EndUpdate();
+                    treeViewGroup.EndUpdate();
                     selectedNode.EnsureVisible();
                 }
             }
@@ -4756,18 +4756,18 @@ namespace QTTabBarLib {
             private VisualStyleRenderer vsrUnChecked;
 
             public ListViewEx() {
-                base.OwnerDraw = true;
-                this.DoubleBuffered = true;
-                this.sfLeft.LineAlignment = StringAlignment.Center;
-                this.sfLeft.Trimming = StringTrimming.EllipsisCharacter;
-                this.sfCenter.Alignment = StringAlignment.Center;
-                this.sfCenter.LineAlignment = StringAlignment.Center;
-                this.sfCenter.Trimming = StringTrimming.EllipsisCharacter;
+                OwnerDraw = true;
+                DoubleBuffered = true;
+                sfLeft.LineAlignment = StringAlignment.Center;
+                sfLeft.Trimming = StringTrimming.EllipsisCharacter;
+                sfCenter.Alignment = StringAlignment.Center;
+                sfCenter.LineAlignment = StringAlignment.Center;
+                sfCenter.Trimming = StringTrimming.EllipsisCharacter;
             }
 
             protected override void Dispose(bool disposing) {
-                this.sfCenter.Dispose();
-                this.sfLeft.Dispose();
+                sfCenter.Dispose();
+                sfLeft.Dispose();
                 base.Dispose(disposing);
             }
 
@@ -4783,24 +4783,24 @@ namespace QTTabBarLib {
                     Rectangle bounds = new Rectangle(e.Bounds.X + 2, y, 0x10, 0x10);
                     RectangleF layoutRectangle = new RectangleF((e.Bounds.X + 20), e.Bounds.Y, (e.Bounds.Width - 20), e.Bounds.Height);
                     if(VisualStyleRenderer.IsSupported) {
-                        if(this.vsrChecked == null) {
-                            this.vsrChecked = new VisualStyleRenderer(VisualStyleElement.Button.CheckBox.CheckedNormal);
-                            this.vsrUnChecked = new VisualStyleRenderer(VisualStyleElement.Button.CheckBox.UncheckedNormal);
+                        if(vsrChecked == null) {
+                            vsrChecked = new VisualStyleRenderer(VisualStyleElement.Button.CheckBox.CheckedNormal);
+                            vsrUnChecked = new VisualStyleRenderer(VisualStyleElement.Button.CheckBox.UncheckedNormal);
                         }
                         if(e.Item.Checked) {
-                            this.vsrChecked.DrawBackground(e.Graphics, bounds);
+                            vsrChecked.DrawBackground(e.Graphics, bounds);
                         }
                         else {
-                            this.vsrUnChecked.DrawBackground(e.Graphics, bounds);
+                            vsrUnChecked.DrawBackground(e.Graphics, bounds);
                         }
                     }
                     else {
                         ControlPaint.DrawCheckBox(e.Graphics, bounds, e.Item.Checked ? ButtonState.Checked : ButtonState.Normal);
                     }
-                    e.Graphics.DrawString(e.Item.Text, this.Font, brush, layoutRectangle, this.sfLeft);
+                    e.Graphics.DrawString(e.Item.Text, Font, brush, layoutRectangle, sfLeft);
                 }
                 else if(e.ColumnIndex == 1) {
-                    e.Graphics.DrawString(e.SubItem.Text, this.Font, brush, e.Bounds, this.sfCenter);
+                    e.Graphics.DrawString(e.SubItem.Text, Font, brush, e.Bounds, sfCenter);
                 }
             }
 
@@ -4817,21 +4817,21 @@ namespace QTTabBarLib {
             [DisplayName("Sizing margins")]
             public Padding SizingMargin {
                 get {
-                    return this.padding;
+                    return padding;
                 }
                 set {
-                    this.padding = value;
-                    if((this.padding.Left > 50) || (this.padding.Left < 0)) {
-                        this.padding.Left = 0;
+                    padding = value;
+                    if((padding.Left > 50) || (padding.Left < 0)) {
+                        padding.Left = 0;
                     }
-                    if((this.padding.Top > 50) || (this.padding.Top < 0)) {
-                        this.padding.Top = 0;
+                    if((padding.Top > 50) || (padding.Top < 0)) {
+                        padding.Top = 0;
                     }
-                    if((this.padding.Right > 50) || (this.padding.Right < 0)) {
-                        this.padding.Right = 0;
+                    if((padding.Right > 50) || (padding.Right < 0)) {
+                        padding.Right = 0;
                     }
-                    if((this.padding.Bottom > 50) || (this.padding.Bottom < 0)) {
-                        this.padding.Bottom = 0;
+                    if((padding.Bottom > 50) || (padding.Bottom < 0)) {
+                        padding.Bottom = 0;
                     }
                 }
             }
