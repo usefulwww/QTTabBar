@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
@@ -331,21 +332,18 @@ namespace QTTabBarLib {
         protected override void OnMouseMove(MouseEventArgs e) {
             base.OnMouseMove(e);
             Dictionary<int, Rectangle> dictionary = new Dictionary<int, Rectangle>(dicItemRcts);
-            foreach(int num in dictionary.Keys) {
-                Rectangle rectangle = dicItemRcts[num];
-                if(rectangle.Contains(e.Location)) {
-                    if(iHoveredIndex != num) {
-                        if(dicItemRcts.ContainsKey(iHoveredIndex)) {
-                            Invalidate(dicItemRcts[iHoveredIndex]);
-                        }
-                        iHoveredIndex = num;
-                        Invalidate(dicItemRcts[num]);
-                        toolTipSwitcher.Active = false;
-                        toolTipSwitcher.SetToolTip(this, GetTitleText(lstPaths[iHoveredIndex]));
-                        toolTipSwitcher.Active = true;
+            foreach(int num in dictionary.Keys.Where(num => dicItemRcts[num].Contains(e.Location))) {
+                if(iHoveredIndex != num) {
+                    if(dicItemRcts.ContainsKey(iHoveredIndex)) {
+                        Invalidate(dicItemRcts[iHoveredIndex]);
                     }
-                    return;
+                    iHoveredIndex = num;
+                    Invalidate(dicItemRcts[num]);
+                    toolTipSwitcher.Active = false;
+                    toolTipSwitcher.SetToolTip(this, GetTitleText(lstPaths[iHoveredIndex]));
+                    toolTipSwitcher.Active = true;
                 }
+                return;
             }
             if(iHoveredIndex != -1) {
                 Invalidate();
@@ -425,14 +423,12 @@ namespace QTTabBarLib {
                     if(iHoveredIndex != -1) {
                         Point pt = new Point(QTUtility2.GET_X_LPARAM(m.LParam), QTUtility2.GET_Y_LPARAM(m.LParam));
                         Dictionary<int, Rectangle> dictionary2 = new Dictionary<int, Rectangle>(dicItemRcts);
-                        foreach(int num2 in dictionary2.Keys) {
-                            if(num2 == iHoveredIndex) {
-                                Rectangle rectangle2 = dicItemRcts[num2];
-                                if(rectangle2.Contains(pt)) {
-                                    HideSwitcherInner(true, true);
-                                }
-                                break;
+                        foreach(Rectangle rect in from num in dictionary2.Keys 
+                                where num == iHoveredIndex select dicItemRcts[num]) {
+                            if(rect.Contains(pt)) {
+                                HideSwitcherInner(true, true);
                             }
+                            break;
                         }
                     }
                     goto Label_01D5;

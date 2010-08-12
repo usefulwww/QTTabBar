@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Media;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
@@ -196,12 +197,7 @@ namespace QTTabBarLib.Interop {
                     ptrArray = list2.ToArray();
                 }
                 else {
-                    foreach(string str in lstPaths) {
-                        IntPtr ptr5 = PInvoke.ILCreateFromPath(str);
-                        if(ptr5 != IntPtr.Zero) {
-                            list.Add(ptr5);
-                        }
-                    }
+                    list.AddRange(lstPaths.Select(PInvoke.ILCreateFromPath).Where(ptr5 => ptr5 != IntPtr.Zero));
                     PInvoke.SHGetDesktopFolder(out ppv);
                     if((list.Count == 0) || (ppv == null)) {
                         return DragDropEffects.None;
@@ -533,11 +529,7 @@ namespace QTTabBarLib.Interop {
         }
 
         private static string MakeFILEOPPATHS(List<string> paths) {
-            string str = string.Empty;
-            foreach(string str2 in paths) {
-                str = str + str2 + '\0';
-            }
-            return (str + '\0');
+            return paths.StringJoin("\0") + "\0\0";
         }
 
         public static bool PasteFile(string pathTarget, IntPtr hwnd) {
@@ -596,12 +588,9 @@ namespace QTTabBarLib.Interop {
             try {
                 IntPtr ptr;
                 List<IntPtr> list2 = new List<IntPtr>();
-                foreach(string str in lstPaths) {
-                    IntPtr item = PInvoke.ILCreateFromPath(str);
-                    if(item != IntPtr.Zero) {
-                        list.Add(item);
-                        list2.Add(PInvoke.ILFindLastID(item));
-                    }
+                foreach(IntPtr item in lstPaths.Select(PInvoke.ILCreateFromPath).Where(item => item != IntPtr.Zero)) {
+                    list.Add(item);
+                    list2.Add(PInvoke.ILFindLastID(item));
                 }
                 if((list.Count == 0) || (PInvoke.SHBindToParent(list[0], ExplorerGUIDs.IID_IShellFolder, out ppv, out ptr) != 0)) {
                     return -1;

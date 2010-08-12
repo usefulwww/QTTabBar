@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using QTTabBarLib.Interop;
@@ -228,13 +229,8 @@ namespace QTTabBarLib {
         public void RemovePluginsRange(PluginInformation[] pis) {
             SuspendLayout();
             try {
-                List<PluginViewItem> list = new List<PluginViewItem>();
-                foreach(Control control in Controls) {
-                    PluginViewItem item = control as PluginViewItem;
-                    if((item != null) && (Array.IndexOf(pis, item.PluginInfo) != -1)) {
-                        list.Add(item);
-                    }
-                }
+                List<PluginViewItem> list = Controls.OfType<PluginViewItem>()
+                    .Where(item => pis.Contains(item.PluginInfo)).ToList();
                 foreach(PluginViewItem item2 in list) {
                     RemovePluginViewItem(item2, true);
                 }

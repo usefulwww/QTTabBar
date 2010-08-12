@@ -21,6 +21,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Media;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
@@ -466,7 +467,7 @@ namespace QTTabBarLib {
             listView_NoCapture.BeginUpdate();
             listView_NoCapture.SelectedItems.Clear();
             foreach(ListViewItem item in listView_NoCapture.Items) {
-                if((item.Text.Length == 0) || (item.Text == "Enter path")) {
+                if(item.Text.Length == 0 || item.Text == "Enter path") {
                     item.Selected = true;
                     item.BeginEdit();
                     listView_NoCapture.EndUpdate();
@@ -694,14 +695,13 @@ namespace QTTabBarLib {
                 dialog.Multiselect = true;
                 if(DialogResult.OK == dialog.ShowDialog()) {
                     bool flag = true;
-                    foreach(string str in dialog.FileNames) {
-                        PluginAssembly assembly = new PluginAssembly(str);
-                        if(assembly.PluginInfosExist) {
-                            CreatePluginViewItem(new PluginAssembly[] { assembly }, true);
-                            if(flag) {
-                                flag = false;
-                                SelectPluginBottom();
-                            }
+                    foreach(PluginAssembly assembly in dialog.FileNames
+                            .Select(str => new PluginAssembly(str))
+                            .Where(assembly => assembly.PluginInfosExist)) {
+                        CreatePluginViewItem(new PluginAssembly[] { assembly }, true);
+                        if(flag) {
+                            flag = false;
+                            SelectPluginBottom();
                         }
                     }
                 }
@@ -1413,28 +1413,18 @@ namespace QTTabBarLib {
         }
 
         private void CreatePluginViewItem(PluginAssembly[] pluginAssemblies, bool fAddedByUser) {
-            foreach(PluginAssembly assembly in pluginAssemblies) {
-                if(assembly.PluginInfosExist) {
-                    bool flag = false;
-                    foreach(PluginViewItem item in pluginView.PluginViewItems) {
-                        if(assembly.Path == item.PluginInfo.Path) {
-                            flag = true;
-                            break;
-                        }
+            foreach(PluginAssembly assembly in pluginAssemblies.Where(assembly => assembly.PluginInfosExist
+                    && pluginView.PluginViewItems.All(item => item.PluginInfo.Path != assembly.Path))) {
+                int num = 0;
+                foreach(PluginInformation information in assembly.PluginInformations) {
+                    if(fAddedByUser || information.Enabled) {
+                        information.Enabled = assembly.Enabled = true;
                     }
-                    if(!flag) {
-                        int num = 0;
-                        foreach(PluginInformation information in assembly.PluginInformations) {
-                            if(fAddedByUser || information.Enabled) {
-                                information.Enabled = assembly.Enabled = true;
-                            }
-                            pluginView.AddPluginViewItem(information, assembly);
-                            num++;
-                        }
-                        if((num > 0) && fAddedByUser) {
-                            lstPluginAssembliesUserAdded.Add(assembly);
-                        }
-                    }
+                    pluginView.AddPluginViewItem(information, assembly);
+                    num++;
+                }
+                if((num > 0) && fAddedByUser) {
+                    lstPluginAssembliesUserAdded.Add(assembly);
                 }
             }
         }
@@ -1473,12 +1463,12 @@ namespace QTTabBarLib {
                         continue;
                     }
                     foreach(string action in plugin.PluginInformation.ShortcutKeyActions) {
-                        ListViewItem item3 = new ListViewItem(new string[] { action, " - " });
-                        item3.Checked = false;
-                        item3.Group = group2;
-                        item3.Tag = 0;
-                        item3.Name = str;
-                        listViewKeyboard.Items.Add(item3);
+                        listViewKeyboard.Items.Add(new ListViewItem(new string[] {action, " - "}) {
+                                Checked = false,
+                                Group = group2,
+                                Tag = 0,
+                                Name = str
+                        });
                     }
                 }
             }
@@ -1504,18 +1494,10 @@ namespace QTTabBarLib {
         private static string CreateUniqueName(string strInitialName, TreeNode tnSelf, TreeNode tnParent) {
             int num = 1;
             string b = strInitialName;
-            bool flag;
-            do {
-                flag = false;
-                foreach(TreeNode node in tnParent.Nodes) {
-                    if(((tnSelf == null) || (tnSelf != node)) && string.Equals(node.Text, b, StringComparison.OrdinalIgnoreCase)) {
-                        b = strInitialName + "_" + ++num;
-                        flag = true;
-                        break;
-                    }
-                }
+            while(tnParent.Nodes.Cast<TreeNode>().Any(node =>
+                    tnSelf != node && string.Equals(node.Text, b, StringComparison.OrdinalIgnoreCase))) {
+                b = strInitialName + "_" + ++num;
             }
-            while(flag);
             return b;
         }
 
@@ -1610,10 +1592,8 @@ namespace QTTabBarLib {
                     if(!b.StartsWith(".")) {
                         b = "." + b;
                     }
-                    foreach(string str3 in box.Items) {
-                        if(string.Equals(str3, b, StringComparison.OrdinalIgnoreCase)) {
-                            return;
-                        }
+                    if(box.Items.Cast<string>().Any(str3 => string.Equals(str3, b, StringComparison.OrdinalIgnoreCase))) {
+                        return;
                     }
                     box.Text = b;
                     if(index == 0) {
@@ -3349,16 +3329,14 @@ namespace QTTabBarLib {
 
         private void pluginView_DragDropEx(object sender, EventArgs e) {
             bool flag = true;
-            foreach(string str in pluginView.DroppedFiles) {
-                if(!string.IsNullOrEmpty(str)) {
-                    PluginAssembly assembly = new PluginAssembly(str);
-                    if(assembly.PluginInfosExist) {
-                        CreatePluginViewItem(new PluginAssembly[] { assembly }, true);
-                        if(flag) {
-                            flag = false;
-                            SelectPluginBottom();
-                        }
-                    }
+            foreach(PluginAssembly assembly in pluginView.DroppedFiles
+                    .Where(str => !string.IsNullOrEmpty(str))
+                    .Select(str => new PluginAssembly(str))
+                    .Where(assembly => assembly.PluginInfosExist)) {
+                CreatePluginViewItem(new PluginAssembly[] { assembly }, true);
+                if(flag) {
+                    flag = false;
+                    SelectPluginBottom();
                 }
             }
         }
@@ -3385,11 +3363,7 @@ namespace QTTabBarLib {
         private void pluginView_PluginRemoved(object sender, PluginOptionEventArgs e) {
             PluginAssembly pluingAssembly = e.PluginViewItem.PluingAssembly;
             if(pluingAssembly.PluginInformations.Count > 1) {
-                string str = string.Empty;
-                foreach(PluginInformation information in pluingAssembly.PluginInformations) {
-                    str = str + " " + information.Name + ",";
-                }
-                str = str.TrimEnd(new char[] { ',' });
+                string str = pluingAssembly.PluginInformations.Select(info => info.Name).StringJoin(", ");
                 if(DialogResult.OK != MessageBox.Show(string.Format(RES_REMOVEPLGIN, str), string.Empty, MessageBoxButtons.OKCancel, MessageBoxIcon.Question)) {
                     e.Cancel = true;
                     return;
@@ -3517,11 +3491,7 @@ namespace QTTabBarLib {
             listViewKeyboard.BeginUpdate();
             ListViewGroup group = listViewKeyboard.Groups[pluginID];
             if(group != null) {
-                List<ListViewItem> list = new List<ListViewItem>();
-                foreach(ListViewItem item in group.Items) {
-                    list.Add(item);
-                }
-                foreach(ListViewItem item2 in list) {
+                foreach(ListViewItem item2 in group.Items) {
                     listViewKeyboard.Items.Remove(item2);
                 }
                 listViewKeyboard.Groups.Remove(group);
@@ -3555,14 +3525,11 @@ namespace QTTabBarLib {
                 else if(node.Nodes.Count > 0) {
                     string text = node.Text;
                     if(text.Length > 0) {
-                        string str2 = string.Empty;
-                        foreach(TreeNode node2 in node.Nodes) {
-                            if(node2.Name.Length > 0) {
-                                str2 = str2 + node2.Name + ";";
-                            }
-                        }
+                        string str2 = node.Nodes.Cast<TreeNode>()
+                                .Select(node2 => node2.Name)
+                                .Where(name => name.Length > 0)
+                                .StringJoin(";");
                         if(str2.Length > 0) {
-                            str2 = str2.TrimEnd(QTUtility.SEPARATOR_CHAR);
                             string item = text.Replace(";", "_");
                             QTUtility.GroupPathsDic[item] = str2;
                             if(node.NodeFont == fntStartUpGroup) {
@@ -3646,12 +3613,12 @@ namespace QTTabBarLib {
                         if((shortcutKeyActions != null) && (shortcutKeyActions.Length > 0)) {
                             ListViewGroup group2 = listViewKeyboard.Groups.Add(pluginInformation.PluginID, pluginInformation.Name + " (" + strArray[1] + ")");
                             foreach(string action in shortcutKeyActions) {
-                                ListViewItem item2 = new ListViewItem(new string[] { action, " - " });
-                                item2.Checked = false;
-                                item2.Group = group2;
-                                item2.Tag = 0;
-                                item2.Name = pluginInformation.PluginID;
-                                listViewKeyboard.Items.Add(item2);
+                                listViewKeyboard.Items.Add(new ListViewItem(new string[] { action, " - " }) {
+                                    Checked = false,
+                                    Group = group2,
+                                    Tag = 0,
+                                    Name = pluginInformation.PluginID
+                                });
                             }
                         }
                     }
@@ -3984,17 +3951,13 @@ namespace QTTabBarLib {
                 }
             }
             QTUtility.ShortcutKeys = list.ToArray();
-            List<PluginKey> list2 = new List<PluginKey>();
-            foreach(string str2 in dictionary.Keys) {
-                list2.Add(new PluginKey(str2, dictionary[str2].ToArray()));
-            }
+            List<PluginKey> list2 = dictionary.Keys
+                    .Select(str2 => new PluginKey(str2, dictionary[str2].ToArray())).ToList();
             QTUtility.dicPluginShortcutKeys.Clear();
             List<int> list3 = new List<int>();
             foreach(PluginKey key in list2) {
                 QTUtility.dicPluginShortcutKeys[key.PluginID] = key.Keys;
-                foreach(int k in key.Keys) {
-                    list3.Add(k);
-                }
+                list3.AddRange(key.Keys);
             }
             QTUtility.PluginShortcutKeysCache = list3.ToArray();
             using(RegistryKey key2 = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar\Plugins")) {

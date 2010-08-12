@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using Microsoft.Win32;
 using QTPlugin;
@@ -124,13 +125,12 @@ namespace QTTabBarLib {
                                 PluginAssembly pa = new PluginAssembly(path);
                                 if(pa.PluginInfosExist) {
                                     if(flag) {
-                                        foreach(PluginInformation information in pa.PluginInformations) {
-                                            if(Array.IndexOf(array, information.PluginID) != -1) {
-                                                information.Enabled = true;
-                                                pa.Enabled = true;
-                                                if(information.PluginType == PluginType.Static) {
-                                                    LoadStatics(information, pa, false);
-                                                }
+                                        foreach(PluginInformation information in pa.PluginInformations
+                                                .Where(information => array.Contains(information.PluginID))) {
+                                            information.Enabled = true;
+                                            pa.Enabled = true;
+                                            if(information.PluginType == PluginType.Static) {
+                                                LoadStatics(information, pa, false);
                                             }
                                         }
                                     }
@@ -154,13 +154,9 @@ namespace QTTabBarLib {
                     }
                     if(keyArray != null) {
                         List<int> list = new List<int>();
-                        foreach(PluginKey key3 in keyArray) {
-                            if(key3.Keys != null) {
-                                QTUtility.dicPluginShortcutKeys[key3.PluginID] = key3.Keys;
-                                foreach(int iKey in key3.Keys) {
-                                    list.Add(iKey);
-                                }
-                            }
+                        foreach(PluginKey key3 in keyArray.Where(key3 => key3.Keys != null)) {
+                            QTUtility.dicPluginShortcutKeys[key3.PluginID] = key3.Keys;
+                            list.AddRange(key3.Keys);
                         }
                         QTUtility.PluginShortcutKeysCache = list.ToArray();
                     }
@@ -169,12 +165,12 @@ namespace QTTabBarLib {
         }
 
         public string InstanceToFullName(IPluginClient pluginClient, bool fTypeFullName) {
-            foreach(Plugin plugin in dicPluginInstances.Values) {
-                if(plugin.Instance == pluginClient) {
-                    return (fTypeFullName ? plugin.PluginInformation.TypeFullName : plugin.PluginInformation.PluginID);
-                }
-            }
-            return string.Empty;
+            Plugin plugin = dicPluginInstances.Values.FirstOrDefault(plugin1 => plugin1.Instance == pluginClient);
+            return plugin == null
+                    ? null
+                    : fTypeFullName
+                            ? plugin.PluginInformation.TypeFullName
+                            : plugin.PluginInformation.PluginID;
         }
 
         public Plugin Load(PluginInformation pi, PluginAssembly pa) {
@@ -218,10 +214,7 @@ namespace QTTabBarLib {
         }
 
         private void LoadStartupPlugins() {
-            foreach(PluginInformation information in PluginInformations) {
-                if(!information.Enabled) {
-                    continue;
-                }
+            foreach(PluginInformation information in PluginInformations.Where(information => information.Enabled)) {
                 if(information.PluginType == PluginType.Background) {
                     Plugin plugin = Load(information, null);
                     if(plugin != null) {
@@ -359,10 +352,7 @@ namespace QTTabBarLib {
         }
 
         public void RegisterMenu(IPluginClient pluginClient, MenuType menuType, string menuText, bool fRegister) {
-            foreach(Plugin plugin in dicPluginInstances.Values) {
-                if(plugin.Instance != pluginClient) {
-                    continue;
-                }
+            foreach(Plugin plugin in dicPluginInstances.Values.Where(plugin => plugin.Instance == pluginClient)) {
                 if(fRegister) {
                     if((menuType & MenuType.Bar) == MenuType.Bar) {
                         dicFullNamesMenuRegistered_Sys[plugin.PluginInformation.PluginID] = menuText;
@@ -424,12 +414,10 @@ namespace QTTabBarLib {
         }
 
         public static void SavePluginShortcutKeys() {
-            List<PluginKey> list = new List<PluginKey>();
-            foreach(string str in QTUtility.dicPluginShortcutKeys.Keys) {
-                list.Add(new PluginKey(str, QTUtility.dicPluginShortcutKeys[str]));
-            }
             using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar\Plugins")) {
-                QTUtility2.WriteRegBinary(list.ToArray(), "ShortcutKeys", key);
+                QTUtility2.WriteRegBinary(QTUtility.dicPluginShortcutKeys.Keys
+                    .Select(str => new PluginKey(str, QTUtility.dicPluginShortcutKeys[str])).ToArray(),
+                    "ShortcutKeys", key);
             }
         }
 
@@ -455,15 +443,9 @@ namespace QTTabBarLib {
             }
             if(fStatic) {
                 dicPluginAssemblies.Remove(pa.Path);
-                List<int> list = new List<int>();
-                foreach(int[] numArray in QTUtility.dicPluginShortcutKeys.Values) {
-                    if(numArray != null) {
-                        foreach(int num in numArray) {
-                            list.Add(num);
-                        }
-                    }
-                }
-                QTUtility.PluginShortcutKeysCache = list.ToArray();
+                QTUtility.PluginShortcutKeysCache = (QTUtility.dicPluginShortcutKeys.Values
+                        .Where(numArray => numArray != null)
+                        .SelectMany(numArray => numArray)).ToArray();
                 SavePluginShortcutKeys();
                 pa.Uninstall();
                 pa.Dispose();
@@ -519,13 +501,7 @@ namespace QTTabBarLib {
 
         public static IEnumerable<PluginInformation> PluginInformations {
             get {
-                //return new <get_PluginInformations>d__0(-2);
-
-                foreach(PluginAssembly pa in dicPluginAssemblies.Values) {
-                    foreach(PluginInformation info in pa.PluginInformations) {
-                        yield return info;
-                    }
-                }
+                return dicPluginAssemblies.Values.SelectMany(pa => pa.PluginInformations);
             }
         }
 

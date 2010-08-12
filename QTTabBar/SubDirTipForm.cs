@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Media;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -100,44 +101,32 @@ namespace QTTabBarLib {
         private void CheckedItemsRightClick(ItemRightClickedEventArgs e) {
             List<string> lstCheckedPaths = new List<string>();
             List<QMenuItem> lstCheckedItems = new List<QMenuItem>();
-            if(GetCheckedItems(contextMenuSubDir, lstCheckedPaths, lstCheckedItems, false)) {
-                if(lstCheckedPaths.Count <= 1) {
-                    if(lstCheckedPaths.Count == 1) {
-                        MenuItemRightClicked(this, e);
-                    }
+            if(!GetCheckedItems(contextMenuSubDir, lstCheckedPaths, lstCheckedItems, false)) return;
+            if(lstCheckedPaths.Count <= 1) {
+                if(lstCheckedPaths.Count == 1) {
+                    MenuItemRightClicked(this, e);
                 }
-                else {
-                    string path = string.Empty;
-                    foreach(string str2 in lstCheckedPaths) {
-                        if((!string.IsNullOrEmpty(str2) && (str2.Length > 3)) && !str2.StartsWith("::")) {
-                            path = str2;
-                            break;
-                        }
-                    }
-                    if(path.Length > 0) {
-                        try {
-                            bool flag = true;
-                            string directoryName = Path.GetDirectoryName(path);
-                            if(!string.IsNullOrEmpty(directoryName)) {
-                                foreach(string str4 in lstCheckedPaths) {
-                                    if(!string.Equals(directoryName, Path.GetDirectoryName(str4), StringComparison.OrdinalIgnoreCase)) {
-                                        flag = false;
-                                        break;
-                                    }
-                                }
-                                if(flag) {
-                                    lstTempDirectoryPaths = new List<string>(lstCheckedPaths);
-                                    MultipleMenuItemsRightClicked(this, e);
-                                    lstTempDirectoryPaths.Clear();
-                                    return;
-                                }
+            }
+            else {
+                string path = lstCheckedPaths.FirstOrDefault(str => 
+                        !string.IsNullOrEmpty(str) && str.Length > 3 && !str.StartsWith("::"));
+                if(path != null) {
+                    try {
+                        string directoryName = Path.GetDirectoryName(path);
+                        if(!string.IsNullOrEmpty(directoryName)) {
+                            if(lstCheckedPaths.All(str => 
+                                    string.Equals(directoryName, Path.GetDirectoryName(str), StringComparison.OrdinalIgnoreCase))) {
+                                lstTempDirectoryPaths = new List<string>(lstCheckedPaths);
+                                MultipleMenuItemsRightClicked(this, e);
+                                lstTempDirectoryPaths.Clear();
+                                return;
                             }
                         }
-                        catch {
-                        }
                     }
-                    SystemSounds.Beep.Play();
+                    catch {
+                    }
                 }
+                SystemSounds.Beep.Play();
             }
         }
 
@@ -594,10 +583,7 @@ namespace QTTabBarLib {
                     }
                     else if(!string.IsNullOrEmpty(draggingPath) && ((draggingPath.Length > 3) || Directory.Exists(draggingPath))) {
                         fDragStarted = true;
-                        List<ToolStripItem> list = new List<ToolStripItem>();
-                        foreach(ToolStripItem item in contextMenuSubDir.Items) {
-                            list.Add(item);
-                        }
+                        List<ToolStripItem> list = contextMenuSubDir.Items.Cast<ToolStripItem>().ToList();
                         ShellMethods.DoDragDrop(draggingPath, this);
                         if(!fDragStarted) {
                             foreach(ToolStripItem item2 in list) {
@@ -733,18 +719,14 @@ namespace QTTabBarLib {
                 if(lstCheckedPaths.Count > 0) {
                     try {
                         string directoryName = Path.GetDirectoryName(lstCheckedPaths[0]);
-                        foreach(string str2 in lstCheckedPaths) {
-                            if(!string.Equals(directoryName, Path.GetDirectoryName(str2), StringComparison.OrdinalIgnoreCase)) {
-                                SystemSounds.Beep.Play();
-                                ddmrt.SetSuppressMouseUp();
-                                return;
-                            }
+                        if(lstCheckedPaths.Any(str2 => !string.Equals(
+                                directoryName, Path.GetDirectoryName(str2), StringComparison.OrdinalIgnoreCase))) {
+                            SystemSounds.Beep.Play();
+                            ddmrt.SetSuppressMouseUp();
+                            return;
                         }
                         fDragStarted = true;
-                        List<ToolStripItem> list3 = new List<ToolStripItem>();
-                        foreach(ToolStripItem item in contextMenuSubDir.Items) {
-                            list3.Add(item);
-                        }
+                        List<ToolStripItem> list3 = contextMenuSubDir.Items.Cast<ToolStripItem>().ToList();
                         ShellMethods.DoDragDrop(lstCheckedPaths, this, true);
                         if(!fDragStarted) {
                             foreach(ToolStripItem item2 in list3) {
@@ -766,20 +748,14 @@ namespace QTTabBarLib {
 
         private bool GetCheckedItems(DropDownMenuReorderable ddmr, List<string> lstCheckedPaths, List<QMenuItem> lstCheckedItems, bool fDragDrop) {
             bool flag = false;
-            foreach(ToolStripItem item in ddmr.Items) {
-                QMenuItem item2 = item as QMenuItem;
-                if(item2 != null) {
-                    if(item2.Checked) {
-                        flag = true;
-                        lstCheckedItems.Add(item2);
-                        lstCheckedPaths.Add(item2.Path);
-                        if(fDragDrop) {
-                            continue;
-                        }
-                    }
-                    if(item2.HasDropDownItems && GetCheckedItems((DropDownMenuReorderable)item2.DropDown, lstCheckedPaths, lstCheckedItems, fDragDrop)) {
-                        flag = true;
-                    }
+            foreach(QMenuItem item2 in ddmr.Items.OfType<QMenuItem>()) {
+                if(item2.Checked) {
+                    flag = true;
+                    lstCheckedItems.Add(item2);
+                    lstCheckedPaths.Add(item2.Path);
+                }
+                else if(!fDragDrop && item2.HasDropDownItems && GetCheckedItems((DropDownMenuReorderable)item2.DropDown, lstCheckedPaths, lstCheckedItems, false)) {
+                    flag = true;
                 }
             }
             return flag;
@@ -919,12 +895,9 @@ namespace QTTabBarLib {
             else {
                 Point mousePosition = MousePosition;
                 if(!contextMenuSubDir.Bounds.Contains(mousePosition)) {
-                    foreach(Rectangle rectangle in lstRcts) {
-                        if(rectangle.Contains(mousePosition)) {
-                            return;
-                        }
+                    if(lstRcts.All(rect => !rect.Contains(mousePosition))) {
+                        HideSubDirTip();
                     }
-                    HideSubDirTip();
                 }
             }
         }
@@ -1198,18 +1171,11 @@ namespace QTTabBarLib {
 
         public bool IsMouseOnMenus {
             get {
-                if(contextMenuSubDir.Visible) {
-                    Point mousePosition = MousePosition;
-                    if(contextMenuSubDir.Bounds.Contains(mousePosition)) {
-                        return true;
-                    }
-                    foreach(Rectangle rectangle in lstRcts) {
-                        if(rectangle.Contains(mousePosition)) {
-                            return true;
-                        }
-                    }
+                if(!contextMenuSubDir.Visible) {
+                    return false;
                 }
-                return false;
+                Point mousePosition = MousePosition;
+                return contextMenuSubDir.Bounds.Contains(mousePosition) || lstRcts.Any(rect => rect.Contains(mousePosition));
             }
         }
 

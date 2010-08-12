@@ -77,6 +77,8 @@ namespace QTTabBarLib.Interop {
         public static extern uint EnumClipboardFormats(uint format);
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool FreeLibrary(IntPtr hModule);
         [DllImport("user32.dll")]
         public static extern IntPtr GetAncestor(IntPtr hwnd, int gaFlags);
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
@@ -189,6 +191,9 @@ namespace QTTabBarLib.Interop {
             Marshal.FreeHGlobal(ptr);
             return num;
         }
+        
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern IntPtr LoadLibrary(string lpFileName);
 
         public static int LoWord(int dwValue) {
             return dwValue & 0xFFFF;

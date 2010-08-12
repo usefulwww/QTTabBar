@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -194,13 +195,7 @@ namespace QTTabBarLib {
                 SuspendLayout();
                 try {
                     int index;
-                    ToolStripItem item = null;
-                    foreach(ToolStripItem item2 in Items) {
-                        if(item2.Selected) {
-                            item = item2;
-                            break;
-                        }
-                    }
+                    ToolStripItem item = Items.Cast<ToolStripItem>().FirstOrDefault(item2 => item2.Selected);
                     if(item != null) {
                         QMenuItem item3 = item as QMenuItem;
                         if(item3 != null) {
@@ -371,10 +366,7 @@ namespace QTTabBarLib {
                     case WM.KEYUP:
                         if(fOnceKeyDown && ((wParam == 0x10) || (wParam == 0x11))) {
                             bool flag2 = false;
-                            foreach(QMenuItem item4 in lstQMIResponds) {
-                                if(!item4.Selected) {
-                                    continue;
-                                }
+                            foreach(QMenuItem item4 in lstQMIResponds.Where(item4 => item4.Selected)) {
                                 if(item4.Enabled) {
                                     Keys modifierKeys = ModifierKeys;
                                     if(modifierKeys == Keys.Control) {
@@ -450,10 +442,7 @@ namespace QTTabBarLib {
                 if((((int)((long)m.LParam)) & 0x40000000) == 0) {
                     if((wParam == 0x10) || (wParam == 0x11)) {
                         bool flag = false;
-                        foreach(QMenuItem item2 in lstQMIResponds) {
-                            if(!item2.Selected) {
-                                continue;
-                            }
+                        foreach(QMenuItem item2 in lstQMIResponds.Where(item2 => item2.Selected)) {
                             if(item2.Enabled) {
                                 Keys keys = ModifierKeys;
                                 if((wParam == 0x11) && ((keys & Keys.Shift) != Keys.Shift)) {

@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using QTTabBarLib.Interop;
@@ -158,12 +159,10 @@ namespace QTTabBarLib {
         }
 
         private void CloseChildDropDown() {
-            foreach(ToolStripItem item in Items) {
-                ToolStripMenuItem item2 = item as ToolStripMenuItem;
-                if(((item2 != null) && item2.HasDropDownItems) && item2.DropDown.Visible) {
-                    item2.DropDown.Close(ToolStripDropDownCloseReason.AppFocusChange);
-                    break;
-                }
+            foreach(ToolStripMenuItem item in Items.OfType<ToolStripMenuItem>()
+                    .Where(item => item.HasDropDownItems && item.DropDown.Visible)) {
+                item.DropDown.Close(ToolStripDropDownCloseReason.AppFocusChange);
+                break;   
             }
         }
 

@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Xml;
@@ -259,10 +260,8 @@ namespace QTTabBarLib {
                             MaxCount_History = QTUtility2.GetRegistryValueSafe(key, "Max_Undo", 0x10);
                             using(RegistryKey key2 = key.CreateSubKey("RecentlyClosed")) {
                                 if(key2 != null) {
-                                    List<string> collection = new List<string>();
-                                    foreach(string str4 in key2.GetValueNames()) {
-                                        collection.Add((string)key2.GetValue(str4));
-                                    }
+                                    List<string> collection = key2.GetValueNames()
+                                            .Select(str4 => (string)key2.GetValue(str4)).ToList();
                                     ClosedTabHistoryList = new PathList(collection, MaxCount_History);
                                 }
                             }
@@ -270,10 +269,8 @@ namespace QTTabBarLib {
                                 MaxCount_Executed = QTUtility2.GetRegistryValueSafe(key, "Max_RecentFile", 0x10);
                                 using(RegistryKey key3 = key.CreateSubKey("RecentFiles")) {
                                     if(key3 != null) {
-                                        List<string> list2 = new List<string>();
-                                        foreach(string str5 in key3.GetValueNames()) {
-                                            list2.Add((string)key3.GetValue(str5));
-                                        }
+                                        List<string> list2 = key3.GetValueNames().Select(str5 => 
+                                                (string)key3.GetValue(str5)).ToList();
                                         ExecutedPathsList = new PathList(list2, MaxCount_Executed);
                                     }
                                 }
@@ -989,12 +986,7 @@ namespace QTTabBarLib {
         public static void SaveClosing(List<string> closingPaths) {
             using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
                 if(key != null) {
-                    string str = string.Empty;
-                    foreach(string str2 in closingPaths) {
-                        str = str + str2 + ";";
-                    }
-                    str = str.TrimEnd(SEPARATOR_CHAR);
-                    key.SetValue("TabsOnLastClosedWindow", str);
+                    key.SetValue("TabsOnLastClosedWindow", closingPaths.StringJoin(";"));
                 }
             }
         }
@@ -1066,10 +1058,7 @@ namespace QTTabBarLib {
             Dictionary<int, object> dictionary = tabBarOption.Dictionary;
             Dictionary<int, object> dictionary2 = GetTabBarOption().Dictionary;
             Dictionary<int, object> dictionary3 = new Dictionary<int, object>(dictionary2);
-            foreach(int num in dictionary3.Keys) {
-                if(!dictionary.ContainsKey(num)) {
-                    continue;
-                }
+            foreach(int num in dictionary3.Keys.Intersect(dictionary.Keys)) {
                 object obj2 = dictionary[num];
                 if(((((num < 0x10000) && (obj2 is bool)) || (((0x10000 <= num) && (num < 0x20000)) && (obj2 is int))) || ((((0x20000 <= num) && (num < 0x40000)) && (obj2 is string)) || (((0x40000 <= num) && (num < 0x80000)) && (obj2 is Color)))) || ((((num == 0x80000) && (obj2 is Padding)) || ((num == 0x80001) && (obj2 is float))) || ((((num == 0x80002) && (obj2 is string[])) || ((num == 0x80003) && (obj2 is string[]))) || ((num == 0x80004) && (obj2 is float))))) {
                     dictionary2[num] = dictionary[num];

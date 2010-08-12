@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using Microsoft.Win32;
 using QTTabBarLib.Interop;
@@ -30,54 +31,52 @@ namespace QTTabBarLib {
             bool flag;
             DirectoryInfo info = new DirectoryInfo(parentItem.Path);
             EventPack eventPack = parentItem.EventPack;
-            foreach(DirectoryInfo info2 in info.GetDirectories()) {
-                if((info2.Attributes & FileAttributes.Hidden) == 0) {
-                    string text = QTUtility2.MakeNameEllipsis(info2.Name, out flag);
-                    DropDownMenuReorderable reorderable = new DropDownMenuReorderable(null);
-                    reorderable.MessageParent = eventPack.MessageParentHandle;
-                    reorderable.ItemRightClicked += eventPack.ItemRightClickEventHandler;
-                    reorderable.ImageList = QTUtility.ImageListGlobal;
-                    DirectoryMenuItem item = new DirectoryMenuItem(text);
-                    item.SetImageReservationKey(info2.FullName, null);
-                    item.Path = info2.FullName;
-                    item.EventPack = eventPack;
-                    item.ModifiiedDate = info2.LastWriteTime;
-                    if(flag) {
-                        item.ToolTipText = info2.Name;
-                    }
-                    item.DropDown = reorderable;
-                    item.DoubleClickEnabled = true;
-                    item.DropDownItems.Add(new ToolStripMenuItem());
-                    item.DropDownItemClicked += realDirectory_DropDownItemClicked;
-                    item.DropDownOpening += realDirectory_DropDownOpening;
-                    item.DoubleClick += eventPack.DirDoubleClickEventHandler;
-                    parentItem.DropDownItems.Add(item);
+            foreach(DirectoryInfo info2 in info.GetDirectories()
+                    .Where(info2 => (info2.Attributes & FileAttributes.Hidden) == 0)) {
+                string text = QTUtility2.MakeNameEllipsis(info2.Name, out flag);
+                DropDownMenuReorderable reorderable = new DropDownMenuReorderable(null);
+                reorderable.MessageParent = eventPack.MessageParentHandle;
+                reorderable.ItemRightClicked += eventPack.ItemRightClickEventHandler;
+                reorderable.ImageList = QTUtility.ImageListGlobal;
+                DirectoryMenuItem item = new DirectoryMenuItem(text);
+                item.SetImageReservationKey(info2.FullName, null);
+                item.Path = info2.FullName;
+                item.EventPack = eventPack;
+                item.ModifiiedDate = info2.LastWriteTime;
+                if(flag) {
+                    item.ToolTipText = info2.Name;
                 }
+                item.DropDown = reorderable;
+                item.DoubleClickEnabled = true;
+                item.DropDownItems.Add(new ToolStripMenuItem());
+                item.DropDownItemClicked += realDirectory_DropDownItemClicked;
+                item.DropDownOpening += realDirectory_DropDownOpening;
+                item.DoubleClick += eventPack.DirDoubleClickEventHandler;
+                parentItem.DropDownItems.Add(item);                
             }
-            foreach(FileInfo info3 in info.GetFiles()) {
-                if((info3.Attributes & FileAttributes.Hidden) == 0) {
-                    string fileNameWithoutExtension;
-                    string ext = info3.Extension.ToLower();
-                    switch(ext) {
-                        case ".lnk":
-                        case ".url":
-                            fileNameWithoutExtension = Path.GetFileNameWithoutExtension(info3.Name);
-                            break;
+            foreach(FileInfo info3 in info.GetFiles()
+                    .Where(info3 => (info3.Attributes & FileAttributes.Hidden) == 0)) {
+                string fileNameWithoutExtension;
+                string ext = info3.Extension.ToLower();
+                switch(ext) {
+                    case ".lnk":
+                    case ".url":
+                        fileNameWithoutExtension = Path.GetFileNameWithoutExtension(info3.Name);
+                        break;
 
-                        default:
-                            fileNameWithoutExtension = info3.Name;
-                            break;
-                    }
-                    string str4 = fileNameWithoutExtension;
-                    QMenuItem item2 = new QMenuItem(QTUtility2.MakeNameEllipsis(fileNameWithoutExtension, out flag), MenuTarget.File, MenuGenre.Application);
-                    item2.Path = info3.FullName;
-                    item2.SetImageReservationKey(info3.FullName, ext);
-                    item2.MouseMove += qmi_File_MouseMove;
-                    if(flag) {
-                        item2.ToolTipText = str4;
-                    }
-                    parentItem.DropDownItems.Add(item2);
+                    default:
+                        fileNameWithoutExtension = info3.Name;
+                        break;
                 }
+                string str4 = fileNameWithoutExtension;
+                QMenuItem item2 = new QMenuItem(QTUtility2.MakeNameEllipsis(fileNameWithoutExtension, out flag), MenuTarget.File, MenuGenre.Application);
+                item2.Path = info3.FullName;
+                item2.SetImageReservationKey(info3.FullName, ext);
+                item2.MouseMove += qmi_File_MouseMove;
+                if(flag) {
+                    item2.ToolTipText = str4;
+                }
+                parentItem.DropDownItems.Add(item2);
             }
         }
 

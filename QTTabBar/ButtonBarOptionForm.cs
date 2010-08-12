@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using QTPlugin;
 
@@ -82,10 +83,8 @@ namespace QTTabBarLib {
                     int count = list.Count;
                     if(PluginManager.ActivatedButtonsOrder.Count > count) {
                         string key = PluginManager.ActivatedButtonsOrder[count];
-                        foreach(PluginInformation information in PluginManager.PluginInformations) {
-                            if(key != information.PluginID) {
-                                continue;
-                            }
+                        foreach(PluginInformation information in PluginManager.PluginInformations
+                                .Where(information => information.PluginID == key)) {
                             list.Add(information);
                             if(information.PluginType == PluginType.BackgroundMultiple) {
                                 int num3;
@@ -114,38 +113,34 @@ namespace QTTabBarLib {
                     listBoxPool.Items.Add(j);
                 }
             }
-            foreach(PluginInformation information2 in PluginManager.PluginInformations) {
-                if((information2.Enabled && (information2.PluginType == PluginType.Interactive)) && !list.Contains(information2)) {
-                    listBoxPool.Items.Add(information2);
-                }
-            }
-            if(this.pluginManager != null) {
-                foreach(Plugin plugin in this.pluginManager.Plugins) {
-                    if(plugin.PluginInformation.PluginType == PluginType.BackgroundMultiple) {
-                        IBarMultipleCustomItems instance = plugin.Instance as IBarMultipleCustomItems;
-                        if(instance != null) {
-                            try {
-                                int num5 = instance.Count;
-                                if(num5 > 0) {
-                                    int num6;
-                                    dicActivePluginMulti.TryGetValue(plugin.PluginInformation.PluginID, out num6);
-                                    for(int k = 0; k < (num5 - num6); k++) {
-                                        listBoxPool.Items.Add(plugin.PluginInformation.Clone(num6 + k));
-                                    }
-                                }
-                                else if(num5 == -1) {
-                                    listBoxPool.Items.Add(plugin.PluginInformation.Clone(-1));
+            listBoxPool.Items.AddRange(PluginManager.PluginInformations
+                    .Where(info => info.Enabled && info.PluginType == PluginType.Interactive)
+                    .Except(list).ToArray());
+            if(this.pluginManager == null) return;
+            foreach(Plugin plugin in this.pluginManager.Plugins) {
+                if(plugin.PluginInformation.PluginType == PluginType.BackgroundMultiple) {
+                    IBarMultipleCustomItems instance = plugin.Instance as IBarMultipleCustomItems;
+                    if(instance != null) {
+                        try {
+                            int num5 = instance.Count;
+                            if(num5 > 0) {
+                                int num6;
+                                dicActivePluginMulti.TryGetValue(plugin.PluginInformation.PluginID, out num6);
+                                for(int k = 0; k < (num5 - num6); k++) {
+                                    listBoxPool.Items.Add(plugin.PluginInformation.Clone(num6 + k));
                                 }
                             }
-                            catch(Exception exception) {
-                                PluginManager.HandlePluginException(exception, IntPtr.Zero, plugin.PluginInformation.Name, "Adding multi items to pool.");
+                            else if(num5 == -1) {
+                                listBoxPool.Items.Add(plugin.PluginInformation.Clone(-1));
                             }
                         }
-                        continue;
+                        catch(Exception exception) {
+                            PluginManager.HandlePluginException(exception, IntPtr.Zero, plugin.PluginInformation.Name, "Adding multi items to pool.");
+                        }
                     }
-                    if(plugin.BackgroundButtonSupported && !plugin.BackgroundButtonEnabled) {
-                        listBoxPool.Items.Add(plugin.PluginInformation);
-                    }
+                }
+                else if(plugin.BackgroundButtonSupported && !plugin.BackgroundButtonEnabled) {
+                    listBoxPool.Items.Add(plugin.PluginInformation);
                 }
             }
         }
@@ -287,11 +282,8 @@ namespace QTTabBarLib {
                     listBoxPool.Items.Add(j);
                 }
             }
-            foreach(PluginInformation information in PluginManager.PluginInformations) {
-                if(information.Enabled && (information.PluginType == PluginType.Interactive)) {
-                    listBoxPool.Items.Add(information);
-                }
-            }
+            listBoxPool.Items.AddRange(PluginManager.PluginInformations.Where(info => 
+                    info.Enabled && info.PluginType == PluginType.Interactive).ToArray());
             if(pluginManager != null) {
                 foreach(Plugin plugin in pluginManager.Plugins) {
                     if(plugin.PluginInformation.PluginType == PluginType.BackgroundMultiple) {

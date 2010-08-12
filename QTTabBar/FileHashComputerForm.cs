@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Media;
 using System.Runtime.Remoting.Messaging;
 using System.Security.Cryptography;
@@ -125,14 +126,10 @@ namespace QTTabBarLib {
         }
 
         private void buttonRefresh_Click(object sender, EventArgs e) {
-            List<string> list = new List<string>();
-            foreach(DataGridViewRow row in dgvHash.Rows) {
-                if(!list.Contains(row.Cells[1].ToolTipText)) {
-                    list.Add(row.Cells[1].ToolTipText);
-                }
-            }
+            string[] list = dgvHash.Rows.Cast<DataGridViewRow>()
+                .Select(row => row.Cells[1].ToolTipText).Distinct().ToArray();
             ClearRows();
-            ShowFileHashForm(list.ToArray());
+            ShowFileHashForm(list);
         }
 
         private void checkBoxFullPath_CheckedChanged(object sender, EventArgs e) {
@@ -182,15 +179,13 @@ namespace QTTabBarLib {
                 int num = 0;
                 int num2 = 0;
                 int count = 0;
-                foreach(List<DataGridViewRow> list in dicResult.Values) {
-                    if(list.Count > 0) {
-                        if(list[0].Cells[2].ToolTipText == VALUE_ERROR) {
-                            count = list.Count;
-                        }
-                        if(list.Count > 1) {
-                            num2++;
-                            num += list.Count;
-                        }
+                foreach(List<DataGridViewRow> list in dicResult.Values.Where(list => list.Count > 0)) {
+                    if(list[0].Cells[2].ToolTipText == VALUE_ERROR) {
+                        count = list.Count;
+                    }
+                    if(list.Count > 1) {
+                        num2++;
+                        num += list.Count;
                     }
                 }
                 if(chbShowResult.Checked) {
@@ -283,13 +278,8 @@ namespace QTTabBarLib {
                     e.Handled = true;
                 }
                 else {
-                    List<DataGridViewRow> list = new List<DataGridViewRow>();
-                    foreach(DataGridViewCell cell in dgvHash.SelectedCells) {
-                        DataGridViewRow owningRow = cell.OwningRow;
-                        if(!list.Contains(owningRow)) {
-                            list.Add(owningRow);
-                        }
-                    }
+                    List<DataGridViewRow> list = dgvHash.SelectedCells.Cast<DataGridViewCell>()
+                            .Select(cell => cell.OwningRow).Distinct().ToList();
                     dgvHash.SuspendLayout();
                     foreach(DataGridViewRow row2 in list) {
                         dgvHash.Rows.Remove(row2);
@@ -311,11 +301,7 @@ namespace QTTabBarLib {
                             dicResult[toolTipText].Add(row3);
                         }
                     }
-                    foreach(List<DataGridViewRow> list3 in dicResult.Values) {
-                        if(list3.Count > 1) {
-                            cMatched_Prv++;
-                        }
-                    }
+                    cMatched_Prv += dicResult.Values.Count(list3 => list3.Count > 1);
                 }
             }
             else if(e.KeyCode == Keys.Escape) {

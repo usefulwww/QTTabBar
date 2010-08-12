@@ -21,6 +21,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using BandObjectLib;
@@ -99,15 +100,12 @@ namespace QTTabBarLib {
         }
 
         private void CloseAllDropDown() {
-            foreach(ToolStripItem item in DisplayedItems) {
-                QMenuItem item2 = item as QMenuItem;
-                if((item2 != null) && item2.Selected) {
-                    if(item2.HasDropDownItems && item2.DropDown.Visible) {
-                        item2.HideDropDown();
-                    }
-                    miUnselect.Invoke(item2, null);
-                    break;
+            foreach(QMenuItem item in DisplayedItems.OfType<QMenuItem>().Where(item => item.Selected)) {
+                if(item.HasDropDownItems && item.DropDown.Visible) {
+                    item.HideDropDown();
                 }
+                miUnselect.Invoke(item, null);
+                break;
             }
         }
 
@@ -404,27 +402,24 @@ namespace QTTabBarLib {
         }
 
         private static void GetCheckedItem(DropDownMenuDropTarget ddmdtRoot, List<string> lstPaths, bool fCut, bool fSetCut) {
-            foreach(ToolStripItem item in ddmdtRoot.Items) {
-                QMenuItem item2 = item as QMenuItem;
-                if(item2 != null) {
-                    if(item2.Checked) {
-                        if(!string.IsNullOrEmpty(item2.Path)) {
-                            lstPaths.Add(item2.Path);
-                            if(fSetCut) {
-                                item2.IsCut = fCut;
-                            }
+            foreach(QMenuItem item2 in ddmdtRoot.Items.OfType<QMenuItem>()) {
+                if(item2.Checked) {
+                    if(!string.IsNullOrEmpty(item2.Path)) {
+                        lstPaths.Add(item2.Path);
+                        if(fSetCut) {
+                            item2.IsCut = fCut;
                         }
-                        else if(fSetCut) {
-                            item2.IsCut = false;
-                        }
-                        continue;
                     }
-                    if(fSetCut) {
+                    else if(fSetCut) {
                         item2.IsCut = false;
                     }
-                    if(item2.HasDropDownItems) {
-                        GetCheckedItem((DropDownMenuDropTarget)item2.DropDown, lstPaths, fCut, fSetCut);
-                    }
+                    continue;
+                }
+                if(fSetCut) {
+                    item2.IsCut = false;
+                }
+                if(item2.HasDropDownItems) {
+                    GetCheckedItem((DropDownMenuDropTarget)item2.DropDown, lstPaths, fCut, fSetCut);
                 }
             }
         }
@@ -611,33 +606,24 @@ namespace QTTabBarLib {
                 path = Path;
             }
             else {
-                foreach(ToolStripItem item in DisplayedItems) {
-                    if(!item.Selected) {
-                        continue;
-                    }
-                    QMenuItem item2 = item as QMenuItem;
-                    if(item2 != null) {
-                        if(item2 is SubDirTipForm.ToolStripMenuItemEx) {
+                foreach(QMenuItem item in from ToolStripItem item in DisplayedItems
+                        where item.Selected select item as QMenuItem) {
+                    if(item != null) {
+                        if(item is SubDirTipForm.ToolStripMenuItemEx) {
                             bool flag2;
-                            if(PathIsExecutable(item2.Path, out flag2) && !flag2) {
+                            if(PathIsExecutable(item.Path, out flag2) && !flag2) {
                                 StringCollection fileDropList = Clipboard.GetFileDropList();
                                 if((fileDropList != null) && (fileDropList.Count > 0)) {
-                                    string str2 = string.Empty;
-                                    foreach(string str3 in fileDropList) {
-                                        str2 = str2 + "\"" + str3 + "\" ";
-                                    }
-                                    str2 = str2.Trim();
-                                    if(str2.Length > 0) {
-                                        MenuItemArguments mia = new MenuItemArguments(item2.Path, MenuTarget.File, MenuGenre.Application);
-                                        mia.Argument = str2;
-                                        AppLauncher.Execute(mia, fIsRootMenu ? Handle : IntPtr.Zero);
-                                    }
+                                    string str2 = "\"" + fileDropList.StringJoin("\" \"") + "\"";
+                                    MenuItemArguments mia = new MenuItemArguments(item.Path, MenuTarget.File, MenuGenre.Application);
+                                    mia.Argument = str2;
+                                    AppLauncher.Execute(mia, fIsRootMenu ? Handle : IntPtr.Zero);
                                 }
                                 return;
                             }
                         }
-                        else if(Directory.Exists(item2.TargetPath)) {
-                            path = item2.TargetPath;
+                        else if(Directory.Exists(item.TargetPath)) {
+                            path = item.TargetPath;
                         }
                     }
                     break;

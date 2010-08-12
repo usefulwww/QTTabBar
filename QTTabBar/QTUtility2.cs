@@ -16,8 +16,11 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Media;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -354,18 +357,34 @@ namespace QTTabBarLib {
             return ptr3;
         }
 
+        public static string StringJoin<T>(this IEnumerable<T> list, string separator) {
+            StringBuilder sb = new StringBuilder();
+            bool first = true;
+            foreach(T t in list) {
+                if(first) first = false;
+                else sb.Append(separator);
+                sb.Append(t.ToString());
+            }
+            return sb.ToString();
+        }
+
+        public static string StringJoin(this IEnumerable list, string separator) {
+            StringBuilder sb = new StringBuilder();
+            bool first = true;
+            foreach(object t in list) {
+                if(first) first = false;
+                else sb.Append(separator);
+                sb.Append(t.ToString());
+            }
+            return sb.ToString();
+        }
+
         public static bool TargetIsInNoCapture(IntPtr pIDL, string path) {
             if(pIDL != IntPtr.Zero) {
                 path = ShellMethods.GetPath(pIDL);
             }
-            if(!string.IsNullOrEmpty(path)) {
-                foreach(string path2 in QTUtility.NoCapturePathsList) {
-                    if(string.Equals(path, path2, StringComparison.OrdinalIgnoreCase)) {
-                        return true;
-                    }
-                }
-            }
-            return false;
+            return !string.IsNullOrEmpty(path) && QTUtility.NoCapturePathsList.Any(path2 =>
+                    string.Equals(path, path2, StringComparison.OrdinalIgnoreCase));
         }
 
         public static void WriteRegBinary<T>(T[] array, string regValueName, RegistryKey rkUserApps) {

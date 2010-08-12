@@ -16,6 +16,7 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using QTTabBarLib.Interop;
@@ -42,14 +43,12 @@ namespace QTTabBarLib {
         }
 
         protected override void OnMouseMove(MouseEventArgs mea) {
-            if(!OverflowButton.DropDown.Visible) {
-                foreach(ToolStripItem item in Items) {
-                    if((item.Visible && (item is ToolStripDropDownItem)) && (((ToolStripDropDownItem)item).HasDropDownItems && ((ToolStripDropDownItem)item).DropDown.Visible)) {
-                        return;
-                    }
-                }
-                base.OnMouseMove(mea);
+            if(OverflowButton.DropDown.Visible) return;
+            if(Items.OfType<ToolStripDropDownItem>().Any(item =>
+                    item.Visible && item.HasDropDownItems && item.DropDown.Visible)) {
+                return;
             }
+            base.OnMouseMove(mea);
         }
 
         internal void RaiseOnResize() {

@@ -23,6 +23,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Media;
 using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Messaging;
@@ -186,10 +187,9 @@ namespace QTTabBarLib {
         }
 
         private void BroadcastConfigChanged(bool fRefreshRequired) {
-            foreach(IntPtr ptr in QTUtility.instanceManager.ButtonBarHandles()) {
-                if((ptr != Handle) && PInvoke.IsWindow(ptr)) {
-                    QTUtility2.SendCOPYDATASTRUCT(ptr, (IntPtr)5, "fromBBBC", fRefreshRequired ? ((IntPtr)1) : IntPtr.Zero);
-                }
+            foreach(IntPtr ptr in QTUtility.instanceManager.ButtonBarHandles()
+                    .Where(ptr => ptr != Handle && PInvoke.IsWindow(ptr))) {
+                QTUtility2.SendCOPYDATASTRUCT(ptr, (IntPtr)5, "fromBBBC", fRefreshRequired ? ((IntPtr)1) : IntPtr.Zero);
             }
         }
 
@@ -213,12 +213,8 @@ namespace QTTabBarLib {
         }
 
         private void ClearToolStripItems() {
-            List<ToolStripItem> list = new List<ToolStripItem>();
-            foreach(ToolStripItem item in toolStrip.Items) {
-                if(!lstPluginCustomItem.Contains(item)) {
-                    list.Add(item);
-                }
-            }
+            List<ToolStripItem> list = toolStrip.Items.Cast<ToolStripItem>()
+                    .Except(lstPluginCustomItem).ToList();
             toolStrip.Items.Clear();
             lstPluginCustomItem.Clear();
             foreach(ToolStripItem item2 in list) {
@@ -577,13 +573,8 @@ namespace QTTabBarLib {
                     pluginID = PluginManager.ActivatedButtonsOrder[iPluginCreatingIndex];
                     bool flag = (ConfigValues[0] & 0x20) == 0x20;
                     bool flag2 = (ConfigValues[0] & 0x10) == 0x10;
-                    PluginInformation pi = null;
-                    foreach(PluginInformation information2 in PluginManager.PluginInformations) {
-                        if(information2.PluginID == pluginID) {
-                            pi = information2;
-                            break;
-                        }
-                    }
+                    PluginInformation pi = PluginManager.PluginInformations
+                            .FirstOrDefault(info => info.PluginID == pluginID);
                     if(pi != null) {
                         Plugin plugin;
                         pluginManager.TryGetPlugin(pluginID, out plugin);
@@ -737,19 +728,18 @@ namespace QTTabBarLib {
         }
 
         private bool DoItems(int index) {
-            foreach(ToolStripItem item in toolStrip.Items) {
-                if((item.Tag == null) || (((int)item.Tag) != index)) {
-                    continue;
-                }
-                if(item is ToolStripDropDownItem) {
-                    ((ToolStripDropDownItem)item).ShowDropDown();
-                }
-                else {
-                    item.PerformClick();
-                }
-                return true;
+            ToolStripItem item = toolStrip.Items.Cast<ToolStripItem>()
+                    .FirstOrDefault(item2 => item2.Tag != null && (int)item2.Tag == index);
+            if(item == null) {
+                return false;
             }
-            return false;
+            else if(item is ToolStripDropDownItem) {
+                ((ToolStripDropDownItem)item).ShowDropDown();
+            }
+            else {
+                item.PerformClick();
+            }
+            return true;
         }
 
         private void dropDownButtons_DropDown_Closed(object sender, ToolStripDropDownClosedEventArgs e) {
@@ -848,12 +838,9 @@ namespace QTTabBarLib {
         }
 
         private void EnableItemAt(int buttonIndex, bool fEnable) {
-            foreach(ToolStripItem item in toolStrip.Items) {
-                if((item.Tag != null) && (((int)item.Tag) == buttonIndex)) {
-                    item.Enabled = fEnable;
-                    break;
-                }
-            }
+            ToolStripItem item = toolStrip.Items.Cast<ToolStripItem>()
+                    .FirstOrDefault(item2 => item2.Tag != null && (int)item2.Tag == buttonIndex);
+            if(item != null) item.Enabled = fEnable;
         }
 
         public override void GetBandInfo(uint dwBandID, uint dwViewMode, ref DESKBANDINFO dbi) {
@@ -1586,10 +1573,9 @@ namespace QTTabBarLib {
                             switch(wParam) {
                                 case Keys.Right:
                                 case Keys.Left:
-                                    foreach(ToolStripItem item in toolStrip.Items) {
-                                        if((item.Visible && item.Enabled) && (item.Selected && (item is ToolStripControlHost))) {
-                                            return 1;
-                                        }
+                                    if(toolStrip.Items.OfType<ToolStripControlHost>()
+                                            .Any(item => item.Visible && item.Enabled && item.Selected)) {
+                                        return 1;
                                     }
                                     break;
                             }
@@ -1665,11 +1651,9 @@ namespace QTTabBarLib {
                         break;
 
                     case Keys.Back:
-                        foreach(ToolStripItem item5 in toolStrip.Items) {
-                            if(item5.Selected && (item5 is ToolStripControlHost)) {
-                                PInvoke.SendMessage(msg.hwnd, 0x102, msg.wParam, msg.lParam);
-                                return 0;
-                            }
+                        if(toolStrip.Items.OfType<ToolStripControlHost>().Any(item5 => item5.Selected)) {
+                            PInvoke.SendMessage(msg.hwnd, WM.CHAR, msg.wParam, msg.lParam);
+                            return 0;
                         }
                         break;
 
@@ -1688,11 +1672,9 @@ namespace QTTabBarLib {
                         break;
 
                     case Keys.Delete:
-                        foreach(ToolStripItem item6 in toolStrip.Items) {
-                            if(item6.Selected && (item6 is ToolStripControlHost)) {
-                                PInvoke.SendMessage(msg.hwnd, 0x100, msg.wParam, msg.lParam);
-                                return 0;
-                            }
+                        if(toolStrip.Items.OfType<ToolStripControlHost>().Any(item6 => item6.Selected)) {
+                            PInvoke.SendMessage(msg.hwnd, WM.KEYDOWN, msg.wParam, msg.lParam);
+                            return 0;
                         }
                         break;
                 }

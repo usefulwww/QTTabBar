@@ -17,6 +17,7 @@
 
 using System;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace QTTabBarLib {
@@ -53,11 +54,8 @@ namespace QTTabBarLib {
                 QTUtility.GroupPathsDic.Add(key, newPath);
             }
             else {
-                str2 = string.Empty;
-                foreach(QTabItem item in Tabs) {
-                    str2 = str2 + item.CurrentPath + ";";
-                }
-                QTUtility.GroupPathsDic.Add(key, str2.Trim(QTUtility.SEPARATOR_CHAR));
+                QTUtility.GroupPathsDic.Add(key, Tabs.Cast<QTabItem>()
+                        .Select(item => item.CurrentPath).StringJoin(";"));
             }
         }
 

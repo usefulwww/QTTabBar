@@ -22,6 +22,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Media;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -426,12 +427,7 @@ namespace QTTabBarLib {
                             }
                             using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
                                 if(key != null) {
-                                    string str2 = string.Empty;
-                                    foreach(string str3 in QTUtility.StartUpGroupList) {
-                                        str2 = str2 + str3 + ";";
-                                    }
-                                    str2 = str2.TrimEnd(QTUtility.SEPARATOR_CHAR);
-                                    key.SetValue("StartUpGroups", str2);
+                                    key.SetValue("StartUpGroups", QTUtility.StartUpGroupList.StringJoin(";"));
                                 }
                             }
                         }
@@ -597,13 +593,9 @@ namespace QTTabBarLib {
                     case 0:
                     case 1: {
                         bool flag = index == 0;
-                        string str = string.Empty;
-                        foreach(IDLWrapper wrapper2 in ShellBrowser.GetItems()) {
-                            string name = flag ? wrapper2.ParseName : wrapper2.DisplayName;
-                            if(name.Length > 0) {
-                                str = str + ((str.Length == 0) ? string.Empty : "\r\n") + name;
-                            }
-                        }
+                        string str = ShellBrowser.GetItems()
+                                .Select(wrapper2 => flag ? wrapper2.ParseName : wrapper2.DisplayName)
+                                .Where(name => name.Length > 0).StringJoin("\r\n");
                         if(str.Length > 0) {
                             QTTabBarClass.SetStringClipboard(str);
                         }
@@ -816,14 +808,11 @@ namespace QTTabBarLib {
                     }
                     MenuItemArguments mia = QTUtility.dicUserAppShortcutKeys[key];
                     try {
-                        List<Address> list2 = new List<Address>();
-                        foreach(IDLWrapper wrapper in ShellBrowser.GetItems(true)) {
-                            if(wrapper.Available && wrapper.HasPath && wrapper.IsFileSystem) {
-                                list2.Add(wrapper.ToAddress());
-                            }
-                        }
-                        if(list2.Count == 0) return false;
-                        AppLauncher launcher = new AppLauncher(list2.ToArray(), Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
+                        Address[] list2 = (from wrapper in ShellBrowser.GetItems(true)
+                                where wrapper.Available && wrapper.HasPath && wrapper.IsFileSystem
+                                select wrapper.ToAddress()).ToArray();
+                        if(list2.Length == 0) return false;
+                        AppLauncher launcher = new AppLauncher(list2, Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
                         launcher.ReplaceTokens_WorkingDir(mia);
                         launcher.ReplaceTokens_Arguments(mia);
                         AppLauncher.Execute(mia, IntPtr.Zero);

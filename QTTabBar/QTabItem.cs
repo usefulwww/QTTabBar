@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using QTPlugin;
 using QTTabBarLib.Interop;
@@ -49,20 +50,18 @@ namespace QTTabBarLib {
             bool flag = false;
             char[] separator = new char[] { '\\' };
             Dictionary<string, List<QTabItem>> dictionary = new Dictionary<string, List<QTabItem>>();
-            foreach(QTabItem item in tabControl.TabPages) {
-                if(!item.CurrentPath.StartsWith("::")) {
-                    if(dictionary.ContainsKey(item.Text)) {
-                        dictionary[item.Text].Add(item);
-                    }
-                    else {
-                        List<QTabItem> list = new List<QTabItem>();
-                        list.Add(item);
-                        dictionary[item.Text] = list;
-                    }
+            foreach(QTabItem item in tabControl.TabPages.Cast<QTabItem>()
+                    .Where(item => !item.CurrentPath.StartsWith("::"))) {
+                if(dictionary.ContainsKey(item.Text)) {
+                    dictionary[item.Text].Add(item);
+                }
+                else {
+                    List<QTabItem> list = new List<QTabItem>();
+                    list.Add(item);
+                    dictionary[item.Text] = list;
                 }
             }
-            foreach(string str in dictionary.Keys) {
-                List<QTabItem> list2 = dictionary[str];
+            foreach(List<QTabItem> list2 in dictionary.Keys.Select(str => dictionary[str])) {
                 if(list2.Count > 1) {
                     bool flag2 = true;
                     for(int i = 1; i < list2.Count; i++) {
@@ -72,12 +71,10 @@ namespace QTTabBarLib {
                         }
                     }
                     if(flag2) {
-                        foreach(QTabItem item2 in list2) {
-                            if(item2.Comment.Length > 0) {
-                                item2.Comment = string.Empty;
-                                item2.RefreshRectangle();
-                                flag = true;
-                            }
+                        foreach(QTabItem item2 in list2.Where(item2 => item2.Comment.Length > 0)) {
+                            item2.Comment = string.Empty;
+                            item2.RefreshRectangle();
+                            flag = true;
                         }
                     }
                     else {
@@ -88,18 +85,14 @@ namespace QTTabBarLib {
                                 for(int j = strArray.Length - 2; j > -1; j--) {
                                     str2 = strArray[j];
                                     bool flag3 = false;
-                                    foreach(QTabItem item4 in list2) {
-                                        if((item4 == item3) || item4.CurrentPath == item3.CurrentPath) {
-                                            continue;
-                                        }
-                                        string[] strArray2 = item4.CurrentPath.Split(separator);
-                                        if(strArray2.Length > 1) {
-                                            for(int k = strArray2.Length - 2; k > -1; k--) {
-                                                if(str2 == strArray2[k]) {
-                                                    flag3 = true;
-                                                    str2 = string.Empty;
-                                                    break;
-                                                }
+                                    foreach(string[] strArray2 in from item4 in list2
+                                            where item4.CurrentPath != item3.CurrentPath
+                                            select item4.CurrentPath.Split(separator)) {
+                                        for(int k = strArray2.Length - 2; k > -1; k--) {
+                                            if(str2 == strArray2[k]) {
+                                                flag3 = true;
+                                                str2 = string.Empty;
+                                                break;
                                             }
                                         }
                                         if(flag3) {
@@ -155,28 +148,18 @@ namespace QTTabBarLib {
             item.stckHistoryBackward = new Stack<LogData>(dataArray2);
             item.dicFocusedItemName = new Dictionary<string, string>(dicFocusedItemName);
             item.lstHistoryBranches = new List<LogData>(lstHistoryBranches.ToArray());
-            Dictionary<string, Address[]> dictionary = new Dictionary<string, Address[]>();
-            foreach(string str in dicSelectdItems.Keys) {
-                dictionary.Add(str, dicSelectdItems[str]);
-            }
+            Dictionary<string, Address[]> dictionary = dicSelectdItems.Keys
+                    .ToDictionary(str => str, str => dicSelectdItems[str]);
             item.dicSelectdItems = dictionary;
             return item;
         }
 
         public string[] GetHistoryBack() {
-            List<string> list = new List<string>();
-            foreach(LogData data in stckHistoryBackward) {
-                list.Add(data.Path);
-            }
-            return list.ToArray();
+            return stckHistoryBackward.Select(data => data.Path).ToArray();
         }
 
         public string[] GetHistoryForward() {
-            List<string> list = new List<string>();
-            foreach(LogData data in stckHistoryForward) {
-                list.Add(data.Path);
-            }
-            return list.ToArray();
+            return stckHistoryForward.Select(data => data.Path).ToArray();
         }
 
         public int GetLogHash(bool back, int index) {
@@ -233,11 +216,7 @@ namespace QTTabBarLib {
                 idl = ShellMethods.GetIDLData(path);
             }
             stckHistoryBackward.Push(new LogData(path, idl, hash));
-            foreach(LogData data in stckHistoryForward) {
-                if(!lstHistoryBranches.Contains(data)) {
-                    lstHistoryBranches.Add(data);
-                }
-            }
+            lstHistoryBranches.AddRange(stckHistoryForward.Except(lstHistoryBranches));
             foreach(LogData data2 in stckHistoryBackward) {
                 lstHistoryBranches.Remove(data2);
             }

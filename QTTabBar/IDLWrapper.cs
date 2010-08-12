@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -259,7 +260,7 @@ namespace QTTabBarLib {
                                         break;
                                     }
                                     byte[] buffer = dicCacheIDLs[str];
-                                    if(((buffer == null) || (buffer.Length == 0)) || (buffer[0] != 20)) {
+                                    if(buffer == null || buffer.Length == 0 || buffer[0] != 20) {
                                         list.Add(str);
                                         num--;
                                     }
@@ -269,13 +270,7 @@ namespace QTTabBarLib {
                                 }
                                 if(num > 0) {
                                     list.Clear();
-                                    foreach(string str3 in dicCacheIDLs.Keys) {
-                                        if(num <= 0) {
-                                            break;
-                                        }
-                                        list.Add(str3);
-                                        num--;
-                                    }
+                                    list.AddRange(dicCacheIDLs.Keys.Take(num));
                                     foreach(string str4 in list) {
                                         dicCacheIDLs.Remove(str4);
                                     }
