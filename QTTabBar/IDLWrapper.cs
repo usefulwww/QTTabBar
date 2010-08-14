@@ -416,7 +416,10 @@ namespace QTTabBarLib {
                 if(attributes == uint.MaxValue) {
                     return false;
                 }
-                return ((attributes & 0x100) == 0x100);
+
+                // GetAttributesOf gives wildly inconsistent results for Libraries, 
+                // so we'll just assume Libraries are always drop targets.
+                return ((attributes & 0x100) == 0x100) || IsLibrary;
             }
         }
 
@@ -463,6 +466,13 @@ namespace QTTabBarLib {
                     return false;
                 }
                 return ((attributes & 0x20000000) == 0x20000000);
+            }
+        }
+
+        public bool IsLibrary {
+            get {
+                int idx = Path.LastIndexOf(System.IO.Path.DirectorySeparatorChar);
+                return idx >= 0 && Path.Substring(0, idx).Equals("::{031E4825-7B94-4DC3-B131-E946B44C8DD5}", StringComparison.OrdinalIgnoreCase);
             }
         }
 
