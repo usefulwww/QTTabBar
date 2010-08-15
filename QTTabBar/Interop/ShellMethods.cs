@@ -582,6 +582,17 @@ namespace QTTabBarLib.Interop {
             return false;
         }
 
+        public static bool PathIsFolder(string targetPath) {
+            if(targetPath.StartsWith("::")) {
+                using(IDLWrapper wrapper = new IDLWrapper(targetPath)) {
+                    return wrapper.IsFolder;
+                }
+            }
+            else {
+                return Directory.Exists(targetPath);
+            }
+        }
+
         public static int PopUpSystemContextMenu(List<string> lstPaths, Point pntShow, ref IContextMenu2 pIContextMenu2, IntPtr hwndParent) {
             IShellFolder ppv = null;
             List<IntPtr> list = new List<IntPtr>();
@@ -840,6 +851,40 @@ namespace QTTabBarLib.Interop {
                 return true;
             }
             path = null;
+            return false;
+        }
+
+        public static bool TryMakeSubDirTipPath(ref string path) {
+            if(!string.IsNullOrEmpty(path)) {
+                bool flag;
+                if(path.StartsWith("::")) {
+                    using(IDLWrapper wrapper = new IDLWrapper(path)) {
+                        return wrapper.IsFolder;
+                    }
+                }
+                if(path.StartsWith(@"a:\", StringComparison.OrdinalIgnoreCase) || path.StartsWith(@"b:\", StringComparison.OrdinalIgnoreCase)) {
+                    return false;
+                }
+                if(!Directory.Exists(path)) {
+                    if(!File.Exists(path) || !string.Equals(Path.GetExtension(path), ".lnk", StringComparison.OrdinalIgnoreCase)) {
+                        return false;
+                    }
+                    path = GetLinkTargetPath(path);
+                    if(!Directory.Exists(path)) {
+                        return false;
+                    }
+                }
+                FileSystemInfo targetIfFolderLink = GetTargetIfFolderLink(new DirectoryInfo(path), out flag);
+                if(flag) {
+                    bool fSearchHidden = QTUtility.CheckConfig(Settings.SubDirTipsHidden);
+                    bool fSearchSystem = QTUtility.CheckConfig(Settings.SubDirTipsSystem);
+                    bool flag4 = QTUtility.CheckConfig(Settings.SubDirTipsFiles);
+                    path = targetIfFolderLink.FullName;
+                    using(FindFile file = new FindFile(path, fSearchHidden, fSearchSystem)) {
+                        return (file.SubDirectoryExists() || (flag4 && file.SubFileExists()));
+                    }
+                }
+            }
             return false;
         }
     }

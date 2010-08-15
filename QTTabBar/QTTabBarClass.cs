@@ -5494,7 +5494,7 @@ namespace QTTabBarLib {
                     }
                     else {
                         string currentPath = tab.CurrentPath;
-                        if(fParent || ExtendedListViewCommon.TryMakeSubDirTipPath(ref currentPath)) {
+                        if(fParent || ShellMethods.TryMakeSubDirTipPath(ref currentPath)) {
                             if(subDirTip_Tab == null) {
                                 subDirTip_Tab = new SubDirTipForm(Handle, true, listView);
                                 subDirTip_Tab.MenuItemClicked += subDirTip_MenuItemClicked;

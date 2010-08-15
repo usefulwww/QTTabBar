@@ -332,7 +332,7 @@ namespace QTTabBarLib {
                     QMenuItem item2 = itemAt as QMenuItem;
                     if(item2 != null) {
                         bool flag4 = item2 is SubDirTipForm.ToolStripMenuItemEx;
-                        if((flag3 && !fTop) && Directory.Exists(Path)) {
+                        if((flag3 && !fTop) && ShellMethods.PathIsFolder(Path)) {
                             fDrawDropTarget = false;
                             strTargetPath = Path;
                             iSourceState = MakeDragOverRetval();
@@ -357,14 +357,14 @@ namespace QTTabBarLib {
                             }
                             else {
                                 fDrawDropTarget = false;
-                                if(Directory.Exists(Path)) {
+                                if(ShellMethods.PathIsFolder(Path)) {
                                     strTargetPath = Path;
                                     iSourceState = MakeDragOverRetval();
                                 }
                                 CloseAllDropDown();
                             }
                         }
-                        else if(Directory.Exists(item2.TargetPath)) {
+                        else if(ShellMethods.PathIsFolder(item2.TargetPath)) {
                             fDrawDropTarget = true;
                             strTargetPath = item2.TargetPath;
                             iSourceState = MakeDragOverRetval();

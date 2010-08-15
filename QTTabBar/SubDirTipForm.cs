@@ -413,9 +413,7 @@ namespace QTTabBarLib {
                                     if((idlChild != null) && (shellFolder.CompareIDs((IntPtr)0x10000000, ptr3, ptr2) == 0)) {
                                         item.BackColor = QTUtility2.MakeModColor(SystemColors.Highlight);
                                     }
-                                    if(!flag2) {
-                                        item.IDLData = ShellMethods.GetIDLData(pIDL);
-                                    }
+                                    item.IDLData = ShellMethods.GetIDLData(pIDL);
                                     item.QueryVirtualMenu += directory_FromIDL_QueryVirtualMenu;
                                     list.Add(item);
                                 }

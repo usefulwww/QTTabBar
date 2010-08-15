@@ -696,7 +696,7 @@ namespace QTTabBarLib {
             if((fSkipForegroundCheck || (hwndExplorer == PInvoke.GetForegroundWindow())) && ShellBrowser.TryGetHotTrackPath(iItem, out str)) {
                 bool flag = false;
                 try {
-                    if(!TryMakeSubDirTipPath(ref str)) {
+                    if(!ShellMethods.TryMakeSubDirTipPath(ref str)) {
                         return false;
                     }
                     Point pnt = GetSubDirTipPoint(fByKey);
@@ -755,40 +755,6 @@ namespace QTTabBarLib {
 
         public override bool SubDirTipMenuIsShowing() {
             return subDirTip != null && subDirTip.MenuIsShowing;
-        }
-
-        public static bool TryMakeSubDirTipPath(ref string path) {
-            if(!string.IsNullOrEmpty(path)) {
-                bool flag;
-                if(path.StartsWith("::")) {
-                    using(IDLWrapper wrapper = new IDLWrapper(path)) {
-                        return wrapper.IsFolder;
-                    }
-                }
-                if(path.StartsWith(@"a:\", StringComparison.OrdinalIgnoreCase) || path.StartsWith(@"b:\", StringComparison.OrdinalIgnoreCase)) {
-                    return false;
-                }
-                if(!Directory.Exists(path)) {
-                    if(!File.Exists(path) || !string.Equals(Path.GetExtension(path), ".lnk", StringComparison.OrdinalIgnoreCase)) {
-                        return false;
-                    }
-                    path = ShellMethods.GetLinkTargetPath(path);
-                    if(!Directory.Exists(path)) {
-                        return false;
-                    }
-                }
-                FileSystemInfo targetIfFolderLink = ShellMethods.GetTargetIfFolderLink(new DirectoryInfo(path), out flag);
-                if(flag) {
-                    bool fSearchHidden = QTUtility.CheckConfig(Settings.SubDirTipsHidden);
-                    bool fSearchSystem = QTUtility.CheckConfig(Settings.SubDirTipsSystem);
-                    bool flag4 = QTUtility.CheckConfig(Settings.SubDirTipsFiles);
-                    path = targetIfFolderLink.FullName;
-                    using(FindFile file = new FindFile(path, fSearchHidden, fSearchSystem)) {
-                        return (file.SubDirectoryExists() || (flag4 && file.SubFileExists()));
-                    }
-                }
-            }
-            return false;
         }
 
         private void subDirTip_MenuClosed(object sender, EventArgs e) {
