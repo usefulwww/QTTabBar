@@ -1950,37 +1950,32 @@ namespace QTTabBarLib {
                 e.Effect = DragDropEffects.Copy;
             }
             else if(tabMouseOn.CurrentPath.Length > 2) {
-                if(!fDrivesContainedDD && !string.Equals(strDraggingStartPath, tabMouseOn.CurrentPath, StringComparison.OrdinalIgnoreCase)) {
+                if(fDrivesContainedDD || string.Equals(strDraggingStartPath, tabMouseOn.CurrentPath, StringComparison.OrdinalIgnoreCase)) {
+                    if(toolTipForDD != null) {
+                        toolTipForDD.Hide(tabControl1);
+                    }
+                    ShowToolTipForDD(tabMouseOn, -1, e.KeyState);
+                }
+                else {
                     using(IDLWrapper wrapper = new IDLWrapper(tabMouseOn.CurrentIDL, !flag)) {
-                        int num;
-                        if(!wrapper.Available || !wrapper.IsDropTarget) {
-                            goto Label_013B;
-                        }
-                        string b = tabMouseOn.CurrentPath.Substring(0, 3);
-                        if((strDraggingDrive != null) && string.Equals(strDraggingDrive, b, StringComparison.OrdinalIgnoreCase)) {
-                            num = 0;
-                        }
-                        else {
-                            num = 1;
-                        }
-                        ShowToolTipForDD(tabMouseOn, num, e.KeyState);
-                        if(!QTUtility.CheckConfig(Settings.DragDropOntoTabs)) {
-                            e.Effect = DragDropEffects.Copy;
+                        if(wrapper.Available && wrapper.IsDropTarget) {
+                            string b = tabMouseOn.CurrentPath.Substring(0, 3);
+                            int num = strDraggingDrive != null && strDraggingDrive.Equals(b, StringComparison.OrdinalIgnoreCase)
+                                    ? 0 : 1;
+                            ShowToolTipForDD(tabMouseOn, num, e.KeyState);
+                            e.Effect = QTUtility.CheckConfig(Settings.DragDropOntoTabs)
+                                    ? DropTargetWrapper.MakeEffect(e.KeyState, num)
+                                    : DragDropEffects.Copy;
                         }
                         else {
-                            e.Effect = DropTargetWrapper.MakeEffect(e.KeyState, num);
+                            HideToolTipForDD();
                         }
-                        return;
                     }
                 }
-                if(toolTipForDD != null) {
-                    toolTipForDD.Hide(tabControl1);
-                }
-                ShowToolTipForDD(tabMouseOn, -1, e.KeyState);
-                return;
             }
-        Label_013B:
-            HideToolTipForDD();
+            else {
+                HideToolTipForDD();
+            }
         }
 
         private void Explorer_DownloadBegin() {

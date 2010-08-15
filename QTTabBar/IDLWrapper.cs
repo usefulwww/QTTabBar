@@ -199,9 +199,10 @@ namespace QTTabBarLib {
                                 if(int.TryParse(str.Substring(str.IndexOf("???") + 3), out hash)) {
                                     return true;
                                 }
-                                goto Label_00B7;
                             }
-                            PInvoke.CoTaskMemFree(ptr2);
+                            else {
+                                PInvoke.CoTaskMemFree(ptr2);
+                            }
                         }
                     }
                 }
@@ -213,7 +214,6 @@ namespace QTTabBarLib {
                     Marshal.ReleaseComObject(ppshf);
                 }
             }
-        Label_00B7:
             key = string.Empty;
             hash = DateTime.Now.GetHashCode();
             return false;
