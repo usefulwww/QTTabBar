@@ -63,16 +63,6 @@ namespace QTTabBarLib {
             return hwndEnumResult;
         }
 
-        public override int GetFocusedItem() {
-            if(HasFocus()) {
-                return AutoMan.DoQuery(factory => {
-                    AutomationElement elem = factory.FromKeyboardFocus();
-                    return elem == null ? -1 : elem.GetItemIndex();
-                });
-            }
-            return -1;
-        }
-
         public override Rectangle GetFocusedItemRect() {
             if(HasFocus()) {
                 return AutoMan.DoQuery(factory => {
@@ -83,22 +73,8 @@ namespace QTTabBarLib {
             return new Rectangle(0, 0, 0, 0);
         }
 
-        public override int GetItemCount() {
-            return AutoMan.DoQuery(factory => {
-                AutomationElement elem = factory.FromHandle(ListViewController.Handle);
-                return elem == null ? 0 : elem.GetItemCount();
-            });
-        }
-
-        public override int GetSelectedCount() {
-            return AutoMan.DoQuery(factory => {
-                AutomationElement elem = factory.FromHandle(ListViewController.Handle);
-                return elem == null ? 0 : elem.GetSelectedCount();
-            });
-        }
-
         public override Point GetSubDirTipPoint(bool fByKey) {
-            int viewMode = ViewMode;
+            int viewMode = ShellBrowser.ViewMode;
             return AutoMan.DoQuery(factory => {
                 AutomationElement elem = fByKey ?
                     factory.FromKeyboardFocus() :
@@ -161,6 +137,71 @@ namespace QTTabBarLib {
             });
         }
 
+        protected override bool HandleCursorLoop(Keys key) {
+            int focusedIdx = ShellBrowser.GetFocusedIndex();
+            int itemCount = ShellBrowser.GetItemCount();
+            int selectMe = -1;
+            int viewMode = ShellBrowser.ViewMode;
+            switch(viewMode) {
+                case FVM.CONTENT:
+                case FVM.DETAILS:
+                    if(key == Keys.Up && focusedIdx == 0) {
+                        selectMe = itemCount - 1;
+                    }
+                    else if(key == Keys.Down && focusedIdx == itemCount - 1) {
+                        selectMe = 0;
+                    }
+                    break;
+
+                case FVM.ICON:
+                case FVM.SMALLICON:
+                case FVM.THUMBNAIL:
+                case FVM.TILE:
+                case FVM.LIST:
+                    Keys KeyNextItem, KeyPrevItem, KeyNextPage, KeyPrevPage;
+                    if(viewMode == FVM.LIST) {
+                        KeyNextItem = Keys.Down;
+                        KeyPrevItem = Keys.Up;
+                        KeyNextPage = Keys.Right;
+                        KeyPrevPage = Keys.Left;
+                    }
+                    else {
+                        KeyNextItem = Keys.Right;
+                        KeyPrevItem = Keys.Left;
+                        KeyNextPage = Keys.Down;
+                        KeyPrevPage = Keys.Up;
+                    }
+                    int pageCount = AutoMan.DoQuery(factory => {
+                        AutomationElement elem = factory.FromHandle(Handle);
+                        if(elem == null) return -1;
+                        return viewMode == FVM.LIST ? elem.GetRowCount() : elem.GetColumnCount();
+                    });
+                    if(pageCount == -1) return false;
+                    int page = focusedIdx % pageCount;
+                    if(key == KeyNextItem && (page == pageCount - 1 || focusedIdx == itemCount - 1)) {
+                        selectMe = focusedIdx - page;
+                    }
+                    else if(key == KeyPrevItem && page == 0) {
+                        selectMe = Math.Min(focusedIdx + pageCount - 1, itemCount - 1);
+                    }
+                    else if(key == KeyNextPage && focusedIdx + pageCount >= itemCount) {
+                        selectMe = page;
+                    }
+                    else if(key == KeyPrevPage && focusedIdx < pageCount) {
+                        int x = itemCount - focusedIdx - 1;
+                        selectMe = x - x % pageCount + focusedIdx;
+                    }
+                    break;
+            }
+            if(selectMe >= 0) {
+                ShellBrowser.SelectItem(selectMe);
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
         public override int HitTest(Point pt, bool ScreenCoords) {
             if(!ScreenCoords) {
                 PInvoke.ClientToScreen(Handle, ref pt);
@@ -182,7 +223,7 @@ namespace QTTabBarLib {
         }
 
         public override bool IsTrackingItemName() {
-            if(ViewMode != FVM.DETAILS) return true;
+            if(ShellBrowser.ViewMode != FVM.DETAILS) return true;
             return AutoMan.DoQuery(factory => {
                 AutomationElement elem = factory.FromPoint(Control.MousePosition);
                 return elem == null ? false : elem.GetAutomationId() == "System.ItemNameDisplay";
@@ -296,7 +337,7 @@ namespace QTTabBarLib {
                         if(nmhdr.code == -530 /* TTN_NEEDTEXT */) {
                             NMTTDISPINFO dispinfo = (NMTTDISPINFO)Marshal.PtrToStructure(msg.LParam, typeof(NMTTDISPINFO));
                             if((dispinfo.uFlags & 0x20 /* TTF_TRACK */) != 0) {
-                                return OnGetInfoTip(GetFocusedItem(), true);
+                                return OnGetInfoTip(ShellBrowser.GetFocusedIndex(), true);
                             }
                             else {
                                 int i = GetHotItem();

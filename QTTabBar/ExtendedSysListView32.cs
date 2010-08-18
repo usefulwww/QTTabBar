@@ -59,7 +59,7 @@ namespace QTTabBarLib {
                 case -12: // NM_CUSTOMDRAW
                     // This is for drawing alternating row colors.  I doubt
                     // very much we'll find an alternative for this...
-                    return HandleLVCUSTOMDRAW(ref msg);
+                    return HandleCustomDraw(ref msg);
 
                 case LVN.ITEMCHANGED: {
                         // There are three things happening here.
@@ -95,7 +95,7 @@ namespace QTTabBarLib {
                                 }
                             }
                             if(flag) {
-                                if(nmlistview2.iItem != -1 && ((num5 != num6) || (num7 != num8) || (num9 != num10)) && ViewMode == FVM.DETAILS) {
+                                if(nmlistview2.iItem != -1 && ((num5 != num6) || (num7 != num8) || (num9 != num10)) && ShellBrowser.ViewMode == FVM.DETAILS) {
                                     PInvoke.SendMessage(nmlistview2.hdr.hwndFrom, LVM.REDRAWITEMS, (IntPtr)nmlistview2.iItem, (IntPtr)nmlistview2.iItem);
                                 }
                             }
@@ -113,7 +113,7 @@ namespace QTTabBarLib {
                     if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
                         HideSubDirTip(1);
                     }
-                    if(QTUtility.CheckConfig(Settings.AlternateRowColors) && (ViewMode == FVM.DETAILS)) {
+                    if(QTUtility.CheckConfig(Settings.AlternateRowColors) && (ShellBrowser.ViewMode == FVM.DETAILS)) {
                         PInvoke.InvalidateRect(nmhdr.hwndFrom, IntPtr.Zero, true);
                     }
                     ShellViewController.DefWndProc(ref msg);
@@ -143,7 +143,7 @@ namespace QTTabBarLib {
                     // FullRowSelect doesn't look possible anyway, so whatever.
                     if(QTUtility.IsVista && QTUtility.CheckConfig(Settings.ToggleFullRowSelect)) {
                         NMLVODSTATECHANGE nmlvodstatechange = (NMLVODSTATECHANGE)Marshal.PtrToStructure(msg.LParam, typeof(NMLVODSTATECHANGE));
-                        if(((nmlvodstatechange.uNewState & 2) == 2) && (ViewMode == FVM.DETAILS)) {
+                        if(((nmlvodstatechange.uNewState & 2) == 2) && (ShellBrowser.ViewMode == FVM.DETAILS)) {
                             PInvoke.SendMessage(nmlvodstatechange.hdr.hwndFrom, LVM.REDRAWITEMS, (IntPtr)nmlvodstatechange.iFrom, (IntPtr)nmlvodstatechange.iTo);
                         }
                     }
@@ -199,7 +199,7 @@ namespace QTTabBarLib {
         }
 
         private void SetStyleFlags() {
-            if(ViewMode != FVM.DETAILS) return;
+            if(ShellBrowser.ViewMode != FVM.DETAILS) return;
             uint flags = 0;
             if(QTUtility.CheckConfig(Settings.DetailsGridLines)) {
                 flags |= LVS_EX.GRIDLINES;
@@ -221,44 +221,119 @@ namespace QTTabBarLib {
             return PInvoke.SendMessage(Handle, LVM.GETEDITCONTROL, IntPtr.Zero, IntPtr.Zero);
         }
 
-        public override int GetFocusedItem() {
-            if(HasFocus()) {
-                int count = GetItemCount();
-                for(int i = 0; i < count; ++i) {
-                    int state = (int)PInvoke.SendMessage(ListViewController.Handle, LVM.GETITEMSTATE, (IntPtr)i, (IntPtr)LVIS.FOCUSED);
-                    if(state != 0) {
-                        return i;
-                    }
-                }
-            }
-            return -1;
-        }
-
         public override Rectangle GetFocusedItemRect() {
-            if(HasFocus()) {
-                return GetLVITEMRECT(Handle, GetFocusedItem(), false, ViewMode).ToRectangle();
-            }
-            return new Rectangle(0, 0, 0, 0);
-        }
-
-        public override int GetItemCount() {
-            return (int)PInvoke.SendMessage(Handle, LVM.GETITEMCOUNT, IntPtr.Zero, IntPtr.Zero);
-        }
-
-        public override int GetSelectedCount() {
-            return (int)PInvoke.SendMessage(Handle, LVM.GETSELECTEDCOUNT, IntPtr.Zero, IntPtr.Zero);
+            return HasFocus()
+                    ? GetItemRect(ShellBrowser.GetFocusedIndex(), false).ToRectangle() 
+                    : new Rectangle(0, 0, 0, 0);
         }
 
         public override Point GetSubDirTipPoint(bool fByKey) {
-            int iItem = fByKey ? GetFocusedItem() : GetHotItem();
-            RECT rect = GetLVITEMRECT(ListViewController.Handle, iItem, true, ViewMode);
+            int iItem = fByKey ? ShellBrowser.GetFocusedIndex() : GetHotItem();
+            RECT rect = GetItemRect(iItem, true);
             return new Point(rect.right - 16, rect.bottom - 16);
 
         }
 
-        private bool HandleLVCUSTOMDRAW(ref Message msg) {
+        protected override bool HandleCursorLoop(Keys key) {
+            int focusedIdx = ShellBrowser.GetFocusedIndex();
+            int itemCount = ShellBrowser.GetItemCount();
+            int selectMe = -1;
+            int viewMode = ShellBrowser.ViewMode;
+            switch(viewMode) {
+                case FVM.CONTENT:
+                case FVM.DETAILS:
+                case FVM.TILE:
+                    if(key == Keys.Up && focusedIdx == 0) {
+                        selectMe = itemCount - 1;
+                    }
+                    else if(key == Keys.Down && focusedIdx == itemCount - 1) {
+                        selectMe = 0;
+                    }
+                    break;
+
+                case FVM.ICON:
+                case FVM.SMALLICON:
+                case FVM.THUMBNAIL:
+                case FVM.LIST:
+                    Keys KeyNextItem, KeyPrevItem, KeyNextPage, KeyPrevPage;
+                    IntPtr MsgNextPage, MsgPrevPage;
+                    if(viewMode == FVM.LIST) {
+                        KeyNextItem = Keys.Down;
+                        KeyPrevItem = Keys.Up;
+                        KeyNextPage = Keys.Right;
+                        KeyPrevPage = Keys.Left;
+                        MsgNextPage = (IntPtr)LVNI.TORIGHT;
+                        MsgPrevPage = (IntPtr)LVNI.TOLEFT;
+                    }
+                    else {
+                        KeyNextItem = Keys.Right;
+                        KeyPrevItem = Keys.Left;
+                        KeyNextPage = Keys.Down;
+                        KeyPrevPage = Keys.Up;
+                        MsgNextPage = (IntPtr)LVNI.BELOW;
+                        MsgPrevPage = (IntPtr)LVNI.ABOVE;
+                    }
+
+                    int nextPageIdx = (int)PInvoke.SendMessage(Handle, LVM.GETNEXTITEM, (IntPtr)focusedIdx, MsgNextPage);
+                    if(nextPageIdx == -1 || nextPageIdx == focusedIdx) {
+                        nextPageIdx = (int)PInvoke.SendMessage(Handle, LVM.GETNEXTITEM, (IntPtr)focusedIdx, MsgPrevPage);
+                    }
+                    if(nextPageIdx == -1 || nextPageIdx == focusedIdx) {
+                        if(key == KeyNextItem) {
+                            if(focusedIdx == itemCount - 1) {
+                                selectMe = 0;
+                            }
+                            else {
+                                RECT thisRect = GetItemRect(focusedIdx, false);
+                                RECT nextRect = GetItemRect(focusedIdx + 1, false);
+                                if(viewMode == FVM.LIST) {
+                                    if(nextRect.top < thisRect.top) selectMe = 0;
+                                }
+                                else if(nextRect.left < thisRect.left) {
+                                    selectMe = 0;
+                                }
+                            }
+                        }
+                        else if(key == KeyPrevItem && focusedIdx == 0) {
+                            selectMe = itemCount - 1;
+                        }
+                    }
+                    else {
+                        int pageCount = Math.Abs(focusedIdx - nextPageIdx);
+                        int page = focusedIdx % pageCount;
+                        if(key == KeyNextItem && (page == pageCount - 1 || focusedIdx == itemCount - 1)) {
+                            selectMe = focusedIdx - page;
+                        }
+                        else if(key == KeyPrevItem && page == 0) {
+                            selectMe = Math.Min(focusedIdx + pageCount - 1, itemCount - 1);
+                        }
+                        else if(key == KeyNextPage && focusedIdx + pageCount >= itemCount) {
+                            selectMe = page;
+                        }
+                        else if(key == KeyPrevPage && focusedIdx < pageCount) {
+                            int x = itemCount - focusedIdx - 1;
+                            selectMe = x - x % pageCount + focusedIdx;
+                        }
+                    }
+                    break;
+
+            }
+
+            if(selectMe >= 0) {
+                SetRedraw(false);
+                ShellBrowser.SelectItem(selectMe);
+                PInvoke.SendMessage(Handle, LVM.REDRAWITEMS, (IntPtr)focusedIdx, (IntPtr)focusedIdx);
+                SetRedraw(true);
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
+        private bool HandleCustomDraw(ref Message msg) {
             // TODO this needs to be cleaned
-            if(QTUtility.CheckConfig(Settings.AlternateRowColors) && (ViewMode == FVM.DETAILS)) {
+            if(QTUtility.CheckConfig(Settings.AlternateRowColors) && (ShellBrowser.ViewMode == FVM.DETAILS)) {
                 NMLVCUSTOMDRAW structure = (NMLVCUSTOMDRAW)Marshal.PtrToStructure(msg.LParam, typeof(NMLVCUSTOMDRAW));
                 int dwItemSpec = 0;
                 if((ulong)structure.nmcd.dwItemSpec < Int32.MaxValue) {
@@ -499,10 +574,11 @@ namespace QTTabBarLib {
             Marshal.FreeHGlobal(lParam);
         }
 
-        private RECT GetLVITEMRECT(IntPtr hwnd, int iItem, bool fSubDirTip, int fvm) {
+        private RECT GetItemRect(int iItem, bool fSubDirTip) {
             int code;
             bool flag = false;
             bool flag2 = false;
+            int fvm = ShellBrowser.ViewMode;
             if(fSubDirTip) {
                 switch(fvm) {
                     case FVM.ICON:
@@ -551,7 +627,7 @@ namespace QTTabBarLib {
                     rect.right -= 13;
                     return rect;
                 }
-                int num3 = (int)PInvoke.SendMessage(hwnd, LVM.GETITEMSPACING, IntPtr.Zero, IntPtr.Zero);
+                int num3 = (int)PInvoke.SendMessage(Handle, LVM.GETITEMSPACING, IntPtr.Zero, IntPtr.Zero);
                 Size iconSize = SystemInformation.IconSize;
                 rect.right = ((rect.left + (((num3 & 0xffff) - iconSize.Width) / 2)) + iconSize.Width) + 8;
                 rect.bottom = (rect.top + iconSize.Height) + 6;
@@ -565,8 +641,8 @@ namespace QTTabBarLib {
                 structure.mask = 1;
                 IntPtr zero = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
                 Marshal.StructureToPtr(structure, zero, false);
-                PInvoke.SendMessage(hwnd, LVM.GETITEM, IntPtr.Zero, zero);
-                int num4 = (int)PInvoke.SendMessage(hwnd, LVM.GETSTRINGWIDTH, IntPtr.Zero, structure.pszText);
+                PInvoke.SendMessage(Handle, LVM.GETITEM, IntPtr.Zero, zero);
+                int num4 = (int)PInvoke.SendMessage(Handle, LVM.GETSTRINGWIDTH, IntPtr.Zero, structure.pszText);
                 num4 += 20;
                 Marshal.FreeHGlobal(structure.pszText);
                 Marshal.FreeHGlobal(zero);
@@ -600,8 +676,8 @@ namespace QTTabBarLib {
         }
 
         public override bool IsTrackingItemName() {
-            if(ViewMode == FVM.DETAILS) return true;
-            if(GetItemCount() == 0) return false;
+            if(ShellBrowser.ViewMode == FVM.DETAILS) return true;
+            if(ShellBrowser.GetItemCount() == 0) return false;
             RECT rect = PInvoke.ListView_GetItemRect(ListViewController.Handle, 0, 0, 2);
             Point mousePosition = Control.MousePosition;
             PInvoke.MapWindowPoints(IntPtr.Zero, ListViewController.Handle, ref mousePosition, 1);

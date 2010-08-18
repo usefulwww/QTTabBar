@@ -25,8 +25,9 @@ using QTTabBarLib.Interop;
 
 namespace QTTabBarLib {
     public class ShellBrowserEx : IDisposable {
-        private IShellBrowser shellBrowser;
         private bool shared;
+        private IShellBrowser shellBrowser;
+
         public ShellBrowserEx(IShellBrowser shellBrowser, bool shared = false) {
             this.shellBrowser = shellBrowser;
             this.shared = shared;
@@ -57,6 +58,21 @@ namespace QTTabBarLib {
                 }
                 shellBrowser = null;
             }
+        }
+
+        public int GetFocusedIndex() {
+            using(FVWrapper w = GetFolderView()) {
+                int focusedIndex;
+                if(w.FolderView.GetFocusedItem(out focusedIndex) == 0) {
+                    return focusedIndex;
+                }
+            }
+            return -1;
+        }
+
+        public IDLWrapper GetFocusedItem() {
+            int focusedIndex = GetFocusedIndex();
+            return focusedIndex == -1 ? new IDLWrapper(IntPtr.Zero) : GetItem(focusedIndex);
         }
 
         private FVWrapper GetFolderView() {
@@ -94,11 +110,12 @@ namespace QTTabBarLib {
             }
         }
 
-        public bool SelectionAvailable() {
+        public int GetItemCount() {
+            int count;
             using(FVWrapper w = GetFolderView()) {
-                int items;
-                return w.FolderView.ItemCount(1, out items) == 0;
+                w.FolderView.ItemCount(2, out count);
             }
+            return count;
         }
 
         public IEnumerable<IDLWrapper> GetItems(bool selectedOnly = false, bool noAppend = false) {
@@ -132,6 +149,14 @@ namespace QTTabBarLib {
                     Marshal.ReleaseComObject(list);
                 }
             }
+        }
+
+        public int GetSelectedCount() {
+            int count;
+            using(FVWrapper w = GetFolderView()) {
+                w.FolderView.ItemCount(1, out count);
+            }
+            return count;
         }
 
         private static IDLWrapper GetShellPath(IFolderView folderView) {
@@ -193,6 +218,19 @@ namespace QTTabBarLib {
             return 1;
         }
 
+        public void SelectItem(int idx) {
+            using(FVWrapper w = GetFolderView()) {
+                w.FolderView.SelectItem(idx, 29 /* SVSI_SELECT | SVSI_DESELECTOTHERS | SVSI_ENSUREVISIBLE | SVSI_FOCUSED */);
+            }
+        }
+
+        public bool SelectionAvailable() {
+            using(FVWrapper w = GetFolderView()) {
+                int items;
+                return w.FolderView.ItemCount(1, out items) == 0;
+            }
+        }
+
         internal void SetStatusText(string status) {
             shellBrowser.SetStatusTextSB(status);
         }
@@ -224,16 +262,6 @@ namespace QTTabBarLib {
                 QTUtility2.MakeErrorLog(exception, null);
             }
             return false;
-        }
-        
-        public IDLWrapper GetFocusedItem() {
-            int focusedIndex;
-            using(FVWrapper w = GetFolderView()) {
-                if(w.FolderView.GetFocusedItem(out focusedIndex) != 0) {
-                    return new IDLWrapper(IntPtr.Zero);
-                }
-            }
-            return GetItem(focusedIndex);
         }
 
         public bool TryGetSelection(out Address[] adSelectedItems, bool fDisplayName) {

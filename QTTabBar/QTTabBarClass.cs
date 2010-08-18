@@ -3217,7 +3217,6 @@ namespace QTTabBarLib {
         }
 
         private bool HandleTabFolderActions(int index, Keys modKeys, bool fEnqExec) {
-            IShellView ppshv = null;
             IntPtr zero = IntPtr.Zero;
             IntPtr ppidl = IntPtr.Zero;
             try {
@@ -3748,7 +3747,7 @@ namespace QTTabBarLib {
             if(timerSelectionChanged != null) {
                 timerSelectionChanged.Enabled = false;
             }
-            int num = listView.GetSelectedCount();
+            int num = ShellBrowser.GetSelectedCount();
             bool fEnqExec = !QTUtility.CheckConfig(Settings.NoRecentFiles);
             if(num != 1 || modKeys != Keys.None || fEnqExec) {
                 if(modKeys == Keys.Alt) {
@@ -3814,7 +3813,7 @@ namespace QTTabBarLib {
             // renaming an item when clicking out of a SubDirTip menu.
             bool ret = false;
             if(listView.SubDirTipMenuIsShowing() || (subDirTip_Tab != null && subDirTip_Tab.MenuIsShowing)) {
-                if(listView.GetSelectedCount() == 1 && listView.HotItemIsSelected()) {
+                if(ShellBrowser.GetSelectedCount() == 1 && listView.HotItemIsSelected()) {
                     result = 2;
                     listView.HideSubDirTipMenu();
                     HideSubDirTip_Tab_Menu();

@@ -33,10 +33,6 @@ namespace QTTabBarLib {
             get { return IntPtr.Zero; }
         }
 
-        public virtual int ViewMode {
-            get { return FVM.ICON; }
-        }
-
         public virtual void Dispose(bool fDisposing) {
             fDisposed = true;
         }
@@ -45,24 +41,12 @@ namespace QTTabBarLib {
             return IntPtr.Zero;
         }
 
-        public virtual int GetFocusedItem() {
-            return -1;
-        }
-
         public virtual Rectangle GetFocusedItemRect() {
             return new Rectangle(0, 0, 0, 0);
         }
 
         public virtual int GetHotItem() {
             return -1;
-        }
-
-        public virtual int GetItemCount() {
-            return 0;
-        }
-
-        public virtual int GetSelectedCount() {
-            return 0;
         }
 
         public virtual Point GetSubDirTipPoint(bool fByKey) {

@@ -253,6 +253,24 @@ namespace QTTabBarLib.Interop {
         public const int LABEL          = 2;
         public const int SELECTBOUNDS   = 3;
     }
+    
+    static class LVNI {
+        public const int ALL            = 0x0000;
+        public const int FOCUSED        = 0x0001;
+        public const int SELECTED       = 0x0002;
+        public const int CUT            = 0x0004;
+        public const int DROPHILITED    = 0x0008;
+        public const int STATEMASK      = (FOCUSED | SELECTED | CUT | DROPHILITED);
+        public const int VISIBLEORDER   = 0x0010;
+        public const int PREVIOUS       = 0x0020;
+        public const int VISIBLEONLY    = 0x0040;
+        public const int SAMEGROUPONLY  = 0x0080;
+        public const int ABOVE          = 0x0100;
+        public const int BELOW          = 0x0200;
+        public const int TOLEFT         = 0x0400;
+        public const int TORIGHT        = 0x0800;
+        public const int DIRECTIONMASK  = (ABOVE | BELOW | TOLEFT | TORIGHT);
+    }
 
     static class CDDS {
         public const int PREPAINT       = 1;

@@ -92,12 +92,7 @@ namespace QTTabBarLib {
         public override IntPtr Handle {
             get { return ListViewController.Handle; }
         }
-
-        // TODO: make this an enum
-        public override int ViewMode {
-            get { return ShellBrowser.ViewMode; }
-        }
-
+       
         #region IDisposable Members
 
         public override void Dispose(bool fDisposing) {
@@ -139,17 +134,11 @@ namespace QTTabBarLib {
 
         public abstract override IntPtr GetEditControl();
 
-        public abstract override int GetFocusedItem(); 
-
         public abstract override Rectangle GetFocusedItemRect(); 
 
         public override int GetHotItem() {
             return HitTest(Control.MousePosition, true);
         }
-
-        public abstract override int GetItemCount();
-
-        public abstract override int GetSelectedCount();
 
         public abstract override Point GetSubDirTipPoint(bool fByKey);
 
@@ -193,84 +182,7 @@ namespace QTTabBarLib {
             Marshal.FreeHGlobal(lParam);
         }
 
-        protected bool HandleLVKEYDOWN_CursorLoop(Keys key) {
-            // TODO
-            /*
-            IntPtr hWnd = IntPtr.Zero; // this.GetExplorerListView();
-            if(hWnd == PInvoke.GetFocus()) {
-                if(IntPtr.Zero != PInvoke.SendMessage(hWnd, 0x10af, IntPtr.Zero, IntPtr.Zero)) {
-                    return false;
-                }
-                int num = (int)PInvoke.SendMessage(hWnd, 0x1004, IntPtr.Zero, IntPtr.Zero);
-                if(num > 1) {
-                    if((key == 0x26) || (key == 40)) {
-                        bool flag = key == 0x26;
-                        int num2 = flag ? 0 : (num - 1);
-                        int iItem = flag ? (num - 1) : 0;
-                        if(1 != ((int)PInvoke.SendMessage(hWnd, 0x102c, (IntPtr)num2, (IntPtr)1))) {
-                            goto Label_025A;
-                        }
-                        IShellView ppshv = null;
-                        try {
-                            try {
-                                if(this.ShellBrowser.QueryActiveShellView(out ppshv) == 0) {
-                                    PInvoke.SetRedraw(hWnd, false);
-                                    ((IFolderView)ppshv).SelectItem(iItem, 0x1d);
-                                    PInvoke.SendMessage(hWnd, 0x1015, (IntPtr)num2, (IntPtr)num2);
-                                    PInvoke.SetRedraw(hWnd, true);
-                                    return true;
-                                }
-                            }
-                            catch {
-                            }
-                            goto Label_025A;
-                        }
-                        finally {
-                            if(ppshv != null) {
-                                Marshal.ReleaseComObject(ppshv);
-                            }
-                        }
-                    }
-                    int num4 = (int)PInvoke.SendMessage(hWnd, 0x100c, (IntPtr)(-1), (IntPtr)1);
-                    if(num4 != -1) {
-                        switch(((int)PInvoke.SendMessage(hWnd, 0x108f, IntPtr.Zero, IntPtr.Zero))) {
-                            case 0:
-                            case 4: {
-                                    bool flag2 = key == 0x25;
-                                    int num6 = (int)PInvoke.SendMessage(hWnd, 0x100c, (IntPtr)num4, flag2 ? ((IntPtr)0x400) : ((IntPtr)0x800));
-                                    if((QTUtility.IsVista && (num6 == num4)) || (!QTUtility.IsVista && (((num6 == -1) || ((num4 == 0) && flag2)) || ((num4 == (num - 1)) && !flag2)))) {
-                                        IShellView view3 = null;
-                                        try {
-                                            int num7 = flag2 ? (num4 - 1) : (num4 + 1);
-                                            if((num7 < 0) || (num7 > (num - 1))) {
-                                                num7 = flag2 ? (num - 1) : 0;
-                                            }
-                                            if(this.ShellBrowser.QueryActiveShellView(out view3) == 0) {
-                                                PInvoke.SetRedraw(hWnd, false);
-                                                ((IFolderView)view3).SelectItem(num7, 0x1d);
-                                                PInvoke.SendMessage(hWnd, 0x1015, (IntPtr)num4, (IntPtr)num4);
-                                                PInvoke.SetRedraw(hWnd, true);
-                                                return true;
-                                            }
-                                        }
-                                        catch {
-                                        }
-                                        finally {
-                                            if(view3 != null) {
-                                                Marshal.ReleaseComObject(view3);
-                                            }
-                                        }
-                                    }
-                                    break;
-                                }
-                        }
-                    }
-                }
-            }
-        Label_025A:
-             */
-            return false;
-        }
+        protected abstract bool HandleCursorLoop(Keys key);
 
         public override bool HasFocus() {
             return (ListViewController != null &&
@@ -522,7 +434,7 @@ namespace QTTabBarLib {
 
         protected void OnItemCountChanged() {
             if(ItemCountChanged != null) {
-                ItemCountChanged(GetItemCount());
+                ItemCountChanged(ShellBrowser.GetItemCount());
             }
         }
 
@@ -550,7 +462,7 @@ namespace QTTabBarLib {
 
             if(QTUtility.CheckConfig(Settings.CursorLoop) && Control.ModifierKeys == Keys.None) {
                 if(key == Keys.Left || key == Keys.Right || key == Keys.Up || key == Keys.Down) {
-                    return HandleLVKEYDOWN_CursorLoop(key);
+                    return HandleCursorLoop(key);
                 }
             }
 
@@ -680,7 +592,7 @@ namespace QTTabBarLib {
                         subDirTip.MultipleMenuItemsRightClicked += subDirTip_MultipleMenuItemsRightClicked;
                     }
 
-                    int iItem = GetFocusedItem();
+                    int iItem = ShellBrowser.GetFocusedIndex();
                     if(iItem != -1) {
                         ShowSubDirTip(iItem, true, false);
                         subDirTip.PerformClickByKey();

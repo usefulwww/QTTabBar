@@ -33,6 +33,7 @@ namespace QTTabBarLib.Automation {
 
         private const int UIAutomationType_Int = 1;
         private const int UIA_ScrollPatternId = 10004;
+        private const int UIA_GridPatternId = 10006;
         private const int UIA_SelectionItemPatternId = 10010;
         private static int UIA_ItemCountPropertyId;
         private static int UIA_SelectedCountPropertyId;
@@ -181,6 +182,23 @@ namespace QTTabBarLib.Automation {
             }
         }
 
+        public int GetColumnCount() {
+            object obj = null;
+            try {
+                pElement.GetCurrentPattern(UIA_GridPatternId, out obj);
+                if(obj == null) return -1;
+                int ret;
+                ((IUIAutomationGridPattern)obj).get_CurrentColumnCount(out ret);
+                return ret;
+            }
+            catch(COMException) {
+                return -1;
+            }
+            finally {
+                if(obj != null) Marshal.ReleaseComObject(obj);
+            }
+        }
+
         public AutomationElement GetFirstChild() {
             IUIAutomationTreeWalker walker = factory.CreateTreeWalker();
             try {
@@ -258,6 +276,23 @@ namespace QTTabBarLib.Automation {
             }
             finally {
                 if(walker != null) Marshal.ReleaseComObject(walker);
+            }
+        }
+
+        public int GetRowCount() {
+            object obj = null;            
+            try {
+                pElement.GetCurrentPattern(UIA_GridPatternId, out obj);
+                if(obj == null) return -1;
+                int ret;
+                ((IUIAutomationGridPattern)obj).get_CurrentRowCount(out ret);
+                return ret;
+            }
+            catch(COMException) {
+                return -1;
+            }
+            finally {
+                if(obj != null) Marshal.ReleaseComObject(obj);
             }
         }
 
