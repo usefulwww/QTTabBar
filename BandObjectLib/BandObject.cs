@@ -69,7 +69,7 @@ namespace BandObjectLib {
                         }
                     }
                 }
-                // Whenever a band is deleted, it the RBBS_BREAKs come back!
+                // Whenever a band is deleted, the RBBS_BREAKs come back!
                 // Catch RB_DELETEBAND to fix it.
                 else if(m.Msg == RB.DELETEBAND) {
                     int del = (int)m.WParam;
