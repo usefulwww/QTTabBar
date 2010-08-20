@@ -27,7 +27,7 @@ using System.Windows.Forms;
 using QTTabBarLib.Interop;
 
 namespace QTTabBarLib {
-    internal sealed class SubDirTipForm : Form {
+    public sealed class SubDirTipForm : Form {
         private IContainer components;
         private DropDownMenuDropTarget contextMenuSubDir;
         private string currentDir;

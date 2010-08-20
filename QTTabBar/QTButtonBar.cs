@@ -1992,7 +1992,7 @@ namespace QTTabBarLib {
                     }
                 case WM.CONTEXTMENU:
                     if((((ddmrGroupButton == null) || !ddmrGroupButton.Visible) && ((ddmrUserAppButton == null) || !ddmrUserAppButton.Visible)) && ((ddmrRecentlyClosed == null) || !ddmrRecentlyClosed.Visible)) {
-                        Point p = new Point(QTUtility2.GET_X_LPARAM(m.LParam), QTUtility2.GET_Y_LPARAM(m.LParam));
+                        Point p = QTUtility2.PointFromLPARAM(m.LParam);
                         if((p.X == -1) && (p.Y == -1)) {
                             QTUtility2.SendCOPYDATASTRUCT(QTUtility.instanceManager.GetTabBarHandle(ExplorerHandle), (IntPtr)0xffc, "btnCM", (IntPtr)1);
                             return;

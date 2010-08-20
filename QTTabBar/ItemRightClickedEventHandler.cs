@@ -16,5 +16,5 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace QTTabBarLib {
-    internal delegate void ItemRightClickedEventHandler(object sender, ItemRightClickedEventArgs e);
+    public delegate void ItemRightClickedEventHandler(object sender, ItemRightClickedEventArgs e);
 }

@@ -25,13 +25,33 @@ using System.Media;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using Microsoft.Win32;
+using Microsoft.Win32.SafeHandles;
 using QTTabBarLib.Interop;
 
 namespace QTTabBarLib {
     internal static class QTUtility2 {
         private const int THRESHOLD_ELLIPSIS = 40;
+        private static bool fConsoleAllocated;
+
+        public static void AllocDebugConsole() {
+            if(fConsoleAllocated) {
+                return;
+            }
+            const int STD_OUTPUT_HANDLE = -11;
+            const int MY_CODE_PAGE = 437;
+            PInvoke.AllocConsole();
+            IntPtr stdHandle = PInvoke.GetStdHandle(STD_OUTPUT_HANDLE);
+            SafeFileHandle safeFileHandle = new SafeFileHandle(stdHandle, true);
+            FileStream fileStream = new FileStream(safeFileHandle, FileAccess.Write);
+            Encoding encoding = System.Text.Encoding.GetEncoding(MY_CODE_PAGE);
+            StreamWriter standardOutput = new StreamWriter(fileStream, encoding);
+            standardOutput.AutoFlush = true;
+            Console.SetOut(standardOutput);
+            fConsoleAllocated = true;
+        }
 
         public static int GET_X_LPARAM(IntPtr lParam) {
             return (short)(((int)lParam) & 0xffff);
@@ -105,6 +125,10 @@ namespace QTTabBarLib {
             return (IntPtr)((x & 0xffff) | ((y & 0xffff) << 0x10));
         }
 
+        public static IntPtr Make_LPARAM(Point pt) {
+            return (IntPtr)((pt.X & 0xffff) | ((pt.Y & 0xffff) << 0x10));
+        }
+        
         public static Color MakeColor(int colorref) {
             return Color.FromArgb(colorref & 0xff, (colorref >> 8) & 0xff, (colorref >> 0x10) & 0xff);
         }
@@ -290,6 +314,10 @@ namespace QTTabBarLib {
                 str2 = @".lzh\";
             }
             return File.Exists(path.Substring(0, path.IndexOf(str2) + 4));
+        }
+
+        public static Point PointFromLPARAM(IntPtr lParam) {
+            return new Point(((int)lParam) & 0xffff, (((int)lParam) >> 0x10) & 0xffff);
         }
 
         public static T[] ReadRegBinary<T>(string regValueName, RegistryKey rkUserApps) {

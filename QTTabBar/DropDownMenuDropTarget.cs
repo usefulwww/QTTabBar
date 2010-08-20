@@ -276,7 +276,7 @@ namespace QTTabBarLib {
             return -1;
         }
 
-        private DragDropEffects dropTargetWrapper_DragFileEnter(IntPtr hDrop, POINT pnt, int grfKeyState) {
+        private DragDropEffects dropTargetWrapper_DragFileEnter(IntPtr hDrop, Point pnt, int grfKeyState) {
             fRespondModKeysTemp = fRespondModKeys;
             fEnableShiftKeyTemp = fEnableShiftKey;
             fRespondModKeys = false;
@@ -311,7 +311,16 @@ namespace QTTabBarLib {
             itemHover = null;
             fSuppressMouseUp = true;
             iItemDragOverRegion = -1;
-            Invalidate();
+            if(Bounds.Contains(MousePosition)) {
+                ToolStripDropDown tsdd = this;
+                while(tsdd.OwnerItem != null && tsdd.OwnerItem.GetCurrentParent() is ToolStripDropDown) {
+                    tsdd = (ToolStripDropDown)tsdd.OwnerItem.GetCurrentParent();
+                }
+                tsdd.Close(ToolStripDropDownCloseReason.AppFocusChange);
+            }
+            else {
+                Invalidate();
+            }
         }
 
         private void dropTargetWrapper_DragFileOver(object sender, DragEventArgs e) {

@@ -421,7 +421,7 @@ namespace QTTabBarLib {
             switch(m.Msg) {
                 case WM.LBUTTONUP:
                     if(iHoveredIndex != -1) {
-                        Point pt = new Point(QTUtility2.GET_X_LPARAM(m.LParam), QTUtility2.GET_Y_LPARAM(m.LParam));
+                        Point pt = QTUtility2.PointFromLPARAM(m.LParam);
                         Dictionary<int, Rectangle> dictionary2 = new Dictionary<int, Rectangle>(dicItemRcts);
                         foreach(Rectangle rect in from num in dictionary2.Keys 
                                 where num == iHoveredIndex select dicItemRcts[num]) {

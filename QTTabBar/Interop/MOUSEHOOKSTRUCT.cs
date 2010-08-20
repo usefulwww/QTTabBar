@@ -16,13 +16,13 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Drawing;
 using System.Runtime.InteropServices;
-using BandObjectLib;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
     public struct MOUSEHOOKSTRUCT {
-        public POINT pt;
+        public Point pt;
         public IntPtr hwnd;
         public uint wHitTestCode;
         public IntPtr dwExtraInfo;

@@ -526,7 +526,7 @@ namespace QTTabBarLib {
                 if((!fEnableShiftKey || ((wParam & 4) != 4)) && (((wParam & 8) != 8) && !fChangeImageSelected)) {
                     goto Label_07C2;
                 }
-                ToolStripItem itemAt = GetItemAt(new Point(QTUtility2.GET_X_LPARAM(m.LParam), QTUtility2.GET_Y_LPARAM(m.LParam)));
+                ToolStripItem itemAt = GetItemAt(QTUtility2.PointFromLPARAM(m.LParam));
                 if(itemAt == null) {
                     base.WndProc(ref m);
                     return;

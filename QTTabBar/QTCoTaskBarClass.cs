@@ -248,7 +248,7 @@ namespace QTTabBarLib {
                         break;
 
                     case WM.MOUSEWHEEL: {
-                            IntPtr handle = PInvoke.WindowFromPoint(new Point(QTUtility2.GET_X_LPARAM(msg.lParam), QTUtility2.GET_Y_LPARAM(msg.lParam)));
+                            IntPtr handle = PInvoke.WindowFromPoint(QTUtility2.PointFromLPARAM(msg.lParam));
                             if((handle != IntPtr.Zero) && (handle != msg.hwnd)) {
                                 Control control = FromHandle(handle);
                                 if(control != null) {
@@ -1122,7 +1122,7 @@ namespace QTTabBarLib {
 
         private bool ListView_DoubleClick(Point pt) {
             if((ConfigValues[1] & 4) == 0 && listView.PointIsBackground(pt, false)) {
-                QTUtility2.SendCOPYDATASTRUCT(ThisHandle, (IntPtr)0xff, "fromdesktop", QTUtility2.Make_LPARAM(pt.X, pt.Y));
+                QTUtility2.SendCOPYDATASTRUCT(ThisHandle, (IntPtr)0xff, "fromdesktop", QTUtility2.Make_LPARAM(pt));
             }
             return false;
         }
@@ -1812,10 +1812,8 @@ namespace QTTabBarLib {
                             break;
 
                         case 0xff: {
-                            int x = QTUtility2.GET_X_LPARAM(copydatastruct.dwData);
-                            int y = QTUtility2.GET_Y_LPARAM(copydatastruct.dwData);
                             PInvoke.SetForegroundWindow(hwndShellTray);
-                            OnDesktopDblClicked(new Point(x, y));
+                            OnDesktopDblClicked(QTUtility2.PointFromLPARAM(copydatastruct.dwData));
                             break;
                         }
                     }

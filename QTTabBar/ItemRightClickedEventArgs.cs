@@ -19,7 +19,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 namespace QTTabBarLib {
-    internal sealed class ItemRightClickedEventArgs {
+    public sealed class ItemRightClickedEventArgs {
         private ToolStripItem clickedItem;
         private int hresult;
         private bool isKey;

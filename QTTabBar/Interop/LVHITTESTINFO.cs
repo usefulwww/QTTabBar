@@ -15,13 +15,13 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
+using System.Drawing;
 using System.Runtime.InteropServices;
-using BandObjectLib;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
     public struct LVHITTESTINFO {
-        public POINT pt;
+        public Point pt;
         public uint flags;
         public int iItem;
         public int iSubItem;

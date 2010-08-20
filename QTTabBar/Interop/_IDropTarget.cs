@@ -15,22 +15,22 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Windows.Forms;
-using BandObjectLib;
 using IDataObject = System.Runtime.InteropServices.ComTypes.IDataObject;
 
 namespace QTTabBarLib.Interop {
     [ComImport, Guid("00000122-0000-0000-C000-000000000046"), SuppressUnmanagedCodeSecurity, InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public interface _IDropTarget {
         [PreserveSig]
-        int DragEnter(IDataObject pDataObj, int grfKeyState, POINT pt, ref DragDropEffects pdwEffect);
+        int DragEnter(IDataObject pDataObj, int grfKeyState, Point pt, ref DragDropEffects pdwEffect);
         [PreserveSig]
-        int DragOver(int grfKeyState, POINT pt, ref DragDropEffects pdwEffect);
+        int DragOver(int grfKeyState, Point pt, ref DragDropEffects pdwEffect);
         [PreserveSig]
         int DragLeave();
         [PreserveSig]
-        int DragDrop(IDataObject pDataObj, int grfKeyState, POINT pt, ref DragDropEffects pdwEffect);
+        int DragDrop(IDataObject pDataObj, int grfKeyState, Point pt, ref DragDropEffects pdwEffect);
     }
 }

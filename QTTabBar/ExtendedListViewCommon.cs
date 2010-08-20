@@ -22,6 +22,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using QTPlugin;
 using QTTabBarLib.Interop;
+using IDataObject = System.Runtime.InteropServices.ComTypes.IDataObject;
 using Timer = System.Windows.Forms.Timer;
 
 namespace QTTabBarLib {
@@ -57,14 +58,16 @@ namespace QTTabBarLib {
 
         protected NativeWindowController ListViewController;
         protected NativeWindowController ShellViewController;
+        private DropTargetPassthrough dropTargetPassthrough;
         private bool fThumbnailPending;
         private bool fTrackMouseEvent;
         private IntPtr hwndExplorer;
         private IntPtr hwndSubDirTipMessageReflect;
-        private int itemIndexDROPHILITED = -1;
+        private int itemIndexDropHilited = -1;
+        private Point pointDropHilited = new Point(0, 0);
         protected ShellBrowserEx ShellBrowser;
-        private int subDirIndex = -1;
-        private SubDirTipForm subDirTip;
+        protected int subDirIndex = -1;
+        protected SubDirTipForm subDirTip;
         private int thumbnailIndex = -1;
         private ThumbnailTooltipForm thumbnailTooltip;
         private Timer timer_HoverSubDirTipMenu;
@@ -87,6 +90,7 @@ namespace QTTabBarLib {
             PInvoke.TrackMouseEvent(ref structure);
 
             hwndExplorer = PInvoke.GetAncestor(hwndShellView, 3 /* GA_ROOTOWNER */);
+            HookDropTarget();
         }
 
         public override IntPtr Handle {
@@ -125,10 +129,12 @@ namespace QTTabBarLib {
                 subDirTip.Dispose();
                 subDirTip = null;
             }
-  
+            if(dropTargetPassthrough != null) {
+                dropTargetPassthrough.Dispose();
+                dropTargetPassthrough = null;
+            }
             base.Dispose(fDisposing);
         }
-
 
         #endregion
 
@@ -197,7 +203,7 @@ namespace QTTabBarLib {
                     subDirIndex = -1;
                 }
             }
-            itemIndexDROPHILITED = -1;
+            itemIndexDropHilited = -1;
         }
 
         public override void HideSubDirTipMenu() {
@@ -224,10 +230,30 @@ namespace QTTabBarLib {
         }
 
         public override int HitTest(IntPtr LParam) {
-            return HitTest(new Point(QTUtility2.GET_X_LPARAM(LParam), QTUtility2.GET_Y_LPARAM(LParam)), false);
+            return HitTest(QTUtility2.PointFromLPARAM(LParam), false);
         }
 
         public abstract override int HitTest(Point pt, bool ScreenCoords);
+
+        private void HookDropTarget() {
+            if(dropTargetPassthrough != null) {
+                dropTargetPassthrough.Dispose();
+                dropTargetPassthrough = null;
+            }
+            IntPtr ptr = PInvoke.GetProp(Handle, "OleDropTargetInterface");
+            if(ptr != IntPtr.Zero) {
+                object obj = Marshal.GetObjectForIUnknown(ptr);
+                _IDropTarget passthrough = obj as _IDropTarget;
+                if(passthrough != null) {
+                    PInvoke.RevokeDragDrop(Handle);
+                    dropTargetPassthrough = new DropTargetPassthrough(passthrough, this);
+                    PInvoke.RegisterDragDrop(Handle, dropTargetPassthrough);
+                }
+                else {
+                    Marshal.ReleaseComObject(obj);
+                }
+            }
+        }
 
         public abstract override bool HotItemIsSelected(); 
 
@@ -267,23 +293,18 @@ namespace QTTabBarLib {
 
                 case WM.LBUTTONDBLCLK:
                     if(DoubleClick != null) {
-                        return DoubleClick(new Point(
-                            QTUtility2.GET_X_LPARAM(msg.LParam),
-                            QTUtility2.GET_Y_LPARAM(msg.LParam)));
+                        return DoubleClick(QTUtility2.PointFromLPARAM(msg.LParam));
                     }
                     break;
                 
                 case WM.MBUTTONUP:
                     if(MiddleClick != null) {
-                        MiddleClick(new Point(
-                            QTUtility2.GET_X_LPARAM(msg.LParam),
-                            QTUtility2.GET_Y_LPARAM(msg.LParam)));
+                        MiddleClick(QTUtility2.PointFromLPARAM(msg.LParam));
                     }
                     break;
 
                 case WM.MOUSEWHEEL: {
-                    Point pt = new Point(QTUtility2.GET_X_LPARAM(msg.LParam), QTUtility2.GET_Y_LPARAM(msg.LParam));
-                    IntPtr handle = PInvoke.WindowFromPoint(pt);
+                    IntPtr handle = PInvoke.WindowFromPoint(QTUtility2.PointFromLPARAM(msg.LParam));
                     if(handle != IntPtr.Zero && handle != msg.HWnd) {
                         Control control = Control.FromHandle(handle);
                         if(control != null) {
@@ -321,52 +342,32 @@ namespace QTTabBarLib {
 
         protected void OnDropHilighted(int iItem) {
             if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
-                if(iItem != itemIndexDROPHILITED) {
+                Point pt = Control.MousePosition;
+                if(iItem != itemIndexDropHilited) {
                     if(iItem == -1) {
                         if(timer_HoverSubDirTipMenu != null) {
                             timer_HoverSubDirTipMenu.Enabled = false;
                         }
-                        //if(subDirTip != null) {
-                        //    subDirTip.HideMenu();
-                        //    HideSubDirTip(10);
-                        //}
-                        itemIndexDROPHILITED = -1;
+                        itemIndexDropHilited = -1;
                     }
                     else {
                         if(timer_HoverSubDirTipMenu == null) {
                             timer_HoverSubDirTipMenu = new Timer();
-                            timer_HoverSubDirTipMenu.Interval = 1200;
+                            timer_HoverSubDirTipMenu.Interval = SystemInformation.MouseHoverTime * 6 / 5;
                             timer_HoverSubDirTipMenu.Tick += timer_HoverSubDirTipMenu_Tick;
                         }
-                        itemIndexDROPHILITED = iItem;
+                        itemIndexDropHilited = iItem;
                         timer_HoverSubDirTipMenu.Enabled = false;
                         timer_HoverSubDirTipMenu.Enabled = true;
                     }
                 }
-            }
-            if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
-                if(iItem != itemIndexDROPHILITED) {
-                    if(iItem == -1) {
-                        if(timer_HoverSubDirTipMenu != null) {
-                            timer_HoverSubDirTipMenu.Enabled = false;
-                        }
-                        //if(subDirTip != null) {
-                        //    subDirTip.HideMenu();
-                        //    HideSubDirTip(10);
-                        //}
-                        itemIndexDROPHILITED = -1;
-                    }
-                    else {
-                        if(timer_HoverSubDirTipMenu == null) {
-                            timer_HoverSubDirTipMenu = new Timer();
-                            timer_HoverSubDirTipMenu.Interval = 1200;
-                            timer_HoverSubDirTipMenu.Tick += timer_HoverSubDirTipMenu_Tick;
-                        }
-                        itemIndexDROPHILITED = iItem;
+                else if(pointDropHilited != pt) {
+                    if(timer_HoverSubDirTipMenu != null && timer_HoverSubDirTipMenu.Enabled) {
                         timer_HoverSubDirTipMenu.Enabled = false;
-                        timer_HoverSubDirTipMenu.Enabled = true;
+                        timer_HoverSubDirTipMenu.Enabled = true;                        
                     }
                 }
+                pointDropHilited = pt;
             }
         }
 
@@ -501,7 +502,7 @@ namespace QTTabBarLib {
         private void RefreshSubDirTip(bool force, int iItem) {
             if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
                 if(!QTUtility.CheckConfig(Settings.SubDirTipsWithShift) ^ (Control.ModifierKeys == Keys.Shift)) {
-                    if(subDirTip != null && subDirTip.MouseIsOnThis()) {
+                    if(subDirTip != null && (subDirTip.MouseIsOnThis() || subDirTip.MenuIsShowing)) {
                         return;
                     }
                     if(!force && subDirIndex == iItem && (QTUtility.IsVista || (iItem != -1))) {
@@ -555,15 +556,34 @@ namespace QTTabBarLib {
         }
 
         protected virtual bool ShellViewController_MessageCaptured(ref Message msg) {
-            if(msg.Msg == WM.MOUSEACTIVATE) {
-                int res = (int)msg.Result;
-                bool ret = OnMouseActivate(ref res);
-                msg.Result = (IntPtr)res;
-                return ret;
-            }
-            else if(msg.Msg == WM.NOTIFY) {
-                NMHDR nmhdr = (NMHDR)Marshal.PtrToStructure(msg.LParam, typeof(NMHDR));
-                return OnShellViewNotify(nmhdr, ref msg);
+
+            switch(msg.Msg) {
+                case WM.MOUSEACTIVATE:
+                    int res = (int)msg.Result;
+                    bool ret = OnMouseActivate(ref res);
+                    msg.Result = (IntPtr)res;
+                    return ret;
+
+                case WM.NOTIFY:
+                    NMHDR nmhdr = (NMHDR)Marshal.PtrToStructure(msg.LParam, typeof(NMHDR));
+                    return OnShellViewNotify(nmhdr, ref msg);
+
+                // The DropTarget isn't registered until some time after the window is
+                // created.  These messages don't fire that often, and always seem
+                // to fire around the time the DropTarget is registered, but they're
+                // just guesses.  The smart way to do this is to set an API hook on
+                // RegisterDragDrop.  TODO.
+                case WM.SHOWWINDOW:
+                    if(msg.WParam != IntPtr.Zero && dropTargetPassthrough == null) {
+                        HookDropTarget();
+                    }
+                    break;
+
+                case WM.WINDOWPOSCHANGING:
+                    if(!QTUtility.IsVista && dropTargetPassthrough == null) {
+                        HookDropTarget();
+                    }
+                    break;
             }
             return false;
         }
@@ -619,6 +639,9 @@ namespace QTTabBarLib {
                         subDirTip.MultipleMenuItemsClicked += subDirTip_MultipleMenuItemsClicked;
                         subDirTip.MenuItemRightClicked += subDirTip_MenuItemRightClicked;
                         subDirTip.MultipleMenuItemsRightClicked += subDirTip_MultipleMenuItemsRightClicked;
+                        if(dropTargetPassthrough != null) {
+                            PInvoke.RegisterDragDrop(subDirTip.Handle, dropTargetPassthrough);
+                        }
                     }
                     subDirTip.ShowSubDirTip(str, null, pnt);
                     flag = true;
@@ -713,28 +736,26 @@ namespace QTTabBarLib {
         private void timer_HoverSubDirTipMenu_Tick(object sender, EventArgs e) {
             timer_HoverSubDirTipMenu.Enabled = false;
             if(Control.MouseButtons != MouseButtons.None) {
-                //IntPtr tag = (IntPtr)this.timer_HoverSubDirTipMenu.Tag;
-
                 int idx = GetHotItem();
-                if(itemIndexDROPHILITED == idx) {
+                if(itemIndexDropHilited == idx) {
                     if(subDirTip != null) {
                         subDirTip.HideMenu();
                     }
                     // TODO: Check if the item is the Recycle Bin and deny if it is.
                     // string.Equals(wrapper.Path, "::{645FF040-5081-101B-9F08-00AA002F954E}"
-                    if(ShowSubDirTip(itemIndexDROPHILITED, false, true)) {
+                    if(ShowSubDirTip(itemIndexDropHilited, false, true)) {
                         if(hwndExplorer != IntPtr.Zero) {
                             WindowUtils.BringExplorerToFront(hwndExplorer);
                         }
                         PInvoke.SetFocus(ListViewController.Handle);
                         PInvoke.SetForegroundWindow(ListViewController.Handle);
-                        HideThumbnailTooltip(-1);
+                        HideThumbnailTooltip();
                         subDirTip.ShowMenu();
                         return;
                     }
                 }
                 if((subDirTip != null) && subDirTip.IsMouseOnMenus) {
-                    itemIndexDROPHILITED = -1;
+                    itemIndexDropHilited = -1;
                     return;
                 }
             }
@@ -752,6 +773,50 @@ namespace QTTabBarLib {
         private void timer_Thumbnail_Tick(object sender, EventArgs e) {
             timer_Thumbnail.Enabled = false;
             fThumbnailPending = false;
+        }
+
+        private class DropTargetPassthrough : _IDropTarget, IDisposable {
+            private _IDropTarget passthrough;
+            private ExtendedListViewCommon parent;
+            private bool fDraggingOnListView;
+            public DropTargetPassthrough(_IDropTarget passthrough, ExtendedListViewCommon parent) {
+                this.passthrough = passthrough;
+                this.parent = parent;
+            }
+
+            public int DragEnter(IDataObject pDataObj, int grfKeyState, Point pt, ref DragDropEffects pdwEffect) {
+                fDraggingOnListView = parent.MouseIsOverListView();
+                return passthrough.DragEnter(pDataObj, grfKeyState, pt, ref pdwEffect);
+            }
+
+            public int DragOver(int grfKeyState, Point pt, ref DragDropEffects pdwEffect) {
+                parent.OnDropHilighted(parent.HitTest(pt, true));
+                return passthrough.DragOver(grfKeyState, pt, ref pdwEffect);
+            }
+
+            public int DragLeave() {
+                if(parent.subDirTip != null && !parent.subDirTip.IsMouseOnMenus) {
+                    if((fDraggingOnListView && !parent.subDirTip.MouseIsOnThis())
+                            || (!fDraggingOnListView && !parent.MouseIsOverListView())) {
+                        parent.subDirTip.HideMenu();
+                        parent.OnDropHilighted(-1);
+                        parent.RefreshSubDirTip(true);
+                    }
+                }
+                return passthrough.DragLeave();
+            }
+
+            public int DragDrop(IDataObject pDataObj, int grfKeyState, Point pt, ref DragDropEffects pdwEffect) {
+                parent.OnDropHilighted(-1);
+                return passthrough.DragDrop(pDataObj, grfKeyState, pt, ref pdwEffect);
+            }
+
+            public void Dispose() {
+                if(passthrough != null) {
+                    Marshal.ReleaseComObject(passthrough);
+                    passthrough = null;
+                }
+            }
         }
     }
 }

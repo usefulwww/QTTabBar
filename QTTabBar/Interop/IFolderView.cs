@@ -16,9 +16,9 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Security;
-using BandObjectLib;
 
 namespace QTTabBarLib.Interop {
     [ComImport, SuppressUnmanagedCodeSecurity, Guid("cde725b0-ccc9-4519-917e-325d72fab4ce"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
@@ -40,11 +40,11 @@ namespace QTTabBarLib.Interop {
         [PreserveSig]
         int GetFocusedItem(out int piItem);
         [PreserveSig]
-        int GetItemPosition(IntPtr pidl, out POINT ppt);
+        int GetItemPosition(IntPtr pidl, out Point ppt);
         [PreserveSig]
-        int GetSpacing(ref POINT ppt);
+        int GetSpacing(ref Point ppt);
         [PreserveSig]
-        int GetDefaultSpacing(ref POINT ppt);
+        int GetDefaultSpacing(ref Point ppt);
         [PreserveSig]
         int GetAutoArrange();
         [PreserveSig]

@@ -62,13 +62,10 @@ namespace QTTabBarLib {
                     return HandleCustomDraw(ref msg);
 
                 case LVN.ITEMCHANGED: {
-                        // There are three things happening here.
+                        // There are two things happening here.
                         // 1. Notify plugins of selection changing: Handled through 
                         //    undocumented WM_USER+163 message
                         // 2. Redraw for Full Row Select: Not happening
-                        // 3. Set new item DropHilighted: Handled through 
-                        //    undocumented WM_USER+209 message
-
                     /*
                         // TODO
                      
@@ -86,14 +83,6 @@ namespace QTTabBarLib {
                             uint num8 = nmlistview2.uOldState & LVIS.DROPHILITED;
                             uint num9 = nmlistview2.uNewState & LVIS.CUT;
                             uint num10 = nmlistview2.uOldState & LVIS.CUT;
-                            if((num8 != num7)) {
-                                if(num7 == 0) {
-                                    OnDropHilighted(-1);
-                                }
-                                else {
-                                    OnDropHilighted(nmlistview2.iItem);
-                                }
-                            }
                             if(flag) {
                                 if(nmlistview2.iItem != -1 && ((num5 != num6) || (num7 != num8) || (num9 != num10)) && ShellBrowser.ViewMode == FVM.DETAILS) {
                                     PInvoke.SendMessage(nmlistview2.hdr.hwndFrom, LVM.REDRAWITEMS, (IntPtr)nmlistview2.iItem, (IntPtr)nmlistview2.iItem);
@@ -190,6 +179,7 @@ namespace QTTabBarLib {
                     break;
 
                 case LVN.ENDLABELEDIT: {
+                    // TODO
                     NMLVDISPINFO nmlvdispinfo2 = (NMLVDISPINFO)Marshal.PtrToStructure(msg.LParam, typeof(NMLVDISPINFO));
                     OnEndLabelEdit(nmlvdispinfo2.item);
                     break;
@@ -658,8 +648,7 @@ namespace QTTabBarLib {
                 PInvoke.ScreenToClient(ListViewController.Handle, ref pt);
             }
             LVHITTESTINFO structure = new LVHITTESTINFO();
-            structure.pt.x = pt.X;
-            structure.pt.y = pt.Y;
+            structure.pt = pt;
             IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
             Marshal.StructureToPtr(structure, ptr, false);
             int num = (int)PInvoke.SendMessage(ListViewController.Handle, LVM.HITTEST, IntPtr.Zero, ptr);
@@ -712,8 +701,7 @@ namespace QTTabBarLib {
                 PInvoke.ScreenToClient(ListViewController.Handle, ref pt);
             }
             LVHITTESTINFO structure = new LVHITTESTINFO();
-            structure.pt.x = pt.X;
-            structure.pt.y = pt.Y;
+            structure.pt = pt;
             IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
             Marshal.StructureToPtr(structure, ptr, false);
             if(QTUtility.IsVista) {

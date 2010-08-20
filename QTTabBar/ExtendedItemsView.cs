@@ -25,7 +25,6 @@ using QTTabBarLib.Automation;
 namespace QTTabBarLib {
     class ExtendedItemsView : ExtendedListViewCommon {
         private AutomationManager AutoMan;
-        private Point lastDragPoint;
         private Point lastLButtonPoint;
         private Int64 lastLButtonTime;
         private Point lastMouseMovePoint;
@@ -206,7 +205,10 @@ namespace QTTabBarLib {
             if(!ScreenCoords) {
                 PInvoke.ClientToScreen(Handle, ref pt);
             }
-            else if(PInvoke.WindowFromPoint(pt) != Handle) {
+            if(subDirTip != null && subDirTip.IsShowing && subDirTip.Bounds.Contains(pt)) {
+                return subDirIndex;
+            }
+            if(PInvoke.WindowFromPoint(pt) != Handle) {
                 return -1;
             }
             return AutoMan.DoQuery(factory => {
@@ -237,83 +239,83 @@ namespace QTTabBarLib {
 
             switch(msg.Msg) {
                 case LVM.SCROLL: {
-                        int amount = msg.WParam.ToInt32();
-                        SetRedraw(false);
-                        AutoMan.DoQuery(factory => {
-                            AutomationElement elem = factory.FromHandle(Handle);
-                            amount /= SystemInformation.MouseWheelScrollDelta;
-                            bool dec = amount < 0;
-                            if(dec) {
-                                amount = -amount;
-                            }
-                            int lines = SystemInformation.MouseWheelScrollLines;
-                            if(lines < 0) {
-                                elem.ScrollHorizontal(dec
-                                        ? ScrollAmount.LargeDecrement
-                                        : ScrollAmount.LargeIncrement, amount);
-                            }
-                            else {
-                                elem.ScrollHorizontal(dec
-                                        ? ScrollAmount.SmallDecrement
-                                        : ScrollAmount.SmallIncrement, amount * lines);
-                            }
-                            return 0;
-                        });
-                        SetRedraw(true);
-                        return true;
-                    }
+                    int amount = msg.WParam.ToInt32();
+                    SetRedraw(false);
+                    AutoMan.DoQuery(factory => {
+                        AutomationElement elem = factory.FromHandle(Handle);
+                        amount /= SystemInformation.MouseWheelScrollDelta;
+                        bool dec = amount < 0;
+                        if(dec) {
+                            amount = -amount;
+                        }
+                        int lines = SystemInformation.MouseWheelScrollLines;
+                        if(lines < 0) {
+                            elem.ScrollHorizontal(dec
+                                    ? ScrollAmount.LargeDecrement
+                                    : ScrollAmount.LargeIncrement, amount);
+                        }
+                        else {
+                            elem.ScrollHorizontal(dec
+                                    ? ScrollAmount.SmallDecrement
+                                    : ScrollAmount.SmallIncrement, amount*lines);
+                        }
+                        return 0;
+                    });
+                    SetRedraw(true);
+                    return true;
+                }
 
                 case WM.MOUSEACTIVATE: {
-                        int res = (int)msg.Result;
-                        bool ret = OnMouseActivate(ref res);
-                        msg.Result = (IntPtr)res;
-                        return ret;
-                    }
+                    int res = (int)msg.Result;
+                    bool ret = OnMouseActivate(ref res);
+                    msg.Result = (IntPtr)res;
+                    return ret;
+                }
 
                 case WM.LBUTTONDOWN: {
                     // The ItemsView's window class doesn't have the CS_DBLCLKS
                     // class style, which means we won't be receiving the
                     // WM.LBUTTONDBLCLK message.  We'll just have to make do
                     // without...                    
-                        Int64 now = DateTime.Now.Ticks;
-                        Point pt = new Point(
-                            QTUtility2.GET_X_LPARAM(msg.LParam),
-                            QTUtility2.GET_Y_LPARAM(msg.LParam));
-                        if((now - lastLButtonTime) / 10000 <= SystemInformation.DoubleClickTime) {
-                            Size size = SystemInformation.DoubleClickSize;
-                            if(Math.Abs(pt.X - lastLButtonPoint.X) <= size.Width) {
-                                if(Math.Abs(pt.Y - lastLButtonPoint.Y) <= size.Height) {
-                                    lastLButtonTime = 0;
-                                    if(OnDoubleClick(pt)) {
+                    Int64 now = DateTime.Now.Ticks;
+                    Point pt = QTUtility2.PointFromLPARAM(msg.LParam);
+                    if((now - lastLButtonTime)/10000 <= SystemInformation.DoubleClickTime) {
+                        Size size = SystemInformation.DoubleClickSize;
+                        if(Math.Abs(pt.X - lastLButtonPoint.X) <= size.Width) {
+                            if(Math.Abs(pt.Y - lastLButtonPoint.Y) <= size.Height) {
+                                lastLButtonTime = 0;
+                                if(OnDoubleClick(pt)) {
+                                    return true;
+                                }
+                                if(HitTest(pt, false) > -1) {
+                                    // Explorer includes an option to make
+                                    // single-clicking activate items.
+                                    // TODO: Support that.
+                                    if(OnItemActivated(Control.ModifierKeys)) {
                                         return true;
                                     }
-                                    if(HitTest(pt, false) > -1) {
-                                        // Explorer includes an option to make
-                                        // single-clicking activate items.
-                                        // TODO: Support that.
-                                        if(OnItemActivated(Control.ModifierKeys)) {
-                                            return true;
-                                        }
-                                    }
-                                    return false;
                                 }
+                                return false;
                             }
                         }
-                        lastLButtonPoint = pt;
-                        lastLButtonTime = now;
                     }
+                    lastLButtonPoint = pt;
+                    lastLButtonTime = now;
                     return false;
+                }
 
                 case WM.MOUSEMOVE: {
-                        Point pt = new Point(QTUtility2.GET_X_LPARAM(msg.LParam), QTUtility2.GET_Y_LPARAM(msg.LParam));
-                        if(pt != lastMouseMovePoint) {
-                            lastMouseMovePoint = pt;
-                            if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews) || !QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
-                                OnHotTrack(HitTest(pt, false));
-                            }
+                    Point pt = QTUtility2.PointFromLPARAM(msg.LParam);
+                    if(pt != lastMouseMovePoint) {
+                        lastMouseMovePoint = pt;
+                        if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews) ||
+                                !QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
+                            OnHotTrack(HitTest(pt, false));
                         }
                     }
                     break;
+                }
+
 
                 case WM.KEYDOWN:
                     if(OnKeyDown((Keys)msg.WParam)) return true;
@@ -322,32 +324,22 @@ namespace QTTabBarLib {
                     }
                     break;
 
-                case WM.USER + 209: { // This message appears to control dragging.
-                        Point pt = new Point((int)msg.WParam, (int)msg.LParam);
-                        if(pt == lastDragPoint) {
-                            return false;
-                        }
-                        lastDragPoint = pt;
-                        OnDropHilighted(HitTest(pt, false));
-                    }
-                    break;
-
                 case WM.NOTIFY: {
-                        NMHDR nmhdr = (NMHDR)Marshal.PtrToStructure(msg.LParam, typeof(NMHDR));
-                        if(nmhdr.code == -530 /* TTN_NEEDTEXT */) {
-                            NMTTDISPINFO dispinfo = (NMTTDISPINFO)Marshal.PtrToStructure(msg.LParam, typeof(NMTTDISPINFO));
-                            if((dispinfo.uFlags & 0x20 /* TTF_TRACK */) != 0) {
-                                return OnGetInfoTip(ShellBrowser.GetFocusedIndex(), true);
-                            }
-                            else {
-                                int i = GetHotItem();
-                                if(i != -1 && IsTrackingItemName()) {
-                                    return OnGetInfoTip(i, false);
-                                }
+                    NMHDR nmhdr = (NMHDR)Marshal.PtrToStructure(msg.LParam, typeof(NMHDR));
+                    if(nmhdr.code == -530 /* TTN_NEEDTEXT */) {
+                        NMTTDISPINFO dispinfo = (NMTTDISPINFO)Marshal.PtrToStructure(msg.LParam, typeof(NMTTDISPINFO));
+                        if((dispinfo.uFlags & 0x20 /* TTF_TRACK */) != 0) {
+                            return OnGetInfoTip(ShellBrowser.GetFocusedIndex(), true);
+                        }
+                        else {
+                            int i = GetHotItem();
+                            if(i != -1 && IsTrackingItemName()) {
+                                return OnGetInfoTip(i, false);
                             }
                         }
                     }
                     break;
+                }
             }
             return false;
         }

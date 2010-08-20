@@ -16,9 +16,9 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Security;
-using BandObjectLib;
 
 namespace QTTabBarLib.Interop {
     [ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("37A378C0-F82D-11CE-AE65-08002B2E1262"), SuppressUnmanagedCodeSecurity]
@@ -45,10 +45,10 @@ namespace QTTabBarLib.Interop {
         void GetSelectedCount(out int puSelected);
         void GetSelectedObjects(out IntPtr pppidl, out int puItems);
         void IsDropOnSource(IntPtr pDropTarget);
-        void GetDragPoint(ref POINT ppt);
-        void GetDropPoint(ref POINT ppt);
+        void GetDragPoint(ref Point ppt);
+        void GetDropPoint(ref Point ppt);
         void MoveIcons(IntPtr pDataObject);
-        void SetItemPos(IntPtr pidl, ref POINT ppt);
+        void SetItemPos(IntPtr pidl, ref Point ppt);
         void IsBkDropTarget(IntPtr pDropTarget);
         void SetClipboard(bool bMove);
         void SetPoints(ref IntPtr pDataObject);

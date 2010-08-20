@@ -27,6 +27,8 @@ using BandObjectLib;
 namespace QTTabBarLib.Interop {
     [SuppressUnmanagedCodeSecurity]
     public static class PInvoke {
+        [DllImport("kernel32.dll")]
+        public static extern int AllocConsole();
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         public static extern bool AppendMenu(IntPtr hMenu, uint uFlags, IntPtr uIDNewItem, string lpNewItem);
         [DllImport("gdi32.dll")]
@@ -115,6 +117,10 @@ namespace QTTabBarLib.Interop {
         [DllImport("user32.dll")]
         public static extern IntPtr GetParent(IntPtr hWnd);
         [DllImport("user32.dll")]
+        public static extern IntPtr GetProp(IntPtr hWnd, string lpString);
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern IntPtr GetStdHandle(int nStdHandle);  
+        [DllImport("user32.dll")]
         private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
         public static IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex) {
             if(IntPtr.Size == 8) {
@@ -183,8 +189,7 @@ namespace QTTabBarLib.Interop {
 
         public static int ListView_HitTest(IntPtr hwnd, IntPtr lParam) {
             LVHITTESTINFO structure = new LVHITTESTINFO();
-            structure.pt.x = QTUtility2.GET_X_LPARAM(lParam);
-            structure.pt.y = QTUtility2.GET_Y_LPARAM(lParam);
+            structure.pt = QTUtility2.PointFromLPARAM(lParam);
             IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
             Marshal.StructureToPtr(structure, ptr, false);
             int num = (int)SendMessage(hwnd, 0x1012, IntPtr.Zero, ptr);
@@ -208,7 +213,7 @@ namespace QTTabBarLib.Interop {
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         public static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
         [DllImport("user32.dll")]
-        public static extern bool PtInRect(ref RECT lprc, POINT pt);
+        public static extern bool PtInRect(ref RECT lprc, Point pt);
         public static IntPtr Ptr_OP_AND(IntPtr ptr, uint ui) {
             if(IntPtr.Size == 8) {
                 return (IntPtr)(((long)ptr) & ui);

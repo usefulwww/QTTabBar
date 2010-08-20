@@ -1905,7 +1905,7 @@ namespace QTTabBarLib {
             return -1;
         }
 
-        private DragDropEffects dropTargetWrapper_DragFileEnter(IntPtr hDrop, POINT pnt, int grfKeyState) {
+        private DragDropEffects dropTargetWrapper_DragFileEnter(IntPtr hDrop, Point pnt, int grfKeyState) {
             if(QTUtility.CheckConfig(Settings.DragDropOntoTabs)) {
                 int num = HandleDragEnter(hDrop, out strDraggingDrive, out strDraggingStartPath);
                 fDrivesContainedDD = num == 2;
@@ -2456,11 +2456,8 @@ namespace QTTabBarLib {
         private void Handle_MButtonUp_Tree(MSG msg) {
             IntPtr ptr;
             if(ShellBrowser.IsFolderTreeVisible(out ptr) && msg.hwnd == ptr) {
-                POINT point;
                 TVHITTESTINFO structure = new TVHITTESTINFO();
-                point.x = QTUtility2.GET_X_LPARAM(msg.lParam);
-                point.y = QTUtility2.GET_Y_LPARAM(msg.lParam);
-                structure.pt = point;
+                structure.pt = QTUtility2.PointFromLPARAM(msg.lParam);
                 IntPtr ptr2 = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
                 Marshal.StructureToPtr(structure, ptr2, false);
                 IntPtr wParam = PInvoke.SendMessage(ptr, 0x1111, IntPtr.Zero, ptr2);
@@ -3067,11 +3064,8 @@ namespace QTTabBarLib {
         private void HandleLBUTTON_Tree(MSG msg, bool fMouseDown) {
             IntPtr ptr;
             if(ShellBrowser.IsFolderTreeVisible(out ptr) && msg.hwnd == ptr) {
-                POINT point;
                 TVHITTESTINFO structure = new TVHITTESTINFO();
-                point.x = QTUtility2.GET_X_LPARAM(msg.lParam);
-                point.y = QTUtility2.GET_Y_LPARAM(msg.lParam);
-                structure.pt = point;
+                structure.pt = QTUtility2.PointFromLPARAM(msg.lParam);
                 IntPtr ptr2 = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
                 Marshal.StructureToPtr(structure, ptr2, false);
                 IntPtr wParam = PInvoke.SendMessage(ptr, 0x1111, IntPtr.Zero, ptr2);
@@ -3101,7 +3095,7 @@ namespace QTTabBarLib {
             }
             MOUSEHOOKSTRUCTEX mousehookstructex = (MOUSEHOOKSTRUCTEX)Marshal.PtrToStructure(lParam, typeof(MOUSEHOOKSTRUCTEX));
             int y = mousehookstructex.mouseData >> 0x10;
-            IntPtr handle = PInvoke.WindowFromPoint(new Point(mousehookstructex.mhs.pt.x, mousehookstructex.mhs.pt.y));
+            IntPtr handle = PInvoke.WindowFromPoint(mousehookstructex.mhs.pt);
             Control control = FromHandle(handle);
             bool flag = false;
             if(control != null) {
@@ -3109,7 +3103,7 @@ namespace QTTabBarLib {
                 DropDownMenuReorderable reorderable = control as DropDownMenuReorderable;
                 if(reorderable != null) {
                     if(reorderable.CanScroll) {
-                        PInvoke.SendMessage(handle, WM.MOUSEWHEEL, QTUtility2.Make_LPARAM(0, y), QTUtility2.Make_LPARAM(mousehookstructex.mhs.pt.x, mousehookstructex.mhs.pt.y));
+                        PInvoke.SendMessage(handle, WM.MOUSEWHEEL, QTUtility2.Make_LPARAM(0, y), QTUtility2.Make_LPARAM(mousehookstructex.mhs.pt));
                     }
                     return true;
                 }
@@ -5974,7 +5968,7 @@ namespace QTTabBarLib {
 
         private void tabControl1_MouseMove(object sender, MouseEventArgs e) {
             RECT rect;
-            if((tabControl1.Capture && (((e.X < 0) || (e.Y < 0)) || ((e.X > tabControl1.Width) || (e.Y > tabControl1.Height)))) && (PInvoke.GetWindowRect(ReBarHandle, out rect) && !PInvoke.PtInRect(ref rect, new POINT(tabControl1.PointToScreen(e.Location))))) {
+            if((tabControl1.Capture && (((e.X < 0) || (e.Y < 0)) || ((e.X > tabControl1.Width) || (e.Y > tabControl1.Height)))) && (PInvoke.GetWindowRect(ReBarHandle, out rect) && !PInvoke.PtInRect(ref rect, tabControl1.PointToScreen(e.Location)))) {
                 Cursor = Cursors.Default;
                 tabControl1.Capture = false;
             }
@@ -6035,7 +6029,7 @@ namespace QTTabBarLib {
                 Keys modifierKeys = ModifierKeys;
                 if(((tabMouseOn == null) && (DraggingTab != null)) && ((modifierKeys == Keys.Control) || (modifierKeys == (Keys.Control | Keys.Shift)))) {
                     bool flag = false;
-                    POINT pt = new POINT(tabControl1.PointToScreen(e.Location));
+                    Point pt = tabControl1.PointToScreen(e.Location);
                     if(QTUtility.IsVista) {
                         RECT rect;
                         PInvoke.GetWindowRect(ReBarHandle, out rect);

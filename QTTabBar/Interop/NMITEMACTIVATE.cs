@@ -16,8 +16,8 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Drawing;
 using System.Runtime.InteropServices;
-using BandObjectLib;
 
 namespace QTTabBarLib.Interop {
     [StructLayout(LayoutKind.Sequential)]
@@ -28,7 +28,7 @@ namespace QTTabBarLib.Interop {
         public int uNewState;
         public int uOldState;
         public int uChanged;
-        public POINT ptAction;
+        public Point ptAction;
         public IntPtr lParam;
         public int uKeyFlags;
     }
