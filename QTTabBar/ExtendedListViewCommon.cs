@@ -807,7 +807,11 @@ namespace QTTabBarLib {
             }
 
             public int DragDrop(IDataObject pDataObj, int grfKeyState, Point pt, ref DragDropEffects pdwEffect) {
+                if(parent.subDirTip != null) {
+                    parent.subDirTip.HideMenu();
+                }
                 parent.OnDropHilighted(-1);
+                parent.RefreshSubDirTip(true);
                 return passthrough.DragDrop(pDataObj, grfKeyState, pt, ref pdwEffect);
             }
 
