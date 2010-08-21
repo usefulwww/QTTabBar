@@ -4688,15 +4688,14 @@ namespace QTTabBarLib {
                                 try {
                                     IntPtr ptr;
                                     if(PInvoke.SHBindToParent(idlw.PIDL, ExplorerGUIDs.IID_IShellFolder, out ppv, out ptr) == 0) {
-                                        using(IDLWrapper wrapper2 = new IDLWrapper(ptr))
-                                        using(IDLWrapper wrapper3 = new IDLWrapper(PInvoke.ILCombine(wrapper.PIDL, wrapper2.PIDL))) {
-                                            if(wrapper3.Available && wrapper3.HasPath) {
+                                        using(IDLWrapper wrapper2 = new IDLWrapper(PInvoke.ILCombine(wrapper.PIDL, ptr))) {
+                                            if(wrapper2.Available && wrapper2.HasPath) {
                                                 if(!blockSelecting && QTUtility.CheckConfig(Settings.ActivateNewTab)) {
                                                     NowTabCreated = true;
-                                                    tabControl1.SelectTab(CreateNewTab(wrapper3));
+                                                    tabControl1.SelectTab(this.CreateNewTab(wrapper2));
                                                 }
                                                 else {
-                                                    CreateNewTab(wrapper3);
+                                                    CreateNewTab(wrapper2);
                                                     SyncButtonBarCurrent(0x1003f);
                                                 }
                                                 return true;
