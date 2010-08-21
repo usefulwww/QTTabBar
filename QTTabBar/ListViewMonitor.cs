@@ -38,7 +38,7 @@ namespace QTTabBarLib {
             ShellBrowser = shellBrowser;
             this.hwndExplorer = hwndExplorer;
             this.hwndSubDirTipMessageReflect = hwndSubDirTipMessageReflect;
-            if(QTUtility.IsVista) {
+            if(!QTUtility.IsXP) {
                 hwndEnumResult = IntPtr.Zero;
                 PInvoke.EnumChildWindows(hwndExplorer, CallbackEnumChildProc_Container, IntPtr.Zero);
                 hwndShellContainer = hwndEnumResult;
@@ -79,7 +79,7 @@ namespace QTTabBarLib {
                 hwndEnumResult = hwnd;
                 return false;
             }
-            else if(QTUtility.IsVista && name == "DirectUIHWND") {
+            else if(!QTUtility.IsXP && name == "DirectUIHWND") {
                 fIsSysListView = false;
                 hwndEnumResult = hwnd;
                 return false;

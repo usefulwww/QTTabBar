@@ -48,12 +48,12 @@ namespace QTTabBarLib {
 
         private static Control CreateControlInstance(bool fLarge, string strDefText, int tbWidth) {
             TextBox box = new TextBox();
-            box.AutoSize = !QTUtility.IsVista;
+            box.AutoSize = QTUtility.IsXP;
             box.ForeColor = SystemColors.GrayText;
             box.Text = strDefText;
             box.ImeMode = ImeMode.NoControl;
             box.Size = new Size(tbWidth, fLarge ? 0x18 : 0x12);
-            box.Font = new Font(SystemFonts.IconTitleFont.FontFamily, fLarge ? 9f : (QTUtility.IsVista ? 8.25f : 9f));
+            box.Font = new Font(SystemFonts.IconTitleFont.FontFamily, fLarge ? 9f : (!QTUtility.IsXP ? 8.25f : 9f));
             return box;
         }
 

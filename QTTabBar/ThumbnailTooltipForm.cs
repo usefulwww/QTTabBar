@@ -113,7 +113,7 @@ namespace QTTabBarLib {
                                 return false;
                             }
                             thumbnail = true;
-                            if(QTUtility.IsVista) {
+                            if(!QTUtility.IsXP) {
                                 data3 = LoadThumbnail(path, info.LastWriteTime, out empty, out sizeActual, out toolTipText, out fCached);
                             }
                             else {
@@ -552,7 +552,7 @@ namespace QTTabBarLib {
         }
 
         protected override void OnPaintBackground(PaintEventArgs e) {
-            if(QTUtility.IsVista && VisualStyleRenderer.IsSupported) {
+            if(!QTUtility.IsXP && VisualStyleRenderer.IsSupported) {
                 new VisualStyleRenderer(VisualStyleElement.ToolTip.Standard.Normal).DrawBackground(e.Graphics, new Rectangle(0, 0, Width, Height));
             }
             else {

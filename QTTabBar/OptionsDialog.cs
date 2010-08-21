@@ -431,7 +431,7 @@ namespace QTTabBarLib {
             cmbRebarBGImageMode.Items.AddRange(new string[] { ResOpt_DropDown[0x1a], ResOpt_DropDown[0x1b], ResOpt_DropDown[0x1c], ResOpt_DropDown[0x21] });
             cmbMenuRenderer.Items.AddRange(new string[] { ResOpt[0x2a], ResOpt_DropDown[0x1f], ResOpt_DropDown[0x20] });
             if(arrSpecialFolderCSIDLs == null) {
-                if(QTUtility.IsVista) {
+                if(!QTUtility.IsXP) {
                     arrSpecialFolderCSIDLs = new int[] { 
             0x11, 0, 10, 3, 0x12, 0x31, 4, 5, 0x27, 13, 14, 6, 0x1a, 40, 0x20, 0x21, 
             8, 0x22
@@ -531,7 +531,7 @@ namespace QTTabBarLib {
                 string selectedItem = (string)cmbSpclFol_Grp.SelectedItem;
                 int selectedIndex = cmbSpclFol_Grp.SelectedIndex;
                 string specialFolderCLSID = ShellMethods.GetSpecialFolderCLSID(arrSpecialFolderCSIDLs[selectedIndex], false);
-                if((selectedIndex == 3) && QTUtility.IsVista) {
+                if((selectedIndex == 3) && !QTUtility.IsXP) {
                     specialFolderCLSID = "::{26EE0668-A00A-44D7-9371-BEB064C98683}";
                 }
                 TreeNode node = new TreeNode(selectedItem);
@@ -566,7 +566,7 @@ namespace QTTabBarLib {
             string selectedItem = (string)cmbSpclFol_NoCapture.SelectedItem;
             int selectedIndex = cmbSpclFol_NoCapture.SelectedIndex;
             string specialFolderCLSID = ShellMethods.GetSpecialFolderCLSID(arrSpecialFolderCSIDLs[selectedIndex], false);
-            if((selectedIndex == 3) && QTUtility.IsVista) {
+            if((selectedIndex == 3) && !QTUtility.IsXP) {
                 specialFolderCLSID = "::{26EE0668-A00A-44D7-9371-BEB064C98683}";
             }
             foreach(ListViewItem item in listView_NoCapture.Items) {
@@ -3760,10 +3760,10 @@ namespace QTTabBarLib {
             if(chbGridLine.Checked) {
                 QTUtility.SetConfigAt(Settings.DetailsGridLines, true);
             }
-            if(chbNoFulRowSelect.Checked ^ QTUtility.IsVista) {
+            if(chbNoFulRowSelect.Checked ^ !QTUtility.IsXP) {
                 QTUtility.SetConfigAt(Settings.ToggleFullRowSelect, true);
             }
-            if(!QTUtility.IsVista && !chbSelectWithoutExt.Checked) {
+            if(QTUtility.IsXP && !chbSelectWithoutExt.Checked) {
                 QTUtility.SetConfigAt(Settings.ExtWhileRenaming, true);
             }
             if(flag) {
@@ -4154,7 +4154,7 @@ namespace QTTabBarLib {
             if(QTUtility.CheckConfig(Settings.HideMenuBar)) {
                 chbHideMenu.Checked = true;
             }
-            if(QTUtility.IsVista) {
+            if(!QTUtility.IsXP) {
                 chbBSUpOneLvl.Checked = (QTUtility.ConfigValues[7] & 1) == 1;
                 chbWhlChangeView.Enabled = chbSelectWithoutExt.Enabled = chbTreeShftWhlTab.Enabled = false;
             }
@@ -4167,7 +4167,7 @@ namespace QTTabBarLib {
             btnToolBarBGClr.BackColor = QTUtility.RebarBGColor;
             chbFolderIcon.Checked = (QTUtility.ConfigValues[7] & 2) == 2;
             chbGridLine.Checked = (QTUtility.ConfigValues[8] & 0x80) == 0x80;
-            chbNoFulRowSelect.Checked = ((QTUtility.ConfigValues[8] & 0x40) == 0x40) ^ QTUtility.IsVista;
+            chbNoFulRowSelect.Checked = ((QTUtility.ConfigValues[8] & 0x40) == 0x40) ^ !QTUtility.IsXP;
             chbAlternateColor.Checked = (QTUtility.ConfigValues[8] & 8) == 8;
             btnAlternateColor.BackColor = QTUtility2.MakeColor(QTUtility.ShellViewRowCOLORREF_Background);
             btnAlternateColor_Text.ForeColor = QTUtility2.MakeColor(QTUtility.ShellViewRowCOLORREF_Text);

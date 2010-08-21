@@ -216,7 +216,7 @@ namespace QTTabBarLib {
                         string name = info.Name;
                         if((((fullName.Length != 0x1c) || !string.Equals(name, "System Volume Information", StringComparison.OrdinalIgnoreCase)) && ((fullName.Length != 15) || !string.Equals(name, "$RECYCLE.BIN", StringComparison.OrdinalIgnoreCase))) && ((fullName.Length != 11) || !string.Equals(name, "RECYCLER", StringComparison.OrdinalIgnoreCase))) {
                             FileAttributes attributes2 = info.Attributes;
-                            if(!QTUtility.IsVista || ((attributes2 & attributes) != attributes)) {
+                            if(QTUtility.IsXP || ((attributes2 & attributes) != attributes)) {
                                 bool flag5 = (attributes2 & FileAttributes.System) != 0;
                                 bool flag6 = (attributes2 & FileAttributes.ReadOnly) != 0;
                                 bool flag7 = (attributes2 & FileAttributes.Hidden) != 0;

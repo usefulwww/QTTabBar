@@ -909,7 +909,7 @@ namespace QTTabBarLib {
 
         private static void InitializeStaticFields() {
             fInitialized = true;
-            if(QTUtility.IsVista) {
+            if(!QTUtility.IsXP) {
                 DefaultButtonIndices = new int[] { 3, 4, 5, 0, 6, 7, 0, 11, 13, 12, 14, 15, 0, 9, 20 };
             }
             else {

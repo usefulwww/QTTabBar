@@ -69,9 +69,9 @@ namespace QTTabBarLib {
         private void DrawItems(Graphics g) {
             dicItemRcts.Clear();
             int x = fCompositionEnabled ? 2 : 6;
-            int num2 = fCompositionEnabled ? 0 : (QTUtility.IsVista ? 2 : 8);
-            int y = QTUtility.IsVista ? 4 : 8;
-            int num4 = TabSwitchForm.menuHeight + (QTUtility.IsVista ? 11 : 0x12);
+            int num2 = fCompositionEnabled ? 0 : (!QTUtility.IsXP ? 2 : 8);
+            int y = !QTUtility.IsXP ? 4 : 8;
+            int num4 = TabSwitchForm.menuHeight + (!QTUtility.IsXP ? 11 : 0x12);
             int width = ClientSize.Width;
             int menuHeight = TabSwitchForm.menuHeight;
             int num7 = Math.Max((menuHeight - 0x10) / 2, 0);
@@ -148,7 +148,7 @@ namespace QTTabBarLib {
         }
 
         private static void DrawSelection(Graphics g, Rectangle rct, bool fHot) {
-            if(QTUtility.IsVista) {
+            if(!QTUtility.IsXP) {
                 int x = rct.X;
                 int y = rct.Y;
                 int num3 = rct.Width - 2;
@@ -363,7 +363,7 @@ namespace QTTabBarLib {
         }
 
         private void SetCompositionState() {
-            if(QTUtility.IsVista) {
+            if(!QTUtility.IsXP) {
                 if((0 <= PInvoke.DwmIsCompositionEnabled(out fCompositionEnabled)) && fCompositionEnabled) {
                     MARGINS pMarInset = new MARGINS();
                     pMarInset.cxLeftWidth = -1;
@@ -386,7 +386,7 @@ namespace QTTabBarLib {
             initialSelectedIndex = selectedIndex = indexCurrent;
             this.lstPaths = lstPaths;
             menuHeight = SystemInformation.MenuHeight;
-            if(QTUtility.IsVista && (PInvoke.DwmIsCompositionEnabled(out fCompositionEnabled) != 0)) {
+            if(!QTUtility.IsXP && (PInvoke.DwmIsCompositionEnabled(out fCompositionEnabled) != 0)) {
                 fCompositionEnabled = false;
             }
             int num = Math.Min(11, lstPaths.Count);
@@ -481,7 +481,7 @@ namespace QTTabBarLib {
         protected override CreateParams CreateParams {
             get {
                 CreateParams createParams = base.CreateParams;
-                if(!QTUtility.IsVista) {
+                if(QTUtility.IsXP) {
                     createParams.ClassStyle |= 0x20000;
                 }
                 return createParams;

@@ -203,7 +203,7 @@ namespace QTTabBarLib {
 
         public bool IsFolderTreeVisible(out IntPtr hwnd) {
             hwnd = IntPtr.Zero;
-            return (!QTUtility.IsVista && (0 == shellBrowser.GetControlWindow(3, out hwnd)));
+            return (QTUtility.IsXP && (0 == shellBrowser.GetControlWindow(3, out hwnd)));
         }
 
         // TODO: make flags an enum

@@ -1235,7 +1235,7 @@ namespace QTTabBarLib {
             ddmrRecentFile.ResumeLayout();
             contextMenu.ResumeLayout();
             if(contextMenu.Items.Count > 0) {
-                if(QTUtility.IsVista) {
+                if(!QTUtility.IsXP) {
                     contextMenu.SendToBack();
                 }
                 contextMenu.Show(popUpPoint);

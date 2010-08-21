@@ -29,7 +29,7 @@ namespace QTTabBarLib {
         }
 
         public static void CloseExplorer(IntPtr hwndExplr, int nCode) {
-            if(QTUtility.IsVista) {
+            if(!QTUtility.IsXP) {
                 PInvoke.SendMessage(hwndExplr, 0x10, IntPtr.Zero, (IntPtr)nCode);
             }
             else {
@@ -71,7 +71,7 @@ namespace QTTabBarLib {
 
         public static void LockToolbar(bool fLock, IntPtr hwndExplr, IntPtr hwndReBar) {
             if(IsToolbarLocked(hwndReBar) ^ fLock) {
-                if(QTUtility.IsVista) {
+                if(!QTUtility.IsXP) {
                     PInvoke.SendMessage(GetShellTabWindowClass(hwndExplr), 0x111, (IntPtr)0xa20c, IntPtr.Zero);
                 }
                 else {

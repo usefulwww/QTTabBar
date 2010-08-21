@@ -74,7 +74,7 @@ namespace QTTabBarLib {
                             QTUtility2.SendCOPYDATASTRUCT(ptr, (IntPtr)13, null, (IntPtr)GetItemCount());
                         }
                      */
-                        bool flag = QTUtility.IsVista && QTUtility.CheckConfig(Settings.ToggleFullRowSelect);
+                        bool flag = !QTUtility.IsXP && QTUtility.CheckConfig(Settings.ToggleFullRowSelect);
                         NMLISTVIEW nmlistview2 = (NMLISTVIEW)Marshal.PtrToStructure(msg.LParam, typeof(NMLISTVIEW));
                         if(nmlistview2.uChanged == 8 /*LVIF_STATE*/) {
                             uint num5 = nmlistview2.uNewState & LVIS.SELECTED;
@@ -130,7 +130,7 @@ namespace QTTabBarLib {
 
                 case LVN.ODSTATECHANGED:
                     // FullRowSelect doesn't look possible anyway, so whatever.
-                    if(QTUtility.IsVista && QTUtility.CheckConfig(Settings.ToggleFullRowSelect)) {
+                    if(!QTUtility.IsXP && QTUtility.CheckConfig(Settings.ToggleFullRowSelect)) {
                         NMLVODSTATECHANGE nmlvodstatechange = (NMLVODSTATECHANGE)Marshal.PtrToStructure(msg.LParam, typeof(NMLVODSTATECHANGE));
                         if(((nmlvodstatechange.uNewState & 2) == 2) && (ShellBrowser.ViewMode == FVM.DETAILS)) {
                             PInvoke.SendMessage(nmlvodstatechange.hdr.hwndFrom, LVM.REDRAWITEMS, (IntPtr)nmlvodstatechange.iFrom, (IntPtr)nmlvodstatechange.iTo);
@@ -168,7 +168,7 @@ namespace QTTabBarLib {
                     // This is just for file renaming, which there's no need to
                     // mess with in Windows 7.
                     ShellViewController.DefWndProc(ref msg);
-                    if(!QTUtility.IsVista && !QTUtility.CheckConfig(Settings.ExtWhileRenaming)) {
+                    if(QTUtility.IsXP && !QTUtility.CheckConfig(Settings.ExtWhileRenaming)) {
                         NMLVDISPINFO nmlvdispinfo = (NMLVDISPINFO)Marshal.PtrToStructure(msg.LParam, typeof(NMLVDISPINFO));
                         if(nmlvdispinfo.item.lParam != IntPtr.Zero) {
                             using(IDLWrapper idl = ShellBrowser.ILAppend(nmlvdispinfo.item.lParam)) {
@@ -197,7 +197,7 @@ namespace QTTabBarLib {
             else {
                 flags &= ~LVS_EX.GRIDLINES;
             }
-            if(QTUtility.CheckConfig(Settings.ToggleFullRowSelect) ^ QTUtility.IsVista) {
+            if(QTUtility.CheckConfig(Settings.ToggleFullRowSelect) ^ !QTUtility.IsXP) {
                 flags |= LVS_EX.FULLROWSELECT;
             }
             else {
@@ -335,7 +335,7 @@ namespace QTTabBarLib {
                                 ListViewController.Handle, LVM.GETITEMSTATE, structure.nmcd.dwItemSpec,
                                 (IntPtr)(LVIS.FOCUSED | LVIS.SELECTED | LVIS.DROPHILITED));
 
-                        if(QTUtility.IsVista) {
+                        if(!QTUtility.IsXP) {
                             int num4 = lstColumnFMT[structure.iSubItem];
                             structure.clrTextBk = QTUtility.ShellViewRowCOLORREF_Background;
                             structure.clrText = QTUtility.ShellViewRowCOLORREF_Text;
@@ -371,7 +371,7 @@ namespace QTTabBarLib {
 
                     case CDDS.SUBITEM | CDDS.ITEMPOSTPAINT: {
                             RECT rc = structure.nmcd.rc;
-                            if(!QTUtility.IsVista) {
+                            if(QTUtility.IsXP) {
                                 rc = PInvoke.ListView_GetItemRect(ListViewController.Handle, dwItemSpec, structure.iSubItem, 2);
                             }
                             else {
@@ -380,9 +380,9 @@ namespace QTTabBarLib {
                             bool flag3 = false;
                             bool flag4 = false;
                             bool flag5 = QTUtility.CheckConfig(Settings.DetailsGridLines);
-                            bool flag6 = QTUtility.CheckConfig(Settings.ToggleFullRowSelect) ^ QTUtility.IsVista;
+                            bool flag6 = QTUtility.CheckConfig(Settings.ToggleFullRowSelect) ^ !QTUtility.IsXP;
                             bool flag7 = false;
-                            if(!QTUtility.IsVista && QTUtility.fSingleClick) {
+                            if(QTUtility.IsXP && QTUtility.fSingleClick) {
                                 flag7 = (dwItemSpec == GetHotItem());
                             }
                             LVITEM lvitem = new LVITEM();
@@ -403,7 +403,7 @@ namespace QTTabBarLib {
                                     rect = new Rectangle(rc.left + 1, rc.top, rc.Width - 1, rc.Height - 1);
                                 }
                                 graphics2.FillRectangle(QTUtility.sbAlternate, rect);
-                                if(!QTUtility.IsVista && ((structure.iSubItem == 0) || flag6)) {
+                                if(QTUtility.IsXP && ((structure.iSubItem == 0) || flag6)) {
                                     flag4 = (iListViewItemState & 8) == 8;
                                     if((iListViewItemState != 0) && (((iListViewItemState == 1) && fListViewHasFocus) || (iListViewItemState != 1))) {
                                         int width;
@@ -434,7 +434,7 @@ namespace QTTabBarLib {
                                         }
                                     }
                                 }
-                                if(QTUtility.IsVista && ((iListViewItemState & 1) == 1)) {
+                                if(!QTUtility.IsXP && ((iListViewItemState & 1) == 1)) {
                                     int num6 = rc.Width;
                                     if(!flag6) {
                                         num6 = 4 + ((int)PInvoke.SendMessage(ListViewController.Handle, LVM.GETSTRINGWIDTH, IntPtr.Zero, lvitem.pszText));
@@ -448,7 +448,7 @@ namespace QTTabBarLib {
                             }
                             IntPtr zero = IntPtr.Zero;
                             IntPtr hgdiobj = IntPtr.Zero;
-                            if(!QTUtility.IsVista && QTUtility.fSingleClick) {
+                            if(QTUtility.IsXP && QTUtility.fSingleClick) {
                                 LOGFONT logfont;
                                 zero = PInvoke.GetCurrentObject(structure.nmcd.hdc, 6);
                                 PInvoke.GetObject(zero, Marshal.SizeOf(typeof(LOGFONT)), out logfont);
@@ -572,7 +572,7 @@ namespace QTTabBarLib {
             if(fSubDirTip) {
                 switch(fvm) {
                     case FVM.ICON:
-                        flag = !QTUtility.IsVista;
+                        flag = QTUtility.IsXP;
                         code = LVIR.ICON;
                         break;
 
@@ -581,7 +581,7 @@ namespace QTTabBarLib {
                         break;
 
                     case FVM.LIST:
-                        if(QTUtility.IsVista) {
+                        if(!QTUtility.IsXP) {
                             code = LVIR.LABEL;
                         }
                         else {
@@ -704,7 +704,7 @@ namespace QTTabBarLib {
             structure.pt = pt;
             IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
             Marshal.StructureToPtr(structure, ptr, false);
-            if(QTUtility.IsVista) {
+            if(!QTUtility.IsXP) {
                 PInvoke.SendMessage(ListViewController.Handle, LVM.HITTEST, (IntPtr)(-1), ptr);
                 structure = (LVHITTESTINFO)Marshal.PtrToStructure(ptr, typeof(LVHITTESTINFO));
                 Marshal.FreeHGlobal(ptr);

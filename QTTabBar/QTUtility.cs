@@ -142,7 +142,7 @@ namespace QTTabBarLib {
         internal static InstanceManager instanceManager = new InstanceManager();
         internal static int InstancesCount;
         internal static bool IsRTL;
-        internal static bool IsVista;
+        internal static bool IsXP;
         internal static Dictionary<string, byte[]> ITEMIDLIST_Dic_Session = new Dictionary<string, byte[]>();
         internal static readonly int[] KEYS_DEFAULT = new int[] { 
       0, 0, 0x160025, 0x160027, 0x120009, 0x130009, 0, 0, 0x120057, 0x130057, 0, 0, 0, 0x13005a, 0x12004e, 0x13004e, 
@@ -212,10 +212,10 @@ namespace QTTabBarLib {
                 ImageListGlobal.ColorDepth = ColorDepth.Depth32Bit;
                 ImageListGlobal.Images.Add("folder", GetIcon(string.Empty, false));
                 try {
-                    IsVista = Environment.OSVersion.Version.Major > 5;
+                    IsXP = Environment.OSVersion.Version.Major <= 5;
                     // TODO: make this more comprehensible 
                     ConfigValues = new byte[] { 200, 0, 4, 0, 4, 0x60, 0x10, 0x22, 2, 8, 0xe0, 8, 0, 0x20, 0, 0 };
-                    if(!IsVista) {
+                    if(IsXP) {
                         ConfigValues[13] = 0x30;
                     }
                     SetConfigAt(Settings.AutoUpdate, true);
@@ -313,7 +313,7 @@ namespace QTTabBarLib {
                     }
                     RefreshGroupsDic();
                     RefreshUserAppDic(true);
-                    if(IsVista) {
+                    if(!IsXP) {
                         PATH_SEARCHFOLDER = "::{9343812E-1C37-4A49-A12E-4B2D810D956B}";
                         PATH_MYNETWORK = "::{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}";
                     }
@@ -383,7 +383,7 @@ namespace QTTabBarLib {
                 }
                 return Resources_Image.icoEmpty;
             }
-            if(IsVista && path.StartsWith("::")) {
+            if(!IsXP && path.StartsWith("::")) {
                 IntPtr pszPath = PInvoke.ILCreateFromPath(path);
                 if(pszPath != IntPtr.Zero) {
                     if((IntPtr.Zero != PInvoke.SHGetFileInfo(pszPath, 0, ref psfi, Marshal.SizeOf(psfi), 0x109)) && (psfi.hIcon != IntPtr.Zero)) {
@@ -590,7 +590,7 @@ namespace QTTabBarLib {
             dictionary[0x1a] = CheckConfig(Settings.ToolbarBGColor);
             dictionary[0x1b] = CheckConfig(Settings.HideMenuBar);
             dictionary[0x1c] = CheckConfig(Settings.BackspaceUpLevel);
-            dictionary[0x1d] = CheckConfig(Settings.ToggleFullRowSelect) ^ IsVista;
+            dictionary[0x1d] = CheckConfig(Settings.ToggleFullRowSelect) ^ !IsXP;
             dictionary[30] = CheckConfig(Settings.DetailsGridLines);
             dictionary[0x1f] = CheckConfig(Settings.AlternateRowColors);
             dictionary[0x20] = CheckConfig(Settings.ShowTooltipPreviews);
@@ -1093,7 +1093,7 @@ namespace QTTabBarLib {
             SetConfigAt(Settings.ToolbarBGColor, (bool)dictionary2[0x1a]);
             SetConfigAt(Settings.HideMenuBar, (bool)dictionary2[0x1b]);
             SetConfigAt(Settings.BackspaceUpLevel, (bool)dictionary2[0x1c]);
-            SetConfigAt(Settings.ToggleFullRowSelect, ((bool)dictionary2[0x1d]) ^ IsVista);
+            SetConfigAt(Settings.ToggleFullRowSelect, ((bool)dictionary2[0x1d]) ^ !IsXP);
             SetConfigAt(Settings.DetailsGridLines, (bool)dictionary2[30]);
             SetConfigAt(Settings.AlternateRowColors, (bool)dictionary2[0x1f]);
             SetConfigAt(Settings.ShowTooltipPreviews, (bool)dictionary2[0x20]);

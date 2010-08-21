@@ -205,7 +205,7 @@ namespace QTTabBarLib {
                     }
                 }
                 ShellMethods.DeleteFile(lstPaths, fShiftKey, hwndDialogParent);
-                if(!QTUtility.IsVista) {
+                if(QTUtility.IsXP) {
                     root.Close(ToolStripDropDownCloseReason.ItemClicked);
                 }
             }
@@ -640,7 +640,7 @@ namespace QTTabBarLib {
             }
             if(!string.IsNullOrEmpty(path)) {
                 ShellMethods.PasteFile(path, hwndDialogParent);
-                if(!QTUtility.IsVista) {
+                if(QTUtility.IsXP) {
                     DropDownMenuDropTarget root = GetRoot(this);
                     if(root != null) {
                         root.Close(ToolStripDropDownCloseReason.ItemClicked);

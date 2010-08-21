@@ -298,9 +298,9 @@ namespace QTTabBarLib {
             }
             if(File.Exists(path)) {
                 string ext = Path.GetExtension(path).ToLower();
-                return (QTUtility.ExtIsCompressed(ext) || (QTUtility.IsVista && (ext == ".search-ms")));
+                return (QTUtility.ExtIsCompressed(ext) || (!QTUtility.IsXP && (ext == ".search-ms")));
             }
-            if(!QTUtility.IsVista || ((!path.Contains(@".zip\") && !path.Contains(@".cab\")) && !path.Contains(@".lzh\"))) {
+            if(QTUtility.IsXP || ((!path.Contains(@".zip\") && !path.Contains(@".cab\")) && !path.Contains(@".lzh\"))) {
                 return !Path.IsPathRooted(path);
             }
             string str2 = string.Empty;

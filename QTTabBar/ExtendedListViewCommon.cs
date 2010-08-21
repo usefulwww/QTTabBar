@@ -505,14 +505,14 @@ namespace QTTabBarLib {
                     if(subDirTip != null && (subDirTip.MouseIsOnThis() || subDirTip.MenuIsShowing)) {
                         return;
                     }
-                    if(!force && subDirIndex == iItem && (QTUtility.IsVista || (iItem != -1))) {
+                    if(!force && subDirIndex == iItem && (!QTUtility.IsXP || (iItem != -1))) {
                         return;
                     }
-                    if(QTUtility.IsVista) {
+                    if(!QTUtility.IsXP) {
                         subDirIndex = iItem;
                     }
                     if(iItem > -1 && ShowSubDirTip(iItem, false, false)) {
-                        if(!QTUtility.IsVista) {
+                        if(QTUtility.IsXP) {
                             subDirIndex = iItem;
                         }
                         return;
@@ -580,7 +580,7 @@ namespace QTTabBarLib {
                     break;
 
                 case WM.WINDOWPOSCHANGING:
-                    if(!QTUtility.IsVista && dropTargetPassthrough == null) {
+                    if(QTUtility.IsXP && dropTargetPassthrough == null) {
                         HookDropTarget();
                     }
                     break;
