@@ -16,6 +16,7 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using QTTabBarLib.Interop;
@@ -179,6 +180,39 @@ namespace QTTabBarLib.Automation {
             }
             catch(COMException) {
                 return "";
+            }
+        }
+
+        public IEnumerable<AutomationElement> GetChildren() {
+            IUIAutomationElement elem = null;
+            IUIAutomationTreeWalker walker = factory.CreateTreeWalker();
+            try {
+                try {
+                    walker.GetFirstChildElement(pElement, out elem);
+                }
+                catch(COMException) {
+                    if(elem != null) {
+                        Marshal.ReleaseComObject(elem);
+                    }
+                    yield break;
+                }
+                while(elem != null) {
+                    yield return new AutomationElement(elem, factory);
+                    IUIAutomationElement next = null;
+                    try {
+                        walker.GetNextSiblingElement(elem, out next);
+                    }
+                    catch(COMException) {
+                        if(next != null) {
+                            Marshal.ReleaseComObject(next);
+                        }
+                        yield break;
+                    }
+                    elem = next;
+                }
+            }
+            finally {
+                if(walker != null) Marshal.ReleaseComObject(walker);
             }
         }
 
