@@ -239,7 +239,7 @@ Do you want to reassign?;Confirmation of reassignment</value>
 
 {0}
 
-Are you sure you want to do this?;Display file information below images</value>
+Are you sure you want to do this?;Display file information below images;Use old ListView control (Win7);Display column headers in all views (Win7)</value>
   </data>
   <data name="ShortcutKeys_Groups" xml:space="preserve">
     <value>QTTabBar;Plugin;User commands</value>

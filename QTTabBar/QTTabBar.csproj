@@ -87,6 +87,8 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="AbstractListView.cs" />
+    <Compile Include="Interop\IFolderView2.cs" />
+    <Compile Include="Interop\IFolderViewOptions.cs" />
     <Compile Include="Interop\IUIAutomationGridPattern.cs" />
     <Compile Include="ShellBrowserEx.cs" />
     <Compile Include="ContextMenuStripEx.cs">

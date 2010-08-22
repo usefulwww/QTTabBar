@@ -92,6 +92,7 @@ namespace QTTabBarLib {
         private FormMethodInvoker callBack;
         private CheckBox chbActivateNew;
         private CheckBox chbAlternateColor;
+        private CheckBox chbAlwaysShowHeader;
         private CheckBox chbAutoSubText;
         private CheckBox chbAutoUpdate;
         private CheckBox chbBlockProcess;
@@ -105,6 +106,7 @@ namespace QTTabBarLib {
         private CheckBox chbF2Selection;
         private CheckBox chbFolderIcon;
         private CheckBox chbFoldrTree;
+        private CheckBox chbForceSysListView;
         private CheckBox chbGridLine;
         private CheckBox chbGroupKey;
         private CheckBox chbHideMenu;
@@ -391,6 +393,8 @@ namespace QTTabBarLib {
             PluginView.MNU_PLUGINABOUT = strArray2[12];
             RES_REMOVEPLGIN = strArray2[13];
             chbPreviewInfo.Text = strArray2[14];
+            chbForceSysListView.Text = strArray2[15];
+            chbAlwaysShowHeader.Text = strArray2[16];
             string[] strArray3 = QTUtility.TextResourcesDic["TabBar_Option_Buttons"];
             btnHistoryClear.Text = btnClearRecentFile.Text = strArray3[0];
             btnUp_Grp.Text = strArray3[1];
@@ -1764,6 +1768,8 @@ namespace QTTabBarLib {
             btnAddToken_Wrk = new Button();
             cmsAddToken = new ContextMenuStrip();
             chbHideMenu = new CheckBox();
+            chbAlwaysShowHeader = new CheckBox();
+            chbForceSysListView = new CheckBox();
             chbBSUpOneLvl = new CheckBox();
             chbNoFulRowSelect = new CheckBox();
             chbGridLine = new CheckBox();
@@ -2680,6 +2686,8 @@ namespace QTTabBarLib {
             btnAddToken_Wrk.Click += btnAddToken_Wrk_Click;
             cmsAddToken.ShowImageMargin = false;
             cmsAddToken.ItemClicked += cmsAddToken_ItemClicked;
+            tabPage9_Misc.Controls.Add(chbForceSysListView);
+            tabPage9_Misc.Controls.Add(chbAlwaysShowHeader);
             tabPage9_Misc.Controls.Add(chbHideMenu);
             tabPage9_Misc.Controls.Add(chbBSUpOneLvl);
             tabPage9_Misc.Controls.Add(chbNoFulRowSelect);
@@ -2872,6 +2880,12 @@ namespace QTTabBarLib {
             chbHideMenu.AutoSize = true;
             chbHideMenu.Location = new Point(0x1b, 0x10);
             chbHideMenu.TabIndex = 0;
+            chbForceSysListView.AutoSize = true;
+            chbForceSysListView.Location = new Point(240, 16);
+            chbForceSysListView.TabIndex = 0;
+            chbAlwaysShowHeader.AutoSize = true;
+            chbAlwaysShowHeader.Location = new Point(240, 40);
+            chbAlwaysShowHeader.TabIndex = 0;
             tabPage7_Plug.Controls.Add(btnBrowsePlugin);
             tabPage7_Plug.Controls.Add(pluginView);
             tabPage7_Plug.Controls.Add(lblPluginLang);
@@ -3755,6 +3769,12 @@ namespace QTTabBarLib {
             if(chbBSUpOneLvl.Checked) {
                 QTUtility.SetConfigAt(Settings.BackspaceUpLevel, true);
             }
+            if(chbForceSysListView.Checked) {
+                QTUtility.SetConfigAt(Settings.ForceSysListView, true);
+            }
+            if(chbAlwaysShowHeader.Checked) {
+                QTUtility.SetConfigAt(Settings.AlwaysShowHeaders, true);
+            }
             QTUtility.Path_TabImage = tbTabImagePath.Text;
             QTUtility.TabImageSizingMargin = tabImageSetting.SizingMargin;
             if(chbGridLine.Checked) {
@@ -4163,6 +4183,10 @@ namespace QTTabBarLib {
                 chbSelectWithoutExt.Checked = (QTUtility.ConfigValues[8] & 0x20) == 0;
                 chbTreeShftWhlTab.Checked = !QTUtility.CheckConfig(Settings.NoMidClickTree);
             }
+            chbForceSysListView.Enabled = chbAlwaysShowHeader.Enabled =
+                     Environment.OSVersion.Version.ToString().StartsWith("6.1.");
+            chbForceSysListView.Checked = QTUtility.CheckConfig(Settings.ForceSysListView);
+            chbAlwaysShowHeader.Checked = QTUtility.CheckConfig(Settings.AlwaysShowHeaders);
             btnToolBarBGClr.Enabled = chbToolbarBGClr.Checked = (QTUtility.ConfigValues[7] & 4) == 4;
             btnToolBarBGClr.BackColor = QTUtility.RebarBGColor;
             chbFolderIcon.Checked = (QTUtility.ConfigValues[7] & 2) == 2;

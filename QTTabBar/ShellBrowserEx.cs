@@ -60,6 +60,23 @@ namespace QTTabBarLib {
             }
         }
 
+        public void EnableHeaderInAllViews() {
+            IShellView ppshv = null;
+            try {
+                if(shellBrowser.QueryActiveShellView(out ppshv) == 0) {
+                    IFolderView2 view2 = ppshv as IFolderView2;
+                    if(view2 != null) {
+                        view2.SetCurrentFolderFlags(FWF.NOHEADERINALLVIEWS, 0);
+                    }
+                }
+            }
+            finally {
+                if(ppshv != null) {
+                    Marshal.ReleaseComObject(ppshv);
+                }
+            }
+        }
+
         public int GetFocusedIndex() {
             using(FVWrapper w = GetFolderView()) {
                 int focusedIndex;
@@ -235,6 +252,12 @@ namespace QTTabBarLib {
             shellBrowser.SetStatusTextSB(status);
         }
 
+        public void SetUsingListView(bool listview) {
+            IFolderViewOptions fvo = shellBrowser as IFolderViewOptions;
+            if(fvo != null) {
+                fvo.SetFolderViewOptions(FVO.VISTALAYOUT, listview ? FVO.VISTALAYOUT : FVO.DEFAULT);
+            }
+        }
 
         public bool TryGetHotTrackPath(int iItem, out string path) {
             return TryGetHotTrackPath(iItem, out path, null);
