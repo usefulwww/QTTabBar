@@ -1,4 +1,4 @@
-﻿//    This file is part of QTTabBar, a shell extension for Microsoft
+//    This file is part of QTTabBar, a shell extension for Microsoft
 //    Windows Explorer.
 //    Copyright (C) 2007-2010  Quizo, Paul Accisano
 //
@@ -30,6 +30,7 @@ namespace QTTabBarLib {
         private List<int> lstColumnFMT;
         private bool fListViewHasFocus;
         private int iListViewItemState;
+        private int iHotItem = -1;
 
 
         internal ExtendedSysListView32(ShellBrowserEx ShellBrowser, IntPtr hwndShellView, IntPtr hwndListView, IntPtr hwndSubDirTipMessageReflect)
@@ -142,7 +143,10 @@ namespace QTTabBarLib {
                     // Handled through WM_MOUSEMOVE.
                     if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews) || !QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
                         NMLISTVIEW nmlistview = (NMLISTVIEW)Marshal.PtrToStructure(msg.LParam, typeof(NMLISTVIEW));
-                        OnHotTrack(nmlistview.iItem);
+                        if(iHotItem != nmlistview.iItem) {
+                            OnHotItemChanged(nmlistview.iItem);
+                            iHotItem = nmlistview.iItem;
+                        }
                     }
                     break;
 

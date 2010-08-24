@@ -28,14 +28,14 @@ namespace QTTabBarLib {
         private Point lastLButtonPoint;
         private Int64 lastLButtonTime;
         private Point lastMouseMovePoint;
-        private CachedListItemElement cachedElement;
+        private CachedListItemElement hotElement;
+        private CachedListItemElement focusedElement;
+        private IntPtr hwndEnumResult;
 
         internal ExtendedItemsView(ShellBrowserEx ShellBrowser, IntPtr hwndShellView, IntPtr hwndListView, IntPtr hwndSubDirTipMessageReflect, AutomationManager AutoMan)
                 : base(ShellBrowser, hwndShellView, hwndListView, hwndSubDirTipMessageReflect) {
             this.AutoMan = AutoMan;
         }
-
-        private IntPtr hwndEnumResult;
 
         private bool CallbackEnumChildProc_Edit(IntPtr hwnd, IntPtr lParam) {
             if(PInvoke.GetClassName(hwnd) == "Edit") {
@@ -62,80 +62,75 @@ namespace QTTabBarLib {
             return hwndEnumResult;
         }
 
+        public override int GetHotItem() {
+            return hotElement == null ? -1 : hotElement.Index;
+        }
+
         public override Rectangle GetFocusedItemRect() {
-            if(HasFocus()) {
-                return AutoMan.DoQuery(factory => {
-                    AutomationElement elem = factory.FromKeyboardFocus();
-                    return elem == null ? new Rectangle(0, 0, 0, 0) : elem.GetBoundingRect();
-                });
+            if(focusedElement == null) {
+                RefreshCache();
+                if(focusedElement == null) return new Rectangle(0, 0, 0, 0);
             }
-            return new Rectangle(0, 0, 0, 0);
+            return focusedElement.FullRect;
         }
 
         public override Point GetSubDirTipPoint(bool fByKey) {
+            CachedListItemElement targetElement;
             if(fByKey) {
-                cachedElement = null;
-                AutoMan.DoQuery(factory => {
-                    AutomationElement elem = factory.FromKeyboardFocus();
-                    if(elem != null) cachedElement = new CachedListItemElement(elem, this);
-                    return 0;
-                });
+                if(focusedElement == null) {
+                    RefreshCache();
+                }
+                targetElement = focusedElement;
             }
             else {
-                Point pt = Control.MousePosition;
-                PInvoke.ScreenToClient(Handle, ref pt);
-                if(cachedElement == null || !cachedElement.FullRect.Contains(pt)) {
-                    cachedElement = null;
-                    AutoMan.DoQuery(factory => {
-                        AutomationElement elem = ListItemElementFromPoint(factory, pt);
-                        if(elem != null) cachedElement = new CachedListItemElement(elem, this);
-                        return 0;
-                    });
+                if(hotElement == null) {
+                    RefreshCache();
                 }
+                targetElement = hotElement;
             }
+            if(targetElement == null) return new Point(0, 0);
 
-            if(cachedElement == null) return new Point(0, 0);
             int x, y;
             Point ret = new Point(0, 0);
             switch(ShellBrowser.ViewMode) {
                 case FVM.CONTENT:
-                    y = cachedElement.FullRect.Bottom;
-                    x = cachedElement.LabelRect.Left;
+                    y = targetElement.FullRect.Bottom;
+                    x = targetElement.LabelRect.Left;
                     ret = new Point(x, y - 16);
                     break;
 
                 case FVM.DETAILS:
-                    x = cachedElement.LabelRect.Right;
-                    y = cachedElement.LabelRect.Top;
-                    y += (cachedElement.LabelRect.Bottom - y) / 2;
+                    x = targetElement.LabelRect.Right;
+                    y = targetElement.LabelRect.Top;
+                    y += (targetElement.LabelRect.Bottom - y) / 2;
                     ret = new Point(x - 16, y - 8);
                     break;
 
                 case FVM.SMALLICON:
-                    x = cachedElement.FullRect.Right;
-                    y = cachedElement.FullRect.Top;
-                    x -= (cachedElement.FullRect.Bottom - y) / 2;
-                    y += (cachedElement.FullRect.Bottom - y) / 2;
+                    x = targetElement.FullRect.Right;
+                    y = targetElement.FullRect.Top;
+                    x -= (targetElement.FullRect.Bottom - y) / 2;
+                    y += (targetElement.FullRect.Bottom - y) / 2;
                     ret = new Point(x - 8, y - 8);
                     break;
 
                 case FVM.TILE:
-                    y = cachedElement.FullRect.Bottom;
-                    x = cachedElement.IconRect.Right;
+                    y = targetElement.FullRect.Bottom;
+                    x = targetElement.IconRect.Right;
                     ret = new Point(x - 16, y - 16);
                     break;
 
                 case FVM.THUMBSTRIP:
                 case FVM.THUMBNAIL:
                 case FVM.ICON:
-                    x = cachedElement.FullRect.Right;
-                    y = cachedElement.IconRect.Bottom;
+                    x = targetElement.FullRect.Right;
+                    y = targetElement.IconRect.Bottom;
                     ret = new Point(x - 16, y - 16);
                     break;
 
                 case FVM.LIST:
-                    x = cachedElement.FullRect.Right;
-                    y = cachedElement.FullRect.Bottom;
+                    x = targetElement.FullRect.Right;
+                    y = targetElement.FullRect.Bottom;
                     ret = new Point(x, y - 15);
                     break;
             }
@@ -215,13 +210,13 @@ namespace QTTabBarLib {
         }
 
         public override int HitTest(Point pt, bool ScreenCoords) {
-            if(cachedElement != null) {
+            if(hotElement != null) {
                 Point pt2 = pt;
                 if(ScreenCoords) {
                     PInvoke.ScreenToClient(Handle, ref pt2);
                 }
-                if(cachedElement.FullRect.Contains(pt2)) {
-                    return cachedElement.Index;
+                if(hotElement.FullRect.Contains(pt2)) {
+                    return hotElement.Index;
                 }
             }
             if(!ScreenCoords) {
@@ -236,8 +231,8 @@ namespace QTTabBarLib {
             return AutoMan.DoQuery(factory => {
                 AutomationElement elem = ListItemElementFromPoint(factory, pt);
                 if(elem == null) return -1;
-                cachedElement = new CachedListItemElement(elem, this);
-                return cachedElement.Index;
+                hotElement = new CachedListItemElement(elem, this);
+                return hotElement.Index;
             });
         }
 
@@ -251,9 +246,9 @@ namespace QTTabBarLib {
         public override bool IsTrackingItemName() {
             if(ShellBrowser.ViewMode != FVM.DETAILS) return true;
             Point pt = Control.MousePosition;
-            if(cachedElement != null) {
+            if(hotElement != null) {
                 PInvoke.ScreenToClient(Handle, ref pt);
-                return cachedElement.LabelRect.Contains(pt);
+                return hotElement.LabelRect.Contains(pt);
             }
             else {
                 return AutoMan.DoQuery(factory => {
@@ -263,9 +258,33 @@ namespace QTTabBarLib {
             }
         }
 
+        private void RefreshCache() {
+            bool hasFocus = HasFocus();
+            int prevItem = hotElement == null ? -1 : hotElement.Index;
+            hotElement = null;
+            focusedElement = null;
+            int nextItem = AutoMan.DoQuery(factory => {
+                AutomationElement elem;
+                if(hasFocus) {
+                    elem = factory.FromKeyboardFocus();
+                    if(elem != null) {
+                        focusedElement = new CachedListItemElement(elem, this);
+                    }
+                }
+                elem = ListItemElementFromPoint(factory, Control.MousePosition);
+                if(elem == null) return -1;
+                hotElement = new CachedListItemElement(elem, this);
+                return hotElement.Index;
+            });
+            if(nextItem != prevItem) {
+                OnHotItemChanged(nextItem);
+            }
+        }
+
+
         protected override bool ListViewController_MessageCaptured(ref Message msg) {
             if(msg.Msg == WM_AFTERPAINT) {
-                cachedElement = null;
+                RefreshCache();
             }
 
             if(base.ListViewController_MessageCaptured(ref msg)) {
@@ -343,9 +362,17 @@ namespace QTTabBarLib {
                     Point pt = QTUtility2.PointFromLPARAM(msg.LParam);
                     if(pt != lastMouseMovePoint) {
                         lastMouseMovePoint = pt;
-                        if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews) ||
-                                !QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
-                            OnHotTrack(HitTest(pt, false));
+                        if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews) || !QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
+                            if(focusedElement != null) {
+                                if(hotElement == null && focusedElement.FullRect.Contains(pt)) {
+                                    hotElement = focusedElement;
+                                    OnHotItemChanged(hotElement.Index);
+                                }
+                                else if(hotElement != null && hotElement.Index == focusedElement.Index && !focusedElement.FullRect.Contains(pt)) {
+                                    hotElement = null;
+                                    OnHotItemChanged(-1);
+                                }
+                            }
                         }
                     }
                     break;
