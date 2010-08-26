@@ -379,7 +379,9 @@ namespace QTTabBarLib {
                 }
                 else if(byKey) {
                     Rectangle rect = GetFocusedItemRect();
-                    return ShowThumbnailTooltip(iItem, new Point(rect.Right - 32, rect.Bottom - 16), true);
+                    Point pt = new Point(rect.Right - 32, rect.Bottom - 16);
+                    PInvoke.ClientToScreen(Handle, ref pt);
+                    return ShowThumbnailTooltip(iItem, pt, true);
                 }
                 else {
                     return ShowThumbnailTooltip(iItem, Control.MousePosition, false);
