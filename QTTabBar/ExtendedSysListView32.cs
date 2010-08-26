@@ -216,16 +216,103 @@ namespace QTTabBarLib {
         }
 
         public override Rectangle GetFocusedItemRect() {
-            return HasFocus()
-                    ? GetItemRect(ShellBrowser.GetFocusedIndex(), false).ToRectangle() 
-                    : new Rectangle(0, 0, 0, 0);
+            if(HasFocus()) {
+                int code = ShellBrowser.ViewMode == FVM.DETAILS ? LVIR.LABEL : LVIR.BOUNDS;
+                return GetItemRect(ShellBrowser.GetFocusedIndex(), code).ToRectangle();
+            }
+            return new Rectangle(0, 0, 0, 0);
         }
 
         public override Point GetSubDirTipPoint(bool fByKey) {
             int iItem = fByKey ? ShellBrowser.GetFocusedIndex() : GetHotItem();
-            RECT rect = GetItemRect(iItem, true);
-            return new Point(rect.right - 16, rect.bottom - 16);
+            int x, y;
+            Point ret = new Point(0, 0);
+            RECT rect;
+            switch(ShellBrowser.ViewMode) {
+                case FVM.DETAILS:
+                    rect = GetItemRect(iItem, LVIR.LABEL);
+                    x = rect.right;
+                    y = rect.top;
+                    y += (rect.bottom - y)/2;
+                    ret = new Point(x - 19, y - 7);
+                    break;
 
+                case FVM.SMALLICON:
+                    rect = GetItemRect(iItem);
+                    x = rect.right;
+                    y = rect.top;
+                    x -= (rect.bottom - y) / 2;
+                    y += (rect.bottom - y) / 2;
+                    ret = new Point(x - 9, y - 7);
+                    break;
+
+                case FVM.CONTENT:
+                case FVM.TILE:
+                    rect = GetItemRect(iItem, LVIR.ICON);
+                    y = rect.bottom;
+                    x = rect.right;
+                    ret = new Point(x - 16, y - 16);
+                    break;
+
+                case FVM.THUMBSTRIP:
+                case FVM.THUMBNAIL:
+                    rect = GetItemRect(iItem, LVIR.ICON);
+                    if(QTUtility.IsXP) rect.right -= 13;
+                    y = rect.bottom;
+                    x = rect.right;
+                    ret = new Point(x - 16, y - 16);
+                    break;
+
+                case FVM.ICON:
+                    rect = GetItemRect(iItem, LVIR.ICON);
+                    if(QTUtility.IsXP) {
+                        int num3 = (int)PInvoke.SendMessage(Handle, LVM.GETITEMSPACING, IntPtr.Zero, IntPtr.Zero);
+                        Size iconSize = SystemInformation.IconSize;
+                        rect.right = ((rect.left + (((num3 & 0xffff) - iconSize.Width) / 2)) + iconSize.Width) + 8;
+                        rect.bottom = (rect.top + iconSize.Height) + 6;
+                    }
+                    y = rect.bottom;
+                    x = rect.right;
+                    ret = new Point(x - 16, y - 16);
+                    break;
+
+                case FVM.LIST:
+                    if(QTUtility.IsXP) {
+                        rect = GetItemRect(iItem, LVIR.ICON);
+                        LVITEM structure = new LVITEM();
+                        structure.pszText = Marshal.AllocHGlobal(520);
+                        structure.cchTextMax = 260;
+                        structure.iItem = iItem;
+                        structure.mask = 1;
+                        IntPtr zero = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
+                        Marshal.StructureToPtr(structure, zero, false);
+                        PInvoke.SendMessage(Handle, LVM.GETITEM, IntPtr.Zero, zero);
+                        int num4 = (int)PInvoke.SendMessage(Handle, LVM.GETSTRINGWIDTH, IntPtr.Zero, structure.pszText);
+                        num4 += 20;
+                        Marshal.FreeHGlobal(structure.pszText);
+                        Marshal.FreeHGlobal(zero);
+                        rect.right += num4;
+                        rect.top += 2;
+                        rect.bottom += 2;
+                    }
+                    else {
+                        rect = GetItemRect(iItem, LVIR.LABEL);
+                    }                    
+                    y = rect.bottom;
+                    x = rect.right;
+                    ret = new Point(x - 16, y - 16);
+                    break;
+
+                default:
+                    rect = GetItemRect(iItem);
+                    y = rect.bottom;
+                    x = rect.right;
+                    ret = new Point(x - 16, y - 16);
+                    break;
+
+            }
+            PInvoke.ClientToScreen(Handle, ref ret);
+            return ret;
         }
 
         protected override bool HandleCursorLoop(Keys key) {
@@ -278,8 +365,8 @@ namespace QTTabBarLib {
                                 selectMe = 0;
                             }
                             else {
-                                RECT thisRect = GetItemRect(focusedIdx, false);
-                                RECT nextRect = GetItemRect(focusedIdx + 1, false);
+                                RECT thisRect = GetItemRect(focusedIdx);
+                                RECT nextRect = GetItemRect(focusedIdx + 1);
                                 if(viewMode == FVM.LIST) {
                                     if(nextRect.top < thisRect.top) selectMe = 0;
                                 }
@@ -568,82 +655,14 @@ namespace QTTabBarLib {
             Marshal.FreeHGlobal(lParam);
         }
 
-        private RECT GetItemRect(int iItem, bool fSubDirTip) {
-            int code;
-            bool flag = false;
-            bool flag2 = false;
-            int fvm = ShellBrowser.ViewMode;
-            if(fSubDirTip) {
-                switch(fvm) {
-                    case FVM.ICON:
-                        flag = QTUtility.IsXP;
-                        code = LVIR.ICON;
-                        break;
-
-                    case FVM.DETAILS:
-                        code = LVIR.LABEL;
-                        break;
-
-                    case FVM.LIST:
-                        if(!QTUtility.IsXP) {
-                            code = LVIR.LABEL;
-                        }
-                        else {
-                            flag2 = true;
-                            code = LVIR.ICON;
-                        }
-                        break;
-
-                    case FVM.TILE:
-                        code = LVIR.ICON;
-                        break;
-
-                    default:
-                        code = LVIR.BOUNDS;
-                        break;
-                }
-            }
-            else {
-                code = (fvm == FVM.DETAILS) ? LVIR.LABEL : LVIR.BOUNDS;
-            }
-
+        private RECT GetItemRect(int iItem, int LVIRCode = LVIR.BOUNDS) {
             RECT rect = new RECT();
-            rect.left = code;
+            rect.left = LVIRCode;
             IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(rect));
             Marshal.StructureToPtr(rect, ptr, false);
             PInvoke.SendMessage(Handle, LVM.GETITEMRECT, (IntPtr)iItem, ptr);
             rect = (RECT)Marshal.PtrToStructure(ptr, typeof(RECT));
             Marshal.FreeHGlobal(ptr);
-            PInvoke.MapWindowPoints(Handle, IntPtr.Zero, ref rect, 2);
-
-            if(flag) {
-                if((fvm == FVM.THUMBNAIL) || (fvm == FVM.THUMBSTRIP)) {
-                    rect.right -= 13;
-                    return rect;
-                }
-                int num3 = (int)PInvoke.SendMessage(Handle, LVM.GETITEMSPACING, IntPtr.Zero, IntPtr.Zero);
-                Size iconSize = SystemInformation.IconSize;
-                rect.right = ((rect.left + (((num3 & 0xffff) - iconSize.Width) / 2)) + iconSize.Width) + 8;
-                rect.bottom = (rect.top + iconSize.Height) + 6;
-                return rect;
-            }
-            if(flag2) {
-                LVITEM structure = new LVITEM();
-                structure.pszText = Marshal.AllocHGlobal(520);
-                structure.cchTextMax = 260;
-                structure.iItem = iItem;
-                structure.mask = 1;
-                IntPtr zero = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
-                Marshal.StructureToPtr(structure, zero, false);
-                PInvoke.SendMessage(Handle, LVM.GETITEM, IntPtr.Zero, zero);
-                int num4 = (int)PInvoke.SendMessage(Handle, LVM.GETSTRINGWIDTH, IntPtr.Zero, structure.pszText);
-                num4 += 20;
-                Marshal.FreeHGlobal(structure.pszText);
-                Marshal.FreeHGlobal(zero);
-                rect.right += num4;
-                rect.top += 2;
-                rect.bottom += 2;
-            }
             return rect;
         }
 

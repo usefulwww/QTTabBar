@@ -135,6 +135,12 @@ namespace QTTabBarLib {
                     y = targetElement.FullRect.Bottom;
                     ret = new Point(x, y - 15);
                     break;
+
+                default:
+                    x = targetElement.FullRect.Right;
+                    y = targetElement.FullRect.Bottom;
+                    ret = new Point(x - 16, y - 16);
+                    break;
             }
             PInvoke.ClientToScreen(Handle, ref ret);
             return ret;
