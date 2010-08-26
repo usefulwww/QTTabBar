@@ -218,9 +218,23 @@ namespace QTTabBarLib {
         }
 
         public override void HandleShiftKey() {
-            PInvoke.InvalidateRect(Handle, IntPtr.Zero, false);
-            PInvoke.UpdateWindow(Handle);
-            base.HandleShiftKey();
+            if(!QTUtility.CheckConfig(Settings.PreviewsWithShift)) {
+                HideThumbnailTooltip(5);
+            }
+
+            if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
+                if(QTUtility.CheckConfig(Settings.SubDirTipsWithShift)) {
+                    if(MouseIsOverListView()) {
+                        // HandleShiftKey is called by a Hook callback, which apparently causes
+                        // problems with automation.  Use PostMessage to update the SubDirTip later.
+                        hotElement = null;
+                        PInvoke.PostMessage(Handle, (uint)WM_AFTERPAINT, IntPtr.Zero, IntPtr.Zero);
+                    }
+                }
+                else if(!SubDirTipMenuIsShowing()) {
+                    HideSubDirTip(6);
+                }
+            }
         }
 
         public override int HitTest(Point pt, bool ScreenCoords) {
@@ -368,12 +382,10 @@ namespace QTTabBarLib {
                         if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews) || !QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
                             if(focusedElement != null) {
                                 if(hotElement == null && focusedElement.FullRect.Contains(pt)) {
-                                    PInvoke.InvalidateRect(Handle, IntPtr.Zero, false);
-                                    PInvoke.UpdateWindow(Handle);
+                                    PInvoke.PostMessage(Handle, (uint)WM_AFTERPAINT, IntPtr.Zero, IntPtr.Zero);
                                 }
                                 else if(hotElement != null && hotElement.Index == focusedElement.Index && !focusedElement.FullRect.Contains(pt)) {
-                                    PInvoke.InvalidateRect(Handle, IntPtr.Zero, false);
-                                    PInvoke.UpdateWindow(Handle);
+                                    PInvoke.PostMessage(Handle, (uint)WM_AFTERPAINT, IntPtr.Zero, IntPtr.Zero);
                                 }
                             }
                         }
