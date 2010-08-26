@@ -218,7 +218,8 @@ namespace QTTabBarLib {
         }
 
         public override void HandleShiftKey() {
-            RefreshCache();
+            PInvoke.InvalidateRect(Handle, IntPtr.Zero, false);
+            PInvoke.UpdateWindow(Handle);
             base.HandleShiftKey();
         }
 
