@@ -226,7 +226,7 @@ namespace QTTabBarLib {
         public override Point GetSubDirTipPoint(bool fByKey) {
             int iItem = fByKey ? ShellBrowser.GetFocusedIndex() : GetHotItem();
             int x, y;
-            Point ret = new Point(0, 0);
+            Point ret;
             RECT rect;
             switch(ShellBrowser.ViewMode) {
                 case FVM.DETAILS:
@@ -320,6 +320,9 @@ namespace QTTabBarLib {
             int itemCount = ShellBrowser.GetItemCount();
             int selectMe = -1;
             int viewMode = ShellBrowser.ViewMode;
+            if(viewMode == FVM.TILE && QTUtility.IsXP) {
+                viewMode = FVM.ICON;
+            }
             switch(viewMode) {
                 case FVM.CONTENT:
                 case FVM.DETAILS:
@@ -359,6 +362,12 @@ namespace QTTabBarLib {
                     if(nextPageIdx == -1 || nextPageIdx == focusedIdx) {
                         nextPageIdx = (int)PInvoke.SendMessage(Handle, LVM.GETNEXTITEM, (IntPtr)focusedIdx, MsgPrevPage);
                     }
+                    else if(QTUtility.IsXP) {
+                        int testIdx = (int)PInvoke.SendMessage(Handle, LVM.GETNEXTITEM, (IntPtr)nextPageIdx, MsgPrevPage);
+                        if(testIdx != focusedIdx) {
+                            nextPageIdx = (int)PInvoke.SendMessage(Handle, LVM.GETNEXTITEM, (IntPtr)focusedIdx, MsgPrevPage);
+                        }
+                    }
                     if(nextPageIdx == -1 || nextPageIdx == focusedIdx) {
                         if(key == KeyNextItem) {
                             if(focusedIdx == itemCount - 1) {
@@ -377,6 +386,11 @@ namespace QTTabBarLib {
                         }
                         else if(key == KeyPrevItem && focusedIdx == 0) {
                             selectMe = itemCount - 1;
+                        }
+                        else if(key == KeyNextPage || key == KeyPrevPage) {
+                            if(QTUtility.IsXP) {
+                                return true;
+                            }
                         }
                     }
                     else {
