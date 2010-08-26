@@ -16,5 +16,5 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace QTTabBarLib {
-    internal delegate void QEventHandler(object sender, QEventArgs e);
+    public delegate void QEventHandler(object sender, QEventArgs e);
 }

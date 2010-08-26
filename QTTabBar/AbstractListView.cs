@@ -37,23 +37,15 @@ namespace QTTabBarLib {
             fDisposed = true;
         }
 
-        public virtual IntPtr GetEditControl() {
-            return IntPtr.Zero;
-        }
-
-        public virtual Rectangle GetFocusedItemRect() {
-            return new Rectangle(0, 0, 0, 0);
-        }
 
         public virtual int GetHotItem() {
             return -1;
         }
 
-        public virtual Point GetSubDirTipPoint(bool fByKey) {
-            return new Point(0, 0);
-        }
-
         public virtual void HandleF2() {
+        }
+        
+        public virtual void HandleShiftKey() {
         }
 
         public virtual bool HasFocus() {

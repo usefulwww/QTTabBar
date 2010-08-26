@@ -352,6 +352,8 @@ namespace QTTabBarLib.Interop {
         [DllImport("user32.dll")]
         public static extern bool TranslateMessage(ref MSG lpMsg);
         [DllImport("user32.dll")]
+        public static extern bool UpdateWindow(IntPtr hWnd);
+        [DllImport("user32.dll")]
         public static extern bool UnhookWindowsHookEx(IntPtr hhk);
         [DllImport("user32.dll")]
         public static extern bool ValidateRect(IntPtr hWnd, IntPtr lpRect);

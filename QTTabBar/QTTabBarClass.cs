@@ -490,6 +490,12 @@ namespace QTTabBarLib {
                     // an exception if the last bit is set.
                     uint flags = (uint)((long)lParam);
 
+                    if((Keys)((int)wParam) == Keys.ShiftKey) {
+                        if((flags & 0x40000000) == 0 || (flags & 0x80000000) != 0) {
+                            listView.HandleShiftKey();
+                        }
+                    }
+
                     if((flags & 0x80000000) == 0) {
                         if(HandleKEYDOWN(wParam, (flags & 0x40000000) == 0x40000000)) {
                             return new IntPtr(1);
@@ -2623,27 +2629,6 @@ namespace QTTabBarLib {
             Keys mkey = (Keys)(((int)wParam) | ((int)ModifierKeys));
 
             switch(key) {
-                case Keys.ShiftKey:
-                    if(fRepeat) {
-                        return false;
-                    }
-
-                    if(!QTUtility.CheckConfig(Settings.PreviewsWithShift)) {
-                        listView.HideThumbnailTooltip(5);
-                    }
-                    
-                    if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
-                        if(QTUtility.CheckConfig(Settings.SubDirTipsWithShift)) {
-                            if(listView.MouseIsOverListView()) {
-                                listView.RefreshSubDirTip();
-                            }
-                        }
-                        else if(!listView.SubDirTipMenuIsShowing()) {
-                            listView.HideSubDirTip(6);
-                        }
-                    }
-                    return false;
-
                 case Keys.Enter:
                     return false;
 

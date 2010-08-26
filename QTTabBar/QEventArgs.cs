@@ -18,7 +18,7 @@
 using System.Windows.Forms;
 
 namespace QTTabBarLib {
-    internal sealed class QEventArgs {
+    public sealed class QEventArgs {
         private ArrowDirection arrowDir;
         private int rowCount;
 

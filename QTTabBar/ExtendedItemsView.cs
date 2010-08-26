@@ -63,7 +63,9 @@ namespace QTTabBarLib {
         }
 
         public override int GetHotItem() {
-            return hotElement == null ? -1 : hotElement.Index;
+            if(hotElement != null) return hotElement.Index;
+            if(IsHotTrackingEnabled()) return -1;
+            return HitTest(Control.MousePosition, true);
         }
 
         public override Rectangle GetFocusedItemRect() {
@@ -209,6 +211,11 @@ namespace QTTabBarLib {
             }
         }
 
+        public override void HandleShiftKey() {
+            RefreshCache();
+            base.HandleShiftKey();
+        }
+
         public override int HitTest(Point pt, bool ScreenCoords) {
             if(hotElement != null) {
                 Point pt2 = pt;
@@ -258,29 +265,18 @@ namespace QTTabBarLib {
             }
         }
 
-        private void RefreshCache() {
-            bool hasFocus = HasFocus();
-            int prevItem = hotElement == null ? -1 : hotElement.Index;
-            hotElement = null;
-            focusedElement = null;
-            int nextItem = AutoMan.DoQuery(factory => {
-                AutomationElement elem;
-                if(hasFocus) {
-                    elem = factory.FromKeyboardFocus();
-                    if(elem != null) {
-                        focusedElement = new CachedListItemElement(elem, this);
-                    }
-                }
-                elem = ListItemElementFromPoint(factory, Control.MousePosition);
-                if(elem == null) return -1;
-                hotElement = new CachedListItemElement(elem, this);
-                return hotElement.Index;
-            });
-            if(nextItem != prevItem) {
-                OnHotItemChanged(nextItem);
+        private bool IsHotTrackingEnabled() {
+            if(thumbnailTooltip != null && (thumbnailTooltip.IsShowing || fThumbnailPending)) {
+                return true;
             }
+            if(!fDragging && !QTUtility.CheckConfig(Settings.NoShowSubDirTips) &&
+                    (!QTUtility.CheckConfig(Settings.SubDirTipsWithShift) || (Control.ModifierKeys & Keys.Shift) != 0) &&
+                    Control.MouseButtons == MouseButtons.None &&
+                    hwndExplorer == PInvoke.GetForegroundWindow()) {
+                return true;
+            }
+            return false;
         }
-
 
         protected override bool ListViewController_MessageCaptured(ref Message msg) {
             if(msg.Msg == WM_AFTERPAINT) {
@@ -365,20 +361,19 @@ namespace QTTabBarLib {
                         if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews) || !QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
                             if(focusedElement != null) {
                                 if(hotElement == null && focusedElement.FullRect.Contains(pt)) {
-                                    hotElement = focusedElement;
-                                    OnHotItemChanged(hotElement.Index);
+                                    PInvoke.InvalidateRect(Handle, IntPtr.Zero, false);
+                                    PInvoke.UpdateWindow(Handle);
                                 }
                                 else if(hotElement != null && hotElement.Index == focusedElement.Index && !focusedElement.FullRect.Contains(pt)) {
-                                    hotElement = null;
-                                    OnHotItemChanged(-1);
+                                    PInvoke.InvalidateRect(Handle, IntPtr.Zero, false);
+                                    PInvoke.UpdateWindow(Handle);
                                 }
                             }
                         }
                     }
                     break;
                 }
-
-
+                
                 case WM.KEYDOWN:
                     if(OnKeyDown((Keys)msg.WParam)) return true;
                     if((Keys)msg.WParam == Keys.Enter) {
@@ -406,6 +401,27 @@ namespace QTTabBarLib {
             return false;
         }
 
+        protected override void OnDragBegin() {
+            base.OnDragBegin();
+            RefreshCache();
+        }
+
+        protected override void OnDragEnd() {
+            base.OnDragEnd();
+            RefreshCache();
+            RefreshSubDirTip(true);
+        }
+
+        protected override void OnDragOver(Point pt) {
+            base.OnDragOver(pt);
+            if(hotElement != null) {
+                PInvoke.ScreenToClient(Handle, ref pt);
+                if(!hotElement.FullRect.Contains(pt)) {
+                    hotElement = null;
+                }
+            } 
+        }
+
         public override bool PointIsBackground(Point pt, bool screenCoords) {
             if(!screenCoords) {
                 PInvoke.ClientToScreen(ListViewController.Handle, ref pt);
@@ -416,6 +432,30 @@ namespace QTTabBarLib {
                 string className = elem.GetClassName();
                 return className == "UIItemsView" || className == "UIGroupItem";
             });
+        }
+
+        private void RefreshCache() {
+            int prevItem = hotElement == null ? -1 : hotElement.Index;
+            hotElement = null;
+            focusedElement = null;
+            if(!IsHotTrackingEnabled()) return;
+            bool hasFocus = HasFocus();
+            int nextItem = AutoMan.DoQuery(factory => {
+                AutomationElement elem;
+                if(hasFocus) {
+                    elem = factory.FromKeyboardFocus();
+                    if(elem != null) {
+                        focusedElement = new CachedListItemElement(elem, this);
+                    }
+                }
+                elem = ListItemElementFromPoint(factory, Control.MousePosition);
+                if(elem == null) return -1;
+                hotElement = new CachedListItemElement(elem, this);
+                return hotElement.Index;
+            });
+            if(nextItem != prevItem) {
+                OnHotItemChanged(nextItem);
+            }
         }
 
         protected override bool ShellViewController_MessageCaptured(ref Message msg) {
