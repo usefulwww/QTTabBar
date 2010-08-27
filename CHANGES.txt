@@ -1,3 +1,25 @@
+======= 1.5.0.0 Alpha 4 =======
+Bugs Fixed:
+    General stability improvements, more exception logging code added
+    Changing environment variables on x64 systems no longer crashes Explorer
+    Tabbar/Toolbar positioning now works correctly on XP
+    Search box no longer mysteriously shrinks when focused
+    Closing dialogs in Win7 such as the Firewall dialog works correctly
+    Subdirectory Tips appear and disappear when they should, drag and drop into them much easier
+    Opening a new tab by navigating on a locked tab opens the tab in the correct location
+    Minimize to tray no longer crashes Explorer
+    Full Row Select can be enabled/disabled when the SysListView32 is used
+    Tabs are restored only on the first instance, not on subsequent instances
+    Libraries can be dropped into
+
+New/Restored Features:
+    Desktop Bar restored for XP/Vista
+    F2 rename selection functionality restored    
+    SelectionChanged plugin event fires correctly
+    Cursor looping reimplemented
+    "Use old ListView control" option enabled
+    "Display column headers in all views" option enabled
+
 ======= 1.5.0.0 Alpha 3 =======
 Bugs Fixed:
     Explorer process no longer consumes a full CPU core.
@@ -9,7 +31,7 @@ Bugs Fixed:
     Button Bar correctly displays buttons when activated after Tab Bar.
     Mouse cursor now becomes an IBeam in the Search Box.
     
-New Features:
+New/Restored Features:
     Tab Locking functionality restored
         
 ======= 1.5.0.0 Alpha 2 =======
@@ -17,5 +39,5 @@ Bugs Fixed:
     Fixed crashes on 32-bit Windows.
 
 ======= 1.5.0.0 Alpha 1 =======
-New Features:
+New/Restored Features:
     First release compatible with Windows 7.
