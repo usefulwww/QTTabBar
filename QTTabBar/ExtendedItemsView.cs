@@ -93,7 +93,7 @@ namespace QTTabBarLib {
             if(targetElement == null) return new Point(0, 0);
 
             int x, y;
-            Point ret = new Point(0, 0);
+            Point ret;
             switch(ShellBrowser.ViewMode) {
                 case FVM.CONTENT:
                     y = targetElement.FullRect.Bottom;
@@ -379,25 +379,37 @@ namespace QTTabBarLib {
                     Point pt = QTUtility2.PointFromLPARAM(msg.LParam);
                     if(pt != lastMouseMovePoint) {
                         lastMouseMovePoint = pt;
-                        if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews) || !QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
-                            if(focusedElement != null) {
-                                if(hotElement == null && focusedElement.FullRect.Contains(pt)) {
-                                    PInvoke.PostMessage(Handle, (uint)WM_AFTERPAINT, IntPtr.Zero, IntPtr.Zero);
-                                }
-                                else if(hotElement != null && hotElement.Index == focusedElement.Index && !focusedElement.FullRect.Contains(pt)) {
-                                    PInvoke.PostMessage(Handle, (uint)WM_AFTERPAINT, IntPtr.Zero, IntPtr.Zero);
-                                }
+                        if(focusedElement != null) {
+                            if(hotElement == null && focusedElement.FullRect.Contains(pt)) {
+                                PInvoke.PostMessage(Handle, (uint)WM_AFTERPAINT, IntPtr.Zero, IntPtr.Zero);
+                            }
+                            else if(hotElement != null && hotElement.Index == focusedElement.Index && !focusedElement.FullRect.Contains(pt)) {
+                                PInvoke.PostMessage(Handle, (uint)WM_AFTERPAINT, IntPtr.Zero, IntPtr.Zero);
                             }
                         }
                     }
                     break;
                 }
+
+                case WM.MOUSELEAVE:
+                    if(focusedElement != null) {
+                        if(hotElement != null && hotElement.Index == focusedElement.Index) {
+                            PInvoke.PostMessage(Handle, (uint)WM_AFTERPAINT, IntPtr.Zero, IntPtr.Zero);
+                        }
+                    }
+                    break;
                 
                 case WM.KEYDOWN:
                     if(OnKeyDown((Keys)msg.WParam)) return true;
                     if((Keys)msg.WParam == Keys.Enter) {
                         return OnItemActivated(Control.ModifierKeys);
                     }
+                    break;
+                
+                case WM.LBUTTONUP:
+                case WM.RBUTTONUP:
+                case WM.MBUTTONUP:
+                    RefreshCache();
                     break;
 
                 case WM.NOTIFY: {
@@ -459,6 +471,7 @@ namespace QTTabBarLib {
             focusedElement = null;
             if(!IsHotTrackingEnabled()) return;
             bool hasFocus = HasFocus();
+            bool hasMouse = MouseIsOverListView();
             int nextItem = AutoMan.DoQuery(factory => {
                 AutomationElement elem;
                 if(hasFocus) {
@@ -467,10 +480,13 @@ namespace QTTabBarLib {
                         focusedElement = new CachedListItemElement(elem, this);
                     }
                 }
-                elem = ListItemElementFromPoint(factory, Control.MousePosition);
-                if(elem == null) return -1;
-                hotElement = new CachedListItemElement(elem, this);
-                return hotElement.Index;
+                if(hasMouse) {
+                    elem = ListItemElementFromPoint(factory, Control.MousePosition);
+                    if(elem == null) return -1;
+                    hotElement = new CachedListItemElement(elem, this);
+                    return hotElement.Index;
+                }
+                return -1;
             });
             if(nextItem != prevItem) {
                 OnHotItemChanged(nextItem);
