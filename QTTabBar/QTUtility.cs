@@ -114,7 +114,7 @@ namespace QTTabBarLib {
 
     internal static class QTUtility {
         internal static string Action_BarDblClick;
-        internal static Version BetaRevision = new Version(0, 3);
+        internal static Version BetaRevision = new Version(0, 4);
         internal static PathList ClosedTabHistoryList = new PathList(0x10);
         internal static byte[] ConfigValues;
         internal static string CreateWindowTMPGroup = string.Empty;
