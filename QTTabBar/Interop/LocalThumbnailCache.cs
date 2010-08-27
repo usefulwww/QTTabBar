@@ -20,6 +20,6 @@ using System.Security;
 
 namespace QTTabBarLib.Interop {
     [ComImport, ClassInterface(ClassInterfaceType.None), SuppressUnmanagedCodeSecurity, Guid("50EF4544-AC9F-4A8E-B21B-8A26180DB13F")]
-    public class LocalThumbnailCache {
+    internal class LocalThumbnailCache {
     }
 }
