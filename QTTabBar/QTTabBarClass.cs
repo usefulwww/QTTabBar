@@ -794,38 +794,27 @@ namespace QTTabBarLib {
             return item;
         }
 
-        private List<string> CloseAllUnlocked() {
-            List<string> list = new List<string>();
-            List<QTabItem> list2 = new List<QTabItem>();
+        private List<string> CloseAllUnlocked() {            
             tabControl1.SetRedraw(false);
+            List<QTabItemBase> items = tabControl1.TabPages.Where(item => !item.TabLocked && item != CurrentTab).ToList();
+            List<string> paths = new List<string>();
+            foreach(QTabItem item in items) {
+                paths.Add(item.CurrentPath);
+                AddToHistory(item);
+                tabControl1.TabPages.Remove(item);
+                item.OnClose();
+            }
             if(CurrentTab.TabLocked) {
-                foreach(QTabItem item in tabControl1.TabPages.Where(item => !item.TabLocked)) {
-                    list.Add(item.CurrentPath);
-                    list2.Add(item);
-                    AddToHistory(item);
-                    tabControl1.TabPages.Remove(item);
-                }
                 SyncButtonBarCurrent(0x1003f);
             }
             else {
-                foreach(QTabItem item2 in tabControl1.TabPages
-                        .Where(item2 => !item2.TabLocked && item2 != CurrentTab)) {
-                    list.Add(item2.CurrentPath);
-                    list2.Add(item2);
-                    AddToHistory(item2);
-                    tabControl1.TabPages.Remove(item2);
-                }
-                list.Add(CurrentTab.CurrentPath);
+                paths.Add(CurrentTab.CurrentPath);
                 CloseTab(CurrentTab, false);
-            }
-            for(int i = 0; i < list2.Count; i++) {
-                list2[i].OnClose();
-                list2[i] = null;
             }
             if(tabControl1.TabCount > 0) {
                 tabControl1.SetRedraw(true);
             }
-            return list;
+            return paths;
         }
 
         public override void CloseDW(uint dwReserved) {
