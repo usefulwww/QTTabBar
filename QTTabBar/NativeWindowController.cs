@@ -35,7 +35,7 @@ namespace QTTabBarLib {
                     consumed = MessageCaptured(ref m);
                 }
                 catch(Exception ex) {
-                    QTUtility2.MakeErrorLog(ex, String.Format("Message: {0:x4}", m.Msg));
+                    QTUtility2.MakeErrorLog(ex, String.Format(m.ToString()));
                 }
             }
             if(!consumed) {
