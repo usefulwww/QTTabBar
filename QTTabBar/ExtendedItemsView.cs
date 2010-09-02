@@ -37,14 +37,6 @@ namespace QTTabBarLib {
             this.AutoMan = AutoMan;
         }
 
-        private bool CallbackEnumChildProc_Edit(IntPtr hwnd, IntPtr lParam) {
-            if(PInvoke.GetClassName(hwnd) == "Edit") {
-                hwndEnumResult = hwnd;
-                return false;
-            }
-            return true;
-        }
-
         private AutomationElement ListItemElementFromPoint(AutomationElementFactory factory, Point pt) {
             if(PInvoke.WindowFromPoint(pt) != Handle) return null;
             AutomationElement elem = factory.FromPoint(pt);
@@ -57,9 +49,7 @@ namespace QTTabBarLib {
         }
 
         public override IntPtr GetEditControl() {
-            hwndEnumResult = IntPtr.Zero;
-            PInvoke.EnumChildWindows(Handle, CallbackEnumChildProc_Edit, IntPtr.Zero);
-            return hwndEnumResult;
+            return WindowUtils.FindChildWindow(Handle, hwnd => PInvoke.GetClassName(hwnd) == "Edit");
         }
 
         public override int GetHotItem() {

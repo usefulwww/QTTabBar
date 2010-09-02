@@ -27,7 +27,6 @@ namespace QTTabBarLib {
         private AutomationManager AutoMan;
         private IntPtr hwndShellContainer;
         private NativeWindowController ContainerController;
-        private IntPtr hwndEnumResult;
         private ShellBrowserEx ShellBrowser;
         private IntPtr hwndExplorer;
         private IntPtr hwndSubDirTipMessageReflect;
@@ -38,14 +37,9 @@ namespace QTTabBarLib {
             ShellBrowser = shellBrowser;
             this.hwndExplorer = hwndExplorer;
             this.hwndSubDirTipMessageReflect = hwndSubDirTipMessageReflect;
-            if(!QTUtility.IsXP) {
-                hwndEnumResult = IntPtr.Zero;
-                PInvoke.EnumChildWindows(hwndExplorer, CallbackEnumChildProc_Container, IntPtr.Zero);
-                hwndShellContainer = hwndEnumResult;
-            }
-            else {
-                hwndShellContainer = hwndExplorer;
-            }
+            hwndShellContainer = QTUtility.IsXP 
+                    ? hwndExplorer
+                    : WindowUtils.FindChildWindow(hwndExplorer, hwnd => PInvoke.GetClassName(hwnd) == "ShellTabWindowClass");
             if(hwndShellContainer != IntPtr.Zero) {
                 ContainerController = new NativeWindowController(hwndShellContainer);
                 ContainerController.MessageCaptured += ContainerController_MessageCaptured;
@@ -53,14 +47,6 @@ namespace QTTabBarLib {
         }
 
         public AbstractListView CurrentListView { get; private set; }
-
-        private bool CallbackEnumChildProc_Container(IntPtr hwnd, IntPtr lParam) {
-            if(PInvoke.GetClassName(hwnd) == "ShellTabWindowClass") {
-                hwndEnumResult = hwnd;
-                return false;
-            }
-            return true;
-        }
 
         private bool ContainerController_MessageCaptured(ref Message msg) {
             if(msg.Msg == WM.PARENTNOTIFY && PInvoke.LoWord((int)msg.WParam) == WM.CREATE) {
@@ -72,33 +58,9 @@ namespace QTTabBarLib {
             return false;
         }
 
-        private bool CallbackEnumChildProc_ListView(IntPtr hwnd, IntPtr lParam) {
-            string name = PInvoke.GetClassName(hwnd);
-            if(name == "SysListView32") {
-                fIsSysListView = true;
-                hwndEnumResult = hwnd;
-                return false;
-            }
-            else if(!QTUtility.IsXP && name == "DirectUIHWND") {
-                fIsSysListView = false;
-                hwndEnumResult = hwnd;
-                return false;
-            }
-            return true;
-        }
-
-        private bool CallbackEnumChildProc_ShellView(IntPtr hwnd, IntPtr lParam) {
-            if(PInvoke.GetClassName(hwnd) == "SHELLDLL_DefView") {
-                hwndEnumResult = hwnd;
-                return false;
-            }
-            return true;
-        }
-
         public void Initialize() {
-            hwndEnumResult = IntPtr.Zero;
-            PInvoke.EnumChildWindows(hwndExplorer, CallbackEnumChildProc_ShellView, IntPtr.Zero);
-            if(hwndEnumResult == IntPtr.Zero) {
+            IntPtr hwndShellView = WindowUtils.FindChildWindow(hwndExplorer, hwnd => PInvoke.GetClassName(hwnd) == "SHELLDLL_DefView");
+            if(hwndShellView == IntPtr.Zero) {
                 if(CurrentListView != null) {
                     CurrentListView.Dispose();
                 }
@@ -106,7 +68,7 @@ namespace QTTabBarLib {
                 ListViewChanged(this, null);
             }
             else {
-                RecaptureHandles(hwndEnumResult);
+                RecaptureHandles(hwndShellView);
             }
         }
 
@@ -115,19 +77,30 @@ namespace QTTabBarLib {
                 CurrentListView.Dispose();
             }
 
-            hwndEnumResult = IntPtr.Zero;
-            PInvoke.EnumChildWindows(hwndShellView, CallbackEnumChildProc_ListView, IntPtr.Zero);
-            if(hwndEnumResult == IntPtr.Zero) {
+            IntPtr hwndListView = WindowUtils.FindChildWindow(hwndShellView, hwnd => {
+                string name = PInvoke.GetClassName(hwnd);
+                if(name == "SysListView32") {
+                    fIsSysListView = true;
+                    return true;
+                }
+                else if(!QTUtility.IsXP && name == "DirectUIHWND") {
+                    fIsSysListView = false;
+                    return true;
+                }
+                return false;
+            });
+
+            if(hwndListView == IntPtr.Zero) {
                 CurrentListView = new AbstractListView();
             }
             else if(fIsSysListView) {
-                CurrentListView = new ExtendedSysListView32(ShellBrowser, hwndShellView, hwndEnumResult, hwndSubDirTipMessageReflect);
+                CurrentListView = new ExtendedSysListView32(ShellBrowser, hwndShellView, hwndListView, hwndSubDirTipMessageReflect);
             }
             else {
                 if(AutoMan == null) {
                     AutoMan = new AutomationManager();
                 }
-                CurrentListView = new ExtendedItemsView(ShellBrowser, hwndShellView, hwndEnumResult, hwndSubDirTipMessageReflect, AutoMan);
+                CurrentListView = new ExtendedItemsView(ShellBrowser, hwndShellView, hwndListView, hwndSubDirTipMessageReflect, AutoMan);
             }
             CurrentListView.ListViewDestroyed += ListView_Destroyed;
             ListViewChanged(this, null);

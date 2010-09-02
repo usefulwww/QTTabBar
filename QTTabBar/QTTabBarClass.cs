@@ -82,9 +82,6 @@ namespace QTTabBarLib {
         private HookProc hookProc_Key;
         private HookProc hookProc_Mouse;
         private static IntPtr hwndNotifyIconParent;
-        private IntPtr hwndSeachBand_Edit;
-        private IntPtr hwndSearchBand;
-        private IntPtr hwndTravelBand;
         private static Icon icoNotify;
         private IContextMenu2 iContextMenu2;
         private int iModKeyStateDD;
@@ -135,6 +132,8 @@ namespace QTTabBarLib {
         private NativeWindowController travelBtnController;
         private ITravelLogStg TravelLog;
         private IntPtr TravelToolBarHandle;
+        private NativeWindowController treeController;
+        private INameSpaceTreeControl treeControl;
         private ToolStripMenuItem tsmiAddToGroup;
         private ToolStripMenuItem tsmiBrowseFolder;
         private ToolStripMenuItem tsmiCloneThis;
@@ -163,6 +162,7 @@ namespace QTTabBarLib {
         private ToolStripSeparator tssep_Tab1;
         private ToolStripSeparator tssep_Tab2;
         private ToolStripSeparator tssep_Tab3;
+        private readonly uint WM_NEWTREECONTROL = PInvoke.RegisterWindowMessage("QTTabBar_NewTreeControl");
 
         public QTTabBarClass() {
             if(!fInitialized) {
@@ -353,33 +353,6 @@ namespace QTTabBarLib {
             RestoreFromTray();
         }
 
-        private bool CallbackEnumChildProc_SearchBand(IntPtr hwnd, IntPtr lParam) {
-            if(PInvoke.GetClassName(hwnd) == "UniversalSearchBand") {
-                hwndSearchBand = hwnd;
-                return false;
-            }
-            hwndSearchBand = IntPtr.Zero;
-            return true;
-        }
-
-        private bool CallbackEnumChildProc_SearchBand_Edit(IntPtr hwnd, IntPtr lParam) {
-            if((PInvoke.GetClassName(hwnd) == "Edit") && ((((int)PInvoke.GetWindowLongPtr(hwnd, -16)) & 0x10000000) == 0x10000000)) {
-                hwndSeachBand_Edit = hwnd;
-                return false;
-            }
-            hwndSeachBand_Edit = IntPtr.Zero;
-            return true;
-        }
-
-        private bool CallbackEnumChildProc_TravelBand(IntPtr hwnd, IntPtr lParam) {
-            if(PInvoke.GetClassName(hwnd) == "TravelBand") {
-                hwndTravelBand = hwnd;
-                return false;
-            }
-            hwndTravelBand = IntPtr.Zero;
-            return true;
-        }
-
         private void CallbackFirstNavComp() {
             int num = 0;
             while(!FirstNavigationCompleted) {
@@ -415,8 +388,46 @@ namespace QTTabBarLib {
                             iSequential_WM_CLOSE = 0;
                         }
                     }
-                    switch(msg.message) {
 
+                    if(msg.message == WM_NEWTREECONTROL) {
+                        object obj = Marshal.GetObjectForIUnknown(msg.wParam);
+                        try {
+                            if(obj != null) {
+                                IOleWindow window = obj as IOleWindow;
+                                if(window != null) {
+                                    IntPtr hwnd;
+                                    window.GetWindow(out hwnd);
+                                    if(hwnd != IntPtr.Zero && PInvoke.IsChild(ExplorerHandle, hwnd)) {
+                                        hwnd = WindowUtils.FindChildWindow(hwnd,
+                                                child => PInvoke.GetClassName(child) == "SysTreeView32");
+                                        if(hwnd != IntPtr.Zero) {
+                                            INameSpaceTreeControl control = obj as INameSpaceTreeControl;
+                                            if(control != null) {
+                                                if(treeControl != null) {
+                                                    Marshal.ReleaseComObject(treeControl);
+                                                }
+                                                if(treeController != null) {
+                                                    treeController.ReleaseHandle();
+                                                }
+                                                treeControl = control;
+                                                obj = null;
+                                                treeController = new NativeWindowController(hwnd);
+                                                treeController.MessageCaptured += TreeControl_MessageCaptured;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        finally {
+                            if(obj != null) {
+                                Marshal.ReleaseComObject(obj);
+                            }
+                        }
+                        return PInvoke.CallNextHookEx(hHook_Msg, nCode, wParam, lParam);   
+                    }
+
+                    switch(msg.message) {
                         case WM.LBUTTONDOWN:
                         case WM.LBUTTONUP:
                             if((QTUtility.IsXP && !QTUtility.CheckConfig(Settings.NoMidClickTree)) && ((((int)((long)msg.wParam)) & 4) != 0)) {
@@ -474,13 +485,6 @@ namespace QTTabBarLib {
             return PInvoke.CallNextHookEx(hHook_Msg, nCode, wParam, lParam);
         }
 
-        private static void CallbackItemEdit(object obj) {
-            object[] objArray = (object[])obj;
-            IntPtr hWnd = (IntPtr)objArray[0];
-            int num = (int)objArray[1];
-            PInvoke.SendMessage(hWnd, 0xb1, IntPtr.Zero, (IntPtr)num);
-        }
-
         private IntPtr CallbackKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam) {
             try {
                 if((nCode >= 0) && !NowModalDialogShown) {
@@ -535,7 +539,7 @@ namespace QTTabBarLib {
                 }
             }
             catch(Exception ex) {
-                QTUtility2.MakeErrorLog(ex, String.Format("LParam: {0:x4}, WParam: {0:x4}", (long)lParam, (long)wParam));
+                QTUtility2.MakeErrorLog(ex, String.Format("LParam: {0:x4}, WParam: {1:x4}", (long)lParam, (long)wParam));
             }
 
             return PInvoke.CallNextHookEx(hHook_Key, nCode, wParam, lParam);
@@ -568,7 +572,7 @@ namespace QTTabBarLib {
                 }
             }
             catch(Exception ex) {
-                QTUtility2.MakeErrorLog(ex, String.Format("LParam: {0:x4}, WParam: {0:x4}", (long)lParam, (long)wParam));
+                QTUtility2.MakeErrorLog(ex, String.Format("LParam: {0:x4}, WParam: {1:x4}", (long)lParam, (long)wParam));
             }
             return PInvoke.CallNextHookEx(hHook_Mouse, nCode, wParam, lParam);
         }
@@ -2444,12 +2448,12 @@ namespace QTTabBarLib {
         }
 
         private IntPtr GetSearchBand_Edit() {
-            PInvoke.EnumChildWindows(ExplorerHandle, CallbackEnumChildProc_SearchBand, IntPtr.Zero);
+            IntPtr hwndSearchBand = WindowUtils.FindChildWindow(ExplorerHandle, hwnd => PInvoke.GetClassName(hwnd) == "UniversalSearchBand");
             if(hwndSearchBand != IntPtr.Zero) {
-                PInvoke.EnumChildWindows(hwndSearchBand, CallbackEnumChildProc_SearchBand_Edit, IntPtr.Zero);
-                return hwndSeachBand_Edit;
+                hwndSearchBand = WindowUtils.FindChildWindow(hwndSearchBand, hwnd =>
+                        PInvoke.GetClassName(hwnd) == "Edit" && ((int)PInvoke.GetWindowLongPtr(hwnd, -16) & 0x10000000) != 0);
             }
-            return IntPtr.Zero;
+            return hwndSearchBand;
         }
 
         public ShellBrowserEx GetShellBrowser() {
@@ -2457,11 +2461,10 @@ namespace QTTabBarLib {
         }
 
         private IntPtr GetTravelToolBarWindow32() {
-            PInvoke.EnumChildWindows(ExplorerHandle, CallbackEnumChildProc_TravelBand, IntPtr.Zero);
-            if(hwndTravelBand != IntPtr.Zero) {
-                return PInvoke.FindWindowEx(hwndTravelBand, IntPtr.Zero, "ToolbarWindow32", null);
-            }
-            return IntPtr.Zero;
+            IntPtr hwndTravelBand = WindowUtils.FindChildWindow(ExplorerHandle, hwnd => PInvoke.GetClassName(hwnd) == "TravelBand");
+            return hwndTravelBand != IntPtr.Zero 
+                    ? PInvoke.FindWindowEx(hwndTravelBand, IntPtr.Zero, "ToolbarWindow32", null) 
+                    : IntPtr.Zero;
         }
         
         // TODO
@@ -3342,7 +3345,7 @@ namespace QTTabBarLib {
                 }
             }
             catch(Exception exception) {
-                QTUtility2.MakeErrorLog(exception, null, false);
+                QTUtility2.MakeErrorLog(exception, null);
             }
             finally {
                 if(zero != IntPtr.Zero) {
@@ -4656,13 +4659,12 @@ namespace QTTabBarLib {
             if((idlw == null) || !idlw.Available) {
                 return false;
             }
-            QTabItem tabPage = null;
             if(blockSelecting) {
                 NowTabsAddingRemoving = true;
             }
             try {
                 if(!fForceNew && QTUtility.CheckConfig(Settings.DontOpenSame)) {
-                    tabPage = tabControl1.TabPages.Cast<QTabItem>().FirstOrDefault(item2 =>
+                    QTabItem tabPage = tabControl1.TabPages.Cast<QTabItem>().FirstOrDefault(item2 =>
                             string.Equals(item2.CurrentPath, idlw.Path, StringComparison.CurrentCultureIgnoreCase));
                     if(tabPage != null) {
                         if(QTUtility.CheckConfig(Settings.ActivateNewTab)) {
@@ -5507,8 +5509,8 @@ namespace QTTabBarLib {
         }
 
         private bool ShowTabSwitcher(bool fShift, bool fRepeat) {
-            listView.HideSubDirTip(-1);
-            listView.HideThumbnailTooltip(-1);
+            listView.HideSubDirTip();
+            listView.HideThumbnailTooltip();
             if(tabControl1.TabCount < 2) {
                 return false;
             }
@@ -6389,6 +6391,56 @@ namespace QTTabBarLib {
             m.Result = IntPtr.Zero;
             return true;
         Label_0427:
+            return false;
+        }
+
+        private bool TreeControl_MessageCaptured(ref Message msg) {
+            switch(msg.Msg) {
+                case WM.MBUTTONUP:
+                    // TODO
+                    if(/*!QTUtility.CheckConfig(Settings.NoMidClickTree) &&*/ treeControl != null) {
+                        IShellItem item = null;
+                        IntPtr ptr = IntPtr.Zero;
+                        try {
+                            Point pt = QTUtility2.PointFromLPARAM(msg.LParam);
+                            TVHITTESTINFO structure = new TVHITTESTINFO {pt = pt};
+                            ptr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
+                            Marshal.StructureToPtr(structure, ptr, false);
+                            IntPtr wParam = PInvoke.SendMessage(treeController.Handle, 0x1111, IntPtr.Zero, ptr);
+                            if(wParam != IntPtr.Zero) {
+                                structure = (TVHITTESTINFO)Marshal.PtrToStructure(ptr, typeof(TVHITTESTINFO));
+                                if((structure.flags & 0x10) == 0 && (structure.flags & 0x80) == 0) {
+                                    treeControl.HitTest(pt, out item);
+
+                                    if(item != null) {
+                                        String str;
+                                        item.GetDisplayName(0x80028000, out str);
+
+                                        // TODO
+                                        Debug.WriteLine(str);
+                                    }
+                                }
+                            }
+                        }
+                        finally {
+                            if(item != null) {
+                                Marshal.ReleaseComObject(item);
+                            }
+                            if(ptr != IntPtr.Zero) {
+                                Marshal.FreeHGlobal(ptr);
+                            }
+                        }
+
+                    }
+                    break;
+
+                case WM.DESTROY:
+                    if(treeControl != null) {
+                        Marshal.ReleaseComObject(treeControl);
+                        treeControl = null;
+                    }
+                    break;
+            }
             return false;
         }
 

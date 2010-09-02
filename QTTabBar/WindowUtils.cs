@@ -40,6 +40,18 @@ namespace QTTabBarLib {
             }
         }
 
+        public static IntPtr FindChildWindow(IntPtr parent, Predicate<IntPtr> pred) {
+            IntPtr ret = IntPtr.Zero;
+            PInvoke.EnumChildWindows(parent, (hwnd, lParam) => {
+                if(pred(hwnd)) {
+                    ret = hwnd;
+                    return false;
+                }
+                return true;
+            }, IntPtr.Zero);
+            return ret;
+        }
+
         public static IntPtr GetShellTabWindowClass(IntPtr hwndExplr) {
             return PInvoke.FindWindowEx(hwndExplr, IntPtr.Zero, "ShellTabWindowClass", null);
         }

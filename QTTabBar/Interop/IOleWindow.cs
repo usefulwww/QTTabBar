@@ -20,17 +20,11 @@ using System.Runtime.InteropServices;
 using System.Security;
 
 namespace QTTabBarLib.Interop {
-    [ComImport, Guid("43826d1e-e718-42ee-bc55-a1e261c37bfe"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown), SuppressUnmanagedCodeSecurity]
-    public interface IShellItem {
+    [ComImport, SuppressUnmanagedCodeSecurity, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("00000114-0000-0000-C000-000000000046")]
+    public interface IOleWindow {
         [PreserveSig]
-        int BindToHandler(IntPtr pbc, [In] ref Guid bhid, [In] ref Guid riid, out IntPtr ppvOut);
+        int GetWindow(out IntPtr phwnd);
         [PreserveSig]
-        int GetParent(out IShellItem ppsi);
-        [PreserveSig]
-        int GetDisplayName(uint sigdnName, [MarshalAs(UnmanagedType.LPWStr)] out string ppszName);
-        [PreserveSig]
-        int GetAttributes(int sfgaoMask, out int psfgaoAttribs);
-        [PreserveSig]
-        int Compare(IShellItem psi, int hint, out int piOrder);
+        int ContextSensitiveHelp(bool fEnterMode);
     }
 }
