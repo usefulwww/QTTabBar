@@ -30,6 +30,9 @@ namespace QTTabBarLib {
         private static string strMsgCaption = ("QTTabBar " + QTUtility2.MakeVersionString());
 
         public static void Check(bool fForce) {
+            if(QTUtility.fIsDevelopmentVersion) {
+                return;
+            }
             if(fForce) {
                 string str;
                 ShowMsg(CheckInternal(out str), str);

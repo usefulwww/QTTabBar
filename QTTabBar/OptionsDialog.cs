@@ -275,7 +275,7 @@ namespace QTTabBarLib {
             sfPlugins.Alignment = StringAlignment.Near;
             sfPlugins.LineAlignment = StringAlignment.Center;
             SuspendLayout();
-            lblVer.Text = "QTTabBar ver " + QTUtility2.MakeVersionString();
+            lblVer.Text = "QTTabBar " + QTUtility2.MakeVersionString();
             tabPage1_Gnrl.Text = ResOpt_Genre[0];
             tabPage2_Tabs.Text = ResOpt_Genre[1];
             tabPage3_Wndw.Text = ResOpt_Genre[2];

@@ -265,14 +265,19 @@ namespace QTTabBarLib {
         }
 
         public static string MakeVersionString() {
-            string str = QTUtility.CurrentVersion.ToString();
-            if(QTUtility.BetaRevision.Major > 0) {
-                str = str + " Beta " + QTUtility.BetaRevision.Major;
+            if(QTUtility.fIsDevelopmentVersion) {
+                return "DevBuild: " + QTUtility.GetLinkerTimestamp();
             }
-            else if(QTUtility.BetaRevision.Minor > 0) {
-                str = str + " Alpha " + QTUtility.BetaRevision.Minor;
+            else {
+                string str = QTUtility.CurrentVersion.ToString();
+                if(QTUtility.BetaRevision.Major > 0) {
+                    str = str + " Beta " + QTUtility.BetaRevision.Major;
+                }
+                else if(QTUtility.BetaRevision.Minor > 0) {
+                    str = str + " Alpha " + QTUtility.BetaRevision.Minor;
+                }
+                return str;
             }
-            return str;
         }
 
         public static bool PathExists(string path) {
