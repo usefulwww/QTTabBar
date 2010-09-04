@@ -30,6 +30,8 @@ Source: "..\BandObjectLib\bin\Release\Interop.SHDocVw.dll"; DestDir: "{app}"; Fl
 Source: "..\BandObjectLib\bin\Release\BandObjectLib.dll"; DestDir: "{app}"; Flags: ignoreversion gacinstall; StrongAssemblyName: "BandObjectLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb"; AfterInstall: NGen('BandObjectLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb');
 Source: "..\QTPluginLib\bin\Release\QTPluginLib.dll"; DestDir: "{app}"; Flags: ignoreversion gacinstall; StrongAssemblyName: "QTPluginLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb"; AfterInstall: NGen('QTPluginLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb');
 Source: "..\QTTabBar\bin\Release\QTTabBar.dll"; DestDir: "{app}"; Flags: ignoreversion gacinstall; StrongAssemblyName: "QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb"; AfterInstall: RegAndNGen('QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb');
+Source: "..\QTHookLib\bin\Release\QTHookLib32.dll"; DestDir: "{commonappdata}\QTTabBar"; DestName: "QTHookLib32.dl_"
+Source: "..\QTHookLib\bin\Release\QTHookLib64.dll"; DestDir: "{commonappdata}\QTTabBar"; DestName: "QTHookLib64.dl_"
 Source: "Restart Explorer.bat"; DestDir: "{tmp}"
 
 [Run]

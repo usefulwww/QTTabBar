@@ -328,7 +328,7 @@ namespace QTTabBarLib {
                     IsRTL = CultureInfo.CurrentCulture.TextInfo.IsRightToLeft;
 
                     // Replace the hook library a new one has been installed.
-                    string appdata = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "QTTabBar");
+                    string appdata = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "QTTabBar");
                     string newLib32 = Path.Combine(appdata, "QTHookLib32.dl_");
                     string newLib64 = Path.Combine(appdata, "QTHookLib64.dl_");
                     string oldLib32 = Path.Combine(appdata, "QTHookLib32.dll");
