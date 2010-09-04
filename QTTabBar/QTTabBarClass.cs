@@ -132,8 +132,7 @@ namespace QTTabBarLib {
         private NativeWindowController travelBtnController;
         private ITravelLogStg TravelLog;
         private IntPtr TravelToolBarHandle;
-        private NativeWindowController treeController;
-        private INameSpaceTreeControl treeControl;
+        private TreeViewWrapper treeViewWrapper;
         private ToolStripMenuItem tsmiAddToGroup;
         private ToolStripMenuItem tsmiBrowseFolder;
         private ToolStripMenuItem tsmiCloneThis;
@@ -403,16 +402,12 @@ namespace QTTabBarLib {
                                         if(hwnd != IntPtr.Zero) {
                                             INameSpaceTreeControl control = obj as INameSpaceTreeControl;
                                             if(control != null) {
-                                                if(treeControl != null) {
-                                                    Marshal.ReleaseComObject(treeControl);
+                                                if(treeViewWrapper != null) {
+                                                    treeViewWrapper.Dispose();
                                                 }
-                                                if(treeController != null) {
-                                                    treeController.ReleaseHandle();
-                                                }
-                                                treeControl = control;
+                                                treeViewWrapper = new TreeViewWrapper(hwnd, control);
+                                                treeViewWrapper.TreeViewMiddleClicked += TreeView_MiddleClicked;
                                                 obj = null;
-                                                treeController = new NativeWindowController(hwnd);
-                                                treeController.MessageCaptured += TreeControl_MessageCaptured;
                                             }
                                         }
                                     }
@@ -6394,54 +6389,23 @@ namespace QTTabBarLib {
             return false;
         }
 
-        private bool TreeControl_MessageCaptured(ref Message msg) {
-            switch(msg.Msg) {
-                case WM.MBUTTONUP:
-                    // TODO
-                    if(/*!QTUtility.CheckConfig(Settings.NoMidClickTree) &&*/ treeControl != null) {
-                        IShellItem item = null;
-                        IntPtr ptr = IntPtr.Zero;
-                        try {
-                            Point pt = QTUtility2.PointFromLPARAM(msg.LParam);
-                            TVHITTESTINFO structure = new TVHITTESTINFO {pt = pt};
-                            ptr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
-                            Marshal.StructureToPtr(structure, ptr, false);
-                            IntPtr wParam = PInvoke.SendMessage(treeController.Handle, 0x1111, IntPtr.Zero, ptr);
-                            if(wParam != IntPtr.Zero) {
-                                structure = (TVHITTESTINFO)Marshal.PtrToStructure(ptr, typeof(TVHITTESTINFO));
-                                if((structure.flags & 0x10) == 0 && (structure.flags & 0x80) == 0) {
-                                    treeControl.HitTest(pt, out item);
-
-                                    if(item != null) {
-                                        String str;
-                                        item.GetDisplayName(0x80028000, out str);
-
-                                        // TODO
-                                        Debug.WriteLine(str);
-                                    }
-                                }
+        private void TreeView_MiddleClicked(IShellItem item) {
+            String str;
+            item.GetDisplayName(0x80028000, out str);
+            using(IDLWrapper wrapper = new IDLWrapper(str)) {
+                if(wrapper.Available && wrapper.HasPath && wrapper.IsReadyIfDrive) {
+                    if(wrapper.IsFolder) {
+                        OpenNewTab(wrapper, (ModifierKeys & Keys.Shift) != 0, false);
+                    }
+                    else if(wrapper.IsLink && !wrapper.IsLinkToDeadFolder) {
+                        using(IDLWrapper wrapper2 = new IDLWrapper(ShellMethods.GetLinkTargetIDL(wrapper.Path))) {
+                            if(wrapper2.Available && wrapper2.HasPath && wrapper2.IsReadyIfDrive && wrapper2.IsFolder) {
+                                OpenNewTab(wrapper2, (ModifierKeys & Keys.Shift) != 0, false);
                             }
                         }
-                        finally {
-                            if(item != null) {
-                                Marshal.ReleaseComObject(item);
-                            }
-                            if(ptr != IntPtr.Zero) {
-                                Marshal.FreeHGlobal(ptr);
-                            }
-                        }
-
                     }
-                    break;
-
-                case WM.DESTROY:
-                    if(treeControl != null) {
-                        Marshal.ReleaseComObject(treeControl);
-                        treeControl = null;
-                    }
-                    break;
+                }
             }
-            return false;
         }
 
         internal bool TryGetSelection(out Address[] adSelectedItems, out string pathFocused, bool fDisplayName) {

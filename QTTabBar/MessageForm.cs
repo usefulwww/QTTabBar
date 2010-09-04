@@ -218,22 +218,25 @@ namespace QTTabBarLib {
             form.ShowMessageForm();
         }
 
-        public static void Show(IntPtr hwndParent, string strMessage, string strTitle, MessageBoxIcon icon, int msecDuration, bool fModal = false) {
+        public static void Show(IntPtr hwndParent, string strMessage, string strTitle, MessageBoxIcon icon, int msecDuration, bool fModal = false, bool fTopMost = false) {
             MessageForm form = new MessageForm(strMessage, strTitle, null, icon, msecDuration);
+            Rectangle parentRect;
             if(hwndParent != IntPtr.Zero) {
                 RECT rect;
                 PInvoke.GetWindowRect(hwndParent, out rect);
-                form.Location = new Point(rect.left + ((rect.Width - form.Width) / 2), rect.top + ((rect.Height - form.Height) / 2));
+                parentRect = rect.ToRectangle();
             }
             else {
-                Rectangle workingArea = Screen.PrimaryScreen.WorkingArea;
-                form.Location = new Point((workingArea.X + workingArea.Width) - form.Width, (workingArea.Y + workingArea.Height) - form.Height);
+                parentRect = Screen.PrimaryScreen.WorkingArea;
             }
+            form.Location = new Point(parentRect.Left + ((parentRect.Width - form.Width) / 2),
+                    parentRect.Top + ((parentRect.Height - form.Height) / 2));
             if(fModal) {
                 form.TopMost = true;
                 form.ShowDialog();
             }
             else {
+                form.TopMost = fTopMost;
                 form.ShowMessageForm();
             }
         }

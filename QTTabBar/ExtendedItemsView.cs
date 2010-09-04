@@ -30,7 +30,6 @@ namespace QTTabBarLib {
         private Point lastMouseMovePoint;
         private CachedListItemElement hotElement;
         private CachedListItemElement focusedElement;
-        private IntPtr hwndEnumResult;
 
         internal ExtendedItemsView(ShellBrowserEx ShellBrowser, IntPtr hwndShellView, IntPtr hwndListView, IntPtr hwndSubDirTipMessageReflect, AutomationManager AutoMan)
                 : base(ShellBrowser, hwndShellView, hwndListView, hwndSubDirTipMessageReflect) {
