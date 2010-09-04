@@ -217,7 +217,7 @@ namespace QTTabBarLib {
                         // HandleShiftKey is called by a Hook callback, which apparently causes
                         // problems with automation.  Use PostMessage to update the SubDirTip later.
                         hotElement = null;
-                        PInvoke.PostMessage(Handle, (uint)WM_AFTERPAINT, IntPtr.Zero, IntPtr.Zero);
+                        PInvoke.PostMessage(Handle, WM_AFTERPAINT, IntPtr.Zero, IntPtr.Zero);
                     }
                 }
                 else if(!SubDirTipMenuIsShowing()) {
@@ -370,10 +370,10 @@ namespace QTTabBarLib {
                         lastMouseMovePoint = pt;
                         if(focusedElement != null) {
                             if(hotElement == null && focusedElement.FullRect.Contains(pt)) {
-                                PInvoke.PostMessage(Handle, (uint)WM_AFTERPAINT, IntPtr.Zero, IntPtr.Zero);
+                                PInvoke.PostMessage(Handle, WM_AFTERPAINT, IntPtr.Zero, IntPtr.Zero);
                             }
                             else if(hotElement != null && hotElement.Index == focusedElement.Index && !focusedElement.FullRect.Contains(pt)) {
-                                PInvoke.PostMessage(Handle, (uint)WM_AFTERPAINT, IntPtr.Zero, IntPtr.Zero);
+                                PInvoke.PostMessage(Handle, WM_AFTERPAINT, IntPtr.Zero, IntPtr.Zero);
                             }
                         }
                     }
@@ -383,7 +383,7 @@ namespace QTTabBarLib {
                 case WM.MOUSELEAVE:
                     if(focusedElement != null) {
                         if(hotElement != null && hotElement.Index == focusedElement.Index) {
-                            PInvoke.PostMessage(Handle, (uint)WM_AFTERPAINT, IntPtr.Zero, IntPtr.Zero);
+                            PInvoke.PostMessage(Handle, WM_AFTERPAINT, IntPtr.Zero, IntPtr.Zero);
                         }
                     }
                     break;

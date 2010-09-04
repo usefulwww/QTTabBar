@@ -53,8 +53,9 @@ namespace QTTabBarLib {
         internal event ItemRightClickedEventHandler SubDirTip_MultipleMenuItemsRightClicked;
         #endregion
 
-        protected static readonly Int32 WM_AFTERPAINT = (Int32)PInvoke.RegisterWindowMessage("QTTabBar_AfterPaint");
-        protected static readonly Int32 WM_REMOTEDISPOSE = (Int32)PInvoke.RegisterWindowMessage("QTTabBar_RemoteDispose");
+        protected static readonly UInt32 WM_AFTERPAINT = PInvoke.RegisterWindowMessage("QTTabBar_AfterPaint");
+        protected static readonly UInt32 WM_REMOTEDISPOSE = PInvoke.RegisterWindowMessage("QTTabBar_RemoteDispose");
+        protected static readonly UInt32 WM_REGISTERDRAGDROP = PInvoke.RegisterWindowMessage("QTTabBar_RegisterDragDrop");
 
         protected NativeWindowController ListViewController;
         protected NativeWindowController ShellViewController;
@@ -92,7 +93,6 @@ namespace QTTabBarLib {
             timer_HoverSubDirTipMenu.Tick += timer_HoverSubDirTipMenu_Tick;
 
             hwndExplorer = PInvoke.GetAncestor(hwndShellView, 3 /* GA_ROOTOWNER */);
-            HookDropTarget();
         }
 
         public override IntPtr Handle {
@@ -249,26 +249,6 @@ namespace QTTabBarLib {
 
         public abstract override int HitTest(Point pt, bool ScreenCoords);
 
-        private void HookDropTarget() {
-            if(dropTargetPassthrough != null) {
-                dropTargetPassthrough.Dispose();
-                dropTargetPassthrough = null;
-            }
-            IntPtr ptr = PInvoke.GetProp(Handle, "OleDropTargetInterface");
-            if(ptr != IntPtr.Zero) {
-                object obj = Marshal.GetObjectForIUnknown(ptr);
-                _IDropTarget passthrough = obj as _IDropTarget;
-                if(passthrough != null) {
-                    PInvoke.RevokeDragDrop(Handle);
-                    dropTargetPassthrough = new DropTargetPassthrough(passthrough, this);
-                    PInvoke.RegisterDragDrop(Handle, dropTargetPassthrough);
-                }
-                else {
-                    Marshal.ReleaseComObject(obj);
-                }
-            }
-        }
-
         public abstract override bool HotItemIsSelected(); 
 
         // If the ListView is in Details mode, returns true only if the mouse
@@ -283,6 +263,25 @@ namespace QTTabBarLib {
                 RefreshSubDirTip(true);
                 return true;
             }
+            else if(msg.Msg == WM_REGISTERDRAGDROP) {
+                if(dropTargetPassthrough != null) {
+                    dropTargetPassthrough.Dispose();
+                    dropTargetPassthrough = null;
+                }
+                IntPtr ptr = Marshal.ReadIntPtr(msg.WParam);
+                if(ptr != IntPtr.Zero) {
+                    object obj = Marshal.GetObjectForIUnknown(ptr);
+                    _IDropTarget passthrough = obj as _IDropTarget;
+                    if(passthrough != null) {
+                        dropTargetPassthrough = new DropTargetPassthrough(passthrough, this);
+                        Marshal.WriteIntPtr(msg.WParam, dropTargetPassthrough.Pointer);
+                    }
+                    else {
+                        Marshal.ReleaseComObject(obj);
+                    }
+                }
+                return true;
+            }
 
             switch(msg.Msg) {
                 case WM.DESTROY:
@@ -295,7 +294,7 @@ namespace QTTabBarLib {
                 case WM.PAINT:
                     // It's very dangerous to do automation-related things
                     // during WM_PAINT.  So, use PostMessage to do it later.
-                    PInvoke.PostMessage(ListViewController.Handle, (uint)WM_AFTERPAINT, IntPtr.Zero, IntPtr.Zero);
+                    PInvoke.PostMessage(ListViewController.Handle, WM_AFTERPAINT, IntPtr.Zero, IntPtr.Zero);
                     break;
 
                 case WM.MOUSEMOVE:
@@ -508,7 +507,7 @@ namespace QTTabBarLib {
         }
 
         public void RemoteDispose() {
-            PInvoke.PostMessage(Handle, (uint)WM_REMOTEDISPOSE, IntPtr.Zero, IntPtr.Zero);
+            PInvoke.PostMessage(Handle, WM_REMOTEDISPOSE, IntPtr.Zero, IntPtr.Zero);
         }
 
         private void ResetTrackMouseEvent() {
@@ -555,23 +554,6 @@ namespace QTTabBarLib {
                 case WM.NOTIFY:
                     NMHDR nmhdr = (NMHDR)Marshal.PtrToStructure(msg.LParam, typeof(NMHDR));
                     return OnShellViewNotify(nmhdr, ref msg);
-
-                // The DropTarget isn't registered until some time after the window is
-                // created.  These messages don't fire that often, and always seem
-                // to fire around the time the DropTarget is registered, but they're
-                // just guesses.  The smart way to do this is to set an API hook on
-                // RegisterDragDrop.  TODO.
-                case WM.SHOWWINDOW:
-                    if(msg.WParam != IntPtr.Zero && dropTargetPassthrough == null) {
-                        HookDropTarget();
-                    }
-                    break;
-
-                case WM.WINDOWPOSCHANGING:
-                    if(QTUtility.IsXP && dropTargetPassthrough == null) {
-                        HookDropTarget();
-                    }
-                    break;
             }
             return false;
         }
@@ -764,7 +746,10 @@ namespace QTTabBarLib {
             public DropTargetPassthrough(_IDropTarget passthrough, ExtendedListViewCommon parent) {
                 this.passthrough = passthrough;
                 this.parent = parent;
+                Pointer = Marshal.GetComInterfaceForObject(this, typeof(_IDropTarget));
             }
+
+            public IntPtr Pointer { get; private set; }
 
             public int DragEnter(IDataObject pDataObj, int grfKeyState, Point pt, ref DragDropEffects pdwEffect) {
                 fDraggingOnListView = parent.MouseIsOverListView();
@@ -801,6 +786,10 @@ namespace QTTabBarLib {
                 if(passthrough != null) {
                     Marshal.ReleaseComObject(passthrough);
                     passthrough = null;
+                }
+                if(Pointer != IntPtr.Zero) {
+                    Marshal.Release(Pointer);
+                    Pointer = IntPtr.Zero;
                 }
             }
         }
