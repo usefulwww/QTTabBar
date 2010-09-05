@@ -30,8 +30,8 @@ typedef HRESULT (WINAPI *REGISTERDRAGDROP)(HWND, LPDROPTARGET);
 
 bool Initialize();
 bool Dispose();
-HRESULT DetourCoCreateInstance(REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWORD dwClsContext, REFIID riid, LPVOID FAR* ppv);
-HRESULT DetourRegisterDragDrop(HWND hwnd, LPDROPTARGET pDropTarget);
+HRESULT WINAPI DetourCoCreateInstance(REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWORD dwClsContext, REFIID riid, LPVOID FAR* ppv);
+HRESULT WINAPI DetourRegisterDragDrop(HWND hwnd, LPDROPTARGET pDropTarget);
 
 unsigned int WM_REGISTERDRAGDROP;
 unsigned int WM_NEWTREECONTROL;
@@ -101,7 +101,7 @@ bool Dispose() {
     return true;
 }
 
-HRESULT DetourCoCreateInstance(REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWORD dwClsContext, REFIID riid, LPVOID FAR* ppv) {
+HRESULT WINAPI DetourCoCreateInstance(REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWORD dwClsContext, REFIID riid, LPVOID FAR* ppv) {
     HRESULT ret = fpCoCreateInstance(rclsid, pUnkOuter, dwClsContext, riid, ppv);
     if(SUCCEEDED(ret) && (
             IsEqualIID(riid, __uuidof(INameSpaceTreeControl)) || 
@@ -111,7 +111,7 @@ HRESULT DetourCoCreateInstance(REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWORD dwCls
     return ret;
 }
 
-HRESULT DetourRegisterDragDrop(IN HWND hwnd, IN LPDROPTARGET pDropTarget) {
+HRESULT WINAPI DetourRegisterDragDrop(IN HWND hwnd, IN LPDROPTARGET pDropTarget) {
     LPDROPTARGET* ppDropTarget = &pDropTarget;
     SendMessage(hwnd, WM_REGISTERDRAGDROP, reinterpret_cast<WPARAM>(ppDropTarget), NULL);
     return fpRegisterDragDrop(hwnd, *ppDropTarget);
