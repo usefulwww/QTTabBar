@@ -19,4 +19,7 @@ IF EXIST Interop.SHDocVw.dll (
     gacutil /if Interop.SHDocVw.dll
 )
 
+cd ..\..\..\QTHookLib\bin\%1
+copy /y * %allusersprofile%\QTTabBar\
+
 cd ..\..\..\Register
