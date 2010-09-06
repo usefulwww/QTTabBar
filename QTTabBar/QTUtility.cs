@@ -256,7 +256,12 @@ namespace QTTabBarLib {
                             string familyName = (string)key.GetValue("TabFont", string.Empty);
                             string s = (string)key.GetValue("TabFontSize", "0");
                             if(float.TryParse(s, out num) && (num != 0f)) {
-                                TabFont = new Font(familyName, num);
+                                try {
+                                    TabFont = new Font(familyName, num);
+                                }
+                                catch {
+                                    TabFont = Control.DefaultFont;
+                                }
                             }
                             Action_BarDblClick = (string)key.GetValue("Action_BarDblClick", string.Empty);
                             MaxCount_History = QTUtility2.GetRegistryValueSafe(key, "Max_Undo", 0x10);
