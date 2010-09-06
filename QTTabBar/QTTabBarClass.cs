@@ -2014,20 +2014,9 @@ namespace QTTabBarLib {
                 bool flag3 = QTUtility2.IsShellPathButNotFileSystem(CurrentTab.CurrentPath);
 
                 if(QTUtility.CheckConfig(Settings.AlwaysShowHeaders)) {
-                    ShellBrowser.EnableHeaderInAllViews();
-
-                    // It seems the ItemsView doesn't respect the FWF.NOHEADERINALLVIEWS flag
-                    // until the view has been refreshed.  Rather than call IShellView.Refresh
-                    // and potentially redownload a huge file listing, we can just briefly
-                    // change the view mode to something it's not, and then change it back.
-                    // LIST and SMALLICON seem like fairly simple views, if that matters.
-                    int viewMode = ShellBrowser.ViewMode;
-                    if(viewMode != FVM.DETAILS && listView is ExtendedItemsView) {
-                        listView.SetRedraw(false);
-                        ShellBrowser.ViewMode = viewMode == FVM.LIST ? FVM.SMALLICON : FVM.LIST;
-                        ShellBrowser.ViewMode = viewMode;
-                        listView.SetRedraw(true);
-                    }                    
+                    listView.SetRedraw(false);
+                    ShellBrowser.EnableHeaderInAllViews(listView is ExtendedItemsView);
+                    listView.SetRedraw(true);
                 }
 
                 // If we're navigating on a locked tab, we simulate opening the target folder

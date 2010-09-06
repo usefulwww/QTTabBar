@@ -60,13 +60,27 @@ namespace QTTabBarLib {
             }
         }
 
-        public void EnableHeaderInAllViews() {
+        public void EnableHeaderInAllViews(bool isItemsView) {
             IShellView ppshv = null;
             try {
                 if(shellBrowser.QueryActiveShellView(out ppshv) == 0) {
                     IFolderView2 view2 = ppshv as IFolderView2;
                     if(view2 != null) {
                         view2.SetCurrentFolderFlags(FWF.NOHEADERINALLVIEWS, 0);
+
+                        // It seems the ItemsView doesn't respect the FWF.NOHEADERINALLVIEWS flag
+                        // until the view has been refreshed.  Rather than call IShellView.Refresh
+                        // and potentially redownload a huge file listing, we can just briefly
+                        // change the view mode to something it's not, and then change it back.
+                        // LIST and SMALLICON seem like fairly simple views, if that matters.
+                        if(isItemsView) {
+                            int viewMode, iconSize;
+                            view2.GetViewModeAndIconSize(out viewMode, out iconSize);
+                            if(viewMode != FVM.DETAILS) {
+                                view2.SetCurrentViewMode(viewMode == FVM.LIST ? FVM.SMALLICON : FVM.LIST);
+                                view2.SetViewModeAndIconSize(viewMode, iconSize);
+                            }
+                        }
                     }
                 }
             }
