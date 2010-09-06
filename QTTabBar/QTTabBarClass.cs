@@ -1277,8 +1277,19 @@ namespace QTTabBarLib {
                 }
                 else if(e.ClickedItem == tsmiCloseAllButThis) {
                     tabControl1.SetRedraw(false);
-                    foreach(QTabItem item in tabControl1.TabPages) {
-                        if(item != ContextMenuedTab) CloseTab(item);
+                    List<QTabItemBase> items = tabControl1.TabPages.Where(
+                            item => item != CurrentTab && item != ContextMenuedTab && !item.TabLocked).ToList();
+                    foreach(QTabItem item in items) {
+                        lstActivatedTabs.Remove(item);
+                        AddToHistory(item);
+                        tabControl1.TabPages.Remove(item);
+                        item.OnClose();
+                    }
+                    if(CurrentTab == ContextMenuedTab) {
+                        SyncButtonBarCurrent(0x1003c);
+                    }
+                    else {
+                        CloseTab(CurrentTab);
                     }
                     tabControl1.SetRedraw(true);
                 }
