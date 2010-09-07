@@ -271,12 +271,17 @@ namespace QTTabBarLib {
                 IntPtr ptr = Marshal.ReadIntPtr(msg.WParam);
                 if(ptr != IntPtr.Zero) {
                     object obj = Marshal.GetObjectForIUnknown(ptr);
-                    _IDropTarget passthrough = obj as _IDropTarget;
-                    if(passthrough != null) {
-                        dropTargetPassthrough = new DropTargetPassthrough(passthrough, this);
-                        Marshal.WriteIntPtr(msg.WParam, dropTargetPassthrough.Pointer);
+                    try {
+                        if(obj is _IDropTarget) {
+
+                            // For some reason, the RCW doesn't work in dropTargetPassthrough's
+                            // functions if it's created now.  So, we'll just keep the pointer,
+                            // and create the RCW each time we need it.
+                            dropTargetPassthrough = new DropTargetPassthrough(ptr, this);
+                            Marshal.WriteIntPtr(msg.WParam, dropTargetPassthrough.Pointer);
+                        }
                     }
-                    else {
+                    finally {
                         Marshal.ReleaseComObject(obj);
                     }
                 }
@@ -738,13 +743,14 @@ namespace QTTabBarLib {
         }
 
         private class DropTargetPassthrough : _IDropTarget, IDisposable {
-            private _IDropTarget passthrough;
+            private IntPtr passthrough;
             private ExtendedListViewCommon parent;
             private bool fDraggingOnListView;
             private Point pointLastDrag = new Point(0, 0);
 
-            public DropTargetPassthrough(_IDropTarget passthrough, ExtendedListViewCommon parent) {
+            public DropTargetPassthrough(IntPtr passthrough, ExtendedListViewCommon parent) {
                 this.passthrough = passthrough;
+                Marshal.AddRef(passthrough);
                 this.parent = parent;
                 Pointer = Marshal.GetComInterfaceForObject(this, typeof(_IDropTarget));
             }
@@ -756,7 +762,11 @@ namespace QTTabBarLib {
                 if(fDraggingOnListView) {
                     parent.OnDragBegin();
                 }
-                return passthrough.DragEnter(pDataObj, grfKeyState, pt, ref pdwEffect);
+
+                _IDropTarget dt = (_IDropTarget)Marshal.GetObjectForIUnknown(passthrough);
+                int ret = dt.DragEnter(pDataObj, grfKeyState, pt, ref pdwEffect);
+                Marshal.ReleaseComObject(dt);
+                return ret;
             }
 
             public int DragOver(int grfKeyState, Point pt, ref DragDropEffects pdwEffect) {
@@ -764,7 +774,11 @@ namespace QTTabBarLib {
                     pointLastDrag = pt;
                     parent.OnDragOver(pt);
                 }
-                return passthrough.DragOver(grfKeyState, pt, ref pdwEffect);
+
+                _IDropTarget dt = (_IDropTarget)Marshal.GetObjectForIUnknown(passthrough);
+                int ret = dt.DragOver(grfKeyState, pt, ref pdwEffect);
+                Marshal.ReleaseComObject(dt);
+                return ret;
             }
 
             public int DragLeave() {
@@ -774,18 +788,26 @@ namespace QTTabBarLib {
                         parent.OnDragEnd();
                     }
                 }
-                return passthrough.DragLeave();
+
+                _IDropTarget dt = (_IDropTarget)Marshal.GetObjectForIUnknown(passthrough);
+                int ret = dt.DragLeave();
+                Marshal.ReleaseComObject(dt);
+                return ret;
             }
 
             public int DragDrop(IDataObject pDataObj, int grfKeyState, Point pt, ref DragDropEffects pdwEffect) {
                 parent.OnDragEnd();
-                return passthrough.DragDrop(pDataObj, grfKeyState, pt, ref pdwEffect);
+
+                _IDropTarget dt = (_IDropTarget)Marshal.GetObjectForIUnknown(passthrough);
+                int ret = dt.DragDrop(pDataObj, grfKeyState, pt, ref pdwEffect);
+                Marshal.ReleaseComObject(dt);
+                return ret;
             }
 
             public void Dispose() {
-                if(passthrough != null) {
-                    Marshal.ReleaseComObject(passthrough);
-                    passthrough = null;
+                if(passthrough != IntPtr.Zero) {
+                    Marshal.Release(passthrough);
+                    passthrough = IntPtr.Zero;
                 }
                 if(Pointer != IntPtr.Zero) {
                     Marshal.Release(Pointer);
