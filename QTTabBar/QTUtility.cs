@@ -335,6 +335,7 @@ namespace QTTabBarLib {
                     // We don't want to open the same file that the installer installed,
                     // because then the installer won't be able to overwrite it when
                     // the user upgrades.  So make a copy and put it in the Local AppData.
+                    bool installError = false;
                     string filename = IntPtr.Size == 8 ? "QTHookLib64.dll" : "QTHookLib32.dll";
                     string commonAppData = Path.Combine(Environment.GetFolderPath(
                             Environment.SpecialFolder.CommonApplicationData), "QTTabBar");
@@ -351,27 +352,37 @@ namespace QTTabBarLib {
                                 File.Copy(commonPath, localPath);
                             }
                             catch {
-                                // TODO: Localize this
-                                MessageForm.Show(IntPtr.Zero, 
-                                    "Error:  Unable to install new QTTabBar hook library.  " +
-                                    "Some features might not be functional.  " +
-                                    "You may have to reboot your computer to complete the installation.",
-                                    "Error", MessageBoxIcon.Hand, 30000, false, true);
+                                installError = true;
                             }
                         }
                     }
                     else {
                         try {
+                            if(!Directory.Exists(localAppData)) {
+                                Directory.CreateDirectory(localAppData);
+                            }
                             File.Copy(commonPath, localPath);
                         }
                         catch {
+                            installError = true;
                         }                        
                     }
-                    hHookLib = PInvoke.LoadLibrary(localPath); 
-                    if(hHookLib == IntPtr.Zero) {
+                    if(installError) {
                         // TODO: Localize this
-                        MessageForm.Show(IntPtr.Zero, "Error:  Unable to load QTTabBar hook library.  " + 
-                            "Some features might not be functional.", "Error", MessageBoxIcon.Hand, 30000, false, true);
+                        MessageForm.Show(IntPtr.Zero,
+                            "Error:  Unable to install new QTTabBar hook library.  " +
+                            "Some features might not be functional.  " +
+                            "You may have to reboot your computer to complete the installation.",
+                            "Error", MessageBoxIcon.Hand, 30000, false, true);
+                    }
+                    else {
+                        hHookLib = PInvoke.LoadLibrary(localPath);
+                        if(hHookLib == IntPtr.Zero) {
+                            // TODO: Localize this
+                            MessageForm.Show(IntPtr.Zero, "Error:  Unable to load QTTabBar hook library.  " +
+                                    "Some features might not be functional.", "Error", MessageBoxIcon.Hand, 30000, false,
+                                    true);
+                        }
                     }
                 }
                 catch(Exception exception) {
