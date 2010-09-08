@@ -116,7 +116,7 @@ namespace QTTabBarLib {
                     // the SubDirTip anyway.
                     ShellViewController.DefWndProc(ref msg);
                     HideSubDirTip(0xff);
-                    break;
+                    return true;
 
                 case LVN.ITEMACTIVATE: {
                     // Handled by catching Double Clicks and Enter keys.  Ugh...
