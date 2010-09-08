@@ -818,6 +818,10 @@ namespace QTTabBarLib {
 
         public override void CloseDW(uint dwReserved) {
             try {
+                if(treeViewWrapper != null) {
+                    treeViewWrapper.Dispose();
+                    treeViewWrapper = null;
+                }
                 if(listViewManager != null) {
                     listViewManager.Dispose();
                     listViewManager = null;
