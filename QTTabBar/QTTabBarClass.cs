@@ -2205,7 +2205,7 @@ namespace QTTabBarLib {
                     listView.HideSubDirTip(0);
                     return false;
 
-                case : {
+                case WM.ACTIVATE: {
                     int num3 = ((int) msg.WParam) & 0xffff;
                     if(num3 > 0) {
                         QTUtility.RegisterPrimaryInstance(ExplorerHandle, this);
