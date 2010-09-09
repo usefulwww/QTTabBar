@@ -90,7 +90,7 @@ namespace QTTabBarLib {
         private int iSequential_WM_CLOSE;
         private bool IsShown;
         private Dictionary<int, ITravelLogEntry> LogEntryDic = new Dictionary<int, ITravelLogEntry>();
-        private AbstractListView listView;
+        private AbstractListView listView = new AbstractListView();
         private ListViewMonitor listViewManager;
         private List<QTabItem> lstActivatedTabs = new List<QTabItem>(0x10);
         private List<ToolStripItem> lstPluginMenuItems_Sys;
@@ -2205,11 +2205,11 @@ namespace QTTabBarLib {
                     listView.HideSubDirTip(0);
                     return false;
 
-                case WM.ACTIVATE: {
+                case : {
                     int num3 = ((int) msg.WParam) & 0xffff;
                     if(num3 > 0) {
                         QTUtility.RegisterPrimaryInstance(ExplorerHandle, this);
-                        if((fNowInTray && (notifyIcon != null)) &&
+                        if(fNowInTray && notifyIcon != null && dicNotifyIcon != null &&
                                 dicNotifyIcon.ContainsKey(ExplorerHandle)) {
                             ShowTaskbarItem(ExplorerHandle, true);
                         }
