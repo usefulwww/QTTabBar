@@ -3732,6 +3732,10 @@ namespace QTTabBarLib {
             return;
         }
 
+        private void ListView_Refresh() {
+            HandleF5();
+        }
+
         private bool ListView_ItemActivated(Keys modKeys) {
             if(timerSelectionChanged != null) {
                 timerSelectionChanged.Enabled = false;
@@ -3844,12 +3848,13 @@ namespace QTTabBarLib {
                 elvc.DoubleClick += ListView_DoubleClick;
                 elvc.EndLabelEdit += ListView_EndLabelEdit;
                 elvc.MouseActivate += ListView_MouseActivate;
+                elvc.Refresh += ListView_Refresh;
                 elvc.SubDirTip_MenuItemClicked += subDirTip_MenuItemClicked;
                 elvc.SubDirTip_MenuItemRightClicked += subDirTip_MenuItemRightClicked;
                 elvc.SubDirTip_MultipleMenuItemsClicked += subDirTip_MultipleMenuItemsClicked;
                 elvc.SubDirTip_MultipleMenuItemsRightClicked += subDirTip_MultipleMenuItemsRightClicked;               
             }
-
+            HandleF5();
         }
           
         private string MakeTravelBtnTooltipText(bool fBack) {

@@ -1374,19 +1374,17 @@ namespace QTTabBarLib {
                         if(str.StartsWith("/") && str.EndsWith("/")) {
                             try {
                                 regex = new Regex(str.Substring(1, str.Length - 2), RegexOptions.IgnoreCase);
-                                goto Label_0184;
                             }
                             catch {
                                 SystemSounds.Asterisk.Play();
                                 return false;
                             }
                         }
-                        if(((pluginManager == null) || (pluginManager.IFilter == null)) || (!pluginManager.IFilter.QueryRegex(str, out regex) || (regex == null))) {
+                        else if(((pluginManager == null) || (pluginManager.IFilter == null)) || (!pluginManager.IFilter.QueryRegex(str, out regex) || (regex == null))) {
                             string input = Regex.Escape(str);
                             input = reAsterisc.Replace(input, ".*");
                             regex = new Regex(reQuestion.Replace(input, "."), RegexOptions.IgnoreCase);
                         }
-                    Label_0184:
                         int num2 = num;
                         if(!ShellMethods.GetShellFolder(zero, out shellFolder)) {
                             return false;

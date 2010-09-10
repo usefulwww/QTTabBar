@@ -107,7 +107,12 @@ namespace QTTabBarLib {
                         PInvoke.InvalidateRect(nmhdr.hwndFrom, IntPtr.Zero, true);
                     }
                     ShellViewController.DefWndProc(ref msg);
-                    OnItemCountChanged();
+                    if(nmhdr.code == LVN.DELETEALLITEMS) {
+                        OnRefresh();
+                    }
+                    else {
+                        OnItemCountChanged();
+                    }
                     return true;
 
                 case LVN.BEGINDRAG:

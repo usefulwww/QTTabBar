@@ -36,6 +36,7 @@ namespace QTTabBarLib {
         internal delegate bool MiddleClickHandler(Point pt);
         internal delegate bool MouseActivateHandler(ref int result);
         internal delegate void SelectionChangedHandler();
+        internal delegate void RefreshHandler();
         #endregion
 
         #region Events
@@ -46,6 +47,7 @@ namespace QTTabBarLib {
         internal event MiddleClickHandler MiddleClick;            // OK
         internal event MouseActivateHandler MouseActivate;        // OK
         internal event SelectionChangedHandler SelectionChanged;  // OK
+        internal event RefreshHandler Refresh;                    // SysListView Only
         internal event EventHandler SubDirTip_MenuClosed;
         internal event ToolStripItemClickedEventHandler SubDirTip_MenuItemClicked;
         internal event ItemRightClickedEventHandler SubDirTip_MenuItemRightClicked;
@@ -467,6 +469,10 @@ namespace QTTabBarLib {
 
         protected bool OnMouseActivate(ref int result) {
             return MouseActivate != null && MouseActivate(ref result);
+        }
+
+        protected void OnRefresh() {
+            if(Refresh != null) Refresh();
         }
 
         protected void OnSelectionChanged() {
