@@ -306,10 +306,10 @@ namespace QTTabBarLib {
         }
 
         // This function is a standin for BeforeNavigate2.  On 7, the path is
-        // empty and cancel has no effect.
-        private void BeforeNavigate(string path, ref bool cancel) {
+        // empty and return value has no effect.
+        private bool BeforeNavigate(string path) {
             if(NowNavigating || !IsShown) {
-                return;
+                return false;
             }
             HideSubDirTip_Tab_Menu();
             NowNavigating = true;
@@ -323,8 +323,7 @@ namespace QTTabBarLib {
                         !QTUtility2.IsShellPathButNotFileSystem(CurrentTab.CurrentPath)) &&
                         !QTUtility2.IsShellPathButNotFileSystem(path)) {
                     CloneTabButton(CurrentTab, path, true, -1);
-                    cancel = true;
-                    return;
+                    return true;
                 }
             }
             if(NowInTravelLog) {
@@ -340,6 +339,7 @@ namespace QTTabBarLib {
                     NowInTravelLog = false;
                 }
             }
+            return false;
         }
 
         private void CallBackDoOpenGroups(object obj, IntPtr ptr) {
@@ -1988,14 +1988,16 @@ namespace QTTabBarLib {
         }
 
         private void Explorer_DownloadBegin() {
-            bool dummy = false;
-            BeforeNavigate("", ref dummy);
+            HandleF5();
+            BeforeNavigate(string.Empty);
         }
 
         private void Explorer_BeforeNavigate2(object pDisp, ref object URL, ref object Flags, ref object TargetFrameName, ref object PostData, ref object Headers, ref bool Cancel) {
             if(IsShown) {
-                BeforeNavigate((string)URL, ref Cancel);
-            } 
+                if(BeforeNavigate((string)URL)) {
+                    Cancel = true;
+                }
+            }
             else {
                 DoFirstNavigation(true, (string)URL);
             }
