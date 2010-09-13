@@ -66,7 +66,7 @@ namespace QTTabBarLib {
         protected bool fTrackMouseEvent;
         protected IntPtr hwndExplorer;
         private IntPtr hwndSubDirTipMessageReflect;
-        protected ShellBrowserEx ShellBrowser;
+        protected readonly ShellBrowserEx ShellBrowser;
         protected int subDirIndex = -1;
         protected SubDirTipForm subDirTip;
         protected int thumbnailIndex = -1;
@@ -95,6 +95,16 @@ namespace QTTabBarLib {
             timer_HoverSubDirTipMenu.Tick += timer_HoverSubDirTipMenu_Tick;
 
             hwndExplorer = PInvoke.GetAncestor(hwndShellView, 3 /* GA_ROOTOWNER */);
+
+            // If we're late to the party, we'll have to get the IDropTarget the
+            // old-fashioned way.  Careful!  Calling RegisterDragDrop will go 
+            // through the hook!
+            IntPtr ptr = PInvoke.GetProp(hwndListView, "OleDropTargetInterface");
+            dropTargetPassthrough = TryMakeDTPassthrough(ptr);
+            if(dropTargetPassthrough != null) {
+                PInvoke.RevokeDragDrop(hwndListView);
+                PInvoke.RegisterDragDrop(hwndListView, dropTargetPassthrough);
+            }
         }
 
         public override IntPtr Handle {
@@ -138,15 +148,15 @@ namespace QTTabBarLib {
 
         #endregion
 
-        public abstract IntPtr GetEditControl();
+        protected abstract IntPtr GetEditControl();
 
-        public abstract Rectangle GetFocusedItemRect(); 
+        protected abstract Rectangle GetFocusedItemRect(); 
 
         public override int GetHotItem() {
             return HitTest(Control.MousePosition, true);
         }
 
-        public abstract Point GetSubDirTipPoint(bool fByKey);
+        protected abstract Point GetSubDirTipPoint(bool fByKey);
         
         protected abstract bool HandleCursorLoop(Keys key);
 
@@ -266,26 +276,18 @@ namespace QTTabBarLib {
                 return true;
             }
             else if(msg.Msg == WM_REGISTERDRAGDROP) {
-                if(dropTargetPassthrough != null) {
-                    dropTargetPassthrough.Dispose();
-                    dropTargetPassthrough = null;
-                }
                 IntPtr ptr = Marshal.ReadIntPtr(msg.WParam);
-                if(ptr != IntPtr.Zero) {
-                    object obj = Marshal.GetObjectForIUnknown(ptr);
-                    try {
-                        if(obj is _IDropTarget) {
-
-                            // For some reason, the RCW doesn't work in dropTargetPassthrough's
-                            // functions if it's created now.  So, we'll just keep the pointer,
-                            // and create the RCW each time we need it.
-                            dropTargetPassthrough = new DropTargetPassthrough(ptr, this);
-                            Marshal.WriteIntPtr(msg.WParam, dropTargetPassthrough.Pointer);
-                        }
+                if(dropTargetPassthrough != null) {
+                    // If this is the RegisterDragDrop call from the constructor,
+                    // don't mess it up!
+                    if(dropTargetPassthrough.Pointer == ptr) {
+                        return true;
                     }
-                    finally {
-                        Marshal.ReleaseComObject(obj);
-                    }
+                    dropTargetPassthrough.Dispose();
+                }
+                dropTargetPassthrough = TryMakeDTPassthrough(ptr);
+                if(dropTargetPassthrough != null) {
+                    Marshal.WriteIntPtr(msg.WParam, dropTargetPassthrough.Pointer);
                 }
                 return true;
             }
@@ -343,6 +345,25 @@ namespace QTTabBarLib {
                     break;
             }
             return false;
+        }
+
+        private DropTargetPassthrough TryMakeDTPassthrough(IntPtr pDropTarget) {
+            if(pDropTarget != IntPtr.Zero) {
+                object obj = Marshal.GetObjectForIUnknown(pDropTarget);
+                try {
+                    if(obj is _IDropTarget) {
+
+                        // For some reason, the RCW doesn't work in dropTargetPassthrough's
+                        // functions if it's created now.  So, we'll just keep the pointer,
+                        // and create the RCW each time we need it.
+                        return new DropTargetPassthrough(pDropTarget, this);
+                    }
+                }
+                finally {
+                    Marshal.ReleaseComObject(obj);
+                }
+            }
+            return null;
         }
 
         public override bool MouseIsOverListView() {
@@ -768,11 +789,9 @@ namespace QTTabBarLib {
                 if(fDraggingOnListView) {
                     parent.OnDragBegin();
                 }
-
-                _IDropTarget dt = (_IDropTarget)Marshal.GetObjectForIUnknown(passthrough);
-                int ret = dt.DragEnter(pDataObj, grfKeyState, pt, ref pdwEffect);
-                Marshal.ReleaseComObject(dt);
-                return ret;
+                using(DTWrapper wrapper = new DTWrapper(passthrough)) {
+                    return wrapper.DropTarget.DragEnter(pDataObj, grfKeyState, pt, ref pdwEffect);
+                }
             }
 
             public int DragOver(int grfKeyState, Point pt, ref DragDropEffects pdwEffect) {
@@ -780,11 +799,9 @@ namespace QTTabBarLib {
                     pointLastDrag = pt;
                     parent.OnDragOver(pt);
                 }
-
-                _IDropTarget dt = (_IDropTarget)Marshal.GetObjectForIUnknown(passthrough);
-                int ret = dt.DragOver(grfKeyState, pt, ref pdwEffect);
-                Marshal.ReleaseComObject(dt);
-                return ret;
+                using(DTWrapper wrapper = new DTWrapper(passthrough)) {
+                    return wrapper.DropTarget.DragOver(grfKeyState, pt, ref pdwEffect);
+                }
             }
 
             public int DragLeave() {
@@ -794,20 +811,16 @@ namespace QTTabBarLib {
                         parent.OnDragEnd();
                     }
                 }
-
-                _IDropTarget dt = (_IDropTarget)Marshal.GetObjectForIUnknown(passthrough);
-                int ret = dt.DragLeave();
-                Marshal.ReleaseComObject(dt);
-                return ret;
+                using(DTWrapper wrapper = new DTWrapper(passthrough)) {
+                    return wrapper.DropTarget.DragLeave();
+                }
             }
 
             public int DragDrop(IDataObject pDataObj, int grfKeyState, Point pt, ref DragDropEffects pdwEffect) {
                 parent.OnDragEnd();
-
-                _IDropTarget dt = (_IDropTarget)Marshal.GetObjectForIUnknown(passthrough);
-                int ret = dt.DragDrop(pDataObj, grfKeyState, pt, ref pdwEffect);
-                Marshal.ReleaseComObject(dt);
-                return ret;
+                using(DTWrapper wrapper = new DTWrapper(passthrough)) {
+                    return wrapper.DropTarget.DragDrop(pDataObj, grfKeyState, pt, ref pdwEffect);
+                }
             }
 
             public void Dispose() {
@@ -818,6 +831,21 @@ namespace QTTabBarLib {
                 if(Pointer != IntPtr.Zero) {
                     Marshal.Release(Pointer);
                     Pointer = IntPtr.Zero;
+                }
+            }
+
+            private class DTWrapper : IDisposable {
+                public DTWrapper(IntPtr pDropTarget) {
+                    DropTarget = (_IDropTarget)Marshal.GetObjectForIUnknown(pDropTarget);
+                }
+
+                public _IDropTarget DropTarget { get; private set; }
+
+                public void Dispose() {
+                    if(DropTarget != null) {
+                        Marshal.ReleaseComObject(DropTarget);
+                        DropTarget = null;
+                    }
                 }
             }
         }

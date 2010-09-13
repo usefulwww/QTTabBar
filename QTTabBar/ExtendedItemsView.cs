@@ -47,7 +47,7 @@ namespace QTTabBarLib {
             return null;
         }
 
-        public override IntPtr GetEditControl() {
+        protected override IntPtr GetEditControl() {
             return WindowUtils.FindChildWindow(Handle, hwnd => PInvoke.GetClassName(hwnd) == "Edit");
         }
 
@@ -57,7 +57,7 @@ namespace QTTabBarLib {
             return HitTest(Control.MousePosition, true);
         }
 
-        public override Rectangle GetFocusedItemRect() {
+        protected override Rectangle GetFocusedItemRect() {
             if(focusedElement == null) {
                 RefreshCache();
                 if(focusedElement == null) return new Rectangle(0, 0, 0, 0);
@@ -65,7 +65,7 @@ namespace QTTabBarLib {
             return focusedElement.FullRect;
         }
 
-        public override Point GetSubDirTipPoint(bool fByKey) {
+        protected override Point GetSubDirTipPoint(bool fByKey) {
             CachedListItemElement targetElement;
             if(fByKey) {
                 if(focusedElement == null) {

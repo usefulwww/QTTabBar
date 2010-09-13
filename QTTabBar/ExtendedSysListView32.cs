@@ -216,11 +216,11 @@ namespace QTTabBarLib {
             PInvoke.SendMessage(Handle, LVM.SETEXTENDEDLISTVIEWSTYLE, (IntPtr)mask, (IntPtr)flags);
         }
 
-        public override IntPtr GetEditControl() {
+        protected override IntPtr GetEditControl() {
             return PInvoke.SendMessage(Handle, LVM.GETEDITCONTROL, IntPtr.Zero, IntPtr.Zero);
         }
 
-        public override Rectangle GetFocusedItemRect() {
+        protected override Rectangle GetFocusedItemRect() {
             if(HasFocus()) {
                 int code = ShellBrowser.ViewMode == FVM.DETAILS ? LVIR.LABEL : LVIR.BOUNDS;
                 return GetItemRect(ShellBrowser.GetFocusedIndex(), code).ToRectangle();
@@ -228,7 +228,7 @@ namespace QTTabBarLib {
             return new Rectangle(0, 0, 0, 0);
         }
 
-        public override Point GetSubDirTipPoint(bool fByKey) {
+        protected override Point GetSubDirTipPoint(bool fByKey) {
             int iItem = fByKey ? ShellBrowser.GetFocusedIndex() : GetHotItem();
             int x, y;
             Point ret;
