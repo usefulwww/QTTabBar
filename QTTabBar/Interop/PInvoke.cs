@@ -334,6 +334,8 @@ namespace QTTabBarLib.Interop {
         [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
         public static extern int SHGetFolderPath(IntPtr hwndOwner, int nFolder, IntPtr hToken, int dwFlags, StringBuilder pszPath);
         [DllImport("shell32.dll")]
+        public static extern int SHGetIDListFromObject([MarshalAs(UnmanagedType.IUnknown)] object punk, out IntPtr ppidl);
+        [DllImport("shell32.dll")]
         public static extern int SHGetKnownFolderIDList(ref Guid rfid, int dwFlags, IntPtr hToken, out IntPtr ppidl);
         [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
         public static extern int SHGetKnownFolderPath(ref Guid rfid, int dwFlags, IntPtr hToken, [MarshalAs(UnmanagedType.LPWStr)] out string ppszPath);

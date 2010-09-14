@@ -6423,9 +6423,9 @@ namespace QTTabBarLib {
         }
 
         private void TreeView_MiddleClicked(IShellItem item) {
-            String str;
-            item.GetDisplayName(0x80028000, out str);
-            using(IDLWrapper wrapper = new IDLWrapper(str)) {
+            IntPtr pidl;
+            if(PInvoke.SHGetIDListFromObject(item, out pidl) != 0) return;
+            using(IDLWrapper wrapper = new IDLWrapper(pidl)) {
                 if(wrapper.Available && wrapper.HasPath && wrapper.IsReadyIfDrive) {
                     if(wrapper.IsFolder) {
                         OpenNewTab(wrapper, (ModifierKeys & Keys.Shift) != 0, false);
