@@ -57,6 +57,7 @@ namespace QTTabBarLib {
         private IntPtr ExplorerHandle;
         private static bool fInitialized;
         private static bool fNoSettings;
+        private bool fRearranging;
         private bool fSearchBoxInputStart;
         private IContextMenu2 iContextMenu2;
         private static ImageStrip imageStrip_Large;
@@ -1146,7 +1147,7 @@ namespace QTTabBarLib {
             }
         }
 
-        // TODO clean
+        // TODO this doesn't even work.
         private void RearrangeFolderView() {
             IShellView ppshv = null;
             try {
@@ -1154,8 +1155,10 @@ namespace QTTabBarLib {
                     IntPtr ptr;
                     IShellFolderView view2 = (IShellFolderView)ppshv;
                     if((view2.GetArrangeParam(out ptr) == 0) && ((((int)ptr) & 0xffff) != 0)) {
+                        fRearranging = true;
                         view2.Rearrange(ptr);
                         view2.Rearrange(ptr);
+                        fRearranging = false;
                     }
                 }
             }
@@ -1432,7 +1435,12 @@ namespace QTTabBarLib {
                     finally {
                         lvw.SetRedraw(true);
                     }
-                    ShellBrowser.SetStatusText(string.Concat(new object[] { iSearchResultCount, " / ", iSearchResultCount + lstPUITEMIDCHILD.Count, QTUtility.TextResourcesDic["ButtonBar_Misc"][5] }));
+                    ShellBrowser.SetStatusText(string.Concat(
+                            iSearchResultCount,
+                            " / ", 
+                            iSearchResultCount + lstPUITEMIDCHILD.Count,
+                            QTUtility.TextResourcesDic["ButtonBar_Misc"][5]
+                    ));
                 }
             }
             catch(Exception exception) {
@@ -1495,7 +1503,7 @@ namespace QTTabBarLib {
             bool flag = ShellViewIncrementalSearch(strSearch);
             fSearchBoxInputStart = false;
             if(flag) {
-                timerSearchBox_Rearrange.Start();
+                //timerSearchBox_Rearrange.Start();
             }
         }
 
@@ -1903,7 +1911,7 @@ namespace QTTabBarLib {
 
                             case 9:
                                 // TODO
-                                RefreshSearchBox(false);
+                                if(!fRearranging) RefreshSearchBox(false);
                                 return;
 
                             case 10:
@@ -1958,9 +1966,17 @@ namespace QTTabBarLib {
                                 return;
 
                             case 14:
-                                // TODO
                                 if(iSearchResultCount > 0) {
-                                    iSearchResultCount--;
+                                    int newCount = ShellBrowser.GetItemCount();
+                                    if(newCount < iSearchResultCount) {
+                                        iSearchResultCount = newCount;
+                                        ShellBrowser.SetStatusText(string.Concat(
+                                                iSearchResultCount, 
+                                                " / ", 
+                                                iSearchResultCount + lstPUITEMIDCHILD.Count,
+                                                QTUtility.TextResourcesDic["ButtonBar_Misc"][5]
+                                        ));
+                                    }
                                 }
                                 return;
 
