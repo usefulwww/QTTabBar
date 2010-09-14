@@ -162,6 +162,7 @@ namespace QTTabBarLib {
         private ToolStripSeparator tssep_Tab2;
         private ToolStripSeparator tssep_Tab3;
         private readonly uint WM_NEWTREECONTROL = PInvoke.RegisterWindowMessage("QTTabBar_NewTreeControl");
+        private readonly uint WM_BROWSEOBJECT = PInvoke.RegisterWindowMessage("QTTabBar_BrowseObject");
 
         public QTTabBarClass() {
             if(!fInitialized) {
@@ -2183,6 +2184,24 @@ namespace QTTabBarLib {
         private bool explorerController_MessageCaptured(ref Message msg) {
             if(msg.Msg != WM.CLOSE) {
                 iSequential_WM_CLOSE = 0;
+            }
+            
+            if(msg.Msg == WM_BROWSEOBJECT) {
+                // TODO
+                /*
+                QTUtility2.AllocDebugConsole();
+                uint flags = (uint)Marshal.ReadInt32(msg.WParam);
+                IntPtr pidl = msg.LParam;
+                string path = "<null>";
+                if(pidl != IntPtr.Zero) {
+                    using(IDLWrapper wrapper = new IDLWrapper(PInvoke.ILClone(pidl))) {
+                        path = wrapper.ParseName;
+                    }
+                }
+                Console.WriteLine(string.Format("{0:x8}", flags) + ": " + path);
+                */
+
+                return true;
             }
 
             switch(msg.Msg) {
@@ -4446,6 +4465,7 @@ namespace QTTabBarLib {
                 Guid riid = ExplorerGUIDs.IID_IUnknown;
                 bandObjectSite.QueryService(ref guid, ref riid, out obj2);
                 ShellBrowser = new ShellBrowserEx((IShellBrowser)obj2);
+                QTUtility.InitShellBrowserHook(ShellBrowser.GetIShellBrowser());
                 if(QTUtility.CheckConfig(Settings.ForceSysListView)) {
                     ShellBrowser.SetUsingListView(true);
                 }
@@ -4459,7 +4479,9 @@ namespace QTTabBarLib {
             }
             Explorer.BeforeNavigate2 += Explorer_BeforeNavigate2;
             Explorer.NavigateComplete2 += Explorer_NavigateComplete2;
-            Explorer.DownloadBegin += Explorer_DownloadBegin;
+            if(!QTUtility.IsXP) {
+                Explorer.DownloadBegin += Explorer_DownloadBegin;
+            }
         }
 
         protected override void OnPaintBackground(PaintEventArgs e) {

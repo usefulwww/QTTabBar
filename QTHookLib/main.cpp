@@ -17,6 +17,7 @@
 
 #include <Windows.h>
 #include <ShObjIdl.h>
+#include <Shlobj.h>
 #include "MinHook.h"
 
 #if defined _M_X64
@@ -27,16 +28,22 @@
 
 typedef HRESULT (WINAPI *COCREATEINSTANCE)(REFCLSID, LPUNKNOWN, DWORD, REFIID, LPVOID FAR*);
 typedef HRESULT (WINAPI *REGISTERDRAGDROP)(HWND, LPDROPTARGET);
+typedef HRESULT (WINAPI *BROWSEOBJECT)(IShellBrowser*, PCUIDLIST_RELATIVE, UINT);
 
 bool Initialize();
 bool Dispose();
+extern "C" __declspec(dllexport) bool InitShellBrowserHook(IShellBrowser* psb);
 HRESULT WINAPI DetourCoCreateInstance(REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWORD dwClsContext, REFIID riid, LPVOID FAR* ppv);
 HRESULT WINAPI DetourRegisterDragDrop(HWND hwnd, LPDROPTARGET pDropTarget);
+HRESULT WINAPI DetourBrowseObject(IShellBrowser* _this, PCUIDLIST_RELATIVE pidl, UINT wFlags);
 
 unsigned int WM_REGISTERDRAGDROP;
 unsigned int WM_NEWTREECONTROL;
+unsigned int WM_BROWSEOBJECT;
 COCREATEINSTANCE fpCoCreateInstance = NULL;
 REGISTERDRAGDROP fpRegisterDragDrop = NULL;
+BROWSEOBJECT CBaseBrowser_BrowseObject = NULL;
+BROWSEOBJECT fpBrowseObject = NULL;
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved) {
     switch (ul_reason_for_call) {
@@ -58,6 +65,7 @@ bool Initialize() {
     // Register the messages.
     WM_REGISTERDRAGDROP = RegisterWindowMessageA("QTTabBar_RegisterDragDrop");
     WM_NEWTREECONTROL = RegisterWindowMessageA("QTTabBar_NewTreeControl");
+    WM_BROWSEOBJECT = RegisterWindowMessageA("QTTabBar_BrowseObject");
 
     // Initialize MinHook.
     if(MH_Initialize() != MH_OK) {
@@ -83,6 +91,22 @@ bool Initialize() {
     return true;
 }
 
+bool InitShellBrowserHook(IShellBrowser* psb) {
+
+    // Grab the 11th entry in the VTable, which is BrowseObject
+    void** vtable = *reinterpret_cast<void***>(psb);
+    CBaseBrowser_BrowseObject = (BROWSEOBJECT)(vtable[11]);
+
+    // Create and enable CBaseBrowser::BrowseObject hook
+    if(MH_CreateHook(CBaseBrowser_BrowseObject, &DetourBrowseObject, reinterpret_cast<void**>(&fpBrowseObject)) != MH_OK) {
+        return false;
+    }
+    if(MH_EnableHook(CBaseBrowser_BrowseObject) != MH_OK) {
+        return false;
+    }
+    return true;
+}
+
 bool Dispose() {
 
     // Disable hooks
@@ -90,6 +114,9 @@ bool Dispose() {
         return false;
     }
     if(MH_DisableHook(&RegisterDragDrop) != MH_OK) {
+        return false;
+    }
+    if(CBaseBrowser_BrowseObject != NULL && MH_DisableHook(CBaseBrowser_BrowseObject) != MH_OK) {
         return false;
     }
 
@@ -100,6 +127,10 @@ bool Dispose() {
 
     return true;
 }
+
+//////////////////////////////
+// Detour Functions
+//////////////////////////////
 
 HRESULT WINAPI DetourCoCreateInstance(REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWORD dwClsContext, REFIID riid, LPVOID FAR* ppv) {
     HRESULT ret = fpCoCreateInstance(rclsid, pUnkOuter, dwClsContext, riid, ppv);
@@ -115,4 +146,15 @@ HRESULT WINAPI DetourRegisterDragDrop(IN HWND hwnd, IN LPDROPTARGET pDropTarget)
     LPDROPTARGET* ppDropTarget = &pDropTarget;
     SendMessage(hwnd, WM_REGISTERDRAGDROP, reinterpret_cast<WPARAM>(ppDropTarget), NULL);
     return fpRegisterDragDrop(hwnd, *ppDropTarget);
+}
+
+HRESULT WINAPI DetourBrowseObject(IShellBrowser* _this, PCUIDLIST_RELATIVE pidl, UINT wFlags) {
+    HWND hwnd;
+    LRESULT result = 0;
+    if(SUCCEEDED(_this->GetWindow(&hwnd))) {
+        HWND parent = GetParent(hwnd);
+        if(parent != 0) hwnd = parent;
+        result = SendMessage(hwnd, WM_BROWSEOBJECT, reinterpret_cast<WPARAM>(&wFlags), reinterpret_cast<LPARAM>(pidl));
+    } 
+    return result == 0 ? fpBrowseObject(_this, pidl, wFlags) : S_FALSE;
 }

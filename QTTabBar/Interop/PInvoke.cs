@@ -116,6 +116,8 @@ namespace QTTabBarLib.Interop {
         public static extern int GetObject(IntPtr hgdiobj, int cbBuffer, out LOGFONT lpvObject);
         [DllImport("user32.dll")]
         public static extern IntPtr GetParent(IntPtr hWnd);
+        [DllImport("kernel32", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = true)]
+        public static extern IntPtr GetProcAddress(IntPtr hModule, string procName);
         [DllImport("user32.dll")]
         public static extern IntPtr GetProp(IntPtr hWnd, string lpString);
         [DllImport("kernel32.dll", SetLastError = true)]

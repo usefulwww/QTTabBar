@@ -133,6 +133,7 @@ namespace QTTabBarLib {
         internal static bool fRequiredRefresh_App;
         internal static bool fRestoreFolderTree;
         internal static bool fSingleClick;
+        private static bool fShellBrowserIsHooked;
         internal static Dictionary<string, string> GroupPathsDic = new Dictionary<string, string>();
         private static IntPtr hHookLib;
         internal static int iIconUnderLineVal;
@@ -207,6 +208,9 @@ namespace QTTabBarLib {
         internal static byte[] TMPTargetIDL;
         internal static Dictionary<string, string[]> UserAppsDic = new Dictionary<string, string[]>();
         internal static byte WindowAlpha = 0xff;
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate bool InitShellBrowserHookDelegate(IntPtr shellBrowser);
 
         static QTUtility() {
             if(Environment.CommandLine.IndexOf("RegAsm.exe\"", StringComparison.OrdinalIgnoreCase) == -1) {
@@ -723,6 +727,31 @@ namespace QTTabBarLib {
             dictionary[0x80003] = PreviewExtsList_Img.ToArray();
             dictionary[0x80004] = PreviewFontSize;
             return new TabBarOption(dictionary);
+        }
+
+        public static void InitShellBrowserHook(IShellBrowser shellBrowser) {
+            if(fShellBrowserIsHooked || hHookLib == IntPtr.Zero) return;
+            IntPtr pFunc = PInvoke.GetProcAddress(hHookLib, "InitShellBrowserHook");
+            if(pFunc == IntPtr.Zero) return;
+            InitShellBrowserHookDelegate initShellBrowserHook = (InitShellBrowserHookDelegate)
+                    Marshal.GetDelegateForFunctionPointer(pFunc, typeof(InitShellBrowserHookDelegate));
+            IntPtr pShellBrowser = Marshal.GetComInterfaceForObject(shellBrowser, typeof(IShellBrowser));
+            if(pShellBrowser == IntPtr.Zero) return;
+            try {
+                fShellBrowserIsHooked = initShellBrowserHook(pShellBrowser);
+            }
+            catch(Exception e) {
+                QTUtility2.MakeErrorLog(e, "");
+            }
+            finally {
+                Marshal.Release(pShellBrowser);
+            }
+            if(!fShellBrowserIsHooked) {
+                // TODO: Localize this
+                MessageForm.Show(IntPtr.Zero, "Error:  Unable to load QTTabBar hook library.  " +
+                        "Some features might not be functional.", "Error", MessageBoxIcon.Hand, 30000, false,
+                        true);
+            }
         }
 
         private static bool IsNetworkRootFolder(string path) {
