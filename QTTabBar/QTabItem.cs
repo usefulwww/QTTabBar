@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using QTPlugin;
@@ -47,85 +48,53 @@ namespace QTTabBarLib {
         }
 
         public static void CheckSubTexts(QTabControl tabControl) {
-            bool flag = false;
-            char[] separator = new char[] { '\\' };
-            Dictionary<string, List<QTabItem>> dictionary = new Dictionary<string, List<QTabItem>>();
-            foreach(QTabItem item in tabControl.TabPages.Cast<QTabItem>()
-                    .Where(item => !item.CurrentPath.StartsWith("::"))) {
-                if(dictionary.ContainsKey(item.Text)) {
-                    dictionary[item.Text].Add(item);
-                }
-                else {
-                    List<QTabItem> list = new List<QTabItem>();
-                    list.Add(item);
-                    dictionary[item.Text] = list;
+            bool needsRefresh = false;
+            char[] separator = new char[] { Path.DirectorySeparatorChar };
+            Dictionary<string, List<QTabItem>> commonTextTabs = new Dictionary<string, List<QTabItem>>();
+            foreach(QTabItem item in tabControl.TabPages) {
+                if(!item.CurrentPath.StartsWith("::")) {
+                    string text = item.Text.ToLower();
+                    if(commonTextTabs.ContainsKey(text)) {
+                        commonTextTabs[text].Add(item);
+                    }
+                    else {
+                        commonTextTabs[text] = new List<QTabItem> { item };
+                    }
                 }
             }
-            foreach(List<QTabItem> list2 in dictionary.Keys.Select(str => dictionary[str])) {
-                if(list2.Count > 1) {
-                    bool flag2 = true;
-                    for(int i = 1; i < list2.Count; i++) {
-                        if(list2[i].CurrentPath != list2[0].CurrentPath) {
-                            flag2 = false;
-                            break;
-                        }
-                    }
-                    if(flag2) {
-                        foreach(QTabItem item2 in list2.Where(item2 => item2.Comment.Length > 0)) {
-                            item2.Comment = string.Empty;
-                            item2.RefreshRectangle();
-                            flag = true;
+            foreach(List<QTabItem> tabs in commonTextTabs.Values) {
+                if(tabs.Count > 1) {
+                    if(tabs.All(tab => tab.CurrentPath == tabs[0].CurrentPath)) {
+                        foreach(QTabItem tab in tabs.Where(item => item.Comment.Length > 0)) {
+                            tab.Comment = string.Empty;
+                            tab.RefreshRectangle();
+                            needsRefresh = true;
                         }
                     }
                     else {
-                        foreach(QTabItem item3 in list2) {
-                            string str2 = string.Empty;
-                            string[] strArray = item3.CurrentPath.Split(separator);
-                            if(strArray.Length > 1) {
-                                for(int j = strArray.Length - 2; j > -1; j--) {
-                                    str2 = strArray[j];
-                                    bool flag3 = false;
-                                    foreach(string[] strArray2 in from item4 in list2
-                                            where item4.CurrentPath != item3.CurrentPath
-                                            select item4.CurrentPath.Split(separator)) {
-                                        for(int k = strArray2.Length - 2; k > -1; k--) {
-                                            if(str2 == strArray2[k]) {
-                                                flag3 = true;
-                                                str2 = string.Empty;
-                                                break;
-                                            }
-                                        }
-                                        if(flag3) {
-                                            break;
-                                        }
-                                    }
-                                    if(!flag3) {
-                                        break;
-                                    }
-                                }
+                        List<string[]> pathArrays = tabs.Select(item => item.CurrentPath
+                                .Split(separator).Reverse().Skip(1).ToArray()).ToList();
+                        for(int i = 0; i < tabs.Count; i++) {
+                            string comment = pathArrays[i].FirstOrDefault(str => !pathArrays.Where(
+                                    (path, j) => i != j && path.Contains(str)).Any()) ?? tabs[i].currentPath;
+                            if(comment.Length == 2 && comment[1] == ':') {
+                                comment += @"\";
                             }
-                            if(str2.Length > 0) {
-                                if((str2.Length == 2) && (str2[1] == ':')) {
-                                    str2 = str2 + @"\";
-                                }
-                                item3.Comment = str2;
+                            if(tabs[i].Comment != comment) {
+                                tabs[i].Comment = comment;
+                                tabs[i].RefreshRectangle();
+                                needsRefresh = true;
                             }
-                            else {
-                                item3.Comment = item3.CurrentPath;
-                            }
-                            item3.RefreshRectangle();
-                            flag = true;
                         }
                     }
-                    continue;
                 }
-                if(list2[0].Comment.Length > 0) {
-                    flag = true;
-                    list2[0].Comment = string.Empty;
-                    list2[0].RefreshRectangle();
+                else if(tabs[0].Comment.Length > 0) {
+                    needsRefresh = true;
+                    tabs[0].Comment = string.Empty;
+                    tabs[0].RefreshRectangle();
                 }
             }
-            if(flag) {
+            if(needsRefresh) {
                 tabControl.Refresh();
             }
         }
