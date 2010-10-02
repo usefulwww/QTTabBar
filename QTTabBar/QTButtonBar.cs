@@ -1308,9 +1308,11 @@ namespace QTTabBarLib {
                 }
             }
             else if(e.KeyChar == '\x001b') {
+                searchBox.Text = "";
                 QTTabBarClass tabBar = QTUtility.instanceManager.GetTabBar(ExplorerHandle);
                 if(tabBar != null) {
                     tabBar.GetListView().SetFocus();
+                    searchBox.RefreshText();
                     e.Handled = true;
                 }
             }
