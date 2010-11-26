@@ -22,28 +22,61 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QTPluginLib", "QTPluginLib\QTPluginLib.csproj", "{749BE612-0CAA-444E-8704-4CF9D9A6F653}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateNewItem", "Plugins\CreateNewItem\CreateNewItem.csproj", "{2D16184B-D2F9-4395-AC50-2B66F9E74525}"
+	ProjectSection(ProjectDependencies) = postProject
+		{749BE612-0CAA-444E-8704-4CF9D9A6F653} = {749BE612-0CAA-444E-8704-4CF9D9A6F653}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QTClock", "Plugins\QTClock\QTClock.csproj", "{0ED51311-F88D-43BE-B412-FC75AB4808CF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{749BE612-0CAA-444E-8704-4CF9D9A6F653} = {749BE612-0CAA-444E-8704-4CF9D9A6F653}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QTFileTools", "Plugins\QTFileTools\QTFileTools.csproj", "{DB674411-121B-4FE2-AFC4-7B04289E3AFD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{749BE612-0CAA-444E-8704-4CF9D9A6F653} = {749BE612-0CAA-444E-8704-4CF9D9A6F653}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QTFolderButton", "Plugins\QTFolderButton\QTFolderButton.csproj", "{DA743E86-4FDE-4C18-952C-545A0390AE79}"
+	ProjectSection(ProjectDependencies) = postProject
+		{749BE612-0CAA-444E-8704-4CF9D9A6F653} = {749BE612-0CAA-444E-8704-4CF9D9A6F653}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ViewModeButton", "Plugins\QTViewModeButton\ViewModeButton.csproj", "{EC7D4D7D-5609-4EC5-88C4-712738492EB1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{749BE612-0CAA-444E-8704-4CF9D9A6F653} = {749BE612-0CAA-444E-8704-4CF9D9A6F653}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QTWindowManager", "Plugins\QTWindowManager\QTWindowManager.csproj", "{388BD40A-CF2C-46DA-973C-3A05E321AF62}"
+	ProjectSection(ProjectDependencies) = postProject
+		{749BE612-0CAA-444E-8704-4CF9D9A6F653} = {749BE612-0CAA-444E-8704-4CF9D9A6F653}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SamplePlugin", "Plugins\Sample\SamplePlugin.csproj", "{544245AF-F77C-4AB9-9024-EA80EF3D1323}"
+	ProjectSection(ProjectDependencies) = postProject
+		{749BE612-0CAA-444E-8704-4CF9D9A6F653} = {749BE612-0CAA-444E-8704-4CF9D9A6F653}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShowStatusBar", "Plugins\ShowStatusBar\ShowStatusBar.csproj", "{59316D50-75D1-48CE-B83F-01F4A1C46F98}"
+	ProjectSection(ProjectDependencies) = postProject
+		{749BE612-0CAA-444E-8704-4CF9D9A6F653} = {749BE612-0CAA-444E-8704-4CF9D9A6F653}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MigemoLoader", "Plugins\MigemoLoader\MigemoLoader.csproj", "{F75F575A-4E9E-4888-AE84-AF2E3427C998}"
+	ProjectSection(ProjectDependencies) = postProject
+		{749BE612-0CAA-444E-8704-4CF9D9A6F653} = {749BE612-0CAA-444E-8704-4CF9D9A6F653}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Memo", "Plugins\Memo\Memo.csproj", "{3E6DBDF7-3386-4E4E-A707-EABF82796A23}"
+	ProjectSection(ProjectDependencies) = postProject
+		{749BE612-0CAA-444E-8704-4CF9D9A6F653} = {749BE612-0CAA-444E-8704-4CF9D9A6F653}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QTHookLib32", "QTHookLib\QTHookLib32.vcxproj", "{740C67C7-6AE5-414B-A3F8-D69355FE508B}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QTHookLib64", "QTHookLib\QTHookLib64.vcxproj", "{D89A99EB-9037-4A9C-993D-4C4BE78B65A1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{749BE612-0CAA-444E-8704-4CF9D9A6F653} = {749BE612-0CAA-444E-8704-4CF9D9A6F653}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
