@@ -29,14 +29,14 @@ namespace QTTabBarLib {
         }
 
         public static void CloseExplorer(IntPtr hwndExplr, int nCode) {
-            if(!QTUtility.IsXP) {
-                PInvoke.SendMessage(hwndExplr, 0x10, IntPtr.Zero, (IntPtr)nCode);
-            }
-            else {
+            if(QTUtility.IsXP) {
                 if(nCode == 0) {
                     nCode = 3;
                 }
-                PInvoke.PostMessage(hwndExplr, 0x10, IntPtr.Zero, (IntPtr)nCode);
+                PInvoke.PostMessage(hwndExplr, WM.CLOSE, IntPtr.Zero, (IntPtr)nCode);
+            }
+            else {
+                PInvoke.SendMessage(hwndExplr, WM.CLOSE, IntPtr.Zero, (IntPtr)nCode);
             }
         }
 

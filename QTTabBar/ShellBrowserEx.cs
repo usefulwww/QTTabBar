@@ -37,13 +37,15 @@ namespace QTTabBarLib {
             get {
                 int pViewMode = 0;
                 using(FVWrapper w = GetFolderView()) {
-                    return w.FolderView.GetCurrentViewMode(ref pViewMode) == 0 
+                    return w != null && w.FolderView.GetCurrentViewMode(ref pViewMode) == 0
                             ? pViewMode : FVM.ICON;
                 }
             }
             set {
                 using(FVWrapper w = GetFolderView()) {
-                    w.FolderView.SetCurrentViewMode(value);
+                    if(w != null) {
+                        w.FolderView.SetCurrentViewMode(value);
+                    }
                 }
             }
         }
@@ -93,6 +95,9 @@ namespace QTTabBarLib {
 
         public int GetFocusedIndex() {
             using(FVWrapper w = GetFolderView()) {
+                if(w == null) {
+                    return 0;
+                }
                 int focusedIndex;
                 if(w.FolderView.GetFocusedItem(out focusedIndex) == 0) {
                     return focusedIndex;
@@ -123,6 +128,9 @@ namespace QTTabBarLib {
 
         public IDLWrapper GetItem(int idx, bool noAppend = false) {
             using(FVWrapper w = GetFolderView()) {
+                if(w == null) {
+                    return null;
+                }
                 IntPtr ppidl = IntPtr.Zero;
                 try {
                     w.FolderView.Item(idx, out ppidl);
@@ -144,6 +152,9 @@ namespace QTTabBarLib {
         public int GetItemCount() {
             int count;
             using(FVWrapper w = GetFolderView()) {
+                if(w == null) {
+                    return 0;
+                }
                 w.FolderView.ItemCount(2, out count);
             }
             return count;
@@ -155,6 +166,9 @@ namespace QTTabBarLib {
             try {
                 using(FVWrapper w = GetFolderView())
                 using(IDLWrapper path = noAppend ? null : GetShellPath(w.FolderView)) {
+                    if(w == null) {
+                        yield break;
+                    }
                     w.FolderView.Items(0x80000000 | (selectedOnly ? 1u : 2u), ref guid, out list);
                     if(list == null) {
                         yield break;
@@ -167,7 +181,7 @@ namespace QTTabBarLib {
                                 yield return wrapper1;
                             }
                             else {
-                                using(IDLWrapper wrapper2 = new IDLWrapper(PInvoke.ILCombine(path.PIDL, wrapper1.PIDL))) {                                
+                                using(IDLWrapper wrapper2 = new IDLWrapper(PInvoke.ILCombine(path.PIDL, wrapper1.PIDL))) {
                                     yield return wrapper2;
                                 }
                             }
@@ -185,12 +199,16 @@ namespace QTTabBarLib {
         public int GetSelectedCount() {
             int count;
             using(FVWrapper w = GetFolderView()) {
+                if(w == null) {
+                    return 0;
+                }
                 w.FolderView.ItemCount(1, out count);
             }
             return count;
         }
 
         private static IDLWrapper GetShellPath(IFolderView folderView) {
+            if(folderView == null) return null;
             IPersistFolder2 ppv = null;
             try {
                 Guid riid = ExplorerGUIDs.IID_IPersistFolder2;
@@ -251,12 +269,18 @@ namespace QTTabBarLib {
 
         public void SelectItem(int idx) {
             using(FVWrapper w = GetFolderView()) {
-                w.FolderView.SelectItem(idx, 29 /* SVSI_SELECT | SVSI_DESELECTOTHERS | SVSI_ENSUREVISIBLE | SVSI_FOCUSED */);
+                if(w != null) {
+                    w.FolderView.SelectItem(idx, 29);
+                    /* SVSI_SELECT | SVSI_DESELECTOTHERS | SVSI_ENSUREVISIBLE | SVSI_FOCUSED */
+                }
             }
         }
 
         public bool SelectionAvailable() {
             using(FVWrapper w = GetFolderView()) {
+                if(w == null) {
+                    return false;
+                }
                 int items;
                 return w.FolderView.ItemCount(1, out items) == 0;
             }
@@ -307,7 +331,7 @@ namespace QTTabBarLib {
                 return false;
             }
 
-            adSelectedItems = GetItems(true).Select(wrapper => fDisplayName 
+            adSelectedItems = GetItems(true).Select(wrapper => fDisplayName
                      ? new Address(wrapper.PIDL, wrapper.DisplayName)
                      : new Address(wrapper.PIDL, wrapper.ParseName)).ToArray();
             return true;
