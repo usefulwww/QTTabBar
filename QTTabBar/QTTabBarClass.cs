@@ -5213,6 +5213,8 @@ namespace QTTabBarLib {
         private static void Register(Type t) {
             string name = t.GUID.ToString("B");
             try {
+                // This seems like a relic of the past...
+                // TODO: delete.
                 using(RegistryKey key = Registry.ClassesRoot.OpenSubKey("CLSID", true)) {
                     key.DeleteSubKeyTree("{D2BF470E-ED1C-487F-A444-2BD8835EB6CE}");
                     Registry.ClassesRoot.DeleteSubKeyTree("QTTabBarLib.QTCoBar");

@@ -80,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppLauncher.cs" />
+    <Compile Include="AutoLoader.cs" />
     <Compile Include="Automation\AutomationElement.cs" />
     <Compile Include="Automation\AutomationElementFactory.cs" />
     <Compile Include="Automation\AutomationManager.cs" />

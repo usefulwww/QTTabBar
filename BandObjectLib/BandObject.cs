@@ -16,6 +16,7 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -33,7 +34,9 @@ namespace BandObjectLib {
         private IAsyncResult result;
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);        
+        private static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+        
+        private const int E_FAIL = unchecked((int)0x80004005);
 
         // We must subclass the rebar in order to fix a certain bug in 
         // Windows 7.
@@ -233,6 +236,9 @@ namespace BandObjectLib {
         }
 
         public virtual void SetSite(object pUnkSite) {
+            if(Process.GetCurrentProcess().ProcessName == "iexplore") {
+                Marshal.ThrowExceptionForHR(E_FAIL);
+            }
             if(BandObjectSite != null) {
                 Marshal.ReleaseComObject(BandObjectSite);
             }

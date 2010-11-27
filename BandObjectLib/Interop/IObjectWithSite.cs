@@ -21,7 +21,7 @@ using System.Security;
 
 namespace BandObjectLib {
     [ComImport, SuppressUnmanagedCodeSecurity, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("FC4801A3-2BA9-11CF-A229-00AA003D7352")]
-    internal interface IObjectWithSite {
+    public interface IObjectWithSite {
         void SetSite([In, MarshalAs(UnmanagedType.IUnknown)] object pUnkSite);
         void GetSite(ref Guid riid, [MarshalAs(UnmanagedType.IUnknown)] out object ppvSite);
     }

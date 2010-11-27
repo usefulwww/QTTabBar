@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -213,185 +214,192 @@ namespace QTTabBarLib {
         private delegate bool InitShellBrowserHookDelegate(IntPtr shellBrowser);
 
         static QTUtility() {
-            if(Environment.CommandLine.IndexOf("RegAsm.exe\"", StringComparison.OrdinalIgnoreCase) == -1) {
-                ImageListGlobal = new ImageList();
-                ImageListGlobal.ColorDepth = ColorDepth.Depth32Bit;
-                ImageListGlobal.Images.Add("folder", GetIcon(string.Empty, false));
-                try {
-                    IsXP = Environment.OSVersion.Version.Major <= 5;
-                    // TODO: make this more comprehensible 
-                    ConfigValues = new byte[] { 200, 0, 4, 0, 4, 0x60, 0x10, 0x22, 2, 8, 0xe0, 8, 0, 0x20, 0, 0 };
-                    if(IsXP) {
-                        ConfigValues[13] = 0x30;
-                    }
-                    SetConfigAt(Settings.AutoUpdate, true);
-                    using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
-                        if(key != null) {
-                            float num;
-                            byte[] inputValues = (byte[])key.GetValue("Config");
-                            ConfigValues = GetSettingValue(inputValues, ConfigValues, false);
-                            string path = (string)key.GetValue("LanguageFile", string.Empty);
-                            if((path.Length > 0) && File.Exists(path)) {
-                                Path_LanguageFile = path;
-                                TextResourcesDic = ReadLanguageFile(path);
-                            }
-                            else {
-                                Path_LanguageFile = string.Empty;
-                            }
-                            ValidateTextResources();
-                            TabWidth = QTUtility2.GetRegistryValueSafe(key, "TabWidth", 80);
-                            TabHeight = QTUtility2.GetRegistryValueSafe(key, "TabHeight", 0x18);
-                            MaxTabWidth = QTUtility2.GetRegistryValueSafe(key, "TabWidthMax", 150);
-                            MinTabWidth = QTUtility2.GetRegistryValueSafe(key, "TabWidthMin", 70);
-                            if(TabHeight > 50) {
-                                TabHeight = 50;
-                            }
-                            if(TabHeight < 10) {
-                                TabHeight = 10;
-                            }
-                            TabTextColor_Active = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "TitleColorActive", SystemColors.ControlText.ToArgb()));
-                            TabTextColor_Inactv = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "TitleColorInactive", SystemColors.ControlText.ToArgb()));
-                            TabHiliteColor = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "HighlightColorClassic", SystemColors.Highlight.ToArgb()));
-                            TabTextColor_ActivShdw = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "TitleColorShadowActive", Color.Silver.ToArgb()));
-                            TabTextColor_InAtvShdw = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "TitleColorShadowInActv", Color.White.ToArgb()));
-                            RebarBGColor = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "ToolbarBGColor", SystemColors.Control.ToArgb()));
-                            ShellViewRowCOLORREF_Background = QTUtility2.GetRegistryValueSafe(key, "AlternateColor_Bk", 0xfaf5f1);
-                            ShellViewRowCOLORREF_Text = QTUtility2.GetRegistryValueSafe(key, "AlternateColor_Text", QTUtility2.MakeCOLORREF(SystemColors.WindowText));
-                            string familyName = (string)key.GetValue("TabFont", string.Empty);
-                            string s = (string)key.GetValue("TabFontSize", "0");
-                            if(float.TryParse(s, out num) && (num != 0f)) {
-                                try {
-                                    TabFont = new Font(familyName, num);
-                                }
-                                catch {
-                                    TabFont = Control.DefaultFont;
-                                }
-                            }
-                            Action_BarDblClick = (string)key.GetValue("Action_BarDblClick", string.Empty);
-                            MaxCount_History = QTUtility2.GetRegistryValueSafe(key, "Max_Undo", 0x10);
-                            using(RegistryKey key2 = key.CreateSubKey("RecentlyClosed")) {
-                                if(key2 != null) {
-                                    List<string> collection = key2.GetValueNames()
-                                            .Select(str4 => (string)key2.GetValue(str4)).ToList();
-                                    ClosedTabHistoryList = new PathList(collection, MaxCount_History);
-                                }
-                            }
-                            if(CheckConfig(Settings.AllRecentFiles)) {
-                                MaxCount_Executed = QTUtility2.GetRegistryValueSafe(key, "Max_RecentFile", 0x10);
-                                using(RegistryKey key3 = key.CreateSubKey("RecentFiles")) {
-                                    if(key3 != null) {
-                                        List<string> list2 = key3.GetValueNames().Select(str5 => 
-                                                (string)key3.GetValue(str5)).ToList();
-                                        ExecutedPathsList = new PathList(list2, MaxCount_Executed);
-                                    }
-                                }
-                            }
-                            RefreshShortcutKeys(key);
-                            RefreshGroupShortcutKeyDic(key);
-                            Path_TabImage = (string)key.GetValue("TabImage", string.Empty);
-                            byte[] buffer2 = (byte[])key.GetValue("TabImageSizingMargin", new byte[4]);
-                            if(buffer2.Length != 4) {
-                                TabImageSizingMargin = Padding.Empty;
-                            }
-                            else {
-                                TabImageSizingMargin = new Padding(buffer2[0], buffer2[1], buffer2[2], buffer2[3]);
-                            }
-                            if((Path_TabImage.Length > 0) && !File.Exists(Path_TabImage)) {
-                                Path_TabImage = string.Empty;
-                            }
-                            Path_RebarImage = (string)key.GetValue("ToolbarBGImage", string.Empty);
-                            RefreshLockedTabsList();
-                            string str6 = (string)key.GetValue("StartUpGroups", string.Empty);
-                            if(str6.Length > 0) {
-                                StartUpGroupList = new List<string>(str6.Split(SEPARATOR_CHAR));
-                            }
-                            string str7 = (string)key.GetValue("NoCaptureAt", string.Empty);
-                            if(str7.Length > 0) {
-                                NoCapturePathsList = new List<string>(str7.Split(SEPARATOR_CHAR));
-                            }
-                            if(!byte.TryParse((string)key.GetValue("WindowAlpha", "255"), out WindowAlpha)) {
-                                WindowAlpha = 0xff;
-                            }
-                            RefreshPreviewExtensions();
-                            PreviewMaxWidth = ValidateMaxMin((int)key.GetValue("PreviewMaxWidth", 0x200), 0x780, 0x80);
-                            PreviewMaxHeight = ValidateMaxMin((int)key.GetValue("PreviewMaxHeight", 0x100), 0x4b0, 0x60);
-                            PreviewFontName = (string)key.GetValue("PreviewFont", null);
-                            string str8 = (string)key.GetValue("PreviewFontSize", null);
-                            if(!float.TryParse(str8, out PreviewFontSize)) {
-                                PreviewFontSize = 10.5f;
-                            }
-                        }
-                    }
-                    RefreshGroupsDic();
-                    RefreshUserAppDic(true);
-                    if(!IsXP) {
-                        PATH_SEARCHFOLDER = "::{9343812E-1C37-4A49-A12E-4B2D810D956B}";
-                        PATH_MYNETWORK = "::{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}";
-                    }
-                    else {
-                        PATH_SEARCHFOLDER = "::{E17D4FC0-5564-11D1-83F2-00A0C90DC849}";
-                        PATH_MYNETWORK = "::{208D2C60-3AEA-1069-A2D7-08002B30309D}";
-                        GetShellClickMode();
-                    }
-                    PluginManager.Initialize();
-                    IsRTL = CultureInfo.CurrentCulture.TextInfo.IsRightToLeft;
+            String processName = Process.GetCurrentProcess().ProcessName.ToLower();
+            
+            // I'm tempted to just return for everything except "explorer"
+            // Maybe I should...
+            if(processName == "iexplore" || processName == "regasm" || processName == "gacutil") {
+                //MessageBox.Show("Blocked " + processName);
+                return;
+            }
 
-                    // We don't want to open the same file that the installer installed,
-                    // because then the installer won't be able to overwrite it when
-                    // the user upgrades.  So make a copy and put it in the Local AppData.
-                    bool installError = false;
-                    string filename = IntPtr.Size == 8 ? "QTHookLib64.dll" : "QTHookLib32.dll";
-                    string commonAppData = Path.Combine(Environment.GetFolderPath(
-                            Environment.SpecialFolder.CommonApplicationData), "QTTabBar");
-                    string localAppData = Path.Combine(Environment.GetFolderPath(
-                            Environment.SpecialFolder.LocalApplicationData), "QTTabBar");
-                    string commonPath = Path.Combine(commonAppData, filename);
-                    string localPath = Path.Combine(localAppData, filename);
-                    if(File.Exists(localPath)) {
-                        DateTime localDate = File.GetLastWriteTime(localPath);
-                        DateTime commonDate = File.GetLastWriteTime(commonPath);
-                        if(localDate < commonDate) {
+            ImageListGlobal = new ImageList();
+            ImageListGlobal.ColorDepth = ColorDepth.Depth32Bit;
+            ImageListGlobal.Images.Add("folder", GetIcon(string.Empty, false));
+            try {
+                IsXP = Environment.OSVersion.Version.Major <= 5;
+                // TODO: make this more comprehensible 
+                ConfigValues = new byte[] { 200, 0, 4, 0, 4, 0x60, 0x10, 0x22, 2, 8, 0xe0, 8, 0, 0x20, 0, 0 };
+                if(IsXP) {
+                    ConfigValues[13] = 0x30;
+                }
+                SetConfigAt(Settings.AutoUpdate, true);
+                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+                    if(key != null) {
+                        float num;
+                        byte[] inputValues = (byte[])key.GetValue("Config");
+                        ConfigValues = GetSettingValue(inputValues, ConfigValues, false);
+                        string path = (string)key.GetValue("LanguageFile", string.Empty);
+                        if((path.Length > 0) && File.Exists(path)) {
+                            Path_LanguageFile = path;
+                            TextResourcesDic = ReadLanguageFile(path);
+                        }
+                        else {
+                            Path_LanguageFile = string.Empty;
+                        }
+                        ValidateTextResources();
+                        TabWidth = QTUtility2.GetRegistryValueSafe(key, "TabWidth", 80);
+                        TabHeight = QTUtility2.GetRegistryValueSafe(key, "TabHeight", 0x18);
+                        MaxTabWidth = QTUtility2.GetRegistryValueSafe(key, "TabWidthMax", 150);
+                        MinTabWidth = QTUtility2.GetRegistryValueSafe(key, "TabWidthMin", 70);
+                        if(TabHeight > 50) {
+                            TabHeight = 50;
+                        }
+                        if(TabHeight < 10) {
+                            TabHeight = 10;
+                        }
+                        TabTextColor_Active = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "TitleColorActive", SystemColors.ControlText.ToArgb()));
+                        TabTextColor_Inactv = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "TitleColorInactive", SystemColors.ControlText.ToArgb()));
+                        TabHiliteColor = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "HighlightColorClassic", SystemColors.Highlight.ToArgb()));
+                        TabTextColor_ActivShdw = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "TitleColorShadowActive", Color.Silver.ToArgb()));
+                        TabTextColor_InAtvShdw = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "TitleColorShadowInActv", Color.White.ToArgb()));
+                        RebarBGColor = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "ToolbarBGColor", SystemColors.Control.ToArgb()));
+                        ShellViewRowCOLORREF_Background = QTUtility2.GetRegistryValueSafe(key, "AlternateColor_Bk", 0xfaf5f1);
+                        ShellViewRowCOLORREF_Text = QTUtility2.GetRegistryValueSafe(key, "AlternateColor_Text", QTUtility2.MakeCOLORREF(SystemColors.WindowText));
+                        string familyName = (string)key.GetValue("TabFont", string.Empty);
+                        string s = (string)key.GetValue("TabFontSize", "0");
+                        if(float.TryParse(s, out num) && (num != 0f)) {
                             try {
-                                File.Delete(localPath);
-                                File.Copy(commonPath, localPath);
+                                TabFont = new Font(familyName, num);
                             }
                             catch {
-                                installError = true;
+                                TabFont = Control.DefaultFont;
                             }
                         }
-                    }
-                    else {
-                        try {
-                            if(!Directory.Exists(localAppData)) {
-                                Directory.CreateDirectory(localAppData);
+                        Action_BarDblClick = (string)key.GetValue("Action_BarDblClick", string.Empty);
+                        MaxCount_History = QTUtility2.GetRegistryValueSafe(key, "Max_Undo", 0x10);
+                        using(RegistryKey key2 = key.CreateSubKey("RecentlyClosed")) {
+                            if(key2 != null) {
+                                List<string> collection = key2.GetValueNames()
+                                        .Select(str4 => (string)key2.GetValue(str4)).ToList();
+                                ClosedTabHistoryList = new PathList(collection, MaxCount_History);
                             }
+                        }
+                        if(CheckConfig(Settings.AllRecentFiles)) {
+                            MaxCount_Executed = QTUtility2.GetRegistryValueSafe(key, "Max_RecentFile", 0x10);
+                            using(RegistryKey key3 = key.CreateSubKey("RecentFiles")) {
+                                if(key3 != null) {
+                                    List<string> list2 = key3.GetValueNames().Select(str5 =>
+                                            (string)key3.GetValue(str5)).ToList();
+                                    ExecutedPathsList = new PathList(list2, MaxCount_Executed);
+                                }
+                            }
+                        }
+                        RefreshShortcutKeys(key);
+                        RefreshGroupShortcutKeyDic(key);
+                        Path_TabImage = (string)key.GetValue("TabImage", string.Empty);
+                        byte[] buffer2 = (byte[])key.GetValue("TabImageSizingMargin", new byte[4]);
+                        if(buffer2.Length != 4) {
+                            TabImageSizingMargin = Padding.Empty;
+                        }
+                        else {
+                            TabImageSizingMargin = new Padding(buffer2[0], buffer2[1], buffer2[2], buffer2[3]);
+                        }
+                        if((Path_TabImage.Length > 0) && !File.Exists(Path_TabImage)) {
+                            Path_TabImage = string.Empty;
+                        }
+                        Path_RebarImage = (string)key.GetValue("ToolbarBGImage", string.Empty);
+                        RefreshLockedTabsList();
+                        string str6 = (string)key.GetValue("StartUpGroups", string.Empty);
+                        if(str6.Length > 0) {
+                            StartUpGroupList = new List<string>(str6.Split(SEPARATOR_CHAR));
+                        }
+                        string str7 = (string)key.GetValue("NoCaptureAt", string.Empty);
+                        if(str7.Length > 0) {
+                            NoCapturePathsList = new List<string>(str7.Split(SEPARATOR_CHAR));
+                        }
+                        if(!byte.TryParse((string)key.GetValue("WindowAlpha", "255"), out WindowAlpha)) {
+                            WindowAlpha = 0xff;
+                        }
+                        RefreshPreviewExtensions();
+                        PreviewMaxWidth = ValidateMaxMin((int)key.GetValue("PreviewMaxWidth", 0x200), 0x780, 0x80);
+                        PreviewMaxHeight = ValidateMaxMin((int)key.GetValue("PreviewMaxHeight", 0x100), 0x4b0, 0x60);
+                        PreviewFontName = (string)key.GetValue("PreviewFont", null);
+                        string str8 = (string)key.GetValue("PreviewFontSize", null);
+                        if(!float.TryParse(str8, out PreviewFontSize)) {
+                            PreviewFontSize = 10.5f;
+                        }
+                    }
+                }
+                RefreshGroupsDic();
+                RefreshUserAppDic(true);
+                if(!IsXP) {
+                    PATH_SEARCHFOLDER = "::{9343812E-1C37-4A49-A12E-4B2D810D956B}";
+                    PATH_MYNETWORK = "::{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}";
+                }
+                else {
+                    PATH_SEARCHFOLDER = "::{E17D4FC0-5564-11D1-83F2-00A0C90DC849}";
+                    PATH_MYNETWORK = "::{208D2C60-3AEA-1069-A2D7-08002B30309D}";
+                    GetShellClickMode();
+                }
+                PluginManager.Initialize();
+                IsRTL = CultureInfo.CurrentCulture.TextInfo.IsRightToLeft;
+
+                // We don't want to open the same file that the installer installed,
+                // because then the installer won't be able to overwrite it when
+                // the user upgrades.  So make a copy and put it in the Local AppData.
+                bool installError = false;
+                string filename = IntPtr.Size == 8 ? "QTHookLib64.dll" : "QTHookLib32.dll";
+                string commonAppData = Path.Combine(Environment.GetFolderPath(
+                        Environment.SpecialFolder.CommonApplicationData), "QTTabBar");
+                string localAppData = Path.Combine(Environment.GetFolderPath(
+                        Environment.SpecialFolder.LocalApplicationData), "QTTabBar");
+                string commonPath = Path.Combine(commonAppData, filename);
+                string localPath = Path.Combine(localAppData, filename);
+                if(File.Exists(localPath)) {
+                    DateTime localDate = File.GetLastWriteTime(localPath);
+                    DateTime commonDate = File.GetLastWriteTime(commonPath);
+                    if(localDate < commonDate) {
+                        try {
+                            File.Delete(localPath);
                             File.Copy(commonPath, localPath);
                         }
                         catch {
                             installError = true;
-                        }                        
-                    }
-                    if(installError) {
-                        // TODO: Localize this
-                        MessageForm.Show(IntPtr.Zero,
-                            "Error:  Unable to install new QTTabBar hook library.  " +
-                            "Some features might not be functional.  " +
-                            "You may have to reboot your computer to complete the installation.",
-                            "Error", MessageBoxIcon.Hand, 30000, false, true);
-                    }
-                    else {
-                        hHookLib = PInvoke.LoadLibrary(localPath);
-                        if(hHookLib == IntPtr.Zero) {
-                            // TODO: Localize this
-                            MessageForm.Show(IntPtr.Zero, "Error:  Unable to load QTTabBar hook library.  " +
-                                    "Some features might not be functional.", "Error", MessageBoxIcon.Hand, 30000, false,
-                                    true);
                         }
                     }
                 }
-                catch(Exception exception) {
-                    QTUtility2.MakeErrorLog(exception, null);
+                else {
+                    try {
+                        if(!Directory.Exists(localAppData)) {
+                            Directory.CreateDirectory(localAppData);
+                        }
+                        File.Copy(commonPath, localPath);
+                    }
+                    catch {
+                        installError = true;
+                    }
                 }
+                if(installError) {
+                    // TODO: Localize this
+                    MessageForm.Show(IntPtr.Zero,
+                            "Error:  Unable to install new QTTabBar hook library.  " +
+                                    "Some features might not be functional.  " +
+                                            "You may have to reboot your computer to complete the installation.",
+                            "Error", MessageBoxIcon.Hand, 30000, false, true);
+                }
+                else {
+                    hHookLib = PInvoke.LoadLibrary(localPath);
+                    if(hHookLib == IntPtr.Zero) {
+                        // TODO: Localize this
+                        MessageForm.Show(IntPtr.Zero, "Error:  Unable to load QTTabBar hook library.  " +
+                                "Some features might not be functional.", "Error", MessageBoxIcon.Hand, 30000, false,
+                                true);
+                    }
+                }
+            }
+            catch(Exception exception) {
+                QTUtility2.MakeErrorLog(exception, null);
             }
         }
 
