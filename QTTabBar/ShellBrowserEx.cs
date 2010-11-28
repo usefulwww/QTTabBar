@@ -96,7 +96,7 @@ namespace QTTabBarLib {
         public int GetFocusedIndex() {
             using(FVWrapper w = GetFolderView()) {
                 if(w == null) {
-                    return 0;
+                    return -1;
                 }
                 int focusedIndex;
                 if(w.FolderView.GetFocusedItem(out focusedIndex) == 0) {
@@ -278,11 +278,8 @@ namespace QTTabBarLib {
 
         public bool SelectionAvailable() {
             using(FVWrapper w = GetFolderView()) {
-                if(w == null) {
-                    return false;
-                }
                 int items;
-                return w.FolderView.ItemCount(1, out items) == 0;
+                return w != null && w.FolderView.ItemCount(1, out items) == 0;
             }
         }
 
