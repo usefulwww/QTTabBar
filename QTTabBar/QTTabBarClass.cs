@@ -5212,20 +5212,10 @@ namespace QTTabBarLib {
         [ComRegisterFunction]
         private static void Register(Type t) {
             string name = t.GUID.ToString("B");
-            try {
-                // This seems like a relic of the past...
-                // TODO: delete.
-                using(RegistryKey key = Registry.ClassesRoot.OpenSubKey("CLSID", true)) {
-                    key.DeleteSubKeyTree("{D2BF470E-ED1C-487F-A444-2BD8835EB6CE}");
-                    Registry.ClassesRoot.DeleteSubKeyTree("QTTabBarLib.QTCoBar");
-                }
-            }
-            catch {
-            }
             using(RegistryKey key2 = Registry.ClassesRoot.CreateSubKey(@"CLSID\" + name)) {
-                key2.SetValue(null, "QT TabBar");
-                key2.SetValue("MenuText", "QT TabBar");
-                key2.SetValue("HelpText", "QT TabBar");
+                key2.SetValue(null, "QTTabBar");
+                key2.SetValue("MenuText", "QTTabBar");
+                key2.SetValue("HelpText", "QTTabBar");
             }
             using(RegistryKey key3 = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Microsoft\Internet Explorer\Toolbar")) {
                 key3.SetValue(name, "QTTabBar");

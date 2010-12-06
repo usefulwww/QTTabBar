@@ -20,6 +20,7 @@ IF EXIST Interop.SHDocVw.dll (
 )
 
 cd ..\..\..\QTHookLib\bin\%1
-copy /y * %allusersprofile%\QTTabBar\
+REG ADD HKLM\SOFTWARE\Quizo\QTTabBar /v InstallPath /t REG_SZ /d "%cd%" /f /reg:32
+REG ADD HKLM\SOFTWARE\Quizo\QTTabBar /v InstallPath /t REG_SZ /d "%cd%" /f /reg:64
 
 cd ..\..\..\Register

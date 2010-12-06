@@ -1548,12 +1548,12 @@ namespace QTTabBarLib {
 
         [ComRegisterFunction]
         private static void Register(Type t) {
-            string str = t.GUID.ToString("B");
-            string str2 = (CultureInfo.CurrentCulture.Parent.Name == "ja") ? "QT Tab デスクトップ ツール" : "QT Tab Desktop Tool";
-            using(RegistryKey key = Registry.ClassesRoot.CreateSubKey(@"CLSID\" + str)) {
-                key.SetValue(null, str2);
-                key.SetValue("MenuText", str2);
-                key.SetValue("HelpText", str2);
+            string guid = t.GUID.ToString("B");
+            const string name = "QTTab Desktop Tool";
+            using(RegistryKey key = Registry.ClassesRoot.CreateSubKey(@"CLSID\" + guid)) {
+                key.SetValue(null, name);
+                key.SetValue("MenuText", name);
+                key.SetValue("HelpText", name);
                 key.CreateSubKey(@"Implemented Categories\{00021492-0000-0000-C000-000000000046}");
             }
         }

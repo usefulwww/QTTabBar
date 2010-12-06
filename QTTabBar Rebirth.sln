@@ -1,12 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installer", "Installer", "{00557216-D6B6-40F1-A9A2-35BF5B57DEA1}"
-	ProjectSection(SolutionItems) = preProject
-		Install\Restart Explorer.bat = Install\Restart Explorer.bat
-		Install\setup.iss = Install\setup.iss
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{81712D9C-F1A2-489F-B288-F4B21A36B3F1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QTTabBar", "QTTabBar\QTTabBar.csproj", "{E36E7A44-8F1D-4CFF-A65A-C3207A17CDED}"
@@ -76,6 +70,13 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QTHookLib64", "QTHookLib\QTHookLib64.vcxproj", "{D89A99EB-9037-4A9C-993D-4C4BE78B65A1}"
 	ProjectSection(ProjectDependencies) = postProject
 		{749BE612-0CAA-444E-8704-4CF9D9A6F653} = {749BE612-0CAA-444E-8704-4CF9D9A6F653}
+	EndProjectSection
+EndProject
+Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "Installer", "Installer\Installer.wixproj", "{1E197BA3-B592-44AC-85E1-7447E731856C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{749BE612-0CAA-444E-8704-4CF9D9A6F653} = {749BE612-0CAA-444E-8704-4CF9D9A6F653}
+		{E36E7A44-8F1D-4CFF-A65A-C3207A17CDED} = {E36E7A44-8F1D-4CFF-A65A-C3207A17CDED}
+		{BDB3B670-A17B-483E-954C-52FC2B6FF9D3} = {BDB3B670-A17B-483E-954C-52FC2B6FF9D3}
 	EndProjectSection
 EndProject
 Global
@@ -180,6 +181,10 @@ Global
 		{D89A99EB-9037-4A9C-993D-4C4BE78B65A1}.Debug|Any CPU.Build.0 = Debug|x64
 		{D89A99EB-9037-4A9C-993D-4C4BE78B65A1}.Release|Any CPU.ActiveCfg = Release|x64
 		{D89A99EB-9037-4A9C-993D-4C4BE78B65A1}.Release|Any CPU.Build.0 = Release|x64
+		{1E197BA3-B592-44AC-85E1-7447E731856C}.Debug (No Reg)|Any CPU.ActiveCfg = Debug|x86
+		{1E197BA3-B592-44AC-85E1-7447E731856C}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{1E197BA3-B592-44AC-85E1-7447E731856C}.Release|Any CPU.ActiveCfg = Release|x86
+		{1E197BA3-B592-44AC-85E1-7447E731856C}.Release|Any CPU.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1217,7 +1217,7 @@ namespace QTTabBarLib {
         [ComRegisterFunction]
         private static void Register(Type t) {
             string name = t.GUID.ToString("B");
-            string str2 = (CultureInfo.CurrentCulture.Parent.Name == "ja") ? "QT Tab 標準のボタン" : "QT Tab Standard Buttons";
+            const string str2 = "QTTab Standard Buttons";
             using(RegistryKey key = Registry.ClassesRoot.CreateSubKey(@"CLSID\" + name)) {
                 key.SetValue(null, str2);
                 key.SetValue("MenuText", str2);

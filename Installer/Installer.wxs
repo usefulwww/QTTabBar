@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    This file is part of QTTabBar, a shell extension for Microsoft
+    Windows Explorer.
+    Copyright (C) 2007-2010  Quizo, Paul Accisano
+
+    QTTabBar is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    QTTabBar is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" 
+     xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
+
+    <?define SkuName = "QTTabBar"?>
+    <?define RTMProductVersion="1.5.0" ?>
+    <?define ProductVersion="1.5.1" ?> <!-- Change the last number to the svn revision before release -->
+    <?define VersionString="1.5.0.0 Alpha 5" ?>
+    <?define UpgradeCode="{ec9baff7-58fb-40cb-9f67-1c438a7524a5}"?> <!-- NEVER CHANGE THIS, EVER!! -->
+    <?define Manufacturer="Quizo and Paul Accisano"?>
+    <?define ProductCode="*"?>
+    
+    <Product Id="$(var.ProductCode)"
+             UpgradeCode="$(var.UpgradeCode)"
+             Name="$(var.SkuName) $(var.VersionString)"
+             Language="1033"
+             Version="$(var.ProductVersion)"
+             Manufacturer="$(var.Manufacturer)">
+        <Package InstallerVersion="200" 
+                 Compressed="yes"
+                 Description="$(var.SkuName) $(var.VersionString)"
+                 ReadOnly="yes"/>
+        <Media Id="1" Cabinet="$(var.SkuName).cab" EmbedCab="yes" />
+        <WixVariable Id="WixUILicenseRtf" Value="GPL3.rtf" />
+        <Upgrade Id="$(var.UpgradeCode)">
+            <UpgradeVersion Minimum="$(var.ProductVersion)" IncludeMinimum="no" OnlyDetect="yes" Property="NEWPRODUCTFOUND" />
+            <UpgradeVersion Minimum="$(var.RTMProductVersion)" IncludeMinimum="yes" OnlyDetect="no" Maximum="$(var.ProductVersion)" IncludeMaximum="no" Property="UPGRADEFOUND" />
+        </Upgrade>       
+        
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="ProgramFilesFolder" >
+                <Directory Id="INSTALLLOCATION" Name="QTTabBar">
+                    <Component Id="ShellLibrary" Guid="27af1a85-9a01-4c79-bdeb-d73fd4bd9574" Win64="yes" DisableRegistryReflection="yes">
+                        <File Id="f1" Assembly=".net" KeyPath="yes" Name="Interop.SHDocVw.dll" Source="..\BandObjectLib\bin\Release\Interop.SHDocVw.dll">
+                            <netfx:NativeImage Id="ngen_Interop.SHDocVw.dll" Priority="0" Platform="all" />
+                        </File>
+                    </Component>
+                    <Component Id="BandObjectLib" Guid="27af1a85-9a02-4c79-bdeb-d73fd4bd9574"  Win64="yes" DisableRegistryReflection="yes">
+                        <File Id="f2" Assembly=".net" KeyPath="yes" Name="BandObjectLib.dll" Source="..\BandObjectLib\bin\Release\BandObjectLib.dll">
+                            <netfx:NativeImage Id="ngen_BandObjectLib.dll" Priority="0" Platform="all" />
+                        </File>
+                    </Component>
+                    <Component Id="QTPluginLib" Guid="27af1a85-9a03-4c79-bdeb-d73fd4bd9574"  Win64="yes" DisableRegistryReflection="yes">
+                        <File Id="f3" Assembly=".net" KeyPath="yes" Name="QTPluginLib.dll" Source="..\QTPluginLib\bin\Release\QTPluginLib.dll">
+                            <netfx:NativeImage Id="ngen_QTPluginLib.dll" Priority="0" Platform="all" />
+                        </File>
+                    </Component>
+                    <Component Id="QTTabBar" Guid="27af1a85-9a04-4c79-bdeb-d73fd4bd9574"  Win64="yes" DisableRegistryReflection="yes">
+                        <File Id="f4" Assembly=".net" KeyPath="yes" Name="QTTabBar.dll" Source="..\QTTabBar\bin\Release\QTTabBar.dll">
+                            <netfx:NativeImage Id="ngen_QTTabBar.dll" Priority="0" Platform="all" />
+                        </File>
+                        <Class Id="{D2BF470E-ED1C-487F-A333-2BD8835EB6CE}" Context="InprocServer32" Description="QTTabBar" ThreadingModel="both" ForeignServer="mscoree.dll">
+                            <ProgId Id="QTTabBarLib.QTTabBarClass" Description="QTTabBarLib.QTTabBarClass" />
+                        </Class>
+                        <Class Id="{D2BF470E-ED1C-487F-A555-2BD8835EB6CE}" Context="InprocServer32" Description="QTTab Desktop Tool" ThreadingModel="both" ForeignServer="mscoree.dll">
+                            <ProgId Id="QTTabBarLib.QTCoTaskBarClass" Description="QTTabBarLib.QTCoTaskBarClass" />
+                        </Class>
+                        <Class Id="{D2BF470E-ED1C-487F-A666-2BD8835EB6CE}" Context="InprocServer32" Description="QTTab Standard Buttons" ThreadingModel="both" ForeignServer="mscoree.dll">
+                            <ProgId Id="QTTabBarLib.QTButtonBar" Description="QTTabBarLib.QTButtonBar" />
+                        </Class>
+                        <Class Id="{D2BF470E-ED1C-487F-A777-2BD8835EB6CE}" Context="InprocServer32" Description="QTTabBar AutoLoader" ThreadingModel="both" ForeignServer="mscoree.dll">
+                            <ProgId Id="QTTabBarLib.AutoLoader" Description="QTTabBarLib.AutoLoader" />
+                        </Class>
+                        <RegistryKey Root="HKLM" Key="Software\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\{d2bf470e-ed1c-487f-a777-2bd8835eb6ce}" Action="createAndRemoveOnUninstall" />
+                        <RegistryKey Root="HKLM" Key="Software\Microsoft\Internet Explorer\Toolbar" Action="create" >
+                            <RegistryValue Name="{d2bf470e-ed1c-487f-a333-2bd8835eb6ce}" Value="QTTabBar" Type="string" Action="write" />
+                            <RegistryValue Name="{d2bf470e-ed1c-487f-a666-2bd8835eb6ce}" Value="QTButtonBar" Type="string" Action="write" />
+                        </RegistryKey>
+                        <RegistryKey Root="HKCR" Key="CLSID\{D2BF470E-ED1C-487F-A333-2BD8835EB6CE}" Action="createAndRemoveOnUninstall">
+                            <RegistryKey Key="Implemented Categories\{62C8FE65-4EBB-45e7-B440-6E39B2CDBF29}" />
+                            <RegistryValue Name="MenuText" Value="QTTabBar" Type="string" Action="write" />
+                            <RegistryValue Name="HelpText" Value="QTTabBar" Type="string" Action="write" />
+                            <RegistryKey Key="InprocServer32" Action="createAndRemoveOnUninstall">
+                                <RegistryValue Name="Class" Value="QTTabBarLib.QTTabBarClass" Type="string" Action="write" />
+                                <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
+                                <RegistryValue Name="RuntimeVersion" Value="v2.0.50727" Type="string" Action="write" />
+                                <RegistryValue Name="CodeBase" Value="file:///C:/Windows/assembly/GAC_MSIL/QTTabBar/1.0.0.0__973461f1cd23d8eb/QTTabBar.dll" Type="string" Action="write" />
+                                <RegistryKey Key="1.0.0.0" Action="createAndRemoveOnUninstall">
+                                    <RegistryValue Name="Class" Value="QTTabBarLib.QTTabBarClass" Type="string" Action="write" />
+                                    <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
+                                    <RegistryValue Name="RuntimeVersion" Value="v2.0.50727" Type="string" Action="write" />
+                                    <RegistryValue Name="CodeBase" Value="file:///C:/Windows/assembly/GAC_MSIL/QTTabBar/1.0.0.0__973461f1cd23d8eb/QTTabBar.dll" Type="string" Action="write" />
+                                </RegistryKey>
+                            </RegistryKey>
+                        </RegistryKey>
+                        <RegistryKey Root="HKCR" Key="CLSID\{D2BF470E-ED1C-487F-A555-2BD8835EB6CE}" Action="createAndRemoveOnUninstall">
+                            <RegistryKey Key="Implemented Categories\{00021492-0000-0000-C000-000000000046}" Action="createAndRemoveOnUninstall" />
+                            <RegistryKey Key="Implemented Categories\{62C8FE65-4EBB-45e7-B440-6E39B2CDBF29}" Action="createAndRemoveOnUninstall" />
+                            <RegistryValue Name="MenuText" Value="QTTab Desktop Tool" Type="string" Action="write" />
+                            <RegistryValue Name="HelpText" Value="QTTab Desktop Tool" Type="string" Action="write" />
+                            <RegistryKey Key="InprocServer32" Action="createAndRemoveOnUninstall">
+                                <RegistryValue Name="Class" Value="QTTabBarLib.QTCoTaskBarClass" Type="string" Action="write" />
+                                <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
+                                <RegistryValue Name="RuntimeVersion" Value="v2.0.50727" Type="string" Action="write" />
+                                <RegistryValue Name="CodeBase" Value="file:///C:/Windows/assembly/GAC_MSIL/QTTabBar/1.0.0.0__973461f1cd23d8eb/QTTabBar.dll" Type="string" Action="write" />
+                                <RegistryKey Key="1.0.0.0" Action="createAndRemoveOnUninstall">
+                                    <RegistryValue Name="Class" Value="QTTabBarLib.QTCoTaskBarClass" Type="string" Action="write" />
+                                    <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
+                                    <RegistryValue Name="RuntimeVersion" Value="v2.0.50727" Type="string" Action="write" />
+                                    <RegistryValue Name="CodeBase" Value="file:///C:/Windows/assembly/GAC_MSIL/QTTabBar/1.0.0.0__973461f1cd23d8eb/QTTabBar.dll" Type="string" Action="write" />
+                                </RegistryKey>
+                            </RegistryKey>
+                        </RegistryKey>
+                        <RegistryKey Root="HKCR" Key="CLSID\{D2BF470E-ED1C-487F-A666-2BD8835EB6CE}" Action="createAndRemoveOnUninstall">
+                            <RegistryKey Key="Implemented Categories\{62C8FE65-4EBB-45e7-B440-6E39B2CDBF29}" Action="createAndRemoveOnUninstall" />
+                            <RegistryValue Name="MenuText" Value="QTTab Standard Buttons" Type="string" Action="write" />
+                            <RegistryValue Name="HelpText" Value="QTTab Standard Buttons" Type="string" Action="write" />
+                            <RegistryKey Key="InprocServer32" Action="createAndRemoveOnUninstall">
+                                <RegistryValue Name="Class" Value="QTTabBarLib.QTButtonBar" Type="string" Action="write" />
+                                <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
+                                <RegistryValue Name="RuntimeVersion" Value="v2.0.50727" Type="string" Action="write" />
+                                <RegistryValue Name="CodeBase" Value="file:///C:/Windows/assembly/GAC_MSIL/QTTabBar/1.0.0.0__973461f1cd23d8eb/QTTabBar.dll" Type="string" Action="write" />
+                                <RegistryKey Key="1.0.0.0" Action="createAndRemoveOnUninstall">
+                                    <RegistryValue Name="Class" Value="QTTabBarLib.QTButtonBar" Type="string" Action="write" />
+                                    <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
+                                    <RegistryValue Name="RuntimeVersion" Value="v2.0.50727" Type="string" Action="write" />
+                                    <RegistryValue Name="CodeBase" Value="file:///C:/Windows/assembly/GAC_MSIL/QTTabBar/1.0.0.0__973461f1cd23d8eb/QTTabBar.dll" Type="string" Action="write" />
+                                </RegistryKey>
+                            </RegistryKey>
+                        </RegistryKey>
+                        <RegistryKey Root="HKCR" Key="CLSID\{D2BF470E-ED1C-487F-A777-2BD8835EB6CE}" Action="createAndRemoveOnUninstall">
+                            <RegistryKey Key="Implemented Categories\{62C8FE65-4EBB-45e7-B440-6E39B2CDBF29}" Action="createAndRemoveOnUninstall" />
+                            <RegistryValue Name="MenuText" Value="QTTabBar AutoLoader" Type="string" Action="write" />
+                            <RegistryValue Name="HelpText" Value="QTTabBar AutoLoader" Type="string" Action="write" />
+                            <RegistryKey Key="InprocServer32" Action="createAndRemoveOnUninstall">
+                                <RegistryValue Name="Class" Value="QTTabBarLib.AutoLoader" Type="string" Action="write" />
+                                <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
+                                <RegistryValue Name="RuntimeVersion" Value="v2.0.50727" Type="string" Action="write" />
+                                <RegistryValue Name="CodeBase" Value="file:///C:/Windows/assembly/GAC_MSIL/QTTabBar/1.0.0.0__973461f1cd23d8eb/QTTabBar.dll" Type="string" Action="write" />
+                                <RegistryKey Key="1.0.0.0" Action="createAndRemoveOnUninstall">
+                                    <RegistryValue Name="Class" Value="QTTabBarLib.AutoLoader" Type="string" Action="write" />
+                                    <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
+                                    <RegistryValue Name="RuntimeVersion" Value="v2.0.50727" Type="string" Action="write" />
+                                    <RegistryValue Name="CodeBase" Value="file:///C:/Windows/assembly/GAC_MSIL/QTTabBar/1.0.0.0__973461f1cd23d8eb/QTTabBar.dll" Type="string" Action="write" />
+                                </RegistryKey>
+                            </RegistryKey>
+                        </RegistryKey>
+                    </Component>
+                    <Component Id="HookLibrary" Guid="27af1a85-9a05-4c79-bdeb-d73fd4bd9574" Win64="yes" DisableRegistryReflection="yes">
+                        <File Id="f5" Name="QTHookLib32.dll" Source="..\QTHookLib\bin\Release\QTHookLib32.dll"/>
+                        <File Id="f6" Name="QTHookLib64.dll" Source="..\QTHookLib\bin\Release\QTHookLib64.dll"/>
+                        <RegistryKey Root="HKLM" Key="Software\Quizo\QTTabBar" Action="createAndRemoveOnUninstall">
+                            <RegistryValue Name="InstallPath" Value="[INSTALLLOCATION]" Type="string" Action="write" KeyPath="yes" />
+                        </RegistryKey>
+                    </Component>
+                    <Component Id="FirstTimeSetter" Guid="" Win64="yes" DisableRegistryReflection="yes">
+                        <RegistryKey Root="HKCU" Key="Software\Quizo\QTTabBar" Action="createAndRemoveOnUninstall">
+                            <RegistryValue Name="FirstTime" Value="1" Type="integer" Action="write" KeyPath="yes" />
+                        </RegistryKey>
+                    </Component>
+                </Directory>
+            </Directory>
+        </Directory>
+
+        <Feature Id="ProductFeature" Title="QTTabBar" Level="1">
+            <ComponentRef Id="ShellLibrary" />
+            <ComponentRef Id="BandObjectLib" />
+            <ComponentRef Id="QTPluginLib" />
+            <ComponentRef Id="QTTabBar" />           
+            <ComponentRef Id="HookLibrary" />
+            <ComponentRef Id="FirstTimeSetter" />
+        </Feature>
+
+        <UI>
+            <ProgressText Action="RollbackCleanup">Compiling native images</ProgressText>
+        </UI>
+        
+        <!-- Prevent downgrading -->
+        <CustomAction Id="PreventDowngrading" Error="Newer version already installed." />
+
+        <InstallExecuteSequence>
+            <Custom Action="PreventDowngrading" After="FindRelatedProducts">NEWPRODUCTFOUND</Custom>
+            <RemoveExistingProducts After="InstallInitialize" />
+        </InstallExecuteSequence>
+
+        <InstallUISequence>
+            <Custom Action="PreventDowngrading" After="FindRelatedProducts">NEWPRODUCTFOUND</Custom>
+        </InstallUISequence>
+
+        <Property Id="WIXUI_INSTALLDIR" Value="INSTALLLOCATION" />
+        <UIRef Id="WixUI_InstallDir" />
+    </Product>
+</Wix>
