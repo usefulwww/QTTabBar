@@ -36,10 +36,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="QTPluginLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\QTTabBarPlugin\QTTabBarPlugin\bin\Release\QTPluginLib.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -120,6 +116,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\PropertiesButton_small.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\QTPluginLib\QTPluginLib.csproj">
+      <Project>{749BE612-0CAA-444E-8704-4CF9D9A6F653}</Project>
+      <Name>QTPluginLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

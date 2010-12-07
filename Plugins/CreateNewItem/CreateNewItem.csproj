@@ -36,15 +36,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="QTPluginLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\QTTabBarPlugin\QTPluginLib\bin\Release\QTPluginLib.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CreateNewItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\QTPluginLib\QTPluginLib.csproj">
+      <Project>{749BE612-0CAA-444E-8704-4CF9D9A6F653}</Project>
+      <Name>QTPluginLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
