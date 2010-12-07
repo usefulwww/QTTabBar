@@ -390,7 +390,16 @@ namespace QTTabBarLib {
 
         protected virtual void OnDragOver(Point pt) {
             timer_HoverSubDirTipMenu.Enabled = false;
-            timer_HoverSubDirTipMenu.Enabled = true;
+            if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
+                if(QTUtility.CheckConfig(Settings.SubDirTipsWithShift)) {
+                    if(Control.ModifierKeys == Keys.Shift) {
+                        timer_HoverSubDirTipMenu_Tick(null, null);
+                    }
+                }
+                else {
+                    timer_HoverSubDirTipMenu.Enabled = true;    
+                }
+            }
         }
 
         protected void OnEndLabelEdit(LVITEM item) {
@@ -480,7 +489,7 @@ namespace QTTabBarLib {
                     return HandleCursorLoop(key);
                 }
             }
-
+            
             return false;
         }
 
@@ -514,7 +523,10 @@ namespace QTTabBarLib {
         public abstract override bool PointIsBackground(Point pt, bool screenCoords); 
 
         public override void RefreshSubDirTip(bool force = false) {
-            if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips) && !fDragging && Control.MouseButtons == MouseButtons.None) {
+            if(fDragging) {
+                OnDragOver(Control.MousePosition);
+            }
+            else if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips) && Control.MouseButtons == MouseButtons.None) {
                 if((!QTUtility.CheckConfig(Settings.SubDirTipsWithShift) ^ (Control.ModifierKeys == Keys.Shift)) && hwndExplorer == PInvoke.GetForegroundWindow()) {
                     int iItem = GetHotItem();
                     if(subDirTip != null && (subDirTip.MouseIsOnThis() || subDirTip.MenuIsShowing)) {
