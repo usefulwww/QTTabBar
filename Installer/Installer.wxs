@@ -28,6 +28,10 @@
     <?define UpgradeCode="{ec9baff7-58fb-40cb-9f67-1c438a7524a5}"?> <!-- NEVER CHANGE THIS, EVER!! -->
     <?define Manufacturer="Quizo and Paul Accisano"?>
     <?define ProductCode="*"?>
+
+    <!-- We're probably going to have do something weird with this. -->
+    <!-- v2.0.50727 or v4.0.30319 ? -->
+    <?define RuntimeVersion="v2.0.50727"?>
     
     <Product Id="$(var.ProductCode)"
              UpgradeCode="$(var.UpgradeCode)"
@@ -92,13 +96,11 @@
                             <RegistryKey Key="InprocServer32" Action="createAndRemoveOnUninstall">
                                 <RegistryValue Name="Class" Value="QTTabBarLib.QTTabBarClass" Type="string" Action="write" />
                                 <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
-                                <RegistryValue Name="RuntimeVersion" Value="v2.0.50727" Type="string" Action="write" />
-                                <RegistryValue Name="CodeBase" Value="file:///C:/Windows/assembly/GAC_MSIL/QTTabBar/1.0.0.0__973461f1cd23d8eb/QTTabBar.dll" Type="string" Action="write" />
+                                <RegistryValue Name="RuntimeVersion" Value="$(var.RuntimeVersion)" Type="string" Action="write" />
                                 <RegistryKey Key="1.0.0.0" Action="createAndRemoveOnUninstall">
                                     <RegistryValue Name="Class" Value="QTTabBarLib.QTTabBarClass" Type="string" Action="write" />
                                     <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
-                                    <RegistryValue Name="RuntimeVersion" Value="v2.0.50727" Type="string" Action="write" />
-                                    <RegistryValue Name="CodeBase" Value="file:///C:/Windows/assembly/GAC_MSIL/QTTabBar/1.0.0.0__973461f1cd23d8eb/QTTabBar.dll" Type="string" Action="write" />
+                                    <RegistryValue Name="RuntimeVersion" Value="$(var.RuntimeVersion)" Type="string" Action="write" />
                                 </RegistryKey>
                             </RegistryKey>
                         </RegistryKey>
@@ -110,13 +112,11 @@
                             <RegistryKey Key="InprocServer32" Action="createAndRemoveOnUninstall">
                                 <RegistryValue Name="Class" Value="QTTabBarLib.QTCoTaskBarClass" Type="string" Action="write" />
                                 <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
-                                <RegistryValue Name="RuntimeVersion" Value="v2.0.50727" Type="string" Action="write" />
-                                <RegistryValue Name="CodeBase" Value="file:///C:/Windows/assembly/GAC_MSIL/QTTabBar/1.0.0.0__973461f1cd23d8eb/QTTabBar.dll" Type="string" Action="write" />
+                                <RegistryValue Name="RuntimeVersion" Value="$(var.RuntimeVersion)" Type="string" Action="write" />
                                 <RegistryKey Key="1.0.0.0" Action="createAndRemoveOnUninstall">
                                     <RegistryValue Name="Class" Value="QTTabBarLib.QTCoTaskBarClass" Type="string" Action="write" />
                                     <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
-                                    <RegistryValue Name="RuntimeVersion" Value="v2.0.50727" Type="string" Action="write" />
-                                    <RegistryValue Name="CodeBase" Value="file:///C:/Windows/assembly/GAC_MSIL/QTTabBar/1.0.0.0__973461f1cd23d8eb/QTTabBar.dll" Type="string" Action="write" />
+                                    <RegistryValue Name="RuntimeVersion" Value="$(var.RuntimeVersion)" Type="string" Action="write" />
                                 </RegistryKey>
                             </RegistryKey>
                         </RegistryKey>
@@ -127,13 +127,11 @@
                             <RegistryKey Key="InprocServer32" Action="createAndRemoveOnUninstall">
                                 <RegistryValue Name="Class" Value="QTTabBarLib.QTButtonBar" Type="string" Action="write" />
                                 <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
-                                <RegistryValue Name="RuntimeVersion" Value="v2.0.50727" Type="string" Action="write" />
-                                <RegistryValue Name="CodeBase" Value="file:///C:/Windows/assembly/GAC_MSIL/QTTabBar/1.0.0.0__973461f1cd23d8eb/QTTabBar.dll" Type="string" Action="write" />
+                                <RegistryValue Name="RuntimeVersion" Value="$(var.RuntimeVersion)" Type="string" Action="write" />
                                 <RegistryKey Key="1.0.0.0" Action="createAndRemoveOnUninstall">
                                     <RegistryValue Name="Class" Value="QTTabBarLib.QTButtonBar" Type="string" Action="write" />
                                     <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
-                                    <RegistryValue Name="RuntimeVersion" Value="v2.0.50727" Type="string" Action="write" />
-                                    <RegistryValue Name="CodeBase" Value="file:///C:/Windows/assembly/GAC_MSIL/QTTabBar/1.0.0.0__973461f1cd23d8eb/QTTabBar.dll" Type="string" Action="write" />
+                                    <RegistryValue Name="RuntimeVersion" Value="$(var.RuntimeVersion)" Type="string" Action="write" />
                                 </RegistryKey>
                             </RegistryKey>
                         </RegistryKey>
@@ -144,13 +142,11 @@
                             <RegistryKey Key="InprocServer32" Action="createAndRemoveOnUninstall">
                                 <RegistryValue Name="Class" Value="QTTabBarLib.AutoLoader" Type="string" Action="write" />
                                 <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
-                                <RegistryValue Name="RuntimeVersion" Value="v2.0.50727" Type="string" Action="write" />
-                                <RegistryValue Name="CodeBase" Value="file:///C:/Windows/assembly/GAC_MSIL/QTTabBar/1.0.0.0__973461f1cd23d8eb/QTTabBar.dll" Type="string" Action="write" />
+                                <RegistryValue Name="RuntimeVersion" Value="$(var.RuntimeVersion)" Type="string" Action="write" />
                                 <RegistryKey Key="1.0.0.0" Action="createAndRemoveOnUninstall">
                                     <RegistryValue Name="Class" Value="QTTabBarLib.AutoLoader" Type="string" Action="write" />
                                     <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
-                                    <RegistryValue Name="RuntimeVersion" Value="v2.0.50727" Type="string" Action="write" />
-                                    <RegistryValue Name="CodeBase" Value="file:///C:/Windows/assembly/GAC_MSIL/QTTabBar/1.0.0.0__973461f1cd23d8eb/QTTabBar.dll" Type="string" Action="write" />
+                                    <RegistryValue Name="RuntimeVersion" Value="$(var.RuntimeVersion)" Type="string" Action="write" />
                                 </RegistryKey>
                             </RegistryKey>
                         </RegistryKey>
