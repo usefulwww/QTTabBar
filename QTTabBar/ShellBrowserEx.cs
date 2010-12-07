@@ -230,7 +230,9 @@ namespace QTTabBarLib {
 
         public IDLWrapper GetShellPath() {
             using(FVWrapper w = GetFolderView()) {
-                return GetShellPath(w.FolderView);
+                return w == null 
+                        ? new IDLWrapper(IntPtr.Zero) 
+                        : GetShellPath(w.FolderView);
             }
         }
 
