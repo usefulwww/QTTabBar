@@ -163,6 +163,8 @@ namespace QTTabBarLib {
         private ToolStripSeparator tssep_Tab3;
         private readonly uint WM_NEWTREECONTROL = PInvoke.RegisterWindowMessage("QTTabBar_NewTreeControl");
         private readonly uint WM_BROWSEOBJECT = PInvoke.RegisterWindowMessage("QTTabBar_BrowseObject");
+        private readonly uint WM_HEADERINALLVIEWS = PInvoke.RegisterWindowMessage("QTTabBar_HeaderInAllViews");
+        private readonly uint WM_LISTREFRESHED = PInvoke.RegisterWindowMessage("QTTabBar_ListRefreshed");
 
         public QTTabBarClass() {
             if(!fInitialized) {
@@ -420,6 +422,10 @@ namespace QTTabBarLib {
                                 Marshal.ReleaseComObject(obj);
                             }
                         }
+                        return PInvoke.CallNextHookEx(hHook_Msg, nCode, wParam, lParam);   
+                    }
+                    else if(msg.message == WM_LISTREFRESHED) {
+                        HandleF5();
                         return PInvoke.CallNextHookEx(hHook_Msg, nCode, wParam, lParam);   
                     }
 
@@ -1989,7 +1995,6 @@ namespace QTTabBarLib {
         }
 
         private void Explorer_DownloadBegin() {
-            HandleF5();
             BeforeNavigate(string.Empty);
         }
 
@@ -2019,12 +2024,6 @@ namespace QTTabBarLib {
                 bool flag = IsSpecialFolderNeedsToTravel(path);
                 bool flag2 = QTUtility2.IsShellPathButNotFileSystem(path);
                 bool flag3 = QTUtility2.IsShellPathButNotFileSystem(CurrentTab.CurrentPath);
-
-                if(QTUtility.CheckConfig(Settings.AlwaysShowHeaders)) {
-                    listView.SetRedraw(false);
-                    ShellBrowser.EnableHeaderInAllViews(listView is ExtendedItemsView);
-                    listView.SetRedraw(true);
-                }
 
                 // If we're navigating on a locked tab, we simulate opening the target folder
                 // in a new tab.  First we clone the tab at the old address and lock it.  Then
@@ -2201,6 +2200,10 @@ namespace QTTabBarLib {
                 Console.WriteLine(string.Format("{0:x8}", flags) + ": " + path);
                 */
 
+                return true;
+            }
+            else if(msg.Msg == WM_HEADERINALLVIEWS) {
+                msg.Result = (IntPtr)(QTUtility.CheckConfig(Settings.AlwaysShowHeaders) ? 1 : 0);
                 return true;
             }
 
@@ -3751,10 +3754,6 @@ namespace QTTabBarLib {
             return;
         }
 
-        private void ListView_Refresh() {
-            HandleF5();
-        }
-
         private bool ListView_ItemActivated(Keys modKeys) {
             if(timerSelectionChanged != null) {
                 timerSelectionChanged.Enabled = false;
@@ -3867,7 +3866,6 @@ namespace QTTabBarLib {
                 elvc.DoubleClick += ListView_DoubleClick;
                 elvc.EndLabelEdit += ListView_EndLabelEdit;
                 elvc.MouseActivate += ListView_MouseActivate;
-                elvc.Refresh += ListView_Refresh;
                 elvc.SubDirTip_MenuItemClicked += subDirTip_MenuItemClicked;
                 elvc.SubDirTip_MenuItemRightClicked += subDirTip_MenuItemRightClicked;
                 elvc.SubDirTip_MultipleMenuItemsClicked += subDirTip_MultipleMenuItemsClicked;

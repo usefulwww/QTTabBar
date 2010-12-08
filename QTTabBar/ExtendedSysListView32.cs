@@ -98,7 +98,6 @@ namespace QTTabBarLib {
 
                 case LVN.INSERTITEM:
                 case LVN.DELETEITEM:
-                case LVN.DELETEALLITEMS:
                     // Handled through undocumented WM_USER+174 message
                     if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
                         HideSubDirTip(1);
@@ -107,12 +106,7 @@ namespace QTTabBarLib {
                         PInvoke.InvalidateRect(nmhdr.hwndFrom, IntPtr.Zero, true);
                     }
                     ShellViewController.DefWndProc(ref msg);
-                    if(nmhdr.code == LVN.DELETEALLITEMS) {
-                        OnRefresh();
-                    }
-                    else {
-                        OnItemCountChanged();
-                    }
+                    OnItemCountChanged();
                     return true;
 
                 case LVN.BEGINDRAG:
