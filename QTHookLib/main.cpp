@@ -158,12 +158,13 @@ HRESULT WINAPI DetourRegisterDragDrop(IN HWND hwnd, IN LPDROPTARGET pDropTarget)
 HRESULT WINAPI DetourSHCreateShellFolderView(const SFV_CREATE* pcsfv, IShellView** ppsv) {
     // Hook the 3rd entry in this IShellFolderViewCB's VTable, which is MessageSFVCB
     void** vtable = *reinterpret_cast<void***>(pcsfv->psfvcb);
-    void* dummy;
+    IShellView* dummy;
     if(MH_CreateHook(vtable[3], &DetourMessageSFVCB, reinterpret_cast<void**>(&fpMessageSFVCB)) == MH_OK) {
         MH_EnableHook(vtable[3]);
     }
     HRESULT ret = fpSHCreateShellFolderView(pcsfv, ppsv);
-    if(SUCCEEDED(ret) && SUCCEEDED((*ppsv)->QueryInterface(IID_CDefView, &dummy))) {
+    if(SUCCEEDED(ret) && SUCCEEDED((*ppsv)->QueryInterface(IID_CDefView, reinterpret_cast<void**>(&dummy)))) {
+        dummy->Release();
         IShellView3* psv3;
         if(SUCCEEDED((*ppsv)->QueryInterface(__uuidof(IShellView3), reinterpret_cast<void**>(&psv3)))) {
             // Hook the 20th entry in this IShellView3's VTable, which is CreateFolderView3
@@ -171,6 +172,7 @@ HRESULT WINAPI DetourSHCreateShellFolderView(const SFV_CREATE* pcsfv, IShellView
             if(MH_CreateHook(vtable[20], &DetourCreateViewWindow3, reinterpret_cast<void**>(&fpCreateViewWindow3)) == MH_OK) {
                 MH_EnableHook(vtable[20]);
             }
+            psv3->Release();
         }
 
         // Disable this hook, no need for it anymore.
