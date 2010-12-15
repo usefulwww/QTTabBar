@@ -197,48 +197,46 @@ namespace QTTabBarLib {
         }
 
         private void AddStartUpTabs(string openingGRP, string openingPath) {
-            if(ModifierKeys != Keys.Shift && QTUtility.InstancesCount == 1) {
-                if(QTUtility.StartUpGroupList.Count > 0) {
-                    bool flag = QTUtility.CheckConfig(Settings.DontOpenSame);
-                    foreach(string str in QTUtility.StartUpGroupList) {
-                        string str2;
-                        if((openingGRP != str) && QTUtility.GroupPathsDic.TryGetValue(str, out str2)) {
-                            if(QTUtility.StartUpGroupNameNowOpening == str) {
-                                QTUtility.StartUpGroupNameNowOpening = string.Empty;
-                            }
-                            else {
-                                foreach(string str3 in str2.Split(QTUtility.SEPARATOR_CHAR)) {
-                                    if(flag) {
-                                        if(string.Equals(str3, openingPath, StringComparison.OrdinalIgnoreCase)) {
-                                            tabControl1.TabPages.Relocate(0, tabControl1.TabCount - 1);
-                                            goto Label_0188;
-                                        }
-                                        if(tabControl1.TabPages.Cast<QTabItem>().Any(item =>
-                                                string.Equals(str3, item.CurrentPath, StringComparison.OrdinalIgnoreCase))) {
-                                            goto Label_0188;
-                                        }
+            if(ModifierKeys == Keys.Shift || QTUtility.InstancesCount != 1) return;
+            if(QTUtility.StartUpGroupList.Count > 0) {
+                bool flag = QTUtility.CheckConfig(Settings.DontOpenSame);
+                foreach(string str in QTUtility.StartUpGroupList) {
+                    string str2;
+                    if((openingGRP != str) && QTUtility.GroupPathsDic.TryGetValue(str, out str2)) {
+                        if(QTUtility.StartUpGroupNameNowOpening == str) {
+                            QTUtility.StartUpGroupNameNowOpening = string.Empty;
+                        }
+                        else {
+                            foreach(string str3 in str2.Split(QTUtility.SEPARATOR_CHAR)) {
+                                if(flag) {
+                                    if(string.Equals(str3, openingPath, StringComparison.OrdinalIgnoreCase)) {
+                                        tabControl1.TabPages.Relocate(0, tabControl1.TabCount - 1);
+                                        continue;
                                     }
-                                    using(IDLWrapper wrapper = new IDLWrapper(str3)) {
-                                        if(wrapper.Available) {
-                                            QTabItem tabPage = new QTabItem(QTUtility2.MakePathDisplayText(str3, false), str3, tabControl1);
-                                            tabPage.NavigatedTo(str3, wrapper.IDL, -1);
-                                            tabPage.ToolTipText = QTUtility2.MakePathDisplayText(str3, true);
-                                            tabPage.UnderLine = true;
-                                            tabControl1.TabPages.Add(tabPage);
-                                        }
+                                    if(tabControl1.TabPages.Cast<QTabItem>().Any(item =>
+                                            string.Equals(str3, item.CurrentPath, StringComparison.OrdinalIgnoreCase))) {
+                                        continue;
                                     }
-                                Label_0188: ;
+                                }
+                                using(IDLWrapper wrapper = new IDLWrapper(str3)) {
+                                    if(wrapper.Available) {
+                                        QTabItem tabPage = new QTabItem(QTUtility2.MakePathDisplayText(str3, false), str3, tabControl1);
+                                        tabPage.NavigatedTo(str3, wrapper.IDL, -1);
+                                        tabPage.ToolTipText = QTUtility2.MakePathDisplayText(str3, true);
+                                        tabPage.UnderLine = true;
+                                        tabControl1.TabPages.Add(tabPage);
+                                    }
                                 }
                             }
                         }
                     }
                 }
-                if(QTUtility.CheckConfig(Settings.RestoreLockedTabs)) {
-                    RestoreTabsOnInitialize(1, openingPath);
-                }
-                else if(QTUtility.CheckConfig(Settings.RestoreTabs)) {
-                    RestoreTabsOnInitialize(0, openingPath);
-                }
+            }
+            if(QTUtility.CheckConfig(Settings.RestoreLockedTabs)) {
+                RestoreTabsOnInitialize(1, openingPath);
+            }
+            else if(QTUtility.CheckConfig(Settings.RestoreTabs)) {
+                RestoreTabsOnInitialize(0, openingPath);
             }
         }
 
@@ -2186,20 +2184,27 @@ namespace QTTabBarLib {
             }
             
             if(msg.Msg == WM_BROWSEOBJECT) {
-                // TODO
-                /*
-                QTUtility2.AllocDebugConsole();
                 uint flags = (uint)Marshal.ReadInt32(msg.WParam);
-                IntPtr pidl = msg.LParam;
-                string path = "<null>";
-                if(pidl != IntPtr.Zero) {
-                    using(IDLWrapper wrapper = new IDLWrapper(PInvoke.ILClone(pidl))) {
-                        path = wrapper.ParseName;
+                if((flags & 0x4000 /* SBSP_NAVIGATEBACK */) != 0) {
+                    msg.Result = (IntPtr)1;
+                    if(!NavigateCurrentTab(true)) {
+                        CloseTab(CurrentTab);
                     }
                 }
-                Console.WriteLine(string.Format("{0:x8}", flags) + ": " + path);
-                */
-
+                else {
+                    // TODO
+                    /*
+                    IntPtr pidl = msg.LParam;
+                    string path = "<null>";
+                    if(pidl != IntPtr.Zero) {
+                        using(IDLWrapper wrapper = new IDLWrapper(PInvoke.ILClone(pidl))) {
+                            path = wrapper.ParseName;
+                        }
+                    }
+                    QTUtility2.AllocDebugConsole();
+                    Console.WriteLine(string.Format("{0:x8}", flags) + ": " + path);
+                    */
+                }
                 return true;
             }
             else if(msg.Msg == WM_HEADERINALLVIEWS) {
@@ -4142,14 +4147,8 @@ namespace QTTabBarLib {
         }
 
         private bool NavigateCurrentTab(bool fBack) {
-            LogData data;
             string currentPath = CurrentTab.CurrentPath;
-            if(fBack) {
-                data = CurrentTab.GoBackward();
-            }
-            else {
-                data = CurrentTab.GoForward();
-            }
+            LogData data = fBack ? CurrentTab.GoBackward() : CurrentTab.GoForward();
             if(string.IsNullOrEmpty(data.Path)) {
                 return false;
             }
@@ -4809,19 +4808,18 @@ namespace QTTabBarLib {
         }
 
         private void OpenOptionsDialog() {
-            if(!TMPfNowOptionDialogOpening) {
-                if(optionsDialog == null) {
-                    TMPfNowOptionDialogOpening = true;
-                    TMP_fPaintBG = QTUtility.CheckConfig(Settings.ToolbarBGColor);
-                    TMP_strOldLangPath = QTUtility.Path_LanguageFile;
-                    fOptionDialogCreated = true;
-                    Thread thread = new Thread(OpenOptionsDialogCore);
-                    thread.SetApartmentState(ApartmentState.STA);
-                    thread.Start();
-                }
-                else {
-                    optionsDialog.Invoke(new MethodInvoker(odCallback_Activate));
-                }
+            if(TMPfNowOptionDialogOpening) return;
+            if(optionsDialog == null) {
+                TMPfNowOptionDialogOpening = true;
+                TMP_fPaintBG = QTUtility.CheckConfig(Settings.ToolbarBGColor);
+                TMP_strOldLangPath = QTUtility.Path_LanguageFile;
+                fOptionDialogCreated = true;
+                Thread thread = new Thread(OpenOptionsDialogCore);
+                thread.SetApartmentState(ApartmentState.STA);
+                thread.Start();
+            }
+            else {
+                optionsDialog.Invoke(new MethodInvoker(odCallback_Activate));
             }
         }
 
@@ -5549,7 +5547,7 @@ namespace QTTabBarLib {
                 tabSwitcher.ShowSwitcher(ExplorerHandle, tabControl1.SelectedIndex, lstPaths);
             }
             int index = tabSwitcher.Switch(fShift);
-            if(!fRepeat || (tabControl1.TabCount < 13)) {
+            if(!fRepeat || tabControl1.TabCount < 13) {
                 tabControl1.SetPseudoHotIndex(index);
             }
             return true;
@@ -5609,7 +5607,7 @@ namespace QTTabBarLib {
                 if(notifyIcon.Visible) {
                     int count = dicNotifyIcon.Count;
                     string str = count + " window" + ((count > 1) ? "s" : string.Empty);
-                    if(str.Length > 0x40) {
+                    if(str.Length > 64) {
                         str = str.Substring(0, 60) + "...";
                     }
                     notifyIcon.Text = str;
