@@ -89,6 +89,7 @@ namespace QTTabBarLib {
         internal const int INTERVAL_SHOWMENU = 0x4b0;
         private int iSequential_WM_CLOSE;
         private bool IsShown;
+        private byte[] lastBrowseObjectIDL;
         private Dictionary<int, ITravelLogEntry> LogEntryDic = new Dictionary<int, ITravelLogEntry>();
         private AbstractListView listView = new AbstractListView();
         private ListViewMonitor listViewManager;
@@ -101,7 +102,6 @@ namespace QTTabBarLib {
         private int navBtnsFlag;
         private bool NavigatedByCode;
         private static NotifyIcon notifyIcon;
-        private bool NowNavigating;
         private bool NowInTravelLog;
         private bool NowModalDialogShown;
         private bool NowOpenedByGroupOpener;
@@ -306,33 +306,20 @@ namespace QTTabBarLib {
             }
         }
 
-        // This function is a standin for BeforeNavigate2.  On 7, the path is
-        // empty and return value has no effect.
-        private bool BeforeNavigate(string path) {
-            if(NowNavigating || !IsShown) {
-                return false;
-            }
+        // This function is used as a more available version of BeforeNavigate2.
+        // Return true to suppress the navigation.  Target IDL should not be relied
+        // upon; it's not guaranteed to be accurate.
+        private bool BeforeNavigate(IDLWrapper target) {
+            if(!IsShown) return false;
             HideSubDirTip_Tab_Menu();
-            NowNavigating = true;
             NowTabDragging = false;
             if(!NavigatedByCode) {
                 SaveSelectedItems(CurrentTab);
-                
-                // We will deal with this in NavigateComplete on 7.
-                if((!string.IsNullOrEmpty(path) &&
-                        CurrentTab.TabLocked &&
-                        !QTUtility2.IsShellPathButNotFileSystem(CurrentTab.CurrentPath)) &&
-                        !QTUtility2.IsShellPathButNotFileSystem(path)) {
-                    CloneTabButton(CurrentTab, path, true, -1);
-                    return true;
-                }
             }
             if(NowInTravelLog) {
                 if(CurrentTravelLogIndex > 0) {
                     CurrentTravelLogIndex--;
-
-                    // TODO ...
-                    if(!IsSpecialFolderNeedsToTravel(path)) {
+                    if(!IsSpecialFolderNeedsToTravel(target.Path)) {
                         NavigateBackToTheFuture();
                     }
                 }
@@ -340,6 +327,7 @@ namespace QTTabBarLib {
                     NowInTravelLog = false;
                 }
             }
+            lastBrowseObjectIDL = target.IDL;
             return false;
         }
 
@@ -1992,23 +1980,13 @@ namespace QTTabBarLib {
             }
         }
 
-        private void Explorer_DownloadBegin() {
-            BeforeNavigate(string.Empty);
-        }
-
         private void Explorer_BeforeNavigate2(object pDisp, ref object URL, ref object Flags, ref object TargetFrameName, ref object PostData, ref object Headers, ref bool Cancel) {
-            if(IsShown) {
-                if(BeforeNavigate((string)URL)) {
-                    Cancel = true;
-                }
-            }
-            else {
+            if(!IsShown) {
                 DoFirstNavigation(true, (string)URL);
             }
         }
 
         private void Explorer_NavigateComplete2(object pDisp, ref object URL) {
-            NowNavigating = false;
             string path = (string)URL;
             if(!IsShown) {
                 DoFirstNavigation(false, path);
@@ -2191,19 +2169,18 @@ namespace QTTabBarLib {
                         CloseTab(CurrentTab);
                     }
                 }
+                else if((flags & 0x8000 /* SBSP_NAVIGATEFORWARD */) != 0) {
+                    msg.Result = (IntPtr)1;
+                    NavigateCurrentTab(false);
+                }
                 else {
-                    // TODO
-                    /*
-                    IntPtr pidl = msg.LParam;
-                    string path = "<null>";
-                    if(pidl != IntPtr.Zero) {
-                        using(IDLWrapper wrapper = new IDLWrapper(PInvoke.ILClone(pidl))) {
-                            path = wrapper.ParseName;
-                        }
+                    IntPtr pidl = IntPtr.Zero;
+                    if(msg.LParam != IntPtr.Zero) {
+                        pidl = PInvoke.ILClone(msg.LParam);
                     }
-                    QTUtility2.AllocDebugConsole();
-                    Console.WriteLine(string.Format("{0:x8}", flags) + ": " + path);
-                    */
+                    using(IDLWrapper wrapper = new IDLWrapper(pidl)) {
+                        msg.Result = (IntPtr)(BeforeNavigate(wrapper) ? 1 : 0);
+                    }
                 }
                 return true;
             }
@@ -2440,6 +2417,10 @@ namespace QTTabBarLib {
             if(!wrapper.Available) {
                 wrapper.Dispose();
                 wrapper = new IDLWrapper(ShellMethods.ShellGetPath2(ExplorerHandle));
+                if(!wrapper.Available) {
+                    wrapper.Dispose();
+                    wrapper = new IDLWrapper(lastBrowseObjectIDL);
+                }
             }
             return wrapper;
         }
@@ -4476,9 +4457,6 @@ namespace QTTabBarLib {
             }
             Explorer.BeforeNavigate2 += Explorer_BeforeNavigate2;
             Explorer.NavigateComplete2 += Explorer_NavigateComplete2;
-            if(!QTUtility.IsXP) {
-                Explorer.DownloadBegin += Explorer_DownloadBegin;
-            }
         }
 
         protected override void OnPaintBackground(PaintEventArgs e) {
