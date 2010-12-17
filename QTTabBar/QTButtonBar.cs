@@ -1353,8 +1353,11 @@ namespace QTTabBarLib {
             try {
                 if(ShellBrowser.GetIShellBrowser().QueryActiveShellView(out ppshv) == 0) {
                     int num;
-                    IFolderView view2 = (IFolderView)ppshv;
-                    IShellFolderView view3 = (IShellFolderView)ppshv;
+                    IFolderView view2 = ppshv as IFolderView;
+                    IShellFolderView view3 = ppshv as IShellFolderView;
+                    if(view2 == null || view3 == null) {
+                        return false;
+                    }
                     IPersistFolder2 ppv = null;
                     try {
                         Guid riid = ExplorerGUIDs.IID_IPersistFolder2;
