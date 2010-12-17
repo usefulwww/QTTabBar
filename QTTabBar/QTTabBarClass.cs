@@ -89,7 +89,8 @@ namespace QTTabBarLib {
         internal const int INTERVAL_SHOWMENU = 0x4b0;
         private int iSequential_WM_CLOSE;
         private bool IsShown;
-        private byte[] lastBrowseObjectIDL;
+        private byte[] lastAttemptedBrowseObjectIDL;
+        private byte[] lastCompletedBrowseObjectIDL;
         private Dictionary<int, ITravelLogEntry> LogEntryDic = new Dictionary<int, ITravelLogEntry>();
         private AbstractListView listView = new AbstractListView();
         private ListViewMonitor listViewManager;
@@ -327,7 +328,7 @@ namespace QTTabBarLib {
                     NowInTravelLog = false;
                 }
             }
-            lastBrowseObjectIDL = target.IDL;
+            lastAttemptedBrowseObjectIDL = target.IDL;
             return false;
         }
 
@@ -1988,9 +1989,10 @@ namespace QTTabBarLib {
 
         private void Explorer_NavigateComplete2(object pDisp, ref object URL) {
             string path = (string)URL;
+            lastCompletedBrowseObjectIDL = lastAttemptedBrowseObjectIDL;
             if(!IsShown) {
                 DoFirstNavigation(false, path);
-            }
+            }            
 
             if(fNowQuitting) {
                 Explorer.Quit();
@@ -2419,7 +2421,7 @@ namespace QTTabBarLib {
                 wrapper = new IDLWrapper(ShellMethods.ShellGetPath2(ExplorerHandle));
                 if(!wrapper.Available) {
                     wrapper.Dispose();
-                    wrapper = new IDLWrapper(lastBrowseObjectIDL);
+                    wrapper = new IDLWrapper(lastCompletedBrowseObjectIDL);
                 }
             }
             return wrapper;

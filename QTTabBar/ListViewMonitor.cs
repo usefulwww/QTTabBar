@@ -47,6 +47,7 @@ namespace QTTabBarLib {
         }
 
         public AbstractListView CurrentListView { get; private set; }
+        public AbstractListView PreviousListView { get; private set; }
 
         private bool ContainerController_MessageCaptured(ref Message msg) {
             if(msg.Msg == WM.PARENTNOTIFY && PInvoke.LoWord((int)msg.WParam) == WM.CREATE) {
@@ -74,7 +75,7 @@ namespace QTTabBarLib {
 
         private void RecaptureHandles(IntPtr hwndShellView) {
             if(CurrentListView != null) {
-                CurrentListView.Dispose();
+                PreviousListView = CurrentListView;
             }
 
             IntPtr hwndListView = WindowUtils.FindChildWindow(hwndShellView, hwnd => {
@@ -107,11 +108,20 @@ namespace QTTabBarLib {
         }
 
         private void ListView_Destroyed(object sender, EventArgs args) {
-            if(CurrentListView == sender) {
-                CurrentListView.Dispose();
-                CurrentListView = new AbstractListView();
+            if(sender == CurrentListView) {
+                if(PreviousListView != null) {
+                    CurrentListView = PreviousListView;
+                    PreviousListView = null;
+                }
+                else {
+                    CurrentListView = new AbstractListView();
+                }
                 ListViewChanged(this, null);
             }
+            else if(sender == PreviousListView) {
+                PreviousListView = null;
+            }
+            ((AbstractListView)sender).Dispose();
         }
 
         #region IDisposable Members
