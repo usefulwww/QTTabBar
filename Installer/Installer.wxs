@@ -104,22 +104,6 @@
                                 </RegistryKey>
                             </RegistryKey>
                         </RegistryKey>
-                        <RegistryKey Root="HKCR" Key="CLSID\{D2BF470E-ED1C-487F-A555-2BD8835EB6CE}" Action="createAndRemoveOnUninstall">
-                            <RegistryKey Key="Implemented Categories\{00021492-0000-0000-C000-000000000046}" Action="createAndRemoveOnUninstall" />
-                            <RegistryKey Key="Implemented Categories\{62C8FE65-4EBB-45e7-B440-6E39B2CDBF29}" Action="createAndRemoveOnUninstall" />
-                            <RegistryValue Name="MenuText" Value="QTTab Desktop Tool" Type="string" Action="write" />
-                            <RegistryValue Name="HelpText" Value="QTTab Desktop Tool" Type="string" Action="write" />
-                            <RegistryKey Key="InprocServer32" Action="createAndRemoveOnUninstall">
-                                <RegistryValue Name="Class" Value="QTTabBarLib.QTCoTaskBarClass" Type="string" Action="write" />
-                                <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
-                                <RegistryValue Name="RuntimeVersion" Value="$(var.RuntimeVersion)" Type="string" Action="write" />
-                                <RegistryKey Key="1.0.0.0" Action="createAndRemoveOnUninstall">
-                                    <RegistryValue Name="Class" Value="QTTabBarLib.QTCoTaskBarClass" Type="string" Action="write" />
-                                    <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
-                                    <RegistryValue Name="RuntimeVersion" Value="$(var.RuntimeVersion)" Type="string" Action="write" />
-                                </RegistryKey>
-                            </RegistryKey>
-                        </RegistryKey>
                         <RegistryKey Root="HKCR" Key="CLSID\{D2BF470E-ED1C-487F-A666-2BD8835EB6CE}" Action="createAndRemoveOnUninstall">
                             <RegistryKey Key="Implemented Categories\{62C8FE65-4EBB-45e7-B440-6E39B2CDBF29}" Action="createAndRemoveOnUninstall" />
                             <RegistryValue Name="MenuText" Value="QTTab Standard Buttons" Type="string" Action="write" />
@@ -151,14 +135,35 @@
                             </RegistryKey>
                         </RegistryKey>
                     </Component>
-                    <Component Id="HookLibrary" Guid="27af1a85-9a05-4c79-bdeb-d73fd4bd9574" Win64="yes" DisableRegistryReflection="yes">
+                    <Component Id="QTDesktopTool" Guid="27af1a85-9a05-4c79-bdeb-d73fd4bd9574" Win64="yes" DisableRegistryReflection="yes">
+                        <Condition>
+                            <![CDATA[VersionNT<>601]]>
+                        </Condition>
+                        <RegistryKey Root="HKCR" Key="CLSID\{D2BF470E-ED1C-487F-A555-2BD8835EB6CE}" Action="createAndRemoveOnUninstall">
+                            <RegistryKey Key="Implemented Categories\{00021492-0000-0000-C000-000000000046}" Action="createAndRemoveOnUninstall" />
+                            <RegistryKey Key="Implemented Categories\{62C8FE65-4EBB-45e7-B440-6E39B2CDBF29}" Action="createAndRemoveOnUninstall" />
+                            <RegistryValue Name="MenuText" Value="QTTab Desktop Tool" Type="string" Action="write" />
+                            <RegistryValue Name="HelpText" Value="QTTab Desktop Tool" Type="string" Action="write" />
+                            <RegistryKey Key="InprocServer32" Action="createAndRemoveOnUninstall">
+                                <RegistryValue Name="Class" Value="QTTabBarLib.QTCoTaskBarClass" Type="string" Action="write" />
+                                <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
+                                <RegistryValue Name="RuntimeVersion" Value="$(var.RuntimeVersion)" Type="string" Action="write" />
+                                <RegistryKey Key="1.0.0.0" Action="createAndRemoveOnUninstall">
+                                    <RegistryValue Name="Class" Value="QTTabBarLib.QTCoTaskBarClass" Type="string" Action="write" />
+                                    <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
+                                    <RegistryValue Name="RuntimeVersion" Value="$(var.RuntimeVersion)" Type="string" Action="write" />
+                                </RegistryKey>
+                            </RegistryKey>
+                        </RegistryKey>
+                    </Component>
+                    <Component Id="HookLibrary" Guid="27af1a85-9a06-4c79-bdeb-d73fd4bd9574" Win64="yes" DisableRegistryReflection="yes">
                         <File Id="f5" Name="QTHookLib32.dll" Source="..\QTHookLib\bin\Release\QTHookLib32.dll"/>
                         <File Id="f6" Name="QTHookLib64.dll" Source="..\QTHookLib\bin\Release\QTHookLib64.dll"/>
                         <RegistryKey Root="HKLM" Key="Software\Quizo\QTTabBar" Action="createAndRemoveOnUninstall">
                             <RegistryValue Name="InstallPath" Value="[INSTALLLOCATION]" Type="string" Action="write" KeyPath="yes" />
                         </RegistryKey>
                     </Component>
-                    <Component Id="FirstTimeSetter" Guid="" Win64="yes" DisableRegistryReflection="yes">
+                    <Component Id="FirstTimeSetter" Guid="27af1a85-9a07-4c79-bdeb-d73fd4bd9574" Win64="yes" DisableRegistryReflection="yes">
                         <RegistryKey Root="HKCU" Key="Software\Quizo\QTTabBar" Action="createAndRemoveOnUninstall">
                             <RegistryValue Name="FirstTime" Value="1" Type="integer" Action="write" KeyPath="yes" />
                         </RegistryKey>
@@ -171,7 +176,8 @@
             <ComponentRef Id="ShellLibrary" />
             <ComponentRef Id="BandObjectLib" />
             <ComponentRef Id="QTPluginLib" />
-            <ComponentRef Id="QTTabBar" />           
+            <ComponentRef Id="QTTabBar" />
+            <ComponentRef Id="QTDesktopTool" />
             <ComponentRef Id="HookLibrary" />
             <ComponentRef Id="FirstTimeSetter" />
         </Feature>
