@@ -30,7 +30,6 @@ namespace QTTabBarLib {
         private ShellBrowserEx ShellBrowser;
         private IntPtr hwndExplorer;
         private IntPtr hwndSubDirTipMessageReflect;
-        private bool fIsSysListView;
         private bool fDisposed;
 
         internal ListViewMonitor(ShellBrowserEx shellBrowser, IntPtr hwndExplorer, IntPtr hwndSubDirTipMessageReflect) {
@@ -74,10 +73,7 @@ namespace QTTabBarLib {
         }
 
         private void RecaptureHandles(IntPtr hwndShellView) {
-            if(CurrentListView != null) {
-                PreviousListView = CurrentListView;
-            }
-
+            bool fIsSysListView = false;
             IntPtr hwndListView = WindowUtils.FindChildWindow(hwndShellView, hwnd => {
                 string name = PInvoke.GetClassName(hwnd);
                 if(name == "SysListView32") {
@@ -90,6 +86,13 @@ namespace QTTabBarLib {
                 }
                 return false;
             });
+
+            if(CurrentListView != null) {
+                if(CurrentListView.Handle == hwndListView) {
+                    return;
+                }
+                PreviousListView = CurrentListView;
+            }
 
             if(hwndListView == IntPtr.Zero) {
                 CurrentListView = new AbstractListView();
