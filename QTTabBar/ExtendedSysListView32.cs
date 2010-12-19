@@ -142,7 +142,12 @@ namespace QTTabBarLib {
                     // Handled through WM_MOUSEMOVE.
                     if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews) || !QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
                         NMLISTVIEW nmlistview = (NMLISTVIEW)Marshal.PtrToStructure(msg.LParam, typeof(NMLISTVIEW));
-                        if(iHotItem != nmlistview.iItem) {
+                        int iItem = nmlistview.iItem;
+                        if(QTUtility.IsXP && iItem == -1 && ShellBrowser.ViewMode == FVM.DETAILS) {
+                            // HotTrack is inaccurate in this case.
+                            iItem = GetHotItem();
+                        }
+                        if(iHotItem != iItem) {
                             OnHotItemChanged(nmlistview.iItem);
                             iHotItem = nmlistview.iItem;
                         }
