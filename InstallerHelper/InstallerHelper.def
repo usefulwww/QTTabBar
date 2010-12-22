@@ -1,0 +1,4 @@
+LIBRARY	"InstallerHelper"
+EXPORTS
+    HideBars
+    CloseAndReopen

@@ -166,6 +166,7 @@ namespace QTTabBarLib {
         private readonly uint WM_BROWSEOBJECT = PInvoke.RegisterWindowMessage("QTTabBar_BrowseObject");
         private readonly uint WM_HEADERINALLVIEWS = PInvoke.RegisterWindowMessage("QTTabBar_HeaderInAllViews");
         private readonly uint WM_LISTREFRESHED = PInvoke.RegisterWindowMessage("QTTabBar_ListRefreshed");
+        private readonly uint WM_SHOWHIDEBARS = PInvoke.RegisterWindowMessage("QTTabBar_ShowHideBars");
 
         public QTTabBarClass() {
             if(!fInitialized) {
@@ -236,7 +237,7 @@ namespace QTTabBarLib {
             if(QTUtility.CheckConfig(Settings.RestoreLockedTabs)) {
                 RestoreTabsOnInitialize(1, openingPath);
             }
-            else if(QTUtility.CheckConfig(Settings.RestoreTabs)) {
+            else if(QTUtility.CheckConfig(Settings.RestoreTabs) || QTUtility.IsFirstTime) {
                 RestoreTabsOnInitialize(0, openingPath);
             }
         }
@@ -2189,6 +2190,20 @@ namespace QTTabBarLib {
             else if(msg.Msg == WM_HEADERINALLVIEWS) {
                 msg.Result = (IntPtr)(QTUtility.CheckConfig(Settings.AlwaysShowHeaders) ? 1 : 0);
                 return true;
+            }
+            else if(msg.Msg == WM_SHOWHIDEBARS) {
+                // Todo: hardcoding = bad
+                object pvaTabBar = new Guid("{d2bf470e-ed1c-487f-a333-2bd8835eb6ce}").ToString("B");
+                object pvaButtonBar = new Guid("{d2bf470e-ed1c-487f-a666-2bd8835eb6ce}").ToString("B");
+                object pvarShow = (msg.WParam != IntPtr.Zero);
+                object pvarSize = null;
+                try {
+                    Explorer.ShowBrowserBar(pvaTabBar, pvarShow, pvarSize);
+                    Explorer.ShowBrowserBar(pvaButtonBar, pvarShow, pvarSize);
+                    msg.Result = (IntPtr)1;
+                }
+                catch(COMException) {
+                }
             }
 
             switch(msg.Msg) {

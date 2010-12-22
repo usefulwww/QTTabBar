@@ -48,10 +48,11 @@
         <Upgrade Id="$(var.UpgradeCode)">
             <UpgradeVersion Minimum="$(var.ProductVersion)" IncludeMinimum="no" OnlyDetect="yes" Property="NEWPRODUCTFOUND" />
             <UpgradeVersion Minimum="$(var.RTMProductVersion)" IncludeMinimum="yes" OnlyDetect="no" Maximum="$(var.ProductVersion)" IncludeMaximum="no" Property="UPGRADEFOUND" />
-        </Upgrade>       
+        </Upgrade>
+        <Binary Id="InstallerHelper" SourceFile="..\InstallerHelper\bin\Release\InstallerHelper.dll" />
         
         <Directory Id="TARGETDIR" Name="SourceDir">
-            <Directory Id="ProgramFilesFolder" >
+            <Directory Id="ProgramFilesFolder">
                 <Directory Id="INSTALLLOCATION" Name="QTTabBar">
                     <Component Id="ShellLibrary" Guid="27af1a85-9a01-4c79-bdeb-d73fd4bd9574" Win64="yes" DisableRegistryReflection="yes">
                         <File Id="f1" Assembly=".net" KeyPath="yes" Name="Interop.SHDocVw.dll" Source="..\BandObjectLib\bin\Release\Interop.SHDocVw.dll">
@@ -182,21 +183,24 @@
             <ComponentRef Id="FirstTimeSetter" />
         </Feature>
 
-        <UI>
-            <ProgressText Action="RollbackCleanup">Compiling native images</ProgressText>
-        </UI>
-        
-        <!-- Prevent downgrading -->
         <CustomAction Id="PreventDowngrading" Error="Newer version already installed." />
+        <CustomAction Id="HideBars" BinaryKey="InstallerHelper" DllEntry="HideBars" />
+        <CustomAction Id="CloseAndReopen" BinaryKey="InstallerHelper" DllEntry="CloseAndReopen" />
 
         <InstallExecuteSequence>
             <Custom Action="PreventDowngrading" After="FindRelatedProducts">NEWPRODUCTFOUND</Custom>
+            <Custom Action="HideBars" Before="InstallValidate">(NOT UPGRADINGPRODUCTCODE) AND REMOVE</Custom>
             <RemoveExistingProducts After="InstallInitialize" />
         </InstallExecuteSequence>
-
+        
         <InstallUISequence>
             <Custom Action="PreventDowngrading" After="FindRelatedProducts">NEWPRODUCTFOUND</Custom>
         </InstallUISequence>
+
+        <UI>
+            <ProgressText Action="RollbackCleanup">Compiling native images</ProgressText>
+            <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="CloseAndReopen">NOT REMOVE</Publish>
+        </UI>
 
         <Property Id="WIXUI_INSTALLDIR" Value="INSTALLLOCATION" />
         <UIRef Id="WixUI_InstallDir" />

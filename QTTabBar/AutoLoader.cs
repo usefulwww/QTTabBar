@@ -65,10 +65,7 @@ namespace QTTabBarLib {
         }
 
         private void ActivateIt() {
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {            
-                if(((int)key.GetValue("FirstTime", 1) == 0)) {
-                    return;
-                }
+            if(QTUtility.IsFirstTime) {
                 object pvaTabBar = new Guid("{d2bf470e-ed1c-487f-a333-2bd8835eb6ce}").ToString("B");
                 object pvaButtonBar = new Guid("{d2bf470e-ed1c-487f-a666-2bd8835eb6ce}").ToString("B");
                 object pvarShow = true;
@@ -85,7 +82,6 @@ namespace QTTabBarLib {
                             "then select QTTabBar from the View/Toolbars menu.",
                             "Could not enable", MessageBoxIcon.Warning, 30000, false, true);
                 }
-                key.SetValue("FirstTime", 0);
             }
         }
     }
