@@ -87,7 +87,7 @@ namespace QTTabBarLib {
                     lstPathFailedThumbnail.Clear();
                 }
                 foreach(ImageData data2 in imageCacheStore) {
-                    if(string.Equals(data2.Path, path, StringComparison.OrdinalIgnoreCase)) {
+                    if(data2.Path.PathEquals(path)) {
                         if(data2.ModifiedDate == info.LastWriteTime) {
                             bitmap = data2.Bitmap;
                             thumbnail = data2.Thumbnail;

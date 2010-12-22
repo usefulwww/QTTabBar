@@ -516,13 +516,11 @@ namespace QTTabBarLib.Interop {
         private static bool IsTargetPathContained(List<string> lstPaths, string pathTarget) {
             foreach(string str in lstPaths) {
                 try {
-                    if(string.Equals(pathTarget, Path.GetDirectoryName(str), StringComparison.OrdinalIgnoreCase)) {
+                    if(pathTarget.PathEquals(Path.GetDirectoryName(str))) {
                         return true;
                     }
-                    continue;
                 }
                 catch {
-                    continue;
                 }
             }
             return false;
@@ -866,7 +864,7 @@ namespace QTTabBarLib.Interop {
                     return false;
                 }
                 if(!Directory.Exists(path)) {
-                    if(!File.Exists(path) || !string.Equals(Path.GetExtension(path), ".lnk", StringComparison.OrdinalIgnoreCase)) {
+                    if(!File.Exists(path) || !Path.GetExtension(path).PathEquals(".lnk")) {
                         return false;
                     }
                     path = GetLinkTargetPath(path);

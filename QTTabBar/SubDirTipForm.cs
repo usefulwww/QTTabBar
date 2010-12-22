@@ -114,8 +114,7 @@ namespace QTTabBarLib {
                     try {
                         string directoryName = Path.GetDirectoryName(path);
                         if(!string.IsNullOrEmpty(directoryName)) {
-                            if(lstCheckedPaths.All(str => 
-                                    string.Equals(directoryName, Path.GetDirectoryName(str), StringComparison.OrdinalIgnoreCase))) {
+                            if(lstCheckedPaths.All(str => directoryName.PathEquals(Path.GetDirectoryName(str)))) {
                                 lstTempDirectoryPaths = new List<string>(lstCheckedPaths);
                                 MultipleMenuItemsRightClicked(this, e);
                                 lstTempDirectoryPaths.Clear();
@@ -214,7 +213,7 @@ namespace QTTabBarLib {
                     try {
                         string fullName = info.FullName;
                         string name = info.Name;
-                        if((((fullName.Length != 0x1c) || !string.Equals(name, "System Volume Information", StringComparison.OrdinalIgnoreCase)) && ((fullName.Length != 15) || !string.Equals(name, "$RECYCLE.BIN", StringComparison.OrdinalIgnoreCase))) && ((fullName.Length != 11) || !string.Equals(name, "RECYCLER", StringComparison.OrdinalIgnoreCase))) {
+                        if((((fullName.Length != 0x1c) || !name.PathEquals("System Volume Information")) && ((fullName.Length != 15) || !name.PathEquals("$RECYCLE.BIN"))) && ((fullName.Length != 11) || !name.PathEquals("RECYCLER"))) {
                             FileAttributes attributes2 = info.Attributes;
                             if(QTUtility.IsXP || ((attributes2 & attributes) != attributes)) {
                                 bool flag5 = (attributes2 & FileAttributes.System) != 0;

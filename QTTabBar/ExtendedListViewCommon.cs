@@ -604,7 +604,7 @@ namespace QTTabBarLib {
                 if(ShellBrowser.TryGetSelection(out addressArray, out str, false) && ((addressArray.Length == 1) && !string.IsNullOrEmpty(addressArray[0].Path))) {
                     string path = addressArray[0].Path;
                     if(!path.StartsWith("::") && !Directory.Exists(path)) {
-                        if(!string.Equals(Path.GetExtension(path), ".lnk", StringComparison.OrdinalIgnoreCase)) {
+                        if(!Path.GetExtension(path).PathEquals(".lnk")) {
                             return;
                         }
                         path = ShellMethods.GetLinkTargetPath(path);
