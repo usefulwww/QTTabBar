@@ -6353,7 +6353,7 @@ namespace QTTabBarLib {
 
                 case WM.USER+1:
                     if(((((int)((long)m.LParam)) >> 0x10) & 0xffff) == 1) {
-                        goto Label_0427;
+                        return false;
                     }
                     m.Result = (IntPtr)1;
                     return true;
@@ -6364,12 +6364,12 @@ namespace QTTabBarLib {
                         buttonNavHistoryMenu.DropDown.Close(ToolStripDropDownCloseReason.AppClicked);
                         return true;
                     }
-                    goto Label_0427;
+                    return false;
 
                 case WM.NOTIFY: {
                         NMHDR nmhdr = (NMHDR)Marshal.PtrToStructure(m.LParam, typeof(NMHDR));
                         if(nmhdr.code != -530) {
-                            goto Label_0427;
+                            return false;
                         }
                         NMTTDISPINFO nmttdispinfo = (NMTTDISPINFO)Marshal.PtrToStructure(m.LParam, typeof(NMTTDISPINFO));
                         string str;
@@ -6394,13 +6394,11 @@ namespace QTTabBarLib {
                         return true;
                     }
                 default:
-                    goto Label_0427;
+                    return false;
             }
             m.Result = IntPtr.Zero;
             return true;
-        Label_0427:
-            return false;
-        }
+       }
 
         private void TreeView_MiddleClicked(IShellItem item) {
             IntPtr pidl;

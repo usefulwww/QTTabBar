@@ -68,7 +68,7 @@ namespace QTTabBarLib {
             if(ExtIsImage(ext)) {
                 FileInfo info = new FileInfo(path);
                 if(!info.Exists || (info.Length <= 0L)) {
-                    goto Label_0635;
+                    return false;
                 }
                 bool flag = false;
                 bool thumbnail = false;
@@ -187,7 +187,7 @@ namespace QTTabBarLib {
                 }
                 catch(Exception exception) {
                     QTUtility2.MakeErrorLog(exception, null);
-                    goto Label_0635;
+                    return false;
                 }
             }
             if(ExtIsText(ext)) {
@@ -248,7 +248,6 @@ namespace QTTabBarLib {
                     }
                 }
             }
-        Label_0635:
             return false;
         }
 
