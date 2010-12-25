@@ -216,7 +216,6 @@ UINT WIXAPI CheckOldVersion(MSIHANDLE hInstaller) {
                 TCHAR szModName[MAX_PATH];
                 if(GetModuleBaseName(hProcess, aMods[j], szModName, sizeof(szModName) / sizeof(TCHAR))) {
                     if(_tcscmp(szModName, _T("QTTabBar.dll")) == 0 || _tcscmp(szModName, _T("QTTabBar.ni.dll")) == 0) {
-                        MessageBox(NULL, szModName, szModName, 0);
                         fFound = true;
                         break;
                     }
