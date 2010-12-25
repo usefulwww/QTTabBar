@@ -21,6 +21,7 @@
 #include <shlobj.h>
 #include <exdisp.h>
 #include <Shlwapi.h>
+#include <psapi.h>
 #include <tchar.h>
 #include <vector>
 
@@ -28,6 +29,7 @@
 
 #pragma comment(lib, "msi.lib")
 #pragma comment(lib, "shlwapi.lib")
+#pragma comment(lib, "psapi.lib")
 
 UINT WM_SHOWHIDEBARS = RegisterWindowMessageA("QTTabBar_ShowHideBars");
 
@@ -149,3 +151,86 @@ UINT WIXAPI CloseAndReopen(MSIHANDLE hInstaller) {
     return ERROR_SUCCESS;
 }
 
+UINT WIXAPI CheckOldVersion(MSIHANDLE hInstaller) {
+    HKEY key;
+    REGSAM access = KEY_QUERY_VALUE | KEY_WOW64_64KEY;
+    if(RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{DAD20769-75D8-4C1D-80E3-D545563FE9EF}_is1"), 0, access, &key) == ERROR_SUCCESS) {
+       MsiSetProperty(hInstaller, _T("OBSOLETEVERSION"), _T("1"));
+       RegCloseKey(key);
+       return ERROR_SUCCESS;
+    }
+    RegCloseKey(key);
+
+    // Check if it's uninstalled, but the user hasn't restarted Explorer yet.
+    // Do this by making sure explorer.exe does not have our dll loaded.
+    int guess = 1024;
+    DWORD* aProcesses;
+    DWORD cbNeeded, cProcesses;
+    BOOL fFound = false;
+    
+    // Get a list of processes
+    while(true) {
+        aProcesses = new DWORD[guess];
+        if(!EnumProcesses(aProcesses, sizeof(DWORD) * guess, &cbNeeded)){
+            return GetLastError();
+        }
+        cProcesses = cbNeeded / sizeof(DWORD);
+        if(cProcesses < guess) break;
+        delete[] aProcesses;
+        guess *= 2;
+    }
+
+    for(int i = 0; i < cProcesses && !fFound; ++i) {
+        TCHAR szProcessName[MAX_PATH] = _T("");
+        HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, aProcesses[i]);
+
+        // Get process basename, look for explorer.exe
+        if(hProcess != NULL) {
+            HMODULE hMod;
+            DWORD cbNeeded;
+            if(EnumProcessModules(hProcess, &hMod, sizeof(hMod), &cbNeeded)) {
+                GetModuleBaseName(hProcess, hMod, szProcessName, sizeof(szProcessName) / sizeof(TCHAR));
+            }
+        }
+
+        if(_tcscmp(szProcessName, _T("explorer.exe")) == 0) {
+            HMODULE* aMods;
+            DWORD cMods;
+            guess = 1024;
+
+            // Get a list of loaded modules
+            while(true) {
+                aMods = new HMODULE[guess];
+                if(!EnumProcessModules(hProcess, aMods, sizeof(HMODULE) * guess, &cbNeeded)){
+                    cMods = 0;
+                    break;
+                }
+                cMods = cbNeeded / sizeof(DWORD);
+                if(cMods < guess) break;
+                delete[] aMods;
+                guess *= 2;
+            }
+            
+            // Look for QTTabBar.dll or QTTabBar.ni.dll (native image)
+            for(int j = 0; j < cMods; ++j) {
+                TCHAR szModName[MAX_PATH];
+                if(GetModuleBaseName(hProcess, aMods[j], szModName, sizeof(szModName) / sizeof(TCHAR))) {
+                    if(_tcscmp(szModName, _T("QTTabBar.dll")) == 0 || _tcscmp(szModName, _T("QTTabBar.ni.dll")) == 0) {
+                        MessageBox(NULL, szModName, szModName, 0);
+                        fFound = true;
+                        break;
+                    }
+                }
+            }
+            delete[] aMods;
+        }
+        CloseHandle(hProcess);
+    }    
+    delete[] aProcesses;
+    
+    if(fFound) {
+        MsiSetProperty(hInstaller, _T("OBSOLETEVERSION"), _T("2"));
+    }
+
+    return ERROR_SUCCESS;
+}

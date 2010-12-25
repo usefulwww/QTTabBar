@@ -186,6 +186,9 @@
         <CustomAction Id="PreventDowngrading" Error="Newer version already installed." />
         <CustomAction Id="HideBars" BinaryKey="InstallerHelper" DllEntry="HideBars" />
         <CustomAction Id="CloseAndReopen" BinaryKey="InstallerHelper" DllEntry="CloseAndReopen" />
+        <CustomAction Id="CheckOldVersion" BinaryKey="InstallerHelper" DllEntry="CheckOldVersion" />
+        <CustomAction Id="FailOldVersion1" Error="Setup has detected that an older version of QTTabBar is installed.  Due to a change in installers, you must manually uninstall this older version and restart Explorer before continuing.  Please run the installer again once the older version is uninstalled and Explorer has been restarted." />
+        <CustomAction Id="FailOldVersion2" Error="It appears that an older version of QTTabBar is still loaded in Windows Explorer.  Please restart Explorer via the Task Manager or restart your computer before continuing." />
 
         <InstallExecuteSequence>
             <Custom Action="PreventDowngrading" After="FindRelatedProducts">NEWPRODUCTFOUND</Custom>
@@ -195,6 +198,9 @@
         
         <InstallUISequence>
             <Custom Action="PreventDowngrading" After="FindRelatedProducts">NEWPRODUCTFOUND</Custom>
+            <Custom Action="CheckOldVersion" Before="AppSearch">(NOT UPGRADINGPRODUCTCODE) AND (NOT REMOVE)</Custom>
+            <Custom Action="FailOldVersion1" After="CheckOldVersion">(NOT Installed) AND OBSOLETEVERSION=1</Custom>
+            <Custom Action="FailOldVersion2" After="FailOldVersion1">(NOT Installed) AND OBSOLETEVERSION=2</Custom>
         </InstallUISequence>
 
         <UI>

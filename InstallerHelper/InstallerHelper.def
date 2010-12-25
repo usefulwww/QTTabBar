@@ -2,3 +2,4 @@ LIBRARY	"InstallerHelper"
 EXPORTS
     HideBars
     CloseAndReopen
+    CheckOldVersion
