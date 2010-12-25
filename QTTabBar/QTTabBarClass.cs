@@ -67,6 +67,7 @@ namespace QTTabBarLib {
         private IntPtr ExplorerHandle;
         private bool fDrivesContainedDD;
         private static bool fInitialized;
+        private readonly bool fIsFirstLoad;
         private volatile bool FirstNavigationCompleted;
         private bool fNavigatedByTabSelection;
         private bool fNowInTray;
@@ -172,6 +173,10 @@ namespace QTTabBarLib {
             if(!fInitialized) {
                 InitializeStaticFields();
             }
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+                fIsFirstLoad = ((int)key.GetValue("FirstTime", 1) != 0);
+                if(fIsFirstLoad) key.SetValue("FirstTime", 0);
+            }
             QTUtility.InstancesCount++;
             BandHeight = QTUtility.TabHeight + 2;
             InitializeComponent();
@@ -236,7 +241,7 @@ namespace QTTabBarLib {
             if(QTUtility.CheckConfig(Settings.RestoreLockedTabs)) {
                 RestoreTabsOnInitialize(1, openingPath);
             }
-            else if(QTUtility.CheckConfig(Settings.RestoreTabs) || QTUtility.IsFirstTime) {
+            else if(QTUtility.CheckConfig(Settings.RestoreTabs) || fIsFirstLoad) {
                 RestoreTabsOnInitialize(0, openingPath);
             }
         }

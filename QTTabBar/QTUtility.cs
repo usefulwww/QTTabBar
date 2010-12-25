@@ -147,7 +147,6 @@ namespace QTTabBarLib {
         internal static int InstancesCount;
         internal static readonly bool IsRTL;
         internal static readonly bool IsXP;
-        internal static readonly bool IsFirstTime;
         internal static Dictionary<string, byte[]> ITEMIDLIST_Dic_Session = new Dictionary<string, byte[]>();
         internal static readonly int[] KEYS_DEFAULT = new int[] { 
       0, 0, 0x160025, 0x160027, 0x120009, 0x130009, 0, 0, 0x120057, 0x130057, 0, 0, 0, 0x13005a, 0x12004e, 0x13004e, 
@@ -222,10 +221,6 @@ namespace QTTabBarLib {
             if(processName == "iexplore" || processName == "regasm" || processName == "gacutil") {
                 //MessageBox.Show("Blocked " + processName);
                 return;
-            }
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
-                IsFirstTime = ((int)key.GetValue("FirstTime", 1) != 0);
-                if(IsFirstTime) key.SetValue("FirstTime", 0);
             }
 
             ImageListGlobal = new ImageList();
