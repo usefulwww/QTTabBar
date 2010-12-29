@@ -165,7 +165,7 @@
                         </RegistryKey>
                     </Component>
                     <Component Id="FirstTimeSetter" Guid="27af1a85-9a07-4c79-bdeb-d73fd4bd9574" Win64="yes" DisableRegistryReflection="yes">
-                        <RegistryKey Root="HKCU" Key="Software\Quizo\QTTabBar" Action="createAndRemoveOnUninstall">
+                        <RegistryKey Root="HKCU" Key="Software\Quizo\QTTabBar" Action="create">
                             <RegistryValue Name="FirstTime" Value="1" Type="integer" Action="write" KeyPath="yes" />
                         </RegistryKey>
                     </Component>
@@ -198,9 +198,9 @@
         
         <InstallUISequence>
             <Custom Action="PreventDowngrading" After="FindRelatedProducts">NEWPRODUCTFOUND</Custom>
-            <Custom Action="CheckOldVersion" Before="AppSearch">(NOT UPGRADINGPRODUCTCODE) AND (NOT REMOVE)</Custom>
-            <Custom Action="FailOldVersion1" After="CheckOldVersion">(NOT Installed) AND OBSOLETEVERSION=1</Custom>
-            <Custom Action="FailOldVersion2" After="FailOldVersion1">(NOT Installed) AND OBSOLETEVERSION=2</Custom>
+            <Custom Action="CheckOldVersion" Before="AppSearch">(NOT UPGRADINGPRODUCTCODE) AND (NOT REMOVE) AND (NOT Installed) AND (NOT UPGRADEFOUND)</Custom>
+            <Custom Action="FailOldVersion1" After="CheckOldVersion">OBSOLETEVERSION=1</Custom>
+            <Custom Action="FailOldVersion2" After="FailOldVersion1">OBSOLETEVERSION=2</Custom>
         </InstallUISequence>
 
         <UI>
