@@ -205,10 +205,12 @@
 
         <UI>
             <ProgressText Action="RollbackCleanup">Compiling native images</ProgressText>
-            <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="CloseAndReopen">NOT REMOVE</Publish>
+            <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="CloseAndReopen">(NOT Installed) AND WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1</Publish>
         </UI>
 
         <Property Id="WIXUI_INSTALLDIR" Value="INSTALLLOCATION" />
+        <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Close all Explorer windows and reopen them as tabs" />
+        <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
         <UIRef Id="WixUI_InstallDir" />
     </Product>
 </Wix>
