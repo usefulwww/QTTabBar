@@ -158,7 +158,7 @@ namespace QTTabBarLib {
             catch {
             }
             MenuItemArguments mia = new MenuItemArguments(name, appVals[1], appVals[2], 0, MenuGenre.Application);
-            if((appVals[0].Length == 0) || string.Equals(appVals[0], "separator", StringComparison.OrdinalIgnoreCase)) {
+            if((appVals[0].Length == 0) || appVals[0].PathEquals("separator")) {
                 ToolStripSeparator separator = new ToolStripSeparator();
                 separator.Name = "appSep";
                 return separator;

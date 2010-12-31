@@ -23,15 +23,11 @@
 
     <?define SkuName = "QTTabBar"?>
     <?define RTMProductVersion="1.5.0" ?>
-    <?define ProductVersion="1.5.1" ?> <!-- Change the last number to the svn revision before release -->
+    <?define ProductVersion="1.5.206" ?> <!-- Change the last number to the svn revision before release -->
     <?define VersionString="1.5.0.0 Alpha 5" ?>
     <?define UpgradeCode="{ec9baff7-58fb-40cb-9f67-1c438a7524a5}"?> <!-- NEVER CHANGE THIS, EVER!! -->
     <?define Manufacturer="Quizo and Paul Accisano"?>
     <?define ProductCode="*"?>
-
-    <!-- We're probably going to have do something weird with this. -->
-    <!-- v2.0.50727 or v4.0.30319 ? -->
-    <?define RuntimeVersion="v2.0.50727"?>
     
     <Product Id="$(var.ProductCode)"
              UpgradeCode="$(var.UpgradeCode)"
@@ -48,10 +44,13 @@
         <Upgrade Id="$(var.UpgradeCode)">
             <UpgradeVersion Minimum="$(var.ProductVersion)" IncludeMinimum="no" OnlyDetect="yes" Property="NEWPRODUCTFOUND" />
             <UpgradeVersion Minimum="$(var.RTMProductVersion)" IncludeMinimum="yes" OnlyDetect="no" Maximum="$(var.ProductVersion)" IncludeMaximum="no" Property="UPGRADEFOUND" />
-        </Upgrade>       
-        
+        </Upgrade>
+        <Binary Id="InstallerHelper" SourceFile="..\InstallerHelper\bin\Release\InstallerHelper.dll" />
+        <PropertyRef Id="NETFRAMEWORK35"/>
+        <PropertyRef Id="NETFRAMEWORK40CLIENT"/>
+
         <Directory Id="TARGETDIR" Name="SourceDir">
-            <Directory Id="ProgramFilesFolder" >
+            <Directory Id="ProgramFilesFolder">
                 <Directory Id="INSTALLLOCATION" Name="QTTabBar">
                     <Component Id="ShellLibrary" Guid="27af1a85-9a01-4c79-bdeb-d73fd4bd9574" Win64="yes" DisableRegistryReflection="yes">
                         <File Id="f1" Assembly=".net" KeyPath="yes" Name="Interop.SHDocVw.dll" Source="..\BandObjectLib\bin\Release\Interop.SHDocVw.dll">
@@ -96,11 +95,11 @@
                             <RegistryKey Key="InprocServer32" Action="createAndRemoveOnUninstall">
                                 <RegistryValue Name="Class" Value="QTTabBarLib.QTTabBarClass" Type="string" Action="write" />
                                 <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
-                                <RegistryValue Name="RuntimeVersion" Value="$(var.RuntimeVersion)" Type="string" Action="write" />
+                                <RegistryValue Name="RuntimeVersion" Value="[RUNTIMEVERSION]" Type="string" Action="write" />
                                 <RegistryKey Key="1.0.0.0" Action="createAndRemoveOnUninstall">
                                     <RegistryValue Name="Class" Value="QTTabBarLib.QTTabBarClass" Type="string" Action="write" />
                                     <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
-                                    <RegistryValue Name="RuntimeVersion" Value="$(var.RuntimeVersion)" Type="string" Action="write" />
+                                    <RegistryValue Name="RuntimeVersion" Value="[RUNTIMEVERSION]" Type="string" Action="write" />
                                 </RegistryKey>
                             </RegistryKey>
                         </RegistryKey>
@@ -111,11 +110,11 @@
                             <RegistryKey Key="InprocServer32" Action="createAndRemoveOnUninstall">
                                 <RegistryValue Name="Class" Value="QTTabBarLib.QTButtonBar" Type="string" Action="write" />
                                 <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
-                                <RegistryValue Name="RuntimeVersion" Value="$(var.RuntimeVersion)" Type="string" Action="write" />
+                                <RegistryValue Name="RuntimeVersion" Value="[RUNTIMEVERSION]" Type="string" Action="write" />
                                 <RegistryKey Key="1.0.0.0" Action="createAndRemoveOnUninstall">
                                     <RegistryValue Name="Class" Value="QTTabBarLib.QTButtonBar" Type="string" Action="write" />
                                     <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
-                                    <RegistryValue Name="RuntimeVersion" Value="$(var.RuntimeVersion)" Type="string" Action="write" />
+                                    <RegistryValue Name="RuntimeVersion" Value="[RUNTIMEVERSION]" Type="string" Action="write" />
                                 </RegistryKey>
                             </RegistryKey>
                         </RegistryKey>
@@ -126,11 +125,11 @@
                             <RegistryKey Key="InprocServer32" Action="createAndRemoveOnUninstall">
                                 <RegistryValue Name="Class" Value="QTTabBarLib.AutoLoader" Type="string" Action="write" />
                                 <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
-                                <RegistryValue Name="RuntimeVersion" Value="$(var.RuntimeVersion)" Type="string" Action="write" />
+                                <RegistryValue Name="RuntimeVersion" Value="[RUNTIMEVERSION]" Type="string" Action="write" />
                                 <RegistryKey Key="1.0.0.0" Action="createAndRemoveOnUninstall">
                                     <RegistryValue Name="Class" Value="QTTabBarLib.AutoLoader" Type="string" Action="write" />
                                     <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
-                                    <RegistryValue Name="RuntimeVersion" Value="$(var.RuntimeVersion)" Type="string" Action="write" />
+                                    <RegistryValue Name="RuntimeVersion" Value="[RUNTIMEVERSION]" Type="string" Action="write" />
                                 </RegistryKey>
                             </RegistryKey>
                         </RegistryKey>
@@ -147,11 +146,11 @@
                             <RegistryKey Key="InprocServer32" Action="createAndRemoveOnUninstall">
                                 <RegistryValue Name="Class" Value="QTTabBarLib.QTCoTaskBarClass" Type="string" Action="write" />
                                 <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
-                                <RegistryValue Name="RuntimeVersion" Value="$(var.RuntimeVersion)" Type="string" Action="write" />
+                                <RegistryValue Name="RuntimeVersion" Value="[RUNTIMEVERSION]" Type="string" Action="write" />
                                 <RegistryKey Key="1.0.0.0" Action="createAndRemoveOnUninstall">
                                     <RegistryValue Name="Class" Value="QTTabBarLib.QTCoTaskBarClass" Type="string" Action="write" />
                                     <RegistryValue Name="Assembly" Value="QTTabBar, Version=1.0.0.0, Culture=neutral, PublicKeyToken=973461f1cd23d8eb" Type="string" Action="write" />
-                                    <RegistryValue Name="RuntimeVersion" Value="$(var.RuntimeVersion)" Type="string" Action="write" />
+                                    <RegistryValue Name="RuntimeVersion" Value="[RUNTIMEVERSION]" Type="string" Action="write" />
                                 </RegistryKey>
                             </RegistryKey>
                         </RegistryKey>
@@ -164,7 +163,7 @@
                         </RegistryKey>
                     </Component>
                     <Component Id="FirstTimeSetter" Guid="27af1a85-9a07-4c79-bdeb-d73fd4bd9574" Win64="yes" DisableRegistryReflection="yes">
-                        <RegistryKey Root="HKCU" Key="Software\Quizo\QTTabBar" Action="createAndRemoveOnUninstall">
+                        <RegistryKey Root="HKCU" Key="Software\Quizo\QTTabBar" Action="create">
                             <RegistryValue Name="FirstTime" Value="1" Type="integer" Action="write" KeyPath="yes" />
                         </RegistryKey>
                     </Component>
@@ -182,23 +181,42 @@
             <ComponentRef Id="FirstTimeSetter" />
         </Feature>
 
-        <UI>
-            <ProgressText Action="RollbackCleanup">Compiling native images</ProgressText>
-        </UI>
-        
-        <!-- Prevent downgrading -->
         <CustomAction Id="PreventDowngrading" Error="Newer version already installed." />
+        <CustomAction Id="HideBars" BinaryKey="InstallerHelper" DllEntry="HideBars" />
+        <CustomAction Id="CloseAndReopen" BinaryKey="InstallerHelper" DllEntry="CloseAndReopen" />
+        <CustomAction Id="CheckOldVersion" BinaryKey="InstallerHelper" DllEntry="CheckOldVersion" />
+        <CustomAction Id="FailOldVersion1" Error="Setup has detected that an older version of QTTabBar is installed.  Due to a change in installers, you must manually uninstall this older version and restart Explorer before continuing.  Please run the installer again once the older version is uninstalled and Explorer has been restarted." />
+        <CustomAction Id="FailOldVersion2" Error="It appears that an older version of QTTabBar is still loaded in Windows Explorer.  Please restart Explorer via the Task Manager or restart your computer before continuing." />
+        <CustomAction Id="SetRuntime4" Property="RUNTIMEVERSION" Value="v4.0.30319" />
+        <CustomAction Id="SetRuntimeNot4" Property="RUNTIMEVERSION" Value="v2.0.50727" />
+        
+        <Condition Message="This application requires the .NET Framework version at least 3.5. Please install the .NET Framework then run this installer again.">
+            <![CDATA[Installed OR NETFRAMEWORK35]]>
+        </Condition>
 
         <InstallExecuteSequence>
             <Custom Action="PreventDowngrading" After="FindRelatedProducts">NEWPRODUCTFOUND</Custom>
+            <Custom Action="HideBars" Before="InstallValidate">(NOT UPGRADINGPRODUCTCODE) AND REMOVE</Custom>
             <RemoveExistingProducts After="InstallInitialize" />
         </InstallExecuteSequence>
-
+        
         <InstallUISequence>
             <Custom Action="PreventDowngrading" After="FindRelatedProducts">NEWPRODUCTFOUND</Custom>
+            <Custom Action="CheckOldVersion" Before="AppSearch">(NOT UPGRADINGPRODUCTCODE) AND (NOT REMOVE) AND (NOT Installed) AND (NOT UPGRADEFOUND)</Custom>
+            <Custom Action="FailOldVersion1" After="CheckOldVersion">OBSOLETEVERSION=1</Custom>
+            <Custom Action="FailOldVersion2" After="FailOldVersion1">OBSOLETEVERSION=2</Custom>
+            <Custom Action="SetRuntime4" After="LaunchConditions">NETFRAMEWORK40CLIENT</Custom>
+            <Custom Action="SetRuntimeNot4" After="SetRuntime4">NOT NETFRAMEWORK40CLIENT</Custom>
         </InstallUISequence>
 
+        <UI>
+            <ProgressText Action="RollbackCleanup">Compiling native images</ProgressText>
+            <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="CloseAndReopen">(NOT Installed) AND WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1</Publish>
+        </UI>
+
         <Property Id="WIXUI_INSTALLDIR" Value="INSTALLLOCATION" />
+        <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Close all Explorer windows and reopen them as tabs" />
+        <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
         <UIRef Id="WixUI_InstallDir" />
     </Product>
 </Wix>

@@ -951,7 +951,7 @@ namespace QTTabBarLib {
                 bitmap.Dispose();
                 bitmap2.Dispose();
                 ImageStripPath_CachePath = path;
-                if(string.Equals(Path.GetExtension(path), ".bmp", StringComparison.OrdinalIgnoreCase)) {
+                if(Path.GetExtension(path).PathEquals(".bmp")) {
                     imageStrip_Large.TransparentColor = imageStrip_Small.TransparentColor = Color.Magenta;
                 }
                 else {
@@ -985,7 +985,8 @@ namespace QTTabBarLib {
             if(ImageStripPath == null) {
                 LoadDefaultImages(false);
             }
-            else if((fRefresh || !string.Equals(ImageStripPath, ImageStripPath_CachePath, StringComparison.OrdinalIgnoreCase)) && ((ImageStripPath.Length == 0) || !LoadExternalImage(ImageStripPath))) {
+            else if((fRefresh || !ImageStripPath.PathEquals(ImageStripPath_CachePath)) &&
+                    (ImageStripPath.Length == 0 || !LoadExternalImage(ImageStripPath))) {
                 LoadDefaultImages(true);
             }
         }

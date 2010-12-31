@@ -31,10 +31,8 @@ namespace QTTabBarLib {
         }
 
         public bool Equals(LogData other) {
-            if(!string.Equals(Path, other.Path, StringComparison.OrdinalIgnoreCase)) {
-                return false;
-            }
-            return (System.IO.Path.IsPathRooted(Path) || (Hash == other.Hash));
+            return Path.PathEquals(other.Path) && 
+                    (System.IO.Path.IsPathRooted(Path) || (Hash == other.Hash));
         }
     }
 }

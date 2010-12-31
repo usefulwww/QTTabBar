@@ -65,10 +65,9 @@ namespace QTTabBarLib {
         }
 
         private void ActivateIt() {
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {            
-                if(((int)key.GetValue("FirstTime", 1) == 0)) {
-                    return;
-                }
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+                if((int)key.GetValue("FirstTime", 1) == 0) return;
+
                 object pvaTabBar = new Guid("{d2bf470e-ed1c-487f-a333-2bd8835eb6ce}").ToString("B");
                 object pvaButtonBar = new Guid("{d2bf470e-ed1c-487f-a666-2bd8835eb6ce}").ToString("B");
                 object pvarShow = true;

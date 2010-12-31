@@ -85,7 +85,7 @@ namespace QTTabBarLib {
                 string path = mia.Path;
                 string argument = mia.Argument;
                 string workingDirectory = mia.WorkingDirectory;
-                if(!string.Equals(path, "separator", StringComparison.OrdinalIgnoreCase)) {
+                if(!path.PathEquals("separator")) {
                     bool flag = false;
                     if(path.StartsWith("::")) {
                         using(IDLWrapper wrapper = new IDLWrapper(path)) {
@@ -144,7 +144,7 @@ namespace QTTabBarLib {
                             }
                             if(PInvoke.ShellExecuteEx(ref shellexecuteinfo2)) {
                                 string extension = Path.GetExtension(path);
-                                if(!string.Equals(".exe", extension, StringComparison.OrdinalIgnoreCase) && !string.Equals(".com", extension, StringComparison.OrdinalIgnoreCase)) {
+                                if(!extension.PathEquals(".exe") && !extension.PathEquals(".com")) {
                                     QTUtility.ExecutedPathsList.Add(path);
                                 }
                             }

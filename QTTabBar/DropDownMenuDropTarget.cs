@@ -457,7 +457,7 @@ namespace QTTabBarLib {
         }
 
         private int MakeDragOverRetval() {
-            if(string.Equals(strTargetPath, strDraggingStartPath, StringComparison.OrdinalIgnoreCase)) {
+            if(strTargetPath.PathEquals(strDraggingStartPath)) {
                 return 3;
             }
             if((strDraggingDrive != null) && string.Equals(strDraggingDrive, strTargetPath.Substring(0, 3), StringComparison.OrdinalIgnoreCase)) {
@@ -662,7 +662,7 @@ namespace QTTabBarLib {
                 strExtExecutable = Environment.GetEnvironmentVariable("PATHEXT") ??
                         ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC";
             }
-            if(!string.Equals(".lnk", extension, StringComparison.OrdinalIgnoreCase)) {
+            if(!extension.PathEquals(".lnk")) {
                 return (strExtExecutable.IndexOf(extension, StringComparison.OrdinalIgnoreCase) != -1);
             }
             string linkTargetPath = ShellMethods.GetLinkTargetPath(path);

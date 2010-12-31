@@ -587,7 +587,7 @@ namespace QTTabBarLib {
                             int rowIndex = -1;
                             bool flag2 = false;
                             foreach(DataGridViewRow row in dgvHash.Rows) {
-                                if(!flag2 && string.Equals(row.Cells[1].ToolTipText, str, StringComparison.OrdinalIgnoreCase)) {
+                                if(!flag2 && row.Cells[1].ToolTipText.PathEquals(str)) {
                                     if((row.Tag != null) && (lastWriteTime != ((RowProperties)row.Tag).modTime)) {
                                         list3.Add(row);
                                         row.Selected = false;

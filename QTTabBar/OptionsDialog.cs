@@ -903,7 +903,7 @@ namespace QTTabBarLib {
                     listView_NoCapture.SelectedItems.Clear();
                     bool flag = false;
                     foreach(ListViewItem item in listView_NoCapture.Items) {
-                        if(string.Equals(dialog.SelectedPath, item.Name, StringComparison.OrdinalIgnoreCase)) {
+                        if(dialog.SelectedPath.PathEquals(item.Name)) {
                             item.Selected = true;
                             flag = true;
                             break;
@@ -1498,8 +1498,7 @@ namespace QTTabBarLib {
         private static string CreateUniqueName(string strInitialName, TreeNode tnSelf, TreeNode tnParent) {
             int num = 1;
             string b = strInitialName;
-            while(tnParent.Nodes.Cast<TreeNode>().Any(node =>
-                    tnSelf != node && string.Equals(node.Text, b, StringComparison.OrdinalIgnoreCase))) {
+            while(tnParent.Nodes.Cast<TreeNode>().Any(node => tnSelf != node && node.Text.PathEquals(b))) {
                 b = strInitialName + "_" + ++num;
             }
             return b;
@@ -1596,7 +1595,7 @@ namespace QTTabBarLib {
                     if(!b.StartsWith(".")) {
                         b = "." + b;
                     }
-                    if(box.Items.Cast<string>().Any(str3 => string.Equals(str3, b, StringComparison.OrdinalIgnoreCase))) {
+                    if(box.Items.Cast<string>().Any(str3 => str3.PathEquals(b))) {
                         return;
                     }
                     box.Text = b;
@@ -4371,7 +4370,7 @@ namespace QTTabBarLib {
                 else if(e.Node.Level == 1) {
                     TreeNode tnSelf = e.Node;
                     string b = CreateUniqueName(e.Label, tnSelf, tnSelf.Parent);
-                    e.CancelEdit = !string.Equals(e.Label, b, StringComparison.OrdinalIgnoreCase);
+                    e.CancelEdit = !e.Label.PathEquals(b);
                     tnSelf.Text = b;
                 }
                 else if((e.Node.Level == 2) && !string.Equals(e.Node.Text, e.Label)) {
@@ -4526,7 +4525,7 @@ namespace QTTabBarLib {
                 else {
                     TreeNode tnSelf = e.Node;
                     string b = CreateUniqueName(e.Label, tnSelf, tnSelf.Parent);
-                    e.CancelEdit = !string.Equals(e.Label, b, StringComparison.OrdinalIgnoreCase);
+                    e.CancelEdit = !e.Label.PathEquals(b);
                     tnSelf.Text = b;
                 }
             }

@@ -47,7 +47,7 @@ namespace QTTabBarLib {
 
         private int ensureUnique(string path) {
             for(int i = 0; i < Count; i++) {
-                if(string.Equals(path, base[i], StringComparison.OrdinalIgnoreCase)) {
+                if(path.PathEquals(base[i])) {
                     RemoveItem(i);
                     return i;
                 }

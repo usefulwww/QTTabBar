@@ -114,8 +114,7 @@ namespace QTTabBarLib {
                     try {
                         string directoryName = Path.GetDirectoryName(path);
                         if(!string.IsNullOrEmpty(directoryName)) {
-                            if(lstCheckedPaths.All(str => 
-                                    string.Equals(directoryName, Path.GetDirectoryName(str), StringComparison.OrdinalIgnoreCase))) {
+                            if(lstCheckedPaths.All(str => directoryName.PathEquals(Path.GetDirectoryName(str)))) {
                                 lstTempDirectoryPaths = new List<string>(lstCheckedPaths);
                                 MultipleMenuItemsRightClicked(this, e);
                                 lstTempDirectoryPaths.Clear();
@@ -214,7 +213,7 @@ namespace QTTabBarLib {
                     try {
                         string fullName = info.FullName;
                         string name = info.Name;
-                        if((((fullName.Length != 0x1c) || !string.Equals(name, "System Volume Information", StringComparison.OrdinalIgnoreCase)) && ((fullName.Length != 15) || !string.Equals(name, "$RECYCLE.BIN", StringComparison.OrdinalIgnoreCase))) && ((fullName.Length != 11) || !string.Equals(name, "RECYCLER", StringComparison.OrdinalIgnoreCase))) {
+                        if((((fullName.Length != 0x1c) || !name.PathEquals("System Volume Information")) && ((fullName.Length != 15) || !name.PathEquals("$RECYCLE.BIN"))) && ((fullName.Length != 11) || !name.PathEquals("RECYCLER"))) {
                             FileAttributes attributes2 = info.Attributes;
                             if(QTUtility.IsXP || ((attributes2 & attributes) != attributes)) {
                                 bool flag5 = (attributes2 & FileAttributes.System) != 0;
@@ -302,7 +301,7 @@ namespace QTTabBarLib {
                                             item2.SetImageReservationKey(lnkPath, ext);
                                             collection.Add(item2);
                                         }
-                                        goto Label_04A3;
+                                        continue;
                                     }
                                     str8 = linkTargetPath;
                                 }
@@ -333,7 +332,6 @@ namespace QTTabBarLib {
                     catch(Exception exception2) {
                         QTUtility2.MakeErrorLog(exception2, "creating subfile menu");
                     }
-                Label_04A3: ;
                 }
                 collection.Sort(extComparer);
                 list.AddRange(collection);
@@ -846,20 +844,19 @@ namespace QTTabBarLib {
                 if(currentIDL != null) {
                     using(IDLWrapper wrapper = new IDLWrapper(currentIDL)) {
                         lstItems = CreateMenuFromIDL(wrapper, null);
-                        goto Label_009D;
                     }
                 }
-                if(currentDir.StartsWith("::")) {
+                else if(currentDir.StartsWith("::")) {
                     using(IDLWrapper wrapper2 = new IDLWrapper(currentDir)) {
                         lstItems = CreateMenuFromIDL(wrapper2, null);
-                        goto Label_009D;
                     }
                 }
-                lstItems = CreateMenu(new DirectoryInfo(currentDir), null);
+                else {
+                    lstItems = CreateMenu(new DirectoryInfo(currentDir), null);
+                }
             }
             catch {
             }
-        Label_009D:
             if((lstItems != null) && (lstItems.Count > 0)) {
                 RECT rect;
                 PInvoke.GetWindowRect(Handle, out rect);
@@ -916,7 +913,7 @@ namespace QTTabBarLib {
 
         public bool ShowMenuWithoutShowForm(string path, Point pnt, bool fParent) {
             if(string.IsNullOrEmpty(path)) {
-                goto Label_0258;
+                return false;
             }
             contextMenuSubDir.Close(ToolStripDropDownCloseReason.ItemClicked);
             currentDir = path;
@@ -933,21 +930,20 @@ namespace QTTabBarLib {
                     using(IDLWrapper wrapper = new IDLWrapper(path)) {
                         lstItems = CreateParentMenu(wrapper, null);
                         lstItems.Reverse();
-                        goto Label_00AC;
                     }
                 }
-                if(path.StartsWith("::")) {
+                else if(path.StartsWith("::")) {
                     using(IDLWrapper wrapper2 = new IDLWrapper(path)) {
                         lstItems = CreateMenuFromIDL(wrapper2, null);
-                        goto Label_00AC;
                     }
                 }
-                DirectoryInfo di = new DirectoryInfo(currentDir);
-                lstItems = CreateMenu(di, null);
+                else {
+                    DirectoryInfo di = new DirectoryInfo(currentDir);
+                    lstItems = CreateMenu(di, null);
+                }
             }
             catch {
             }
-        Label_00AC:
             if((lstItems != null) && (lstItems.Count > 0)) {
                 contextMenuSubDir.SuspendLayout();
                 contextMenuSubDir.MaximumSize = Size.Empty;
@@ -980,7 +976,6 @@ namespace QTTabBarLib {
                 menuIsShowing = true;
                 return true;
             }
-        Label_0258:
             return false;
         }
 
@@ -1085,15 +1080,15 @@ namespace QTTabBarLib {
                 if(item.TargetPath.StartsWith("::")) {
                     using(IDLWrapper wrapper = new IDLWrapper(item.TargetPath)) {
                         lstItems = CreateMenuFromIDL(wrapper, item.IDLDataChild);
-                        goto Label_008E;
                     }
                 }
-                DirectoryInfo di = new DirectoryInfo(item.TargetPath);
-                lstItems = CreateMenu(di, item.PathChild);
+                else {
+                    DirectoryInfo di = new DirectoryInfo(item.TargetPath);
+                    lstItems = CreateMenu(di, item.PathChild);                    
+                }
             }
             catch {
             }
-        Label_008E:
             if((lstItems != null) && (lstItems.Count > 0)) {
                 ((DropDownMenuReorderable)item.DropDown).AddItemsRangeVirtual(lstItems);
             }

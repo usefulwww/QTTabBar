@@ -280,6 +280,10 @@ namespace QTTabBarLib {
             }
         }
 
+        public static bool PathEquals(this string str1, string str2) {
+            return string.Equals(str1, str2, StringComparison.OrdinalIgnoreCase);
+        }
+
         public static bool PathExists(string path) {
             if(string.IsNullOrEmpty(path)) {
                 return false;
@@ -319,6 +323,10 @@ namespace QTTabBarLib {
                 str2 = @".lzh\";
             }
             return File.Exists(path.Substring(0, path.IndexOf(str2) + 4));
+        }
+
+        public static bool PathStartsWith(this string str1, string str2) {
+            return str1.StartsWith(str2, StringComparison.OrdinalIgnoreCase);
         }
 
         public static Point PointFromLPARAM(IntPtr lParam) {
@@ -416,8 +424,7 @@ namespace QTTabBarLib {
             if(pIDL != IntPtr.Zero) {
                 path = ShellMethods.GetPath(pIDL);
             }
-            return !string.IsNullOrEmpty(path) && QTUtility.NoCapturePathsList.Any(path2 =>
-                    string.Equals(path, path2, StringComparison.OrdinalIgnoreCase));
+            return !string.IsNullOrEmpty(path) && QTUtility.NoCapturePathsList.Any(path2 => path.PathEquals(path2));
         }
 
         public static void WriteRegBinary<T>(T[] array, string regValueName, RegistryKey rkUserApps) {

@@ -40,6 +40,7 @@
   <Import Project="$(WixTargetsPath)" />
   <PropertyGroup>
     <RunWixToolsOutOfProc>true</RunWixToolsOutOfProc> 
+    <SetMsiAssemblyNameFileVersion>true</SetMsiAssemblyNameFileVersion>
   </PropertyGroup>
   <!--
 	To modify your build process, add your task inside one of the targets below and uncomment it.

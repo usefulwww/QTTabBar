@@ -115,7 +115,7 @@ namespace QTTabBarLib {
 
     internal static class QTUtility {
         internal static string Action_BarDblClick;
-        internal static Version BetaRevision = new Version(0, 3);
+        internal static Version BetaRevision = new Version(0, 5);
         internal static PathList ClosedTabHistoryList = new PathList(0x10);
         internal static byte[] ConfigValues;
         internal static string CreateWindowTMPGroup = string.Empty;
@@ -130,7 +130,7 @@ namespace QTTabBarLib {
         internal static PathList ExecutedPathsList = new PathList(0x10);
         internal static bool fExplorerPrevented;
         internal const int FLAG_KEYENABLED = 0x100000;
-        internal static bool fIsDevelopmentVersion = true;  // <----------------- Change me before releasing!
+        internal static bool fIsDevelopmentVersion = false;  // <----------------- Change me before releasing!
         internal static bool fRequiredRefresh_App;
         internal static bool fRestoreFolderTree;
         internal static bool fSingleClick;
@@ -145,8 +145,8 @@ namespace QTTabBarLib {
         internal static ImageList ImageListGlobal;
         internal static InstanceManager instanceManager = new InstanceManager();
         internal static int InstancesCount;
-        internal static bool IsRTL;
-        internal static bool IsXP;
+        internal static readonly bool IsRTL;
+        internal static readonly bool IsXP;
         internal static Dictionary<string, byte[]> ITEMIDLIST_Dic_Session = new Dictionary<string, byte[]>();
         internal static readonly int[] KEYS_DEFAULT = new int[] { 
       0, 0, 0x160025, 0x160027, 0x120009, 0x130009, 0, 0, 0x120057, 0x130057, 0, 0, 0, 0x13005a, 0x12004e, 0x13004e, 
