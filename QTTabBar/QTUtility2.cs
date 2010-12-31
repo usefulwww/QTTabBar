@@ -325,6 +325,10 @@ namespace QTTabBarLib {
             return File.Exists(path.Substring(0, path.IndexOf(str2) + 4));
         }
 
+        public static bool PathStartsWith(this string str1, string str2) {
+            return str1.StartsWith(str2, StringComparison.OrdinalIgnoreCase);
+        }
+
         public static Point PointFromLPARAM(IntPtr lParam) {
             return new Point(((int)lParam) & 0xffff, (((int)lParam) >> 0x10) & 0xffff);
         }
