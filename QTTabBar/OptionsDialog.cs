@@ -3504,7 +3504,7 @@ namespace QTTabBarLib {
             listViewKeyboard.BeginUpdate();
             ListViewGroup group = listViewKeyboard.Groups[pluginID];
             if(group != null) {
-                foreach(ListViewItem item2 in group.Items) {
+                foreach(ListViewItem item2 in group.Items.Cast<ListViewItem>().ToList()) {
                     listViewKeyboard.Items.Remove(item2);
                 }
                 listViewKeyboard.Groups.Remove(group);
