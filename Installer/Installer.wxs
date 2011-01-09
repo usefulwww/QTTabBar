@@ -183,6 +183,7 @@
             <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="CloseAndReopen">(NOT Installed) AND WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1</Publish>
         </UI>
 
+        <Property Id="ALLUSERS" Value="1" />
         <Property Id="WIXUI_INSTALLDIR" Value="INSTALLLOCATION" />
         <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Close all Explorer windows and reopen them as tabs" />
         <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
