@@ -170,12 +170,24 @@ namespace QTTabBarLib {
         private readonly uint WM_SHOWHIDEBARS = PInvoke.RegisterWindowMessage("QTTabBar_ShowHideBars");
 
         public QTTabBarClass() {
+            try {
+                string installDateString;
+                DateTime installDate;
+                string minDate = DateTime.MinValue.ToString();
+                using(RegistryKey key = Registry.LocalMachine.OpenSubKey(@"Software\Quizo\QTTabBar")) {
+                    installDateString = key == null ? minDate : (string)key.GetValue("InstallDate", minDate);
+                    installDate = DateTime.Parse(installDateString);
+                }
+                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+                    DateTime lastActivation = DateTime.Parse((string)key.GetValue("ActivationDate", minDate));
+                    fIsFirstLoad = installDate.CompareTo(lastActivation) > 0;
+                    if(fIsFirstLoad) key.SetValue("ActivationDate", installDateString);
+                }
+            }
+            catch {
+            }
             if(!fInitialized) {
                 InitializeStaticFields();
-            }
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
-                fIsFirstLoad = ((int)key.GetValue("FirstTime", 1) != 0);
-                if(fIsFirstLoad) key.SetValue("FirstTime", 0);
             }
             QTUtility.InstancesCount++;
             BandHeight = QTUtility.TabHeight + 2;

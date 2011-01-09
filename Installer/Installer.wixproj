@@ -23,6 +23,7 @@
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <SuppressValidation>False</SuppressValidation>
     <SuppressIces>ICE80</SuppressIces>
+    <SuppressSpecificWarnings>1076;1118</SuppressSpecificWarnings>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Installer.wxs" />
@@ -39,7 +40,7 @@
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
   <PropertyGroup>
-    <RunWixToolsOutOfProc>true</RunWixToolsOutOfProc> 
+    <RunWixToolsOutOfProc>true</RunWixToolsOutOfProc>
     <SetMsiAssemblyNameFileVersion>true</SetMsiAssemblyNameFileVersion>
   </PropertyGroup>
   <!--

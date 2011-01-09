@@ -65,8 +65,16 @@ namespace QTTabBarLib {
         }
 
         private void ActivateIt() {
+            string installDateString;
+            DateTime installDate;
+            string minDate = DateTime.MinValue.ToString();
+            using(RegistryKey key = Registry.LocalMachine.OpenSubKey(@"Software\Quizo\QTTabBar")) {
+                installDateString = key == null ? minDate : (string)key.GetValue("InstallDate", minDate);
+                installDate = DateTime.Parse(installDateString);
+            }
             using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
-                if((int)key.GetValue("FirstTime", 1) == 0) return;
+                DateTime lastActivation = DateTime.Parse((string)key.GetValue("ActivationDate", minDate));
+                if(installDate.CompareTo(lastActivation) <= 0) return;
 
                 object pvaTabBar = new Guid("{d2bf470e-ed1c-487f-a333-2bd8835eb6ce}").ToString("B");
                 object pvaButtonBar = new Guid("{d2bf470e-ed1c-487f-a666-2bd8835eb6ce}").ToString("B");
@@ -84,7 +92,7 @@ namespace QTTabBarLib {
                             "then select QTTabBar from the View/Toolbars menu.",
                             "Could not enable", MessageBoxIcon.Warning, 30000, false, true);
                 }
-                key.SetValue("FirstTime", 0);
+                key.SetValue("ActivationDate", installDateString);
             }
         }
     }
