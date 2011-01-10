@@ -38,6 +38,20 @@ namespace QTTabBarLib {
             SetStyleFlags();
         }
 
+        private int CorrectHotItem(int iItem) {
+            if(QTUtility.IsXP && iItem == -1 && ShellBrowser.ViewMode == FVM.DETAILS && ShellBrowser.GetItemCount() > 0) {
+                RECT rect = GetItemRect(0, LVIR.LABEL);
+                Point mousePosition = Control.MousePosition;
+                PInvoke.ScreenToClient(Handle, ref mousePosition);
+                int minX = Math.Min(rect.left, rect.right);
+                int maxX = Math.Max(rect.left, rect.right);
+                if(minX <= mousePosition.X && mousePosition.X <= maxX) {
+                    iItem = HitTest(new Point(minX + 2, mousePosition.Y), false);
+                }
+            }
+            return iItem;
+        }
+
         private bool EditController_MessageCaptured(ref Message msg) {
             if(msg.Msg == 0xb1 /* EM_SETSEL */ && msg.WParam.ToInt32() != -1) {
                 msg.LParam = EditController.OptionalHandle;
@@ -142,14 +156,10 @@ namespace QTTabBarLib {
                     // Handled through WM_MOUSEMOVE.
                     if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews) || !QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
                         NMLISTVIEW nmlistview = (NMLISTVIEW)Marshal.PtrToStructure(msg.LParam, typeof(NMLISTVIEW));
-                        int iItem = nmlistview.iItem;
-                        if(QTUtility.IsXP && iItem == -1 && ShellBrowser.ViewMode == FVM.DETAILS) {
-                            // HotTrack is inaccurate in this case.
-                            iItem = GetHotItem();
-                        }
+                        int iItem = CorrectHotItem(nmlistview.iItem);
                         if(iHotItem != iItem) {
-                            OnHotItemChanged(nmlistview.iItem);
-                            iHotItem = nmlistview.iItem;
+                            OnHotItemChanged(iItem);
+                            iHotItem = iItem;
                         }
                     }
                     break;
@@ -225,6 +235,10 @@ namespace QTTabBarLib {
                 return GetItemRect(ShellBrowser.GetFocusedIndex(), code).ToRectangle();
             }
             return new Rectangle(0, 0, 0, 0);
+        }
+
+        public override int GetHotItem() {
+            return CorrectHotItem(base.GetHotItem());
         }
 
         protected override Point GetSubDirTipPoint(bool fByKey) {
