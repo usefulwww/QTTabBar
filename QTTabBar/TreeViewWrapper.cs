@@ -29,10 +29,15 @@ namespace QTTabBarLib {
         private bool fDisposed;
         private INameSpaceTreeControl treeControl;
         private NativeWindowController treeController;
+        private NativeWindowController parentController;
+        private bool fPreventSelChange;
+
         public TreeViewWrapper(IntPtr hwnd, INameSpaceTreeControl treeControl) {
             this.treeControl = treeControl;
             treeController = new NativeWindowController(hwnd);
             treeController.MessageCaptured += TreeControl_MessageCaptured;
+            parentController = new NativeWindowController(PInvoke.GetParent(hwnd));
+            parentController.MessageCaptured += ParentControl_MessageCaptured;
         }
 
         private void HandleClick(Point pt) {
@@ -65,8 +70,8 @@ namespace QTTabBarLib {
 
         private bool TreeControl_MessageCaptured(ref Message msg) {
             switch(msg.Msg) {
-                case WM.LBUTTONUP:
-                    // TODO: Doesn't seem to ever fire...
+                case WM.USER:
+                    fPreventSelChange = false;
                     break;
 
                 case WM.MBUTTONUP:
@@ -82,6 +87,32 @@ namespace QTTabBarLib {
                         treeControl = null;
                     }
                     break;
+            }
+            return false;
+        }
+
+        private bool ParentControl_MessageCaptured(ref Message msg) {
+            if(msg.Msg == WM.NOTIFY) {
+                NMHDR nmhdr = (NMHDR)Marshal.PtrToStructure(msg.LParam, typeof(NMHDR));
+                switch(nmhdr.code) {
+                    case -2: /* NM_CLICK */
+                        if((Control.ModifierKeys & Keys.Control) != 0) {
+                            Point pt = Control.MousePosition;
+                            PInvoke.ScreenToClient(nmhdr.hwndFrom, ref pt);
+                            HandleClick(pt);
+                            fPreventSelChange = true;
+                            PInvoke.PostMessage(nmhdr.hwndFrom, WM.USER, IntPtr.Zero, IntPtr.Zero);
+                            return true;
+                        }
+                        break;
+
+                    case -450: /* TVN_SELECTIONCHANGING */
+                        if(fPreventSelChange) {
+                            msg.Result = (IntPtr)1;
+                            return true;
+                        }
+                        break;
+                }
             }
             return false;
         }
