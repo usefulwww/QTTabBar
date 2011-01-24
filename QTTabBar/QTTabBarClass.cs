@@ -2141,8 +2141,8 @@ namespace QTTabBarLib {
                 uint flags = (uint)Marshal.ReadInt32(msg.WParam);
                 if((flags & 0x4000 /* SBSP_NAVIGATEBACK */) != 0) {
                     msg.Result = (IntPtr)1;
-                    if(!NavigateCurrentTab(true)) {
-                        CloseTab(CurrentTab);
+                    if(!NavigateCurrentTab(true) && CloseTab(CurrentTab, true) && tabControl1.TabCount == 0) {
+                        WindowUtils.CloseExplorer(ExplorerHandle, 2);
                     }
                 }
                 else if((flags & 0x8000 /* SBSP_NAVIGATEFORWARD */) != 0) {
