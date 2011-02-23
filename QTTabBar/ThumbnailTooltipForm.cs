@@ -186,7 +186,7 @@ namespace QTTabBarLib {
                     return true;
                 }
                 catch(Exception exception) {
-                    QTUtility2.MakeErrorLog(exception, null);
+                    QTUtility2.MakeErrorLog(exception);
                     return false;
                 }
             }
@@ -419,7 +419,7 @@ namespace QTTabBarLib {
                 }
                 catch(Exception exception2) {
                     PluginManager.HandlePluginException(exception2, IntPtr.Zero, "Unknown IEncodingDetector", "Getting Enconding object.");
-                    QTUtility2.MakeErrorLog(exception2, null, false);
+                    QTUtility2.MakeErrorLog(exception2, null);
                 }
             }
             if(encoding == null) {
@@ -470,7 +470,7 @@ namespace QTTabBarLib {
                 }
             }
             catch(Exception exception) {
-                QTUtility2.MakeErrorLog(exception, null);
+                QTUtility2.MakeErrorLog(exception);
             }
             finally {
                 if(zero != IntPtr.Zero) {
@@ -527,7 +527,7 @@ namespace QTTabBarLib {
                 }
             }
             catch(Exception exception) {
-                QTUtility2.MakeErrorLog(exception, null);
+                QTUtility2.MakeErrorLog(exception);
             }
             finally {
                 if(zero != IntPtr.Zero) {
@@ -727,7 +727,7 @@ namespace QTTabBarLib {
                     }
                 }
                 catch(Exception exception) {
-                    QTUtility2.MakeErrorLog(exception, null);
+                    QTUtility2.MakeErrorLog(exception);
                 }
             }
         }

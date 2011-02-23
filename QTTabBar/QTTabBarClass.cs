@@ -756,7 +756,7 @@ namespace QTTabBarLib {
                 }
             }
             catch(Exception exception) {
-                QTUtility2.MakeErrorLog(exception, null);
+                QTUtility2.MakeErrorLog(exception);
             }
             finally {
                 if(ppenum != null) {
@@ -2122,7 +2122,7 @@ namespace QTTabBarLib {
                     }
                 }
                 catch(Exception exception) {
-                    QTUtility2.MakeErrorLog(exception, null);
+                    QTUtility2.MakeErrorLog(exception);
                 }
                 finally {
                     QTUtility.RestoreFolderTree_Hide = NavigatedByCode = fNavigatedByTabSelection = NowTabCreated = fNowTravelByTree = false;
@@ -2384,7 +2384,7 @@ namespace QTTabBarLib {
                 entry3 = rgElt;
             }
             catch(Exception exception) {
-                QTUtility2.MakeErrorLog(exception, null);
+                QTUtility2.MakeErrorLog(exception);
                 entry3 = null;
             }
             finally {
@@ -3326,7 +3326,7 @@ namespace QTTabBarLib {
                 }
             }
             catch(Exception exception) {
-                QTUtility2.MakeErrorLog(exception, null);
+                QTUtility2.MakeErrorLog(exception);
             }
             finally {
                 if(zero != IntPtr.Zero) {
@@ -4046,7 +4046,7 @@ namespace QTTabBarLib {
                 }
             }
             catch(Exception exception) {
-                QTUtility2.MakeErrorLog(exception, null);
+                QTUtility2.MakeErrorLog(exception);
             }
             finally {
                 if(ppenum != null) {
@@ -4116,7 +4116,7 @@ namespace QTTabBarLib {
                     tabControl1.SelectTab(tab);
                 }
                 catch(Exception exception) {
-                    QTUtility2.MakeErrorLog(exception, null);
+                    QTUtility2.MakeErrorLog(exception);
                 }
                 return true;
             }
@@ -4260,7 +4260,7 @@ namespace QTTabBarLib {
                 goto Label_0013;
             }
             catch(Exception exception) {
-                QTUtility2.MakeErrorLog(exception, null);
+                QTUtility2.MakeErrorLog(exception);
             }
             finally {
                 if(ppenum != null) {
@@ -4422,7 +4422,7 @@ namespace QTTabBarLib {
                 TravelLog = (ITravelLogStg)obj3;
             }
             catch(COMException exception) {
-                QTUtility2.MakeErrorLog(exception, null);
+                QTUtility2.MakeErrorLog(exception);
             }
             Explorer.BeforeNavigate2 += Explorer_BeforeNavigate2;
             Explorer.NavigateComplete2 += Explorer_NavigateComplete2;
@@ -4744,12 +4744,14 @@ namespace QTTabBarLib {
                 }
                 QTUtility.CreateWindowTMPPath = idlw.Path;
                 if(ShellBrowser.Navigate(idlw, wFlags) != 0) {
+                    QTUtility2.MakeErrorLog(null, string.Format("Failed navigation: {0}", idlw.Path));
                     MessageBox.Show(string.Format(QTUtility.TextResourcesDic["TabBar_Message"][0], idlw.Path));
                     QTUtility.CreateWindowTMPGroup = QTUtility.CreateWindowTMPPath = string.Empty;
                 }
                 QTUtility.fRestoreFolderTree = false;
             }
             else if((idlw != null) && idlw.HasPath) {
+                QTUtility2.MakeErrorLog(null, string.Format("Failed navigation: {0}", idlw.Path));
                 MessageForm.Show(ExplorerHandle, string.Format(QTUtility.TextResourcesDic["TabBar_Message"][0], idlw.Path), idlw.Path, MessageBoxIcon.Asterisk, 0x1770);
             }
         }
@@ -5060,7 +5062,7 @@ namespace QTTabBarLib {
                 }
             }
             catch(COMException exception) {
-                QTUtility2.MakeErrorLog(exception, null);
+                QTUtility2.MakeErrorLog(exception);
             }
             finally {
                 tabControl1.ResumeLayout();
@@ -5399,6 +5401,7 @@ namespace QTTabBarLib {
         }
 
         private void ShowMessageNavCanceled(string failedPath, bool fModal) {
+            QTUtility2.MakeErrorLog(null, string.Format("Failed navigation: {0}", failedPath));
             MessageForm.Show(ExplorerHandle, string.Format(QTUtility.TextResourcesDic["TabBar_Message"][0], failedPath), string.Empty, MessageBoxIcon.Asterisk, 0x2710, fModal);
         }
 
@@ -5553,7 +5556,7 @@ namespace QTTabBarLib {
                 }
             }
             catch(Exception exception) {
-                QTUtility2.MakeErrorLog(exception, null);
+                QTUtility2.MakeErrorLog(exception);
             }
             finally {
                 if(o != null) {
@@ -5738,7 +5741,7 @@ namespace QTTabBarLib {
                 }
             }
             catch(Exception exception) {
-                QTUtility2.MakeErrorLog(exception, null);
+                QTUtility2.MakeErrorLog(exception);
             }
         }
 
@@ -5793,7 +5796,7 @@ namespace QTTabBarLib {
                 }
             }
             catch(Exception exception) {
-                QTUtility2.MakeErrorLog(exception, null);
+                QTUtility2.MakeErrorLog(exception);
             }
         }
 
@@ -5806,7 +5809,7 @@ namespace QTTabBarLib {
                 }
             }
             catch(Exception exception) {
-                QTUtility2.MakeErrorLog(exception, null);
+                QTUtility2.MakeErrorLog(exception);
             }
         }
 

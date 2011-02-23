@@ -648,7 +648,7 @@ namespace QTTabBarLib {
                 }
             }
             catch(Exception exception) {
-                QTUtility2.MakeErrorLog(exception, null);
+                QTUtility2.MakeErrorLog(exception);
             }
         }
 
@@ -819,7 +819,7 @@ namespace QTTabBarLib {
                         return true;
                     }
                     catch(Exception exception) {
-                        QTUtility2.MakeErrorLog(exception, null);
+                        QTUtility2.MakeErrorLog(exception);
                     }
                     finally {
                         mia.RestoreOriginalArgs();
@@ -1803,7 +1803,7 @@ namespace QTTabBarLib {
                                 BlockedExplorerProcess.Exited += BlockedExplorer_Exited;
                             }
                             catch(Exception exception) {
-                                QTUtility2.MakeErrorLog(exception, null);
+                                QTUtility2.MakeErrorLog(exception);
                             }
                             break;
                         }

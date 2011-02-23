@@ -1450,7 +1450,7 @@ namespace QTTabBarLib {
                 }
             }
             catch(Exception exception) {
-                QTUtility2.MakeErrorLog(exception, null);
+                QTUtility2.MakeErrorLog(exception);
                 flag = false;
             }
             finally {

@@ -110,7 +110,7 @@ namespace QTTabBarLib {
                 ReadCache();
             }
             catch(Exception exception) {
-                QTUtility2.MakeErrorLog(exception, null, false);
+                QTUtility2.MakeErrorLog(exception);
             }
         }
 
@@ -285,7 +285,7 @@ namespace QTTabBarLib {
                 fCacheDirty = false;
             }
             catch(Exception exception) {
-                QTUtility2.MakeErrorLog(exception, null, false);
+                QTUtility2.MakeErrorLog(exception);
             }
         }
 
@@ -361,7 +361,7 @@ namespace QTTabBarLib {
                         }
                     }
                     catch(Exception exception) {
-                        QTUtility2.MakeErrorLog(exception, null, true);
+                        QTUtility2.MakeErrorLog(exception);
                     }
                 }
             }

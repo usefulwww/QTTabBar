@@ -1043,7 +1043,7 @@ namespace QTTabBarLib {
                 timerToolTipByKey.Tag = null;
             }
             catch(Exception exception) {
-                QTUtility2.MakeErrorLog(exception, null);
+                QTUtility2.MakeErrorLog(exception);
             }
         }
 

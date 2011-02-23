@@ -112,7 +112,7 @@ namespace QTTabBarLib.Interop {
                     }
                 }
                 catch(Exception exception) {
-                    QTUtility2.MakeErrorLog(exception, null);
+                    QTUtility2.MakeErrorLog(exception);
                 }
                 finally {
                     if(lpFileOp.pFrom != IntPtr.Zero) {
@@ -450,7 +450,7 @@ namespace QTTabBarLib.Interop {
                     }
                 }
                 catch(Exception exception) {
-                    QTUtility2.MakeErrorLog(exception, null);
+                    QTUtility2.MakeErrorLog(exception);
                 }
                 finally {
                     if(ppv != null) {
@@ -561,7 +561,7 @@ namespace QTTabBarLib.Interop {
                             }
                         }
                         catch(Exception exception) {
-                            QTUtility2.MakeErrorLog(exception, null);
+                            QTUtility2.MakeErrorLog(exception);
                         }
                         finally {
                             if(lpFileOp.pFrom != IntPtr.Zero) {

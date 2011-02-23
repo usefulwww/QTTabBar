@@ -1057,7 +1057,7 @@ namespace QTTabBarLib {
                     ShowUpDown(fNeedToDrawUpDown);
                 }
                 catch(Exception exception) {
-                    QTUtility2.MakeErrorLog(exception, null);
+                    QTUtility2.MakeErrorLog(exception);
                 }
             }
         }
@@ -1091,7 +1091,7 @@ namespace QTTabBarLib {
                 ShowUpDown(false);
             }
             catch(Exception exception) {
-                QTUtility2.MakeErrorLog(exception, null);
+                QTUtility2.MakeErrorLog(exception);
             }
         }
 

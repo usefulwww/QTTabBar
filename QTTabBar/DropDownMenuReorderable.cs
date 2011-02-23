@@ -343,7 +343,7 @@ namespace QTTabBarLib {
                     type.GetMethod("Cancel", Type.EmptyTypes).Invoke(property.GetValue(this, null), null);
                 }
                 catch(Exception exception) {
-                    QTUtility2.MakeErrorLog(exception, null);
+                    QTUtility2.MakeErrorLog(exception);
                 }
             }
         }
@@ -841,7 +841,7 @@ namespace QTTabBarLib {
                 }
             }
             catch(Exception exception) {
-                QTUtility2.MakeErrorLog(exception, null);
+                QTUtility2.MakeErrorLog(exception);
             }
         }
 

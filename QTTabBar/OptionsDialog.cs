@@ -3368,7 +3368,7 @@ namespace QTTabBarLib {
                 }
                 catch(Exception exception) {
                     PluginManager.HandlePluginException(exception, Handle, plugin.PluginInformation.Name, "Open plugin option.");
-                    QTUtility2.MakeErrorLog(exception, "Error at Plugin: " + e.PluginViewItem.PluginInfo.Name, true);
+                    QTUtility2.MakeErrorLog(exception, "Error at Plugin: " + e.PluginViewItem.PluginInfo.Name);
                 }
             }
         }
@@ -3394,7 +3394,7 @@ namespace QTTabBarLib {
                 }
                 catch(Exception exception) {
                     PluginManager.HandlePluginException(exception, Handle, pi.Name, "Checking if the plugin has option.");
-                    QTUtility2.MakeErrorLog(exception, "Error at Plugin: " + pi.Name, true);
+                    QTUtility2.MakeErrorLog(exception, "Error at Plugin: " + pi.Name);
                 }
             }
             return false;

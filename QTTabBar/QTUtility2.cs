@@ -137,34 +137,31 @@ namespace QTTabBarLib {
             return ((clr.R | (clr.G << 8)) | (clr.B << 0x10));
         }
 
-        public static void MakeErrorLog(Exception ex, string optional, bool fCritical = false) {
-            // TODO Make a release-acceptable version of this code
-
-            //if(QTUtility.NowDebugging || fCritical) {
-                try {
-                    string path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\QTTabBarException.log";
-                    bool flag = File.Exists(path);
-                    using(StreamWriter writer = new StreamWriter(path, true)) {
-                        if(!flag) {
-                            writer.WriteLine("This file was created by QTTabBar for debugging. Sorry for inconvenience. You can delete this without any harm.");
-                            writer.WriteLine("--------------");
-                            writer.WriteLine();
-                        }
-                        writer.WriteLine(DateTime.Now.ToString());
-                        writer.WriteLine("OS ver: " + Environment.OSVersion.Version);
-                        writer.WriteLine("QT ver: " + MakeVersionString());
-                        writer.WriteLine((ex == null) ? "Exception : N/A" : ex.ToString());
-                        if(!string.IsNullOrEmpty(optional)) {
-                            writer.WriteLine("Optional information : " + optional);
-                        }
-                        writer.WriteLine("--------------");
-                        writer.WriteLine();
+        public static void MakeErrorLog(Exception ex, string optional = null) {
+            try {
+                string appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                string path = Path.Combine(Path.Combine(appdata, "QTTabBar"), "QTTabBarException.log");
+                using(StreamWriter writer = new StreamWriter(path, true)) {
+                    writer.WriteLine(DateTime.Now.ToString());
+                    writer.WriteLine("OS ver: " + Environment.OSVersion.Version);
+                    writer.WriteLine("QT ver: " + MakeVersionString());
+                    if(!string.IsNullOrEmpty(optional)) {
+                        writer.WriteLine("Optional information: " + optional);
                     }
-                    SystemSounds.Exclamation.Play();
+                    if(ex == null) {
+                        writer.WriteLine("Exception: None");
+                        writer.WriteLine(Environment.StackTrace);
+                    }
+                    else {
+                        writer.WriteLine(ex.ToString());
+                    }                        
+                    writer.WriteLine("--------------");
+                    writer.WriteLine();
                 }
-                catch {
-                }
-            //}
+                SystemSounds.Exclamation.Play();
+            }
+            catch {
+            }
         }
 
         public static string MakeKeyString(Keys key) {
@@ -256,10 +253,7 @@ namespace QTTabBarLib {
             }
             if(path.StartsWith(@"\\")) {
                 int index = path.IndexOf(@"\", 2);
-                if(index != -1) {
-                    return path.Substring(0, index);
-                }
-                return path;
+                return index != -1 ? path.Substring(0, index) : path;
             }
             return path.Substring(0, 3);
         }

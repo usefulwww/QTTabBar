@@ -288,7 +288,7 @@ namespace QTTabBarLib {
                 }
             }
             catch(Exception exception) {
-                QTUtility2.MakeErrorLog(exception, null);
+                QTUtility2.MakeErrorLog(exception);
             }
             return false;
         }
@@ -367,7 +367,7 @@ namespace QTTabBarLib {
                     }
                 }
                 catch(Exception exception) {
-                    QTUtility2.MakeErrorLog(exception, null);
+                    QTUtility2.MakeErrorLog(exception);
                 }
                 finally {
                     if(ppshv != null) {
