@@ -97,7 +97,13 @@ namespace QTTabBarLib {
             }
             try {
                 if(Path.IsPathRooted(path)) {
-                    DriveInfo drive = new DriveInfo(Path.GetPathRoot(path));
+                    DriveInfo drive;
+                    try {
+                        drive = new DriveInfo(Path.GetPathRoot(path));
+                    }
+                    catch {
+                        return false;
+                    }
                     if(drive.DriveType == DriveType.Network) {
                         return true;
                     }
@@ -287,7 +293,13 @@ namespace QTTabBarLib {
                 return true;
             }
             if(Path.IsPathRooted(path)) {
-                DriveInfo drive = new DriveInfo(Path.GetPathRoot(path));
+                DriveInfo drive;
+                try {
+                    drive = new DriveInfo(Path.GetPathRoot(path));
+                }
+                catch {
+                    return false;
+                }
                 switch(drive.DriveType) {
                     case DriveType.Unknown:
                     case DriveType.NoRootDirectory:
