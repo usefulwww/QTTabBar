@@ -146,7 +146,11 @@ namespace QTTabBarLib {
         public static void MakeErrorLog(Exception ex, string optional = null) {
             try {
                 string appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                string path = Path.Combine(Path.Combine(appdata, "QTTabBar"), "QTTabBarException.log");
+                string appdataQT = Path.Combine(appdata, "QTTabBar");
+                if(!Directory.Exists(appdataQT)) {
+                    Directory.CreateDirectory(appdataQT);
+                }
+                string path = Path.Combine(appdataQT, "QTTabBarException.log");
                 using(StreamWriter writer = new StreamWriter(path, true)) {
                     writer.WriteLine(DateTime.Now.ToString());
                     writer.WriteLine("OS ver: " + Environment.OSVersion.Version);
