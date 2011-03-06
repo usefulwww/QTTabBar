@@ -211,7 +211,9 @@ namespace QTTabBarLib {
         internal static byte WindowAlpha = 0xff;
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate bool InitShellBrowserHookDelegate(IntPtr shellBrowser);
+        private delegate int InitShellBrowserHookDelegate(IntPtr shellBrowser);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate int InitHookLibDelegate();
 
         static QTUtility() {
             String processName = Process.GetCurrentProcess().ProcessName.ToLower();
@@ -354,11 +356,33 @@ namespace QTTabBarLib {
                 }
                 string filename = IntPtr.Size == 8 ? "QTHookLib64.dll" : "QTHookLib32.dll";
                 hHookLib = PInvoke.LoadLibrary(Path.Combine(installPath, filename));
+                int retcode = -1;
                 if(hHookLib == IntPtr.Zero) {
+                    int error = Marshal.GetLastWin32Error();
+                    QTUtility2.MakeErrorLog(null, "LoadLibrary error: " + error);
+                }
+                else {
+                    IntPtr pFunc = PInvoke.GetProcAddress(hHookLib, "Initialize");
+                    if(pFunc != IntPtr.Zero) {
+                        InitHookLibDelegate initialize = (InitHookLibDelegate)
+                                Marshal.GetDelegateForFunctionPointer(pFunc, typeof(InitHookLibDelegate));
+                        try {
+                            retcode = initialize();
+                        }
+                        catch(Exception e) {
+                            QTUtility2.MakeErrorLog(e, "");
+                        }
+
+                    }
+                }
+
+                if(retcode != 0) {
+                    QTUtility2.MakeErrorLog(null, "HookLib Initialize failed: " + retcode);
+
                     // TODO: Localize this
-                    MessageForm.Show(IntPtr.Zero, 
+                    MessageForm.Show(IntPtr.Zero,
                             "Error:  Unable to load QTTabBar hook library.  " +
-                            "Some features might not be functional.  " + 
+                            "Some features might not be functional.  " +
                             "You may need to reinstall the applicaiton.",
                             "Error", MessageBoxIcon.Hand, 30000, false, true);
                 }
@@ -710,8 +734,9 @@ namespace QTTabBarLib {
                     Marshal.GetDelegateForFunctionPointer(pFunc, typeof(InitShellBrowserHookDelegate));
             IntPtr pShellBrowser = Marshal.GetComInterfaceForObject(shellBrowser, typeof(IShellBrowser));
             if(pShellBrowser == IntPtr.Zero) return;
+            int retcode = -1;
             try {
-                fShellBrowserIsHooked = initShellBrowserHook(pShellBrowser);
+                retcode = initShellBrowserHook(pShellBrowser);
             }
             catch(Exception e) {
                 QTUtility2.MakeErrorLog(e, "");
@@ -719,13 +744,18 @@ namespace QTTabBarLib {
             finally {
                 Marshal.Release(pShellBrowser);
             }
-            if(!fShellBrowserIsHooked) {
+            if(retcode != 0) {
+                QTUtility2.MakeErrorLog(null, "InitShellBrowserHook failed: " + retcode);
+
                 // TODO: Localize this
                 MessageForm.Show(IntPtr.Zero,
                         "Error:  Unable to initialize QTTabBar hook library.  " +
                         "Some features might not be functional.  " +
                         "You may need to reinstall the applicaiton.",
                         "Error", MessageBoxIcon.Hand, 30000, false, true);
+            }
+            else {
+                fShellBrowserIsHooked = true;
             }
         }
 

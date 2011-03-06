@@ -28,9 +28,9 @@
 
 #define SFVM_LISTREFRESHED 17
 
-bool Initialize();
-bool Dispose();
-extern "C" __declspec(dllexport) bool InitShellBrowserHook(IShellBrowser* psb);
+extern "C" __declspec(dllexport) int Initialize();
+extern "C" __declspec(dllexport) int Dispose();
+extern "C" __declspec(dllexport) int InitShellBrowserHook(IShellBrowser* psb);
 
 // Function pointer types
 typedef HRESULT (WINAPI *COCREATEINSTANCE)(REFCLSID, LPUNKNOWN, DWORD, REFIID, LPVOID FAR*);
@@ -65,12 +65,10 @@ unsigned int WM_LISTREFRESHED;
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved) {
     switch (ul_reason_for_call) {
-        case DLL_PROCESS_ATTACH:
-            return Initialize();
-
         case DLL_PROCESS_DETACH:
             return Dispose();
 
+        case DLL_PROCESS_ATTACH:
         case DLL_THREAD_ATTACH:
         case DLL_THREAD_DETACH:
             break;
@@ -78,7 +76,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
     return true;
 }
 
-bool Initialize() {
+int Initialize() {
 
     // Register the messages.
     WM_REGISTERDRAGDROP = RegisterWindowMessageA("QTTabBar_RegisterDragDrop");
@@ -88,51 +86,42 @@ bool Initialize() {
     WM_LISTREFRESHED = RegisterWindowMessageA("QTTabBar_ListRefreshed");
 
     // Initialize MinHook.
-    if(MH_Initialize() != MH_OK) {
-        return false;
-    }
+    MH_STATUS ret = MH_Initialize();
+    if(ret != MH_OK) return ret;
 
     // Create and enable CoCreateInstance hook
-    if(MH_CreateHook(&CoCreateInstance, &DetourCoCreateInstance, reinterpret_cast<void**>(&fpCoCreateInstance)) != MH_OK) {
-        return false;
-    }
-    if(MH_EnableHook(&CoCreateInstance) != MH_OK) {
-        return false;
-    }
+    ret = MH_CreateHook(&CoCreateInstance, &DetourCoCreateInstance, reinterpret_cast<void**>(&fpCoCreateInstance));
+    if(ret != MH_OK) return ret;
+    ret = MH_EnableHook(&CoCreateInstance);
+    if(ret != MH_OK) return ret;
 
     // Create and enable RegisterDragDrop hook
-    if(MH_CreateHook(&RegisterDragDrop, &DetourRegisterDragDrop, reinterpret_cast<void**>(&fpRegisterDragDrop)) != MH_OK) {
-        return false;
-    }
-    if(MH_EnableHook(&RegisterDragDrop) != MH_OK) {
-        return false;
-    }
+    ret = MH_CreateHook(&RegisterDragDrop, &DetourRegisterDragDrop, reinterpret_cast<void**>(&fpRegisterDragDrop));
+    if(ret != MH_OK) return ret;
+    ret = MH_EnableHook(&RegisterDragDrop);
+    if(ret != MH_OK) return ret;
 
     // Create and enable SHCreateShellFolderView hook
-    if(MH_CreateHook(&SHCreateShellFolderView, &DetourSHCreateShellFolderView, reinterpret_cast<void**>(&fpSHCreateShellFolderView)) != MH_OK) {
-        return false;
-    }
-    if(MH_EnableHook(&SHCreateShellFolderView) != MH_OK) {
-        return false;
-    }
-    return true;
+    ret = MH_CreateHook(&SHCreateShellFolderView, &DetourSHCreateShellFolderView, reinterpret_cast<void**>(&fpSHCreateShellFolderView));
+    if(ret != MH_OK) return ret;
+    ret = MH_EnableHook(&SHCreateShellFolderView);
+    if(ret != MH_OK) return ret;
+    
+    return ret;
 }
 
-bool InitShellBrowserHook(IShellBrowser* psb) {
+int InitShellBrowserHook(IShellBrowser* psb) {
     // Hook the 11th entry in this IShellBrowser's VTable, which is BrowseObject
     void** vtable = *reinterpret_cast<void***>(psb);
-    if(MH_CreateHook(vtable[11], &DetourBrowseObject, reinterpret_cast<void**>(&fpBrowseObject)) != MH_OK) {
-        return false;
-    }
-    if(MH_EnableHook(vtable[11]) != MH_OK) {
-        return false;
-    }
-    return true;
+    MH_STATUS ret = MH_CreateHook(vtable[11], &DetourBrowseObject, reinterpret_cast<void**>(&fpBrowseObject));
+    if(ret != MH_OK)
+    MH_STATUS ret = MH_EnableHook(vtable[11]);
+    return ret;
 }
 
-bool Dispose() {
+int Dispose() {
     // Uninitialize MinHook.
-    return MH_Uninitialize() == MH_OK;
+    return MH_Uninitialize();
 }
 
 //////////////////////////////
@@ -155,6 +144,7 @@ HRESULT WINAPI DetourRegisterDragDrop(IN HWND hwnd, IN LPDROPTARGET pDropTarget)
     return fpRegisterDragDrop(hwnd, *ppDropTarget);
 }
 
+// TODO: Make thread safe
 HRESULT WINAPI DetourSHCreateShellFolderView(const SFV_CREATE* pcsfv, IShellView** ppsv) {
     // Hook the 3rd entry in this IShellFolderViewCB's VTable, which is MessageSFVCB
     void** vtable = *reinterpret_cast<void***>(pcsfv->psfvcb);
