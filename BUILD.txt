@@ -1,4 +1,4 @@
-Open the .sln in Visual Studio and select Build > Build Solution to compile QTTabBar.  If the compilation is successful, the Register project will automatically register the resulting binary with your computer.  Restart Explorer for the changes to take effect.  Beware, compiling this project will overwrite your original installation if you already have QTTabBar installed.
+Open the .sln in Visual Studio, select a configuration, and click Build > Build Solution to compile QTTabBar. The configurations Debug, Debug (No Plugins), and Release will also execute the Register script upon successful compilation, which will register the resulting binary with your computer.  Restart Explorer for the changes to take effect.  Beware, compiling these configurations will overwrite your original installation if you already have QTTabBar installed.
 
 You will need the Windows SDK in order to compile the C++ Hook DLL, and WiX 3.5 or higher to compile the installer.
 
