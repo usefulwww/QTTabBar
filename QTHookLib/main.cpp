@@ -63,6 +63,7 @@ unsigned int WM_BROWSEOBJECT;
 unsigned int WM_HEADERINALLVIEWS;
 unsigned int WM_LISTREFRESHED;
 
+
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved) {
     switch (ul_reason_for_call) {
         case DLL_PROCESS_DETACH:
@@ -77,6 +78,13 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 }
 
 int Initialize() {
+
+    volatile static long initialized;
+    if(InterlockedIncrement(&initialized) != 1) {
+        // Return if another thread has beaten us here.
+        initialized = 1;
+        return MH_OK;
+    }
 
     // Register the messages.
     WM_REGISTERDRAGDROP = RegisterWindowMessageA("QTTabBar_RegisterDragDrop");
@@ -111,6 +119,13 @@ int Initialize() {
 }
 
 int InitShellBrowserHook(IShellBrowser* psb) {
+    volatile static long initialized;
+    if(InterlockedIncrement(&initialized) != 1) {
+        // Return if another thread has beaten us here.
+        initialized = 1;
+        return MH_OK;
+    }
+
     // Hook the 11th entry in this IShellBrowser's VTable, which is BrowseObject
     void** vtable = *reinterpret_cast<void***>(psb);
     MH_STATUS ret = MH_CreateHook(vtable[11], &DetourBrowseObject, reinterpret_cast<void**>(&fpBrowseObject));
@@ -144,7 +159,7 @@ HRESULT WINAPI DetourRegisterDragDrop(IN HWND hwnd, IN LPDROPTARGET pDropTarget)
     return fpRegisterDragDrop(hwnd, *ppDropTarget);
 }
 
-// TODO: Make thread safe
+// TODO: This should have some way of reporting success or failure.
 HRESULT WINAPI DetourSHCreateShellFolderView(const SFV_CREATE* pcsfv, IShellView** ppsv) {
     // Hook the 3rd entry in this IShellFolderViewCB's VTable, which is MessageSFVCB
     void** vtable = *reinterpret_cast<void***>(pcsfv->psfvcb);
