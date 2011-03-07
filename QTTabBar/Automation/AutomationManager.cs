@@ -33,6 +33,7 @@ namespace QTTabBarLib.Automation {
         private IUIAutomation pAutomation;
         private Thread automationThread = new Thread(AutomationThreadEntry);
         private List<Worker> workerQueue = new List<Worker>();
+        private volatile bool killingThread;
         private volatile bool threadDying;
 
         public delegate T Query<out T>(AutomationElementFactory factory);
@@ -76,13 +77,8 @@ namespace QTTabBarLib.Automation {
             Guid riid = IID_IUIAutomation;
             object obj;
             PInvoke.CoCreateInstance(ref rclsid, IntPtr.Zero, 1, ref riid, out obj);
-            if(obj == null) return;
             pAutomation = obj as IUIAutomation;
-
-            lock(automationThread) {
-                automationThread.Start(this);
-                Monitor.Wait(automationThread);
-            }
+            automationThread.Start(this);
         }
 
         ~AutomationManager() {
@@ -92,8 +88,8 @@ namespace QTTabBarLib.Automation {
         public void Dispose() {
             if(automationThread.ThreadState != ThreadState.Stopped) {
                 lock(automationThread) {
+                    killingThread = true;
                     while(!threadDying) {
-                        workerQueue.Clear();
                         Monitor.PulseAll(automationThread);
                         Monitor.Wait(automationThread);
                     }
@@ -109,14 +105,21 @@ namespace QTTabBarLib.Automation {
         private static void AutomationThreadEntry(object param) {
             AutomationManager manager = (AutomationManager)param;
             lock(manager.automationThread) {
-                while(true) {
-                    Monitor.PulseAll(manager.automationThread);
-                    Monitor.Wait(manager.automationThread);
-                    if(manager.workerQueue.Count == 0) break;
+                // This if statement addresses a weird corner-case:
+                // what if DoQuery or Dispose somehow got the lock
+                // before we did?  If so, we can't Wait here, or 
+                // we'll deadlock.
+                if(manager.workerQueue.Count == 0 && !manager.killingThread) {
+                    Monitor.Wait(manager.automationThread);   
+                }
+
+                while(!manager.killingThread) {
                     foreach(Worker worker in manager.workerQueue) {
                         worker.DoWork();    
                     }
                     manager.workerQueue.Clear();
+                    Monitor.PulseAll(manager.automationThread);
+                    Monitor.Wait(manager.automationThread);
                 }
                 manager.threadDying = true;
                 Monitor.PulseAll(manager.automationThread);
