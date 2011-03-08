@@ -29,7 +29,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCopyright("Copyright (C)  2007-2010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyFileVersion("1.5.0.0")]
+[assembly: AssemblyFileVersion("2.0.0.0")]
 
 // ComVisible を false に設定すると、このアセンブリ内の型は COM コンポーネントには 
 // 参照不可能になります。COM からこのアセンブリ内の型にアクセスする場合は、 
