@@ -78,16 +78,20 @@
                             <RegistryValue Name="{d2bf470e-ed1c-487f-a333-2bd8835eb6ce}" Value="QTTabBar" Type="string" Action="write" />
                             <RegistryValue Name="{d2bf470e-ed1c-487f-a666-2bd8835eb6ce}" Value="QTButtonBar" Type="string" Action="write" />
                         </RegistryKey>
+                    </Component>
+                    <Component Id="HookLibrary32" Win64="yes" Guid="27af1a85-9a06-4c79-bdeb-d73fd4bd9574" DisableRegistryReflection="yes">
+                        <File Id="f5" Name="QTHookLib32.dll" Source="..\QTHookLib\bin\Release\QTHookLib32.dll" KeyPath="yes" />
+                    </Component>
+                    <Component Id="HookLibrary64" Win64="yes" Guid="27af1a85-9a07-4c79-bdeb-d73fd4bd9574" DisableRegistryReflection="yes">
+                        <File Id="f6" Name="QTHookLib64.dll" Source="..\QTHookLib\bin\Release\QTHookLib64.dll" KeyPath="yes" />
+                    </Component>
+                    <Component Id="InstallDate" Win64="yes" Guid="27af1a85-9a08-4c79-bdeb-d73fd4bd9574" DisableRegistryReflection="yes">
                         <RegistryKey Root="HKLM" Key="Software\Quizo\QTTabBar" Action="createAndRemoveOnUninstall">
-                            <RegistryValue Name="InstallDate" Value="[Date] [Time]" Type="string" Action="write" />
+                            <RegistryValue Name="InstallDate" Value="[Date] [Time]" Type="string" Action="write" KeyPath ="yes" />
                             <RegistryValue Name="InstallPath" Value="[INSTALLLOCATION]" Type="string" Action="write" />
                         </RegistryKey>
                     </Component>
-                    <Component Id="HookLibrary" Win64="yes" Guid="27af1a85-9a06-4c79-bdeb-d73fd4bd9574" DisableRegistryReflection="yes">
-                        <File Id="f5" Name="QTHookLib32.dll" Source="..\QTHookLib\bin\Release\QTHookLib32.dll"/>
-                        <File Id="f6" Name="QTHookLib64.dll" Source="..\QTHookLib\bin\Release\QTHookLib64.dll"/>
-                    </Component>
-
+                    
                     <!-- COM Objects -->
                     <?foreach compName in QTTabBarClass;QTButtonBar;QTCoTaskBarClass;AutoLoader ?>
                         <?if $(var.compName) = QTTabBarClass?>
@@ -137,12 +141,15 @@
         </Directory>
 
         <Feature Id="ProductFeature" Title="QTTabBar" Level="1">
-            <!-- Files -->
+            <!-- Files and RegKeys -->
             <ComponentRef Id="ShellLibrary" />
             <ComponentRef Id="BandObjectLib" />
             <ComponentRef Id="QTPluginLib" />
             <ComponentRef Id="QTTabBar" />
-            <ComponentRef Id="HookLibrary" />
+            <ComponentRef Id="HookLibrary32" />
+            <ComponentRef Id="HookLibrary64" />
+            <ComponentRef Id="InstallDate" />
+            
             <!-- COM Objects -->
             <ComponentRef Id="QTTabBarClass" />
             <ComponentRef Id="QTCoTaskBarClass" />
