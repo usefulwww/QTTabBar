@@ -73,11 +73,6 @@
                         <File Id="f4" Assembly=".net" KeyPath="yes" Name="QTTabBar.dll" Source="..\QTTabBar\bin\Release\QTTabBar.dll">
                             <netfx:NativeImage Id="ngen_QTTabBar.dll" Priority="0" Platform="all" />
                         </File>
-                        <RegistryKey Root="HKLM" Key="Software\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\{d2bf470e-ed1c-487f-a777-2bd8835eb6ce}" Action="createAndRemoveOnUninstall" />
-                        <RegistryKey Root="HKLM" Key="Software\Microsoft\Internet Explorer\Toolbar" Action="create" >
-                            <RegistryValue Name="{d2bf470e-ed1c-487f-a333-2bd8835eb6ce}" Value="QTTabBar" Type="string" Action="write" />
-                            <RegistryValue Name="{d2bf470e-ed1c-487f-a666-2bd8835eb6ce}" Value="QTButtonBar" Type="string" Action="write" />
-                        </RegistryKey>
                     </Component>
                     <Component Id="HookLibrary32" Win64="yes" Guid="27af1a85-9a06-4c79-bdeb-d73fd4bd9574" DisableRegistryReflection="yes">
                         <File Id="f5" Name="QTHookLib32.dll" Source="..\QTHookLib\bin\Release\QTHookLib32.dll" KeyPath="yes" />
@@ -85,7 +80,24 @@
                     <Component Id="HookLibrary64" Win64="yes" Guid="27af1a85-9a07-4c79-bdeb-d73fd4bd9574" DisableRegistryReflection="yes">
                         <File Id="f6" Name="QTHookLib64.dll" Source="..\QTHookLib\bin\Release\QTHookLib64.dll" KeyPath="yes" />
                     </Component>
-                    <Component Id="InstallDate" Win64="yes" Guid="27af1a85-9a08-4c79-bdeb-d73fd4bd9574" DisableRegistryReflection="yes">
+                    
+                    <!-- Reg Keys-->
+                    <Component Id="QTTabBarReg" Win64="yes" Guid="27af1a85-9a08-4c79-bdeb-d73fd4bd9574" DisableRegistryReflection="yes">
+                        <RegistryKey Root="HKLM" Key="Software\Microsoft\Internet Explorer\Toolbar" Action="create" >
+                            <RegistryValue Name="{d2bf470e-ed1c-487f-a333-2bd8835eb6ce}" Value="QTTabBar" Type="string" Action="write" KeyPath="yes" />
+                        </RegistryKey>
+                    </Component>
+                    <Component Id="QTButtonBarReg" Win64="yes" Guid="27af1a85-9a09-4c79-bdeb-d73fd4bd9574" DisableRegistryReflection="yes">
+                        <RegistryKey Root="HKLM" Key="Software\Microsoft\Internet Explorer\Toolbar" Action="create" >
+                            <RegistryValue Name="{d2bf470e-ed1c-487f-a666-2bd8835eb6ce}" Value="QTButtonBar" Type="string" Action="write" KeyPath="yes"/>
+                        </RegistryKey>
+                    </Component>
+                    <Component Id="AutoLoaderReg" Win64="yes" Guid="27af1a85-9a10-4c79-bdeb-d73fd4bd9574" DisableRegistryReflection="yes">
+                        <RegistryKey Root="HKLM" Key="Software\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\{d2bf470e-ed1c-487f-a777-2bd8835eb6ce}" Action="createAndRemoveOnUninstall">
+                            <RegistryValue Value="QTTabBar AutoLoader" Type="string" Action="write" KeyPath="yes"/>
+                        </RegistryKey>
+                    </Component>
+                    <Component Id="InstallDate" Win64="yes" Guid="27af1a85-9a11-4c79-bdeb-d73fd4bd9574" DisableRegistryReflection="yes">
                         <RegistryKey Root="HKLM" Key="Software\Quizo\QTTabBar" Action="createAndRemoveOnUninstall">
                             <RegistryValue Name="InstallDate" Value="[Date] [Time]" Type="string" Action="write" KeyPath ="yes" />
                             <RegistryValue Name="InstallPath" Value="[INSTALLLOCATION]" Type="string" Action="write" />
@@ -141,13 +153,18 @@
         </Directory>
 
         <Feature Id="ProductFeature" Title="QTTabBar" Level="1">
-            <!-- Files and RegKeys -->
+            <!-- Files -->
             <ComponentRef Id="ShellLibrary" />
             <ComponentRef Id="BandObjectLib" />
             <ComponentRef Id="QTPluginLib" />
             <ComponentRef Id="QTTabBar" />
             <ComponentRef Id="HookLibrary32" />
             <ComponentRef Id="HookLibrary64" />
+
+            <!-- RegKeys -->
+            <ComponentRef Id="QTTabBarReg" />
+            <ComponentRef Id="QTButtonBarReg" />
+            <ComponentRef Id="AutoLoaderReg" />
             <ComponentRef Id="InstallDate" />
             
             <!-- COM Objects -->
