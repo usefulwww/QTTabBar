@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using BandObjectLib;
@@ -279,7 +280,7 @@ namespace QTTabBarLib {
                         }
                         using(IDLWrapper wrapper2 = ILAppend(wrapper.PIDL)) {
                             path = wrapper2.ParseName;
-                            if(!string.IsNullOrEmpty(path)) {
+                            if(!string.IsNullOrEmpty(path) && path.IndexOfAny(Path.GetInvalidPathChars()) < 0) {
                                 return true;
                             }
                             path = null;
