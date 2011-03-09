@@ -30,7 +30,7 @@ using System.Reflection;
 [assembly: AssemblyCopyright("Copyright (C)  2007-2010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyFileVersion("1.5.0.0")]
+[assembly: AssemblyFileVersion("2.0.0.0")]
 //
 // Version information for an assembly consists of the following four values:
 //
