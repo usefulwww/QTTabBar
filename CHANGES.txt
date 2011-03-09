@@ -1,3 +1,15 @@
+======= 1.5.0.0 Beta 1 =======
+Bugs Fixed:
+    Minor tweaks, fixes, and polish all around.
+    Fixed crash when uninstalling plugins.
+    Installer installs for all users now, not just a single user.
+    Fixed Subdirectory Tip display in details mode on Windows XP (for good this time).
+    Fixed bug where OK/Cancel buttons in Control Panel windows don’t work.
+    Moved the Exception log from the Desktop to %APPDATA%\QTTabBar.
+
+New Features:
+    Ctrl-Click on the Folder Tree now opens a new tab.
+
 ======= 1.5.0.0 Alpha 5 =======
 Bugs Fixed:
     Many random crashes involving navigation fixed
