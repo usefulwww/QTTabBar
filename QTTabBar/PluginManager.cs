@@ -321,26 +321,25 @@ namespace QTTabBarLib {
             foreach(PluginInformation information in pa.PluginInformations) {
                 if(!information.Enabled) {
                     UnloadPluginInstance(information.PluginID, EndCode.Unloaded, fStatic);
-                    continue;
                 }
-                if(information.PluginType == PluginType.Background) {
-                    if(!PluginInstantialized(information.PluginID)) {
-                        Plugin plugin = Load(information, pa);
-                        if(plugin != null) {
-                            if(plgIFilter == null) {
-                                plgIFilter = plugin.Instance as IFilter;
-                            }
-                            if(plgFilterCore == null) {
-                                plgFilterCore = plugin.Instance as IFilterCore;
-                            }
+                else if(information.PluginType == PluginType.Background) {
+                    Plugin plugin;
+                    if(!TryGetPlugin(information.PluginID, out plugin)) {
+                        plugin = Load(information, pa);
+                    }
+                    if(plugin != null) {
+                        if(plgIFilter == null) {
+                            plgIFilter = plugin.Instance as IFilter;
                         }
-                        else {
-                            information.Enabled = false;
+                        if(plgFilterCore == null) {
+                            plgFilterCore = plugin.Instance as IFilterCore;
                         }
                     }
-                    continue;
+                    else {
+                        information.Enabled = false;
+                    }
                 }
-                if(information.PluginType == PluginType.BackgroundMultiple) {
+                else if(information.PluginType == PluginType.BackgroundMultiple) {
                     if(!PluginInstantialized(information.PluginID) && (Load(information, pa) == null)) {
                         information.Enabled = false;
                     }
