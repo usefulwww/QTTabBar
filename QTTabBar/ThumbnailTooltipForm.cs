@@ -418,8 +418,8 @@ namespace QTTabBarLib {
                     encoding = PluginManager.IEncodingDetector.GetEncoding(ref buffer);
                 }
                 catch(Exception exception2) {
-                    PluginManager.HandlePluginException(exception2, IntPtr.Zero, "Unknown IEncodingDetector", "Getting Enconding object.");
-                    QTUtility2.MakeErrorLog(exception2, null);
+                    PluginManager.HandlePluginException(exception2, IntPtr.Zero, "Unknown IEncodingDetector", "Getting Encoding object.");
+                    QTUtility2.MakeErrorLog(exception2);
                 }
             }
             if(encoding == null) {
