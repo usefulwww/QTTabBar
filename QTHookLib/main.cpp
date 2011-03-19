@@ -129,9 +129,8 @@ int InitShellBrowserHook(IShellBrowser* psb) {
     // Hook the 11th entry in this IShellBrowser's VTable, which is BrowseObject
     void** vtable = *reinterpret_cast<void***>(psb);
     MH_STATUS ret = MH_CreateHook(vtable[11], &DetourBrowseObject, reinterpret_cast<void**>(&fpBrowseObject));
-    if(ret != MH_OK)
-    MH_STATUS ret = MH_EnableHook(vtable[11]);
-    return ret;
+    if(ret != MH_OK) return ret;
+    return MH_EnableHook(vtable[11]);
 }
 
 int Dispose() {
