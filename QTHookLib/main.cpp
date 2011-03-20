@@ -128,7 +128,7 @@ int Initialize() {
     if(ret != MH_OK) return ret;
 
     // Create and enable the UiaReturnRawElementProvider hook (maybe)
-    hModAutomation = LoadLibraryA("Uiautomationcore.dll");
+    hModAutomation = LoadLibraryA("UIAutomationCore.dll");
     if(hModAutomation != NULL) {
         fpRealRREP = GetProcAddress(hModAutomation, "UiaReturnRawElementProvider");
         if(fpRealRREP != NULL) {
@@ -173,6 +173,9 @@ int Dispose() {
 // Detour Functions
 //////////////////////////////
 
+// The purpose of this hook is to intercept the creation of the INameSpaceTreeControl object, and 
+// send a reference to the control to QTTabBar.  We can use this reference to hit test the
+// control, which is how opening new tabs from middle-click works.
 HRESULT WINAPI DetourCoCreateInstance(REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWORD dwClsContext, REFIID riid, LPVOID FAR* ppv) {
     HRESULT ret = fpCoCreateInstance(rclsid, pUnkOuter, dwClsContext, riid, ppv);
     if(SUCCEEDED(ret) && (
@@ -183,12 +186,15 @@ HRESULT WINAPI DetourCoCreateInstance(REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWOR
     return ret;
 }
 
+// The purpose of this hook is to allow QTTabBar to insert its IDropTarget wrapper in place of
+// the real IDropTarget.  This is much more reliable than using the GetProp method.
 HRESULT WINAPI DetourRegisterDragDrop(IN HWND hwnd, IN LPDROPTARGET pDropTarget) {
     LPDROPTARGET* ppDropTarget = &pDropTarget;
     SendMessage(hwnd, WM_REGISTERDRAGDROP, reinterpret_cast<WPARAM>(ppDropTarget), NULL);
     return fpRegisterDragDrop(hwnd, *ppDropTarget);
 }
 
+// The purpose of this hook is just to set other hooks.  It is disabled once the other hooks are set.
 // TODO: This should have some way of reporting success or failure.
 HRESULT WINAPI DetourSHCreateShellFolderView(const SFV_CREATE* pcsfv, IShellView** ppsv) {
     // Hook the 3rd entry in this IShellFolderViewCB's VTable, which is MessageSFVCB
@@ -216,6 +222,8 @@ HRESULT WINAPI DetourSHCreateShellFolderView(const SFV_CREATE* pcsfv, IShellView
     return ret;
 }
 
+// The purpose of this hook is to work around Explorer's BeforeNavigate2 bug.  It allows QTTabBar
+// to be notified of navigations before they occur and have the chance to veto them.
 HRESULT WINAPI DetourBrowseObject(IShellBrowser* _this, PCUIDLIST_RELATIVE pidl, UINT wFlags) {
     HWND hwnd;
     LRESULT result = 0;
@@ -227,6 +235,8 @@ HRESULT WINAPI DetourBrowseObject(IShellBrowser* _this, PCUIDLIST_RELATIVE pidl,
     return result == 0 ? fpBrowseObject(_this, pidl, wFlags) : S_FALSE;
 }
 
+// The purpose of this hook is to enable the Header In All Views functionality, if the user has 
+// opted to use it.
 HRESULT WINAPI DetourCreateViewWindow3(IShellView3* _this, IShellBrowser* psbOwner, IShellView* psvPrev, SV3CVW3_FLAGS dwViewFlags, FOLDERFLAGS dwMask, FOLDERFLAGS dwFlags, FOLDERVIEWMODE fvMode, const SHELLVIEWID* pvid, const RECT* prcView, HWND* phwndView) {
     HWND hwnd;
     LRESULT result = 0;
@@ -241,6 +251,8 @@ HRESULT WINAPI DetourCreateViewWindow3(IShellView3* _this, IShellBrowser* psbOwn
     return fpCreateViewWindow3(_this, psbOwner, psvPrev, dwViewFlags, dwMask, dwFlags, fvMode, pvid, prcView, phwndView);
 }
 
+// The purpose of this hook is to notify QTTabBar whenever an Explorer refresh occurs.  This allows
+// the search box to be cleared.
 HRESULT WINAPI DetourMessageSFVCB(IShellFolderViewCB* _this, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     if(uMsg == SFVM_LISTREFRESHED && wParam != 0) {
         PostThreadMessage(GetCurrentThreadId(), WM_LISTREFRESHED, NULL, NULL);
@@ -248,6 +260,7 @@ HRESULT WINAPI DetourMessageSFVCB(IShellFolderViewCB* _this, UINT uMsg, WPARAM w
     return fpMessageSFVCB(_this, uMsg, wParam, lParam);
 }
 
+// The purpose of this hook is just to set another hook.  It is disabled once the other hook is set.
 LRESULT WINAPI DetourUiaReturnRawElementProvider(HWND hwnd, WPARAM wParam, LPARAM lParam, IRawElementProviderSimple* el) {
     if(fpQueryInterface == NULL && (LONG)lParam == OBJID_CLIENT && SendMessage(hwnd, WM_ISITEMSVIEW, 0, 0) == 1) {
         // Hook the 0th entry in UIItemsViewElementProvider's VTable, which is QueryInterface
@@ -264,6 +277,7 @@ LRESULT WINAPI DetourUiaReturnRawElementProvider(HWND hwnd, WPARAM wParam, LPARA
     return ret;
 }
 
+// The purpose of this hook is to work around kb2462524, aka the scrolling lag bug.
 HRESULT WINAPI DetourQueryInterface(IRawElementProviderSimple* _this, REFIID riid, void** ppvObject) {
     return IsEqualIID(riid, __uuidof(IRawElementProviderAdviseEvents))
             ? E_NOINTERFACE
