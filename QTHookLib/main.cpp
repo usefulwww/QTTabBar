@@ -18,6 +18,7 @@
 #include <Windows.h>
 #include <ShObjIdl.h>
 #include <Shlobj.h>
+#include <UIAutomationCore.h>
 #include "MinHook.h"
 
 #if defined _M_X64
@@ -39,6 +40,8 @@ typedef HRESULT (WINAPI *SHCREATESHELLFOLDERVIEW)(const SFV_CREATE*, IShellView*
 typedef HRESULT (WINAPI *BROWSEOBJECT)(IShellBrowser*, PCUIDLIST_RELATIVE, UINT);
 typedef HRESULT (WINAPI *CREATEVIEWWINDOW3)(IShellView3*, IShellBrowser*, IShellView*, SV3CVW3_FLAGS, FOLDERFLAGS, FOLDERFLAGS, FOLDERVIEWMODE, const SHELLVIEWID*, const RECT*, HWND*);
 typedef HRESULT (WINAPI *MESSAGESFVCB)(IShellFolderViewCB*, UINT, WPARAM, LPARAM);
+typedef LRESULT (WINAPI *UIARETURNRAWELEMENTPROVIDER)(HWND, WPARAM, LPARAM, IRawElementProviderSimple*);
+typedef HRESULT (WINAPI *QUERYINTERFACE)(IRawElementProviderSimple*, REFIID, void**);
 
 // Detour functions
 HRESULT WINAPI DetourCoCreateInstance(REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWORD dwClsContext, REFIID riid, LPVOID FAR* ppv);
@@ -47,6 +50,8 @@ HRESULT WINAPI DetourSHCreateShellFolderView(const SFV_CREATE* pcsfv, IShellView
 HRESULT WINAPI DetourBrowseObject(IShellBrowser* _this, PCUIDLIST_RELATIVE pidl, UINT wFlags);
 HRESULT WINAPI DetourCreateViewWindow3(IShellView3* _this, IShellBrowser* psbOwner, IShellView* psvPrev, SV3CVW3_FLAGS dwViewFlags, FOLDERFLAGS dwMask, FOLDERFLAGS dwFlags, FOLDERVIEWMODE fvMode, const SHELLVIEWID* pvid, const RECT* prcView, HWND* phwndView);
 HRESULT WINAPI DetourMessageSFVCB(IShellFolderViewCB* _this, UINT uMsg, WPARAM wParam, LPARAM lParam);
+LRESULT WINAPI DetourUiaReturnRawElementProvider(HWND hwnd, WPARAM wParam, LPARAM lParam, IRawElementProviderSimple* el);
+HRESULT WINAPI DetourQueryInterface(IRawElementProviderSimple* _this, REFIID riid, void** ppvObject);
 
 // Pointers to original functions
 COCREATEINSTANCE fpCoCreateInstance = NULL;
@@ -55,6 +60,8 @@ SHCREATESHELLFOLDERVIEW fpSHCreateShellFolderView = NULL;
 BROWSEOBJECT fpBrowseObject = NULL;
 CREATEVIEWWINDOW3 fpCreateViewWindow3 = NULL;
 MESSAGESFVCB fpMessageSFVCB = NULL;
+UIARETURNRAWELEMENTPROVIDER fpUiaReturnRawElementProvider = NULL;
+QUERYINTERFACE fpQueryInterface = NULL;
 
 // Messages
 unsigned int WM_REGISTERDRAGDROP;
@@ -62,7 +69,11 @@ unsigned int WM_NEWTREECONTROL;
 unsigned int WM_BROWSEOBJECT;
 unsigned int WM_HEADERINALLVIEWS;
 unsigned int WM_LISTREFRESHED;
+unsigned int WM_ISITEMSVIEW;
 
+// Other stuff
+HMODULE hModAutomation = NULL;
+FARPROC fpRealRREP = NULL;
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved) {
     switch (ul_reason_for_call) {
@@ -92,6 +103,7 @@ int Initialize() {
     WM_BROWSEOBJECT = RegisterWindowMessageA("QTTabBar_BrowseObject");
     WM_HEADERINALLVIEWS = RegisterWindowMessageA("QTTabBar_HeaderInAllViews");
     WM_LISTREFRESHED = RegisterWindowMessageA("QTTabBar_ListRefreshed");
+    WM_ISITEMSVIEW = RegisterWindowMessageA("QTTabBar_IsItemsView");
 
     // Initialize MinHook.
     MH_STATUS ret = MH_Initialize();
@@ -114,6 +126,18 @@ int Initialize() {
     if(ret != MH_OK) return ret;
     ret = MH_EnableHook(&SHCreateShellFolderView);
     if(ret != MH_OK) return ret;
+
+    // Create and enable the UiaReturnRawElementProvider hook (maybe)
+    hModAutomation = LoadLibraryA("Uiautomationcore.dll");
+    if(hModAutomation != NULL) {
+        fpRealRREP = GetProcAddress(hModAutomation, "UiaReturnRawElementProvider");
+        if(fpRealRREP != NULL) {
+            ret = MH_CreateHook(fpRealRREP, &DetourUiaReturnRawElementProvider, reinterpret_cast<void**>(&fpUiaReturnRawElementProvider));
+            if(ret != MH_OK) return ret;
+            ret = MH_EnableHook(fpRealRREP);
+            if(ret != MH_OK) return ret;
+        }
+    }
     
     return ret;
 }
@@ -135,7 +159,14 @@ int InitShellBrowserHook(IShellBrowser* psb) {
 
 int Dispose() {
     // Uninitialize MinHook.
-    return MH_Uninitialize();
+    MH_Uninitialize();
+
+    // Free the Automation library
+    if(hModAutomation != NULL) {
+        FreeLibrary(hModAutomation);
+    }
+
+    return S_OK;
 }
 
 //////////////////////////////
@@ -215,4 +246,26 @@ HRESULT WINAPI DetourMessageSFVCB(IShellFolderViewCB* _this, UINT uMsg, WPARAM w
         PostThreadMessage(GetCurrentThreadId(), WM_LISTREFRESHED, NULL, NULL);
     }
     return fpMessageSFVCB(_this, uMsg, wParam, lParam);
+}
+
+LRESULT WINAPI DetourUiaReturnRawElementProvider(HWND hwnd, WPARAM wParam, LPARAM lParam, IRawElementProviderSimple* el) {
+    if(fpQueryInterface == NULL && (LONG)lParam == OBJID_CLIENT && SendMessage(hwnd, WM_ISITEMSVIEW, 0, 0) == 1) {
+        // Hook the 0th entry in UIItemsViewElementProvider's VTable, which is QueryInterface
+        void** vtable = *reinterpret_cast<void***>(el);
+        if(MH_CreateHook(vtable[0], &DetourQueryInterface, reinterpret_cast<void**>(&fpQueryInterface)) == MH_OK) {
+            MH_EnableHook(vtable[0]);
+        }
+    }
+    LRESULT ret = fpUiaReturnRawElementProvider(hwnd, wParam, lParam, el);
+    if(fpQueryInterface != NULL) {
+        // Disable this hook, no need for it anymore.
+        MH_DisableHook(fpRealRREP);
+    }
+    return ret;
+}
+
+HRESULT WINAPI DetourQueryInterface(IRawElementProviderSimple* _this, REFIID riid, void** ppvObject) {
+    return IsEqualIID(riid, __uuidof(IRawElementProviderAdviseEvents))
+            ? E_NOINTERFACE
+            : fpQueryInterface(_this, riid, ppvObject);
 }

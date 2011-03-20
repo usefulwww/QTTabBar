@@ -292,6 +292,10 @@ namespace QTTabBarLib {
             if(msg.Msg == WM_AFTERPAINT) {
                 RefreshCache();
             }
+            else if(msg.Msg == WM_ISITEMSVIEW) {
+                msg.Result = (IntPtr)1;
+                return true;
+            }
 
             if(base.ListViewController_MessageCaptured(ref msg)) {
                 return true;

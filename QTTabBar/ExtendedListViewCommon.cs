@@ -57,6 +57,7 @@ namespace QTTabBarLib {
         protected static readonly UInt32 WM_AFTERPAINT = PInvoke.RegisterWindowMessage("QTTabBar_AfterPaint");
         protected static readonly UInt32 WM_REMOTEDISPOSE = PInvoke.RegisterWindowMessage("QTTabBar_RemoteDispose");
         protected static readonly UInt32 WM_REGISTERDRAGDROP = PInvoke.RegisterWindowMessage("QTTabBar_RegisterDragDrop");
+        protected static readonly UInt32 WM_ISITEMSVIEW = PInvoke.RegisterWindowMessage("QTTabBar_IsItemsView");
 
         protected NativeWindowController ListViewController;
         protected NativeWindowController ShellViewController;
