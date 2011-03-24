@@ -69,6 +69,7 @@ namespace QTTabBarLib {
         private static bool fInitialized;
         private readonly bool fIsFirstLoad;
         private volatile bool FirstNavigationCompleted;
+        private bool fAutoNavigating;
         private bool fNavigatedByTabSelection;
         private bool fNowInTray;
         private bool fNowQuitting;
@@ -239,7 +240,7 @@ namespace QTTabBarLib {
                                 using(IDLWrapper wrapper = new IDLWrapper(str3)) {
                                     if(wrapper.Available) {
                                         QTabItem tabPage = new QTabItem(QTUtility2.MakePathDisplayText(str3, false), str3, tabControl1);
-                                        tabPage.NavigatedTo(str3, wrapper.IDL, -1);
+                                        tabPage.NavigatedTo(str3, wrapper.IDL, -1, false);
                                         tabPage.ToolTipText = QTUtility2.MakePathDisplayText(str3, true);
                                         tabPage.UnderLine = true;
                                         tabControl1.TabPages.Add(tabPage);
@@ -327,10 +328,11 @@ namespace QTTabBarLib {
         // This function is used as a more available version of BeforeNavigate2.
         // Return true to suppress the navigation.  Target IDL should not be relied
         // upon; it's not guaranteed to be accurate.
-        private bool BeforeNavigate(IDLWrapper target) {
+        private bool BeforeNavigate(IDLWrapper target, bool autonav) {
             if(!IsShown) return false;
             HideSubDirTip_Tab_Menu();
             NowTabDragging = false;
+            fAutoNavigating = autonav;
             if(!NavigatedByCode) {
                 SaveSelectedItems(CurrentTab);
             }
@@ -771,7 +773,7 @@ namespace QTTabBarLib {
             AddInsertTab(item);
             using(IDLWrapper wrapper = new IDLWrapper(log.IDL)) {
                 if(wrapper.Available) {
-                    item.NavigatedTo(wrapper.Path, wrapper.IDL, log.Hash);
+                    item.NavigatedTo(wrapper.Path, wrapper.IDL, log.Hash, false);
                 }
             }
             tabControl1.SelectTab(item);
@@ -791,7 +793,7 @@ namespace QTTabBarLib {
             }
             if(optionURL != null) {
                 using(IDLWrapper wrapper = new IDLWrapper(optionURL)) {
-                    item.NavigatedTo(optionURL, wrapper.IDL, -1);
+                    item.NavigatedTo(optionURL, wrapper.IDL, -1, false);
                 }
             }
             if(fSelect) {
@@ -1581,7 +1583,7 @@ namespace QTTabBarLib {
         private QTabItem CreateNewTab(IDLWrapper idlw) {
             string path = idlw.Path;
             QTabItem tab = new QTabItem(QTUtility2.MakePathDisplayText(path, false), path, tabControl1);
-            tab.NavigatedTo(path, idlw.IDL, -1);
+            tab.NavigatedTo(path, idlw.IDL, -1, false);
             tab.ToolTipText = QTUtility2.MakePathDisplayText(path, true);
             AddInsertTab(tab);
             return tab;
@@ -2058,7 +2060,7 @@ namespace QTTabBarLib {
                             }
                         }
                         if(!NavigatedByCode) {
-                            CurrentTab.NavigatedTo(CurrentAddress, idl, hash);
+                            CurrentTab.NavigatedTo(CurrentAddress, idl, hash, fAutoNavigating);
                         }
                     }
                     SyncTravelState();
@@ -2154,8 +2156,9 @@ namespace QTTabBarLib {
                     if(msg.LParam != IntPtr.Zero) {
                         pidl = PInvoke.ILClone(msg.LParam);
                     }
+                    bool autonav = (flags & 0x100 /* SBSP_AUTONAVIGATE */) != 0;
                     using(IDLWrapper wrapper = new IDLWrapper(pidl)) {
-                        msg.Result = (IntPtr)(BeforeNavigate(wrapper) ? 1 : 0);
+                        msg.Result = (IntPtr)(BeforeNavigate(wrapper, autonav) ? 1 : 0);
                     }
                 }
                 return true;
@@ -5660,7 +5663,7 @@ namespace QTTabBarLib {
                             return;
                         }
                         NowTabCloned = targetPath == CurrentAddress;
-                        ContextMenuedTab.NavigatedTo(targetPath, null, -1);
+                        ContextMenuedTab.NavigatedTo(targetPath, null, -1, false);
                         tabControl1.SelectTab(ContextMenuedTab);
                     }
                     return;
@@ -7010,7 +7013,7 @@ namespace QTTabBarLib {
                     return false;
                 }
                 QTabItem tab = new QTabItem(QTUtility2.MakePathDisplayText(address.Path, false), address.Path, tabBar.tabControl1);
-                tab.NavigatedTo(address.Path, address.ITEMIDLIST, -1);
+                tab.NavigatedTo(address.Path, address.ITEMIDLIST, -1, false);
                 tab.ToolTipText = QTUtility2.MakePathDisplayText(address.Path, true);
                 tab.TabLocked = fLocked;
                 if(index < 0) {

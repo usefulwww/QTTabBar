@@ -24,10 +24,12 @@ namespace QTTabBarLib {
         public string Path;
         public byte[] IDL;
         public int Hash;
-        public LogData(string path, byte[] idl, int hash) {
+        public bool AutoNav;
+        public LogData(string path, byte[] idl, int hash, bool autoNav) {
             Path = path;
             IDL = idl;
             Hash = hash;
+            AutoNav = autoNav;
         }
 
         public bool Equals(LogData other) {

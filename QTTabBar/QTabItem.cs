@@ -180,11 +180,14 @@ namespace QTTabBarLib {
             return data;
         }
 
-        public void NavigatedTo(string path, byte[] idl, int hash) {
+        public void NavigatedTo(string path, byte[] idl, int hash, bool autoNav) {
             if((idl == null) || (idl.Length == 0)) {
                 idl = ShellMethods.GetIDLData(path);
             }
-            stckHistoryBackward.Push(new LogData(path, idl, hash));
+            if(autoNav && stckHistoryBackward.Count > 0 && stckHistoryBackward.Peek().AutoNav) {
+                stckHistoryBackward.Pop();
+            }
+            stckHistoryBackward.Push(new LogData(path, idl, hash, autoNav));
             lstHistoryBranches.AddRange(stckHistoryForward.Except(lstHistoryBranches));
             foreach(LogData data2 in stckHistoryBackward) {
                 lstHistoryBranches.Remove(data2);
