@@ -27,7 +27,11 @@
     #pragma comment(lib, "libMinHook.x86.lib")
 #endif
 
-#define SFVM_LISTREFRESHED 17
+// Hook declaration macro
+#define DECLARE_HOOK(ret, name, params)                                                 \
+        typedef ret (WINAPI *__TYPE__##name)params; /* Function pointer type        */  \
+        ret WINAPI Detour##name params;             /* Detour function              */  \
+        __TYPE__##name fp##name = NULL;             /* Pointer to original function */  
 
 extern "C" __declspec(dllexport) int Initialize();
 extern "C" __declspec(dllexport) int Dispose();
@@ -45,38 +49,16 @@ public:
 MIDL_INTERFACE("3050F679-98B5-11CF-BB82-00AA00BDCE0B")
 ITravelLogEx : public IUnknown {};
 
-// Function pointer types
-typedef HRESULT (WINAPI *COCREATEINSTANCE)(REFCLSID, LPUNKNOWN, DWORD, REFIID, LPVOID FAR*);
-typedef HRESULT (WINAPI *REGISTERDRAGDROP)(HWND, LPDROPTARGET);
-typedef HRESULT (WINAPI *SHCREATESHELLFOLDERVIEW)(const SFV_CREATE*, IShellView**);
-typedef HRESULT (WINAPI *BROWSEOBJECT)(IShellBrowser*, PCUIDLIST_RELATIVE, UINT);
-typedef HRESULT (WINAPI *CREATEVIEWWINDOW3)(IShellView3*, IShellBrowser*, IShellView*, SV3CVW3_FLAGS, FOLDERFLAGS, FOLDERFLAGS, FOLDERVIEWMODE, const SHELLVIEWID*, const RECT*, HWND*);
-typedef HRESULT (WINAPI *MESSAGESFVCB)(IShellFolderViewCB*, UINT, WPARAM, LPARAM);
-typedef LRESULT (WINAPI *UIARETURNRAWELEMENTPROVIDER)(HWND, WPARAM, LPARAM, IRawElementProviderSimple*);
-typedef HRESULT (WINAPI *QUERYINTERFACE)(IRawElementProviderSimple*, REFIID, void**);
-typedef HRESULT (WINAPI *TRAVELTOENTRY)(ITravelLogEx*, IUnknown*, /* ITravelLogEntry */ IUnknown*);
-
-// Detour functions
-HRESULT WINAPI DetourCoCreateInstance(REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWORD dwClsContext, REFIID riid, LPVOID FAR* ppv);
-HRESULT WINAPI DetourRegisterDragDrop(HWND hwnd, LPDROPTARGET pDropTarget);
-HRESULT WINAPI DetourSHCreateShellFolderView(const SFV_CREATE* pcsfv, IShellView** ppsv);
-HRESULT WINAPI DetourBrowseObject(IShellBrowser* _this, PCUIDLIST_RELATIVE pidl, UINT wFlags);
-HRESULT WINAPI DetourCreateViewWindow3(IShellView3* _this, IShellBrowser* psbOwner, IShellView* psvPrev, SV3CVW3_FLAGS dwViewFlags, FOLDERFLAGS dwMask, FOLDERFLAGS dwFlags, FOLDERVIEWMODE fvMode, const SHELLVIEWID* pvid, const RECT* prcView, HWND* phwndView);
-HRESULT WINAPI DetourMessageSFVCB(IShellFolderViewCB* _this, UINT uMsg, WPARAM wParam, LPARAM lParam);
-LRESULT WINAPI DetourUiaReturnRawElementProvider(HWND hwnd, WPARAM wParam, LPARAM lParam, IRawElementProviderSimple* el);
-HRESULT WINAPI DetourQueryInterface(IRawElementProviderSimple* _this, REFIID riid, void** ppvObject);
-HRESULT WINAPI DetourTravelToEntry(ITravelLogEx* _this, IUnknown* punk, /* ITravelLogEntry */ IUnknown* ptle);
-
-// Pointers to original functions
-COCREATEINSTANCE fpCoCreateInstance = NULL;
-REGISTERDRAGDROP fpRegisterDragDrop = NULL;
-SHCREATESHELLFOLDERVIEW fpSHCreateShellFolderView = NULL;
-BROWSEOBJECT fpBrowseObject = NULL;
-CREATEVIEWWINDOW3 fpCreateViewWindow3 = NULL;
-MESSAGESFVCB fpMessageSFVCB = NULL;
-UIARETURNRAWELEMENTPROVIDER fpUiaReturnRawElementProvider = NULL;
-QUERYINTERFACE fpQueryInterface = NULL;
-TRAVELTOENTRY fpTravelToEntry = NULL;
+// Hooks
+DECLARE_HOOK(HRESULT, CoCreateInstance, (REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWORD dwClsContext, REFIID riid, LPVOID FAR* ppv))
+DECLARE_HOOK(HRESULT, RegisterDragDrop, (HWND hwnd, LPDROPTARGET pDropTarget))
+DECLARE_HOOK(HRESULT, SHCreateShellFolderView, (const SFV_CREATE* pcsfv, IShellView** ppsv))
+DECLARE_HOOK(HRESULT, BrowseObject, (IShellBrowser* _this, PCUIDLIST_RELATIVE pidl, UINT wFlags))
+DECLARE_HOOK(HRESULT, CreateViewWindow3, (IShellView3* _this, IShellBrowser* psbOwner, IShellView* psvPrev, SV3CVW3_FLAGS dwViewFlags, FOLDERFLAGS dwMask, FOLDERFLAGS dwFlags, FOLDERVIEWMODE fvMode, const SHELLVIEWID* pvid, const RECT* prcView, HWND* phwndView))
+DECLARE_HOOK(HRESULT, MessageSFVCB, (IShellFolderViewCB* _this, UINT uMsg, WPARAM wParam, LPARAM lParam))
+DECLARE_HOOK(LRESULT, UiaReturnRawElementProvider, (HWND hwnd, WPARAM wParam, LPARAM lParam, IRawElementProviderSimple* el))
+DECLARE_HOOK(HRESULT, QueryInterface, (IRawElementProviderSimple* _this, REFIID riid, void** ppvObject))
+DECLARE_HOOK(HRESULT, TravelToEntry, (ITravelLogEx* _this, IUnknown* punk, /* ITravelLogEntry */ IUnknown* ptle))
 
 // Messages
 unsigned int WM_REGISTERDRAGDROP;
@@ -89,7 +71,6 @@ unsigned int WM_ISITEMSVIEW;
 // Other stuff
 HMODULE hModAutomation = NULL;
 FARPROC fpRealRREP = NULL;
-
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved) {
     switch (ul_reason_for_call) {
@@ -115,11 +96,11 @@ int Initialize() {
 
     // Register the messages.
     WM_REGISTERDRAGDROP = RegisterWindowMessageA("QTTabBar_RegisterDragDrop");
-    WM_NEWTREECONTROL = RegisterWindowMessageA("QTTabBar_NewTreeControl");
-    WM_BROWSEOBJECT = RegisterWindowMessageA("QTTabBar_BrowseObject");
+    WM_NEWTREECONTROL   = RegisterWindowMessageA("QTTabBar_NewTreeControl");
+    WM_BROWSEOBJECT     = RegisterWindowMessageA("QTTabBar_BrowseObject");
     WM_HEADERINALLVIEWS = RegisterWindowMessageA("QTTabBar_HeaderInAllViews");
-    WM_LISTREFRESHED = RegisterWindowMessageA("QTTabBar_ListRefreshed");
-    WM_ISITEMSVIEW = RegisterWindowMessageA("QTTabBar_IsItemsView");
+    WM_LISTREFRESHED    = RegisterWindowMessageA("QTTabBar_ListRefreshed");
+    WM_ISITEMSVIEW      = RegisterWindowMessageA("QTTabBar_IsItemsView");
 
     // Initialize MinHook.
     MH_STATUS ret = MH_Initialize();
@@ -291,7 +272,7 @@ HRESULT WINAPI DetourCreateViewWindow3(IShellView3* _this, IShellBrowser* psbOwn
 // The purpose of this hook is to notify QTTabBar whenever an Explorer refresh occurs.  This allows
 // the search box to be cleared.
 HRESULT WINAPI DetourMessageSFVCB(IShellFolderViewCB* _this, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-    if(uMsg == SFVM_LISTREFRESHED && wParam != 0) {
+    if(uMsg == 0x11 /* SFVM_LISTREFRESHED */ && wParam != 0) {
         PostThreadMessage(GetCurrentThreadId(), WM_LISTREFRESHED, NULL, NULL);
     }
     return fpMessageSFVCB(_this, uMsg, wParam, lParam);
@@ -323,17 +304,17 @@ HRESULT WINAPI DetourQueryInterface(IRawElementProviderSimple* _this, REFIID rii
 
 // The purpose of this hook is to make clearing a search go back to the original directory.
 HRESULT WINAPI DetourTravelToEntry(ITravelLogEx* _this, IUnknown* punk, /* ITravelLogEntry */ IUnknown* ptle) {
-	IShellBrowser* psb;
-	LRESULT result = 0;
-	if(punk != NULL && SUCCEEDED(punk->QueryInterface(__uuidof(IShellBrowser), (void**)&psb))) {
-		HWND hwnd;
-		if(SUCCEEDED(psb->GetWindow(&hwnd))) {
-			HWND parent = GetParent(hwnd);
-			if(parent != 0) hwnd = parent;
+    IShellBrowser* psb;
+    LRESULT result = 0;
+    if(punk != NULL && SUCCEEDED(punk->QueryInterface(__uuidof(IShellBrowser), (void**)&psb))) {
+        HWND hwnd;
+        if(SUCCEEDED(psb->GetWindow(&hwnd))) {
+            HWND parent = GetParent(hwnd);
+            if(parent != 0) hwnd = parent;
             UINT wFlags = SBSP_NAVIGATEBACK | SBSP_SAMEBROWSER;
-			result = SendMessage(parent, WM_BROWSEOBJECT, reinterpret_cast<WPARAM>(&wFlags), NULL);
-		}
-		psb->Release();
-	}
-	return result == 0 ? fpTravelToEntry(_this, punk, ptle) : S_OK;
+            result = SendMessage(parent, WM_BROWSEOBJECT, reinterpret_cast<WPARAM>(&wFlags), NULL);
+        }
+        psb->Release();
+    }
+    return result == 0 ? fpTravelToEntry(_this, punk, ptle) : S_OK;
 }
