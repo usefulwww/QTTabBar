@@ -28,14 +28,18 @@
 #endif
 
 // Hook declaration macro
-#define DECLARE_HOOK(ret, name, params)                                                 \
-        typedef ret (WINAPI *__TYPE__##name)params; /* Function pointer type        */  \
-        ret WINAPI Detour##name params;             /* Detour function              */  \
-        __TYPE__##name fp##name = NULL;             /* Pointer to original function */  
+#define DECLARE_HOOK(id, ret, name, params)                                         \
+    typedef ret (WINAPI *__TYPE__##name)params; /* Function pointer type        */  \
+    ret WINAPI Detour##name params;             /* Detour function              */  \
+    __TYPE__##name fp##name = NULL;             /* Pointer to original function */  \
+    const int hook##name = id;                  /* Hook ID                      */ 
 
-extern "C" __declspec(dllexport) int Initialize();
-extern "C" __declspec(dllexport) int Dispose();
-extern "C" __declspec(dllexport) int InitShellBrowserHook(IShellBrowser* psb);
+// Hook creation macro
+#define CREATE_HOOK(address, name) {                                                            \
+    MH_STATUS ret = MH_CreateHook(address, &Detour##name, reinterpret_cast<void**>(&fp##name)); \
+    if(ret == MH_OK) ret = MH_EnableHook(address);                                              \
+    fpHookResult(hook##name, ret);                                                              \
+}
 
 // The undocumented IShellBrowserService interface, of which we only need one function.
 MIDL_INTERFACE("DFBC7E30-F9E5-455F-88F8-FA98C1E494CA")
@@ -50,15 +54,15 @@ MIDL_INTERFACE("3050F679-98B5-11CF-BB82-00AA00BDCE0B")
 ITravelLogEx : public IUnknown {};
 
 // Hooks
-DECLARE_HOOK(HRESULT, CoCreateInstance, (REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWORD dwClsContext, REFIID riid, LPVOID FAR* ppv))
-DECLARE_HOOK(HRESULT, RegisterDragDrop, (HWND hwnd, LPDROPTARGET pDropTarget))
-DECLARE_HOOK(HRESULT, SHCreateShellFolderView, (const SFV_CREATE* pcsfv, IShellView** ppsv))
-DECLARE_HOOK(HRESULT, BrowseObject, (IShellBrowser* _this, PCUIDLIST_RELATIVE pidl, UINT wFlags))
-DECLARE_HOOK(HRESULT, CreateViewWindow3, (IShellView3* _this, IShellBrowser* psbOwner, IShellView* psvPrev, SV3CVW3_FLAGS dwViewFlags, FOLDERFLAGS dwMask, FOLDERFLAGS dwFlags, FOLDERVIEWMODE fvMode, const SHELLVIEWID* pvid, const RECT* prcView, HWND* phwndView))
-DECLARE_HOOK(HRESULT, MessageSFVCB, (IShellFolderViewCB* _this, UINT uMsg, WPARAM wParam, LPARAM lParam))
-DECLARE_HOOK(LRESULT, UiaReturnRawElementProvider, (HWND hwnd, WPARAM wParam, LPARAM lParam, IRawElementProviderSimple* el))
-DECLARE_HOOK(HRESULT, QueryInterface, (IRawElementProviderSimple* _this, REFIID riid, void** ppvObject))
-DECLARE_HOOK(HRESULT, TravelToEntry, (ITravelLogEx* _this, IUnknown* punk, /* ITravelLogEntry */ IUnknown* ptle))
+DECLARE_HOOK(0, HRESULT, CoCreateInstance, (REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWORD dwClsContext, REFIID riid, LPVOID FAR* ppv))
+DECLARE_HOOK(1, HRESULT, RegisterDragDrop, (HWND hwnd, LPDROPTARGET pDropTarget))
+DECLARE_HOOK(2, HRESULT, SHCreateShellFolderView, (const SFV_CREATE* pcsfv, IShellView** ppsv))
+DECLARE_HOOK(3, HRESULT, BrowseObject, (IShellBrowser* _this, PCUIDLIST_RELATIVE pidl, UINT wFlags))
+DECLARE_HOOK(4, HRESULT, CreateViewWindow3, (IShellView3* _this, IShellBrowser* psbOwner, IShellView* psvPrev, SV3CVW3_FLAGS dwViewFlags, FOLDERFLAGS dwMask, FOLDERFLAGS dwFlags, FOLDERVIEWMODE fvMode, const SHELLVIEWID* pvid, const RECT* prcView, HWND* phwndView))
+DECLARE_HOOK(5, HRESULT, MessageSFVCB, (IShellFolderViewCB* _this, UINT uMsg, WPARAM wParam, LPARAM lParam))
+DECLARE_HOOK(6, LRESULT, UiaReturnRawElementProvider, (HWND hwnd, WPARAM wParam, LPARAM lParam, IRawElementProviderSimple* el))
+DECLARE_HOOK(7, HRESULT, QueryInterface, (IRawElementProviderSimple* _this, REFIID riid, void** ppvObject))
+DECLARE_HOOK(8, HRESULT, TravelToEntry, (ITravelLogEx* _this, IUnknown* punk, /* ITravelLogEntry */ IUnknown* ptle))
 
 // Messages
 unsigned int WM_REGISTERDRAGDROP;
@@ -68,9 +72,17 @@ unsigned int WM_HEADERINALLVIEWS;
 unsigned int WM_LISTREFRESHED;
 unsigned int WM_ISITEMSVIEW;
 
+// Callback function
+typedef void (*HOOKLIB_CALLBACK)(int hookId, int retcode);
+HOOKLIB_CALLBACK fpHookResult = NULL;
+
 // Other stuff
 HMODULE hModAutomation = NULL;
 FARPROC fpRealRREP = NULL;
+
+extern "C" __declspec(dllexport) int Initialize(HOOKLIB_CALLBACK cb);
+extern "C" __declspec(dllexport) int Dispose();
+extern "C" __declspec(dllexport) int InitShellBrowserHook(IShellBrowser* psb);
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved) {
     switch (ul_reason_for_call) {
@@ -85,7 +97,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
     return true;
 }
 
-int Initialize() {
+int Initialize(HOOKLIB_CALLBACK cb) {
 
     volatile static long initialized;
     if(InterlockedIncrement(&initialized) != 1) {
@@ -93,6 +105,13 @@ int Initialize() {
         initialized = 1;
         return MH_OK;
     }
+
+    // Initialize MinHook.
+    MH_STATUS ret = MH_Initialize();
+    if(ret != MH_OK && ret != MH_ERROR_ALREADY_INITIALIZED) return ret;
+
+    // Store the callback function
+    fpHookResult = cb;
 
     // Register the messages.
     WM_REGISTERDRAGDROP = RegisterWindowMessageA("QTTabBar_RegisterDragDrop");
@@ -102,41 +121,21 @@ int Initialize() {
     WM_LISTREFRESHED    = RegisterWindowMessageA("QTTabBar_ListRefreshed");
     WM_ISITEMSVIEW      = RegisterWindowMessageA("QTTabBar_IsItemsView");
 
-    // Initialize MinHook.
-    MH_STATUS ret = MH_Initialize();
-    if(ret != MH_OK) return ret;
-
-    // Create and enable CoCreateInstance hook
-    ret = MH_CreateHook(&CoCreateInstance, &DetourCoCreateInstance, reinterpret_cast<void**>(&fpCoCreateInstance));
-    if(ret != MH_OK) return ret;
-    ret = MH_EnableHook(&CoCreateInstance);
-    if(ret != MH_OK) return ret;
-
-    // Create and enable RegisterDragDrop hook
-    ret = MH_CreateHook(&RegisterDragDrop, &DetourRegisterDragDrop, reinterpret_cast<void**>(&fpRegisterDragDrop));
-    if(ret != MH_OK) return ret;
-    ret = MH_EnableHook(&RegisterDragDrop);
-    if(ret != MH_OK) return ret;
-
-    // Create and enable SHCreateShellFolderView hook
-    ret = MH_CreateHook(&SHCreateShellFolderView, &DetourSHCreateShellFolderView, reinterpret_cast<void**>(&fpSHCreateShellFolderView));
-    if(ret != MH_OK) return ret;
-    ret = MH_EnableHook(&SHCreateShellFolderView);
-    if(ret != MH_OK) return ret;
+    // Create and enable the CoCreateInstance, RegisterDragDrop, and SHCreateShellFolderView hooks.
+    CREATE_HOOK(&CoCreateInstance, CoCreateInstance);
+    CREATE_HOOK(&RegisterDragDrop, RegisterDragDrop);
+    CREATE_HOOK(&SHCreateShellFolderView, SHCreateShellFolderView);
 
     // Create and enable the UiaReturnRawElementProvider hook (maybe)
     hModAutomation = LoadLibraryA("UIAutomationCore.dll");
     if(hModAutomation != NULL) {
         fpRealRREP = GetProcAddress(hModAutomation, "UiaReturnRawElementProvider");
         if(fpRealRREP != NULL) {
-            ret = MH_CreateHook(fpRealRREP, &DetourUiaReturnRawElementProvider, reinterpret_cast<void**>(&fpUiaReturnRawElementProvider));
-            if(ret != MH_OK) return ret;
-            ret = MH_EnableHook(fpRealRREP);
-            if(ret != MH_OK) return ret;
+            CREATE_HOOK(fpRealRREP, UiaReturnRawElementProvider);
         }
     }
     
-    return ret;
+    return MH_OK;
 }
 
 int InitShellBrowserHook(IShellBrowser* psb) {
@@ -149,10 +148,7 @@ int InitShellBrowserHook(IShellBrowser* psb) {
 
     // Hook the 11th entry in this IShellBrowser's VTable, which is BrowseObject
     void** vtable = *reinterpret_cast<void***>(psb);
-    MH_STATUS ret = MH_CreateHook(vtable[11], &DetourBrowseObject, reinterpret_cast<void**>(&fpBrowseObject));
-    if(ret != MH_OK) return ret;
-    ret = MH_EnableHook(vtable[11]);
-    if(ret != MH_OK) return ret;
+    CREATE_HOOK(vtable[11], BrowseObject);
 
     IShellBrowserService* psbs = NULL;
     if(SUCCEEDED(psb->QueryInterface(__uuidof(IShellBrowserService), reinterpret_cast<void**>(&psbs)))) {
@@ -162,17 +158,14 @@ int InitShellBrowserHook(IShellBrowser* psb) {
             if(SUCCEEDED(ptl->QueryInterface(__uuidof(ITravelLogEx), reinterpret_cast<void**>(&ptlex)))) {
                 void** vtable = *reinterpret_cast<void***>(ptlex);
                 // Hook the 11th entry in this ITravelLogEx's VTable, which is TravelToEntry
-                ret = MH_CreateHook(vtable[11], &DetourTravelToEntry, reinterpret_cast<void**>(&fpTravelToEntry));
-                if(ret == MH_OK) {
-                    ret = MH_EnableHook(vtable[11]);
-                }
+                CREATE_HOOK(vtable[11], TravelToEntry);
                 ptlex->Release();
             }
             ptl->Release();
         }
         psbs->Release();
     }
-    return ret;
+    return MH_OK;
 }
 
 int Dispose() {
@@ -213,24 +206,20 @@ HRESULT WINAPI DetourRegisterDragDrop(IN HWND hwnd, IN LPDROPTARGET pDropTarget)
 }
 
 // The purpose of this hook is just to set other hooks.  It is disabled once the other hooks are set.
-// TODO: This should have some way of reporting success or failure.
 HRESULT WINAPI DetourSHCreateShellFolderView(const SFV_CREATE* pcsfv, IShellView** ppsv) {
-    // Hook the 3rd entry in this IShellFolderViewCB's VTable, which is MessageSFVCB
-    void** vtable = *reinterpret_cast<void***>(pcsfv->psfvcb);
-    IShellView* dummy;
-    if(MH_CreateHook(vtable[3], &DetourMessageSFVCB, reinterpret_cast<void**>(&fpMessageSFVCB)) == MH_OK) {
-        MH_EnableHook(vtable[3]);
-    }
     HRESULT ret = fpSHCreateShellFolderView(pcsfv, ppsv);
+    IShellView* dummy;
     if(SUCCEEDED(ret) && SUCCEEDED((*ppsv)->QueryInterface(IID_CDefView, reinterpret_cast<void**>(&dummy)))) {
         dummy->Release();
+
+        // Hook the 3rd entry in this IShellFolderViewCB's VTable, which is MessageSFVCB
+        void** vtable = *reinterpret_cast<void***>(pcsfv->psfvcb);
+        CREATE_HOOK(vtable[3], MessageSFVCB);
         IShellView3* psv3;
         if(SUCCEEDED((*ppsv)->QueryInterface(__uuidof(IShellView3), reinterpret_cast<void**>(&psv3)))) {
             // Hook the 20th entry in this IShellView3's VTable, which is CreateFolderView3
             vtable = *reinterpret_cast<void***>(psv3);
-            if(MH_CreateHook(vtable[20], &DetourCreateViewWindow3, reinterpret_cast<void**>(&fpCreateViewWindow3)) == MH_OK) {
-                MH_EnableHook(vtable[20]);
-            }
+            CREATE_HOOK(vtable[20], CreateViewWindow3);
             psv3->Release();
         }
 
@@ -283,16 +272,11 @@ LRESULT WINAPI DetourUiaReturnRawElementProvider(HWND hwnd, WPARAM wParam, LPARA
     if(fpQueryInterface == NULL && (LONG)lParam == OBJID_CLIENT && SendMessage(hwnd, WM_ISITEMSVIEW, 0, 0) == 1) {
         // Hook the 0th entry in UIItemsViewElementProvider's VTable, which is QueryInterface
         void** vtable = *reinterpret_cast<void***>(el);
-        if(MH_CreateHook(vtable[0], &DetourQueryInterface, reinterpret_cast<void**>(&fpQueryInterface)) == MH_OK) {
-            MH_EnableHook(vtable[0]);
-        }
-    }
-    LRESULT ret = fpUiaReturnRawElementProvider(hwnd, wParam, lParam, el);
-    if(fpQueryInterface != NULL) {
+        CREATE_HOOK(vtable[0], QueryInterface);
         // Disable this hook, no need for it anymore.
         MH_DisableHook(fpRealRREP);
     }
-    return ret;
+    return fpUiaReturnRawElementProvider(hwnd, wParam, lParam, el);
 }
 
 // The purpose of this hook is to work around kb2462524, aka the scrolling lag bug.
@@ -318,3 +302,4 @@ HRESULT WINAPI DetourTravelToEntry(ITravelLogEx* _this, IUnknown* punk, /* ITrav
     }
     return result == 0 ? fpTravelToEntry(_this, punk, ptle) : S_OK;
 }
+

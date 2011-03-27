@@ -4415,7 +4415,7 @@ namespace QTTabBarLib {
                 Guid riid = ExplorerGUIDs.IID_IUnknown;
                 bandObjectSite.QueryService(ref guid, ref riid, out obj2);
                 ShellBrowser = new ShellBrowserEx((IShellBrowser)obj2);
-                QTUtility.InitShellBrowserHook(ShellBrowser.GetIShellBrowser());
+                HookLibManager.InitShellBrowserHook(ShellBrowser.GetIShellBrowser());
                 if(QTUtility.CheckConfig(Settings.ForceSysListView)) {
                     ShellBrowser.SetUsingListView(true);
                 }

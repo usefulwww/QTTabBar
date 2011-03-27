@@ -22,6 +22,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Xml;
@@ -134,9 +135,7 @@ namespace QTTabBarLib {
         internal static bool fRequiredRefresh_App;
         internal static bool fRestoreFolderTree;
         internal static bool fSingleClick;
-        private static bool fShellBrowserIsHooked;
         internal static Dictionary<string, string> GroupPathsDic = new Dictionary<string, string>();
-        private static IntPtr hHookLib;
         internal static int iIconUnderLineVal;
         internal const string IMAGEKEY_FOLDER = "folder";
         internal const string IMAGEKEY_MYNETWORK = "mynetwork";
@@ -209,11 +208,6 @@ namespace QTTabBarLib {
         internal static byte[] TMPTargetIDL;
         internal static Dictionary<string, string[]> UserAppsDic = new Dictionary<string, string[]>();
         internal static byte WindowAlpha = 0xff;
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate int InitShellBrowserHookDelegate(IntPtr shellBrowser);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate int InitHookLibDelegate();
 
         static QTUtility() {
             String processName = Process.GetCurrentProcess().ProcessName.ToLower();
@@ -347,45 +341,8 @@ namespace QTTabBarLib {
                 PluginManager.Initialize();
                 IsRTL = CultureInfo.CurrentCulture.TextInfo.IsRightToLeft;
 
-                // Load the hook library
-                String installPath = "";
-                using(RegistryKey key = Registry.LocalMachine.OpenSubKey(@"Software\Quizo\QTTabBar")) {
-                    if(key != null) {
-                        installPath = (string)key.GetValue("InstallPath", "");
-                    }
-                }
-                string filename = IntPtr.Size == 8 ? "QTHookLib64.dll" : "QTHookLib32.dll";
-                hHookLib = PInvoke.LoadLibrary(Path.Combine(installPath, filename));
-                int retcode = -1;
-                if(hHookLib == IntPtr.Zero) {
-                    int error = Marshal.GetLastWin32Error();
-                    QTUtility2.MakeErrorLog(null, "LoadLibrary error: " + error);
-                }
-                else {
-                    IntPtr pFunc = PInvoke.GetProcAddress(hHookLib, "Initialize");
-                    if(pFunc != IntPtr.Zero) {
-                        InitHookLibDelegate initialize = (InitHookLibDelegate)
-                                Marshal.GetDelegateForFunctionPointer(pFunc, typeof(InitHookLibDelegate));
-                        try {
-                            retcode = initialize();
-                        }
-                        catch(Exception e) {
-                            QTUtility2.MakeErrorLog(e, "");
-                        }
-
-                    }
-                }
-
-                if(retcode != 0) {
-                    QTUtility2.MakeErrorLog(null, "HookLib Initialize failed: " + retcode);
-
-                    // TODO: Localize this
-                    MessageForm.Show(IntPtr.Zero,
-                            "Error:  Unable to load QTTabBar hook library.  " +
-                            "Some features might not be functional.  " +
-                            "You may need to reinstall the applicaiton.",
-                            "Error", MessageBoxIcon.Hand, 30000, false, true);
-                }
+                // Make sure the hooklib is initialized
+                RuntimeHelpers.RunClassConstructor(typeof(HookLibManager).TypeHandle);
             }
             catch(Exception exception) {
                 QTUtility2.MakeErrorLog(exception);
@@ -615,7 +572,7 @@ namespace QTTabBarLib {
         }
 
         public static void GetShellClickMode() {
-            string lpSubKey = @"Software\Microsoft\Windows\CurrentVersion\Explorer";
+            const string lpSubKey = @"Software\Microsoft\Windows\CurrentVersion\Explorer";
             iIconUnderLineVal = 0;
             int lpcbData = 4;
             try {
@@ -726,39 +683,6 @@ namespace QTTabBarLib {
             return new TabBarOption(dictionary);
         }
 
-        public static void InitShellBrowserHook(IShellBrowser shellBrowser) {
-            if(fShellBrowserIsHooked || hHookLib == IntPtr.Zero) return;
-            IntPtr pFunc = PInvoke.GetProcAddress(hHookLib, "InitShellBrowserHook");
-            if(pFunc == IntPtr.Zero) return;
-            InitShellBrowserHookDelegate initShellBrowserHook = (InitShellBrowserHookDelegate)
-                    Marshal.GetDelegateForFunctionPointer(pFunc, typeof(InitShellBrowserHookDelegate));
-            IntPtr pShellBrowser = Marshal.GetComInterfaceForObject(shellBrowser, typeof(IShellBrowser));
-            if(pShellBrowser == IntPtr.Zero) return;
-            int retcode = -1;
-            try {
-                retcode = initShellBrowserHook(pShellBrowser);
-            }
-            catch(Exception e) {
-                QTUtility2.MakeErrorLog(e, "");
-            }
-            finally {
-                Marshal.Release(pShellBrowser);
-            }
-            if(retcode != 0) {
-                QTUtility2.MakeErrorLog(null, "InitShellBrowserHook failed: " + retcode);
-
-                // TODO: Localize this
-                MessageForm.Show(IntPtr.Zero,
-                        "Error:  Unable to initialize QTTabBar hook library.  " +
-                        "Some features might not be functional.  " +
-                        "You may need to reinstall the applicaiton.",
-                        "Error", MessageBoxIcon.Hand, 30000, false, true);
-            }
-            else {
-                fShellBrowserIsHooked = true;
-            }
-        }
-
         private static bool IsNetworkRootFolder(string path) {
             string str = path.Substring(2);
             int index = str.IndexOf(Path.DirectorySeparatorChar);
@@ -824,8 +748,8 @@ namespace QTTabBarLib {
 
         public static Dictionary<string, string[]> ReadLanguageFile(string path) {
             Dictionary<string, string[]> dictionary = new Dictionary<string, string[]>();
-            string newValue = "\r\n";
-            string oldValue = @"\r\n";
+            const string newValue = "\r\n";
+            const string oldValue = @"\r\n";
             try {
                 using(XmlTextReader reader = new XmlTextReader(path)) {
                     while(reader.Read()) {
@@ -845,7 +769,7 @@ namespace QTTabBarLib {
                 return null;
             }
             catch(Exception exception2) {
-                QTUtility2.MakeErrorLog(exception2, null);
+                QTUtility2.MakeErrorLog(exception2);
                 return null;
             }
             //return dictionary;
@@ -910,7 +834,7 @@ namespace QTTabBarLib {
         }
 
         public static void RefreshPreviewExtensions() {
-            string defaultValue = ".txt;.ini;.inf;.cs;.log;.js;.vbs";
+            const string defaultValue = ".txt;.ini;.inf;.cs;.log;.js;.vbs";
             using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
                 string str2 = (string)key.GetValue("TextExtensions", defaultValue);
                 if(str2.Length > 0) {
