@@ -6354,17 +6354,52 @@ namespace QTTabBarLib {
        }
 
         private void TreeView_MiddleClicked(IShellItem item) {
+            if(QTUtility.CheckConfig(Settings.NoCaptureMidClick)) {
+                return;
+            }
+            Keys modifierKeys = ModifierKeys;
+            if(modifierKeys != (Keys.Alt | Keys.Control | Keys.Shift)) {
+                modifierKeys &= ~Keys.Alt;
+                if(QTUtility.CheckConfig(Settings.MidClickNewWindow)) {
+                    switch(modifierKeys) {
+                        case Keys.Control:
+                            modifierKeys = Keys.None;
+                            break;
+
+                        case (Keys.Control | Keys.Shift):
+                            modifierKeys = Keys.Shift;
+                            break;
+
+                        default:
+                            modifierKeys = Keys.Control;
+                            break;
+                    }
+                }
+                else if(modifierKeys == (Keys.Control | Keys.Shift)) {
+                    modifierKeys = Keys.Control;
+                }
+            }
             IntPtr pidl;
             if(PInvoke.SHGetIDListFromObject(item, out pidl) != 0) return;
             using(IDLWrapper wrapper = new IDLWrapper(pidl)) {
                 if(wrapper.Available && wrapper.HasPath && wrapper.IsReadyIfDrive) {
                     if(wrapper.IsFolder) {
-                        OpenNewTab(wrapper, (ModifierKeys & Keys.Shift) != 0, false);
+                        if((modifierKeys & Keys.Control) != 0) {
+                            OpenNewWindow(wrapper);
+                        }
+                        else {
+                            OpenNewTab(wrapper, (modifierKeys & Keys.Shift) != 0, false);
+                        }
                     }
                     else if(wrapper.IsLink && !wrapper.IsLinkToDeadFolder) {
                         using(IDLWrapper wrapper2 = new IDLWrapper(ShellMethods.GetLinkTargetIDL(wrapper.Path))) {
                             if(wrapper2.Available && wrapper2.HasPath && wrapper2.IsReadyIfDrive && wrapper2.IsFolder) {
-                                OpenNewTab(wrapper2, (ModifierKeys & Keys.Shift) != 0, false);
+                                if((modifierKeys & Keys.Control) != 0) {
+                                    OpenNewWindow(wrapper2);
+                                }
+                                else {
+                                    OpenNewTab(wrapper2, (modifierKeys & Keys.Shift) != 0, false);
+                                }
                             }
                         }
                     }
