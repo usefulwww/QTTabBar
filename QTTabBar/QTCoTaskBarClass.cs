@@ -222,7 +222,7 @@ namespace QTTabBarLib {
 
                         listView = new ExtendedSysListView32(ShellBrowser, PInvoke.GetParent(hwndListView), hwndListView, ThisHandle);
                         listView.MouseActivate += ListView_MouseActivate;
-                        listView.ItemActivated += ListView_ItemActivated;
+                        listView.SelectionActivated += ListView_SelectionActivated;
                         listView.MiddleClick += ListView_MiddleClick;
                         listView.DoubleClick += ListView_DoubleClick;
                         listView.ListViewDestroyed += ListView_Destroyed;
@@ -1105,7 +1105,7 @@ namespace QTTabBarLib {
             return false;
         }
 
-        private bool ListView_ItemActivated(Keys modKeys) {
+        private bool ListView_SelectionActivated(Keys modKeys) {
             bool fEnqExec = !QTUtility.CheckConfig(Settings.NoRecentFiles);
             return HandleTabFolderActions(-1, modKeys, fEnqExec);
         }

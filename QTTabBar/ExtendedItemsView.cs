@@ -348,18 +348,7 @@ namespace QTTabBarLib {
                         if(Math.Abs(pt.X - lastLButtonPoint.X) <= size.Width) {
                             if(Math.Abs(pt.Y - lastLButtonPoint.Y) <= size.Height) {
                                 lastLButtonTime = 0;
-                                if(OnDoubleClick(pt)) {
-                                    return true;
-                                }
-                                if(HitTest(pt, false) > -1) {
-                                    // Explorer includes an option to make
-                                    // single-clicking activate items.
-                                    // TODO: Support that.
-                                    if(OnItemActivated(Control.ModifierKeys)) {
-                                        return true;
-                                    }
-                                }
-                                return false;
+                                return OnDoubleClick(pt);
                             }
                         }
                     }
@@ -393,11 +382,7 @@ namespace QTTabBarLib {
                     break;
                 
                 case WM.KEYDOWN:
-                    if(OnKeyDown((Keys)msg.WParam)) return true;
-                    if((Keys)msg.WParam == Keys.Enter) {
-                        return OnItemActivated(Control.ModifierKeys);
-                    }
-                    break;
+                    return OnKeyDown((Keys)msg.WParam);
                 
                 case WM.LBUTTONUP:
                 case WM.RBUTTONUP:
@@ -488,6 +473,18 @@ namespace QTTabBarLib {
 
         protected override bool ShellViewController_MessageCaptured(ref Message msg) {
             if(base.ShellViewController_MessageCaptured(ref msg)) {
+                return true;
+            }
+
+            if(msg.Msg == WM_ACTIVATESEL) {
+                int mk = Marshal.ReadInt32(msg.WParam);
+                Keys modKeys = Keys.None;
+                if((mk & 0x04) != 0) modKeys |= Keys.Shift;
+                if((mk & 0x08) != 0) modKeys |= Keys.Control;
+                if((mk & 0x20) != 0) modKeys |= Keys.Alt;
+                if(OnSelectionActivated(modKeys)) {
+                    msg.Result = (IntPtr)1;
+                }
                 return true;
             }
 

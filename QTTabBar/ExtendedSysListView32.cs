@@ -138,7 +138,7 @@ namespace QTTabBarLib {
                         (((nmitemactivate.uKeyFlags & 1) == 1) ? Keys.Alt : Keys.None) |
                         (((nmitemactivate.uKeyFlags & 2) == 2) ? Keys.Control : Keys.None) |
                         (((nmitemactivate.uKeyFlags & 4) == 4) ? Keys.Shift : Keys.None);
-                    if(OnItemActivated(modKeys)) return true;
+                    if(OnSelectionActivated(modKeys)) return true;
                     break;
                 }
 

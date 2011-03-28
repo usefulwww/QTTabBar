@@ -49,6 +49,10 @@ public:
     virtual HRESULT STDMETHODCALLTYPE GetTravelLog(/* ITravelLog */ IUnknown** ppTravelLog) = 0;
 };
 
+// The undocumented IListControlHost interface, of which we only really need the IID.
+MIDL_INTERFACE("0B907F92-1B63-40C6-AA54-0D3117F03578")
+IListControlHost : public IUnknown {};
+	
 // The undocumented ITravelLogEx interface, of which we only really need the IID.
 MIDL_INTERFACE("3050F679-98B5-11CF-BB82-00AA00BDCE0B")
 ITravelLogEx : public IUnknown {};
@@ -63,6 +67,7 @@ DECLARE_HOOK(5, HRESULT, MessageSFVCB, (IShellFolderViewCB* _this, UINT uMsg, WP
 DECLARE_HOOK(6, LRESULT, UiaReturnRawElementProvider, (HWND hwnd, WPARAM wParam, LPARAM lParam, IRawElementProviderSimple* el))
 DECLARE_HOOK(7, HRESULT, QueryInterface, (IRawElementProviderSimple* _this, REFIID riid, void** ppvObject))
 DECLARE_HOOK(8, HRESULT, TravelToEntry, (ITravelLogEx* _this, IUnknown* punk, /* ITravelLogEntry */ IUnknown* ptle))
+DECLARE_HOOK(9, HRESULT, OnActivateSelection, (IListControlHost* _this, DWORD dwModifierKeys))
 
 // Messages
 unsigned int WM_REGISTERDRAGDROP;
@@ -71,6 +76,7 @@ unsigned int WM_BROWSEOBJECT;
 unsigned int WM_HEADERINALLVIEWS;
 unsigned int WM_LISTREFRESHED;
 unsigned int WM_ISITEMSVIEW;
+unsigned int WM_ACTIVATESEL;
 
 // Callback function
 typedef void (*HOOKLIB_CALLBACK)(int hookId, int retcode);
@@ -120,6 +126,7 @@ int Initialize(HOOKLIB_CALLBACK cb) {
     WM_HEADERINALLVIEWS = RegisterWindowMessageA("QTTabBar_HeaderInAllViews");
     WM_LISTREFRESHED    = RegisterWindowMessageA("QTTabBar_ListRefreshed");
     WM_ISITEMSVIEW      = RegisterWindowMessageA("QTTabBar_IsItemsView");
+    WM_ACTIVATESEL      = RegisterWindowMessageA("QTTabBar_ActivateSelection");
 
     // Create and enable the CoCreateInstance, RegisterDragDrop, and SHCreateShellFolderView hooks.
     CREATE_HOOK(&CoCreateInstance, CoCreateInstance);
@@ -215,12 +222,21 @@ HRESULT WINAPI DetourSHCreateShellFolderView(const SFV_CREATE* pcsfv, IShellView
         // Hook the 3rd entry in this IShellFolderViewCB's VTable, which is MessageSFVCB
         void** vtable = *reinterpret_cast<void***>(pcsfv->psfvcb);
         CREATE_HOOK(vtable[3], MessageSFVCB);
+
         IShellView3* psv3;
         if(SUCCEEDED((*ppsv)->QueryInterface(__uuidof(IShellView3), reinterpret_cast<void**>(&psv3)))) {
             // Hook the 20th entry in this IShellView3's VTable, which is CreateFolderView3
             vtable = *reinterpret_cast<void***>(psv3);
             CREATE_HOOK(vtable[20], CreateViewWindow3);
             psv3->Release();
+        }
+
+        IListControlHost* plch;
+        if(SUCCEEDED((*ppsv)->QueryInterface(__uuidof(IListControlHost), reinterpret_cast<void**>(&plch)))) {
+            // Hook the 3rd entry in this IListControlHost's VTable, which is OnActivateSelection
+            vtable = *reinterpret_cast<void***>(plch);
+            CREATE_HOOK(vtable[3], OnActivateSelection);
+            plch->Release();
         }
 
         // Disable this hook, no need for it anymore.
@@ -290,7 +306,7 @@ HRESULT WINAPI DetourQueryInterface(IRawElementProviderSimple* _this, REFIID rii
 HRESULT WINAPI DetourTravelToEntry(ITravelLogEx* _this, IUnknown* punk, /* ITravelLogEntry */ IUnknown* ptle) {
     IShellBrowser* psb;
     LRESULT result = 0;
-    if(punk != NULL && SUCCEEDED(punk->QueryInterface(__uuidof(IShellBrowser), (void**)&psb))) {
+    if(punk != NULL && SUCCEEDED(punk->QueryInterface(__uuidof(IShellBrowser), reinterpret_cast<void**>(&psb)))) {
         HWND hwnd;
         if(SUCCEEDED(psb->GetWindow(&hwnd))) {
             HWND parent = GetParent(hwnd);
@@ -303,3 +319,17 @@ HRESULT WINAPI DetourTravelToEntry(ITravelLogEx* _this, IUnknown* punk, /* ITrav
     return result == 0 ? fpTravelToEntry(_this, punk, ptle) : S_OK;
 }
 
+// The purpose of this hook is let QTTabBar handle activating the selection, so that recently
+// opened files can be logged (among other features).
+HRESULT WINAPI DetourOnActivateSelection(IListControlHost* _this, DWORD dwModifierKeys) {
+    IShellView* psv = NULL;
+    LRESULT result = 0;
+    if(SUCCEEDED(_this->QueryInterface(__uuidof(IShellView), reinterpret_cast<void**>(&psv)))) {
+        HWND hwnd;
+        if(SUCCEEDED(psv->GetWindow(&hwnd))) {
+            result = SendMessage(hwnd, WM_ACTIVATESEL, reinterpret_cast<WPARAM>(&dwModifierKeys), 0);
+        }
+        psv->Release();
+    }
+    return result == 0 ? fpOnActivateSelection(_this, dwModifierKeys) : S_OK;
+}

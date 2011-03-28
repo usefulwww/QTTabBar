@@ -42,7 +42,7 @@ namespace QTTabBarLib {
         #region Events
         internal event DoubleClickHandler DoubleClick;            // OK
         internal event EndLabelEditHandler EndLabelEdit;          // SysListView Only
-        internal event ItemActivatedHandler ItemActivated;        // OK
+        internal event ItemActivatedHandler SelectionActivated;        // OK
         internal event ItemCountChangedHandler ItemCountChanged;  // OK
         internal event MiddleClickHandler MiddleClick;            // OK
         internal event MouseActivateHandler MouseActivate;        // OK
@@ -58,6 +58,7 @@ namespace QTTabBarLib {
         protected static readonly UInt32 WM_REMOTEDISPOSE = PInvoke.RegisterWindowMessage("QTTabBar_RemoteDispose");
         protected static readonly UInt32 WM_REGISTERDRAGDROP = PInvoke.RegisterWindowMessage("QTTabBar_RegisterDragDrop");
         protected static readonly UInt32 WM_ISITEMSVIEW = PInvoke.RegisterWindowMessage("QTTabBar_IsItemsView");
+        protected static readonly UInt32 WM_ACTIVATESEL = PInvoke.RegisterWindowMessage("QTTabBar_ActivateSelection");
 
         protected NativeWindowController ListViewController;
         protected NativeWindowController ShellViewController;
@@ -452,8 +453,8 @@ namespace QTTabBarLib {
             return;
         }
 
-        protected bool OnItemActivated(Keys modKeys) {
-            return ItemActivated != null && ItemActivated(modKeys);
+        protected bool OnSelectionActivated(Keys modKeys) {
+            return SelectionActivated != null && SelectionActivated(modKeys);
         }
 
         protected void OnItemCountChanged() {

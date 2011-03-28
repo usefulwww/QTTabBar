@@ -53,7 +53,8 @@ namespace QTTabBarLib {
             MessageSFVCB,                   // Refresh = clear text
             UiaReturnRawElementProvider,
             QueryInterface,                 // Scrolling Lag workaround
-            TravelToEntry                   // Clear Search bar = back
+            TravelToEntry,                  // Clear Search bar = back
+            OnActivateSelection,            // Recently activated files
         }
 
         static HookLibManager() {

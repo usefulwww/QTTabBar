@@ -3712,7 +3712,7 @@ namespace QTTabBarLib {
             return;
         }
 
-        private bool ListView_ItemActivated(Keys modKeys) {
+        private bool ListView_SelectionActivated(Keys modKeys) {
             if(timerSelectionChanged != null) {
                 timerSelectionChanged.Enabled = false;
             }
@@ -3818,7 +3818,7 @@ namespace QTTabBarLib {
             ExtendedListViewCommon elvc = listView as ExtendedListViewCommon;
             if(elvc != null) {
                 elvc.ItemCountChanged += ListView_ItemCountChanged;
-                elvc.ItemActivated += ListView_ItemActivated;
+                elvc.SelectionActivated += ListView_SelectionActivated;
                 elvc.SelectionChanged += ListView_SelectionChanged;
                 elvc.MiddleClick += ListView_MiddleClick;
                 elvc.DoubleClick += ListView_DoubleClick;
