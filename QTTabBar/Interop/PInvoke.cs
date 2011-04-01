@@ -57,6 +57,8 @@ namespace QTTabBarLib.Interop {
         public static extern bool DeleteObject(IntPtr hObject);
         [DllImport("user32.dll")]
         public static extern int DestroyIcon(IntPtr hIcon);
+        [DllImport("comctl32.dll")]
+        public static extern IntPtr DPA_GetPtr(IntPtr pdpa, int index);
         [DllImport("shell32.dll")]
         public static extern void DragAcceptFiles(IntPtr HWND, bool fAccept);
         [DllImport("shell32.dll")]
@@ -256,6 +258,18 @@ namespace QTTabBarLib.Interop {
         public static extern IntPtr SelectObject(IntPtr hdc, IntPtr hgdiobj);
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+        public static IntPtr SendMessage<T>(IntPtr hWnd, uint Msg, IntPtr wParam, ref T lParam) {
+            IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(lParam));
+            try {
+                Marshal.StructureToPtr(lParam, ptr, false);
+                IntPtr ret = SendMessage(hWnd, Msg, wParam, ptr);
+                lParam = (T)Marshal.PtrToStructure(ptr, typeof(T));
+                return ret;
+            }
+            finally {
+                if(ptr != IntPtr.Zero) Marshal.FreeHGlobal(ptr);
+            }
+        }
         [DllImport("gdi32.dll")]
         public static extern int SetBkMode(IntPtr hdc, int iBkMode);
         [DllImport("user32.dll")]
@@ -335,6 +349,8 @@ namespace QTTabBarLib.Interop {
         public static extern int SHGetFolderPath(IntPtr hwndOwner, int nFolder, IntPtr hToken, int dwFlags, StringBuilder pszPath);
         [DllImport("shell32.dll")]
         public static extern int SHGetIDListFromObject([MarshalAs(UnmanagedType.IUnknown)] object punk, out IntPtr ppidl);
+        [DllImport("shell32.dll")]
+        public static extern int SHGetIDListFromObject(IntPtr punk, out IntPtr ppidl);
         [DllImport("shell32.dll")]
         public static extern int SHGetKnownFolderIDList(ref Guid rfid, int dwFlags, IntPtr hToken, out IntPtr ppidl);
         [DllImport("shell32.dll", CharSet = CharSet.Unicode)]

@@ -45,6 +45,7 @@ namespace QTTabBarLib {
         private int BandHeight;
         private VisualStyleRenderer bgRenderer;
         private Bitmap bmpRebar;
+        private BreadcrumbBar breadcrumbBar;
         private ToolStripButton buttonBack;
         private ToolStripButton buttonForward;
         private ToolStripDropDownButton buttonNavHistoryMenu;
@@ -169,6 +170,8 @@ namespace QTTabBarLib {
         private readonly uint WM_HEADERINALLVIEWS = PInvoke.RegisterWindowMessage("QTTabBar_HeaderInAllViews");
         private readonly uint WM_LISTREFRESHED = PInvoke.RegisterWindowMessage("QTTabBar_ListRefreshed");
         private readonly uint WM_SHOWHIDEBARS = PInvoke.RegisterWindowMessage("QTTabBar_ShowHideBars");
+        
+        public delegate void FolderMiddleClickedHandler(IDLWrapper item, Keys modkeys);
 
         public QTTabBarClass() {
             try {
@@ -415,8 +418,8 @@ namespace QTTabBarLib {
                                                     treeViewWrapper.Dispose();
                                                 }
                                                 treeViewWrapper = new TreeViewWrapper(hwnd, control);
-                                                treeViewWrapper.TreeViewMiddleClicked += TreeView_MiddleClicked;
-                                                obj = null;
+                                                treeViewWrapper.TreeViewMiddleClicked += FolderMiddleClicked;
+                                                obj = null; // Release the object only if we didn't get this far.
                                             }
                                         }
                                     }
@@ -3528,6 +3531,15 @@ namespace QTTabBarLib {
             listViewManager = new ListViewMonitor(ShellBrowser, ExplorerHandle, Handle);
             listViewManager.ListViewChanged += ListViewMonitor_ListViewChanged;
             listViewManager.Initialize();
+
+            IntPtr hwndBreadcrumbBar = WindowUtils.FindChildWindow(ExplorerHandle, hwnd => PInvoke.GetClassName(hwnd) == "Breadcrumb Parent");
+            if(hwndBreadcrumbBar != IntPtr.Zero) {
+                hwndBreadcrumbBar = PInvoke.FindWindowEx(hwndBreadcrumbBar, IntPtr.Zero, "ToolbarWindow32", null);
+                if(hwndBreadcrumbBar != IntPtr.Zero) {
+                    breadcrumbBar = new BreadcrumbBar(hwndBreadcrumbBar);
+                    breadcrumbBar.MiddleClicked += FolderMiddleClicked;
+                }
+            }
         }
 
         private static void InitializeStaticFields() {
@@ -6258,13 +6270,8 @@ namespace QTTabBarLib {
             switch(m.Msg) {
                 case WM.LBUTTONDOWN:
                 case WM.LBUTTONUP: {
-                        POINT structure = new POINT();
-                        structure.x = QTUtility2.GET_X_LPARAM(m.LParam);
-                        structure.y = QTUtility2.GET_Y_LPARAM(m.LParam);
-                        IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
-                        Marshal.StructureToPtr(structure, ptr, false);
-                        int num = (int)PInvoke.SendMessage(travelBtnController.Handle, 0x445, IntPtr.Zero, ptr);
-                        Marshal.FreeHGlobal(ptr);
+                        Point pt = QTUtility2.PointFromLPARAM(m.LParam);
+                        int num = (int)PInvoke.SendMessage(travelBtnController.Handle, 0x445, IntPtr.Zero, ref pt);
                         bool flag = CurrentTab.HistoryCount_Back > 1;
                         bool flag2 = CurrentTab.HistoryCount_Forward > 0;
                         if(m.Msg != 0x202) {
@@ -6353,11 +6360,9 @@ namespace QTTabBarLib {
             return true;
        }
 
-        private void TreeView_MiddleClicked(IShellItem item) {
-            if(QTUtility.CheckConfig(Settings.NoCaptureMidClick)) {
-                return;
-            }
-            Keys modifierKeys = ModifierKeys;
+        private void FolderMiddleClicked(IDLWrapper wrapper, Keys modifierKeys) {
+            if(QTUtility.CheckConfig(Settings.NoCaptureMidClick)) return;
+            if(!wrapper.Available || !wrapper.HasPath || !wrapper.IsReadyIfDrive) return;
             if(modifierKeys != (Keys.Alt | Keys.Control | Keys.Shift)) {
                 modifierKeys &= ~Keys.Alt;
                 if(QTUtility.CheckConfig(Settings.MidClickNewWindow)) {
@@ -6378,29 +6383,23 @@ namespace QTTabBarLib {
                 else if(modifierKeys == (Keys.Control | Keys.Shift)) {
                     modifierKeys = Keys.Control;
                 }
+            }                
+            if(wrapper.IsFolder) {
+                if((modifierKeys & Keys.Control) != 0) {
+                    OpenNewWindow(wrapper);
+                }
+                else {
+                    OpenNewTab(wrapper, (modifierKeys & Keys.Shift) != 0, false);
+                }
             }
-            IntPtr pidl;
-            if(PInvoke.SHGetIDListFromObject(item, out pidl) != 0) return;
-            using(IDLWrapper wrapper = new IDLWrapper(pidl)) {
-                if(wrapper.Available && wrapper.HasPath && wrapper.IsReadyIfDrive) {
-                    if(wrapper.IsFolder) {
+            else if(wrapper.IsLink && !wrapper.IsLinkToDeadFolder) {
+                using(IDLWrapper wrapper2 = new IDLWrapper(ShellMethods.GetLinkTargetIDL(wrapper.Path))) {
+                    if(wrapper2.Available && wrapper2.HasPath && wrapper2.IsReadyIfDrive && wrapper2.IsFolder) {
                         if((modifierKeys & Keys.Control) != 0) {
-                            OpenNewWindow(wrapper);
+                            OpenNewWindow(wrapper2);
                         }
                         else {
-                            OpenNewTab(wrapper, (modifierKeys & Keys.Shift) != 0, false);
-                        }
-                    }
-                    else if(wrapper.IsLink && !wrapper.IsLinkToDeadFolder) {
-                        using(IDLWrapper wrapper2 = new IDLWrapper(ShellMethods.GetLinkTargetIDL(wrapper.Path))) {
-                            if(wrapper2.Available && wrapper2.HasPath && wrapper2.IsReadyIfDrive && wrapper2.IsFolder) {
-                                if((modifierKeys & Keys.Control) != 0) {
-                                    OpenNewWindow(wrapper2);
-                                }
-                                else {
-                                    OpenNewTab(wrapper2, (modifierKeys & Keys.Shift) != 0, false);
-                                }
-                            }
+                            OpenNewTab(wrapper2, (modifierKeys & Keys.Shift) != 0, false);
                         }
                     }
                 }

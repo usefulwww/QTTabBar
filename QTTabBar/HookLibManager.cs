@@ -55,6 +55,7 @@ namespace QTTabBarLib {
             QueryInterface,                 // Scrolling Lag workaround
             TravelToEntry,                  // Clear Search bar = back
             OnActivateSelection,            // Recently activated files
+            SetNavigationState,             // Breadcrumb Bar Middle-click
         }
 
         static HookLibManager() {

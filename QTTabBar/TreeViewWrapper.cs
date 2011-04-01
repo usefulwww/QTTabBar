@@ -24,7 +24,7 @@ using QTTabBarLib.Interop;
 namespace QTTabBarLib {
     class TreeViewWrapper : IDisposable {
         public delegate void TreeViewMiddleClickedHandler(IShellItem item);
-        public event TreeViewMiddleClickedHandler TreeViewMiddleClicked;
+        public event QTTabBarClass.FolderMiddleClickedHandler TreeViewMiddleClicked;
 
         private bool fDisposed;
         private INameSpaceTreeControl treeControl;
@@ -40,7 +40,7 @@ namespace QTTabBarLib {
             parentController.MessageCaptured += ParentControl_MessageCaptured;
         }
 
-        private void HandleClick(Point pt) {
+        private void HandleClick(Point pt, Keys modifierKeys) {
             IShellItem item = null;
             IntPtr ptr = IntPtr.Zero;
             try {
@@ -53,7 +53,12 @@ namespace QTTabBarLib {
                     if((structure.flags & 0x10) == 0 && (structure.flags & 0x80) == 0) {
                         treeControl.HitTest(pt, out item);
                         if(item != null) {
-                            TreeViewMiddleClicked(item);
+                            IntPtr pidl;
+                            if(PInvoke.SHGetIDListFromObject(item, out pidl) == 0) {
+                                using(IDLWrapper wrapper = new IDLWrapper(pidl)) {
+                                    TreeViewMiddleClicked(wrapper, modifierKeys);
+                                }
+                            }
                         }
                     }
                 }
@@ -77,7 +82,7 @@ namespace QTTabBarLib {
                 case WM.MBUTTONUP:
                     // TODO
                     if(/*!QTUtility.CheckConfig(Settings.NoMidClickTree) &&*/ treeControl != null && TreeViewMiddleClicked != null) {
-                        HandleClick(QTUtility2.PointFromLPARAM(msg.LParam));
+                        HandleClick(QTUtility2.PointFromLPARAM(msg.LParam), Control.ModifierKeys);
                     }
                     break;
 
@@ -96,10 +101,10 @@ namespace QTTabBarLib {
                 NMHDR nmhdr = (NMHDR)Marshal.PtrToStructure(msg.LParam, typeof(NMHDR));
                 switch(nmhdr.code) {
                     case -2: /* NM_CLICK */
-                        if((Control.ModifierKeys & Keys.Control) != 0) {
+                        if((Control.ModifierKeys & Keys.Shift) != 0) {
                             Point pt = Control.MousePosition;
                             PInvoke.ScreenToClient(nmhdr.hwndFrom, ref pt);
-                            HandleClick(pt);
+                            HandleClick(pt, Control.ModifierKeys & ~Keys.Shift);
                             fPreventSelChange = true;
                             PInvoke.PostMessage(nmhdr.hwndFrom, WM.USER, IntPtr.Zero, IntPtr.Zero);
                             return true;

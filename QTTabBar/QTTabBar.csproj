@@ -77,11 +77,14 @@
     <Compile Include="Automation\AutomationElement.cs" />
     <Compile Include="Automation\AutomationElementFactory.cs" />
     <Compile Include="Automation\AutomationManager.cs" />
+    <Compile Include="BreadcrumbBar.cs" />
     <Compile Include="ButtonBarOptionForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="AbstractListView.cs" />
     <Compile Include="HookLibManager.cs" />
+    <Compile Include="Interop\TBBUTTON.cs" />
+    <Compile Include="Interop\TBBUTTONINFO.cs" />
     <Compile Include="TreeViewWrapper.cs" />
     <Compile Include="Interop\INameSpaceTreeControl.cs" />
     <Compile Include="Interop\IOleWindow.cs" />

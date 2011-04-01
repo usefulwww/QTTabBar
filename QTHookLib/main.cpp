@@ -48,26 +48,25 @@ public:
     virtual HRESULT STDMETHODCALLTYPE Unused() = 0;
     virtual HRESULT STDMETHODCALLTYPE GetTravelLog(/* ITravelLog */ IUnknown** ppTravelLog) = 0;
 };
-
-// The undocumented IListControlHost interface, of which we only really need the IID.
-MIDL_INTERFACE("0B907F92-1B63-40C6-AA54-0D3117F03578")
-IListControlHost : public IUnknown {};
 	
-// The undocumented ITravelLogEx interface, of which we only really need the IID.
-MIDL_INTERFACE("3050F679-98B5-11CF-BB82-00AA00BDCE0B")
-ITravelLogEx : public IUnknown {};
+// A few more undocumented interfaces and classes, of which we only really need the IIDs.
+MIDL_INTERFACE("0B907F92-1B63-40C6-AA54-0D3117F03578") IListControlHost     : public IUnknown {};
+MIDL_INTERFACE("3050F679-98B5-11CF-BB82-00AA00BDCE0B") ITravelLogEx         : public IUnknown {};
+MIDL_INTERFACE("E93D4057-B9A2-42A5-8AF8-E5BBF177D365") IShellNavigationBand : public IUnknown {};
+MIDL_INTERFACE("596742A5-1393-4E13-8765-AE1DF71ACAFB") CBreadcrumbBar {};
 
 // Hooks
-DECLARE_HOOK(0, HRESULT, CoCreateInstance, (REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWORD dwClsContext, REFIID riid, LPVOID FAR* ppv))
-DECLARE_HOOK(1, HRESULT, RegisterDragDrop, (HWND hwnd, LPDROPTARGET pDropTarget))
-DECLARE_HOOK(2, HRESULT, SHCreateShellFolderView, (const SFV_CREATE* pcsfv, IShellView** ppsv))
-DECLARE_HOOK(3, HRESULT, BrowseObject, (IShellBrowser* _this, PCUIDLIST_RELATIVE pidl, UINT wFlags))
-DECLARE_HOOK(4, HRESULT, CreateViewWindow3, (IShellView3* _this, IShellBrowser* psbOwner, IShellView* psvPrev, SV3CVW3_FLAGS dwViewFlags, FOLDERFLAGS dwMask, FOLDERFLAGS dwFlags, FOLDERVIEWMODE fvMode, const SHELLVIEWID* pvid, const RECT* prcView, HWND* phwndView))
-DECLARE_HOOK(5, HRESULT, MessageSFVCB, (IShellFolderViewCB* _this, UINT uMsg, WPARAM wParam, LPARAM lParam))
-DECLARE_HOOK(6, LRESULT, UiaReturnRawElementProvider, (HWND hwnd, WPARAM wParam, LPARAM lParam, IRawElementProviderSimple* el))
-DECLARE_HOOK(7, HRESULT, QueryInterface, (IRawElementProviderSimple* _this, REFIID riid, void** ppvObject))
-DECLARE_HOOK(8, HRESULT, TravelToEntry, (ITravelLogEx* _this, IUnknown* punk, /* ITravelLogEntry */ IUnknown* ptle))
-DECLARE_HOOK(9, HRESULT, OnActivateSelection, (IListControlHost* _this, DWORD dwModifierKeys))
+DECLARE_HOOK( 0, HRESULT, CoCreateInstance, (REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWORD dwClsContext, REFIID riid, LPVOID FAR* ppv))
+DECLARE_HOOK( 1, HRESULT, RegisterDragDrop, (HWND hwnd, LPDROPTARGET pDropTarget))
+DECLARE_HOOK( 2, HRESULT, SHCreateShellFolderView, (const SFV_CREATE* pcsfv, IShellView** ppsv))
+DECLARE_HOOK( 3, HRESULT, BrowseObject, (IShellBrowser* _this, PCUIDLIST_RELATIVE pidl, UINT wFlags))
+DECLARE_HOOK( 4, HRESULT, CreateViewWindow3, (IShellView3* _this, IShellBrowser* psbOwner, IShellView* psvPrev, SV3CVW3_FLAGS dwViewFlags, FOLDERFLAGS dwMask, FOLDERFLAGS dwFlags, FOLDERVIEWMODE fvMode, const SHELLVIEWID* pvid, const RECT* prcView, HWND* phwndView))
+DECLARE_HOOK( 5, HRESULT, MessageSFVCB, (IShellFolderViewCB* _this, UINT uMsg, WPARAM wParam, LPARAM lParam))
+DECLARE_HOOK( 6, LRESULT, UiaReturnRawElementProvider, (HWND hwnd, WPARAM wParam, LPARAM lParam, IRawElementProviderSimple* el))
+DECLARE_HOOK( 7, HRESULT, QueryInterface, (IRawElementProviderSimple* _this, REFIID riid, void** ppvObject))
+DECLARE_HOOK( 8, HRESULT, TravelToEntry, (ITravelLogEx* _this, IUnknown* punk, /* ITravelLogEntry */ IUnknown* ptle))
+DECLARE_HOOK( 9, HRESULT, OnActivateSelection, (IListControlHost* _this, DWORD dwModifierKeys))
+DECLARE_HOOK(10, HRESULT, SetNavigationState, (IShellNavigationBand* _this, unsigned long state))
 
 // Messages
 unsigned int WM_REGISTERDRAGDROP;
@@ -77,6 +76,7 @@ unsigned int WM_HEADERINALLVIEWS;
 unsigned int WM_LISTREFRESHED;
 unsigned int WM_ISITEMSVIEW;
 unsigned int WM_ACTIVATESEL;
+unsigned int WM_BREADCRUMBDPA;
 
 // Callback function
 typedef void (*HOOKLIB_CALLBACK)(int hookId, int retcode);
@@ -127,6 +127,7 @@ int Initialize(HOOKLIB_CALLBACK cb) {
     WM_LISTREFRESHED    = RegisterWindowMessageA("QTTabBar_ListRefreshed");
     WM_ISITEMSVIEW      = RegisterWindowMessageA("QTTabBar_IsItemsView");
     WM_ACTIVATESEL      = RegisterWindowMessageA("QTTabBar_ActivateSelection");
+    WM_BREADCRUMBDPA    = RegisterWindowMessageA("QTTabBar_BreadcrumbDPA");
 
     // Create and enable the CoCreateInstance, RegisterDragDrop, and SHCreateShellFolderView hooks.
     CREATE_HOOK(&CoCreateInstance, CoCreateInstance);
@@ -142,6 +143,14 @@ int Initialize(HOOKLIB_CALLBACK cb) {
         }
     }
     
+    // Create an instance of the breadcrumb bar so we can hook it.
+    IShellNavigationBand* psnb;
+    HRESULT hr = CoCreateInstance(__uuidof(CBreadcrumbBar), NULL, CLSCTX_INPROC_SERVER, __uuidof(IShellNavigationBand), (void**)&psnb);
+    if(SUCCEEDED(hr)) {
+        void** vtable = *reinterpret_cast<void***>(psnb);
+        CREATE_HOOK(vtable[4], SetNavigationState);
+        psnb->Release();
+    }
     return MH_OK;
 }
 
@@ -332,4 +341,24 @@ HRESULT WINAPI DetourOnActivateSelection(IListControlHost* _this, DWORD dwModifi
         psv->Release();
     }
     return result == 0 ? fpOnActivateSelection(_this, dwModifierKeys) : S_OK;
+}
+
+// The purpose of this hook is to send the Breadcrumb Bar's internal DPA handle to QTTabBar,
+// so that we can use it map the buttons to their corresponding IDLs.  This allows middle-click
+// on the breadcrumb bar to work.  The DPA handle changes whenever this function is called.
+HRESULT WINAPI DetourSetNavigationState(IShellNavigationBand* _this, unsigned long state) {
+	HRESULT ret = fpSetNavigationState(_this, state);
+    // I find the idea of reading an internal private variable of an undocumented class to
+    // be quite unsettling.  Unfortunately, I see no way around it.  It's been in the same
+    // location since the first Vista release, so I guess it should be safe...
+    HDPA hdpa = (HDPA)(((void**)_this)[6]);
+    IOleWindow* pow = NULL;
+    if(SUCCEEDED(_this->QueryInterface(__uuidof(IOleWindow), reinterpret_cast<void**>(&pow)))) {
+        HWND hwnd;
+        if(SUCCEEDED(pow->GetWindow(&hwnd))) {
+            SendMessage(hwnd, WM_BREADCRUMBDPA, NULL, reinterpret_cast<LPARAM>(hdpa));
+        }
+        pow->Release();
+    }
+    return ret;
 }
