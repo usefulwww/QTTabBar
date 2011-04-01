@@ -5059,14 +5059,8 @@ namespace QTTabBarLib {
                     bandObjectSite.Exec(ref pguidCmdGroup, 0, 0, IntPtr.Zero, IntPtr.Zero);
                     if(!QTUtility.IsXP) {
                         IntPtr windowLongPtr = PInvoke.GetWindowLongPtr(ReBarHandle, -8);
-                        NMHDR structure = new NMHDR();
-                        structure.hwndFrom = ReBarHandle;
-                        structure.idFrom = (IntPtr)0xa005;
-                        structure.code = -831;
-                        IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
-                        Marshal.StructureToPtr(structure, ptr, false);
-                        PInvoke.SendMessage(windowLongPtr, 0x4e, (IntPtr)0xa005, ptr);
-                        Marshal.FreeHGlobal(ptr);
+                        NMHDR structure = new NMHDR {hwndFrom = ReBarHandle, idFrom = (IntPtr)0xa005, code = -831};
+                        PInvoke.SendMessage(windowLongPtr, 0x4e, (IntPtr)0xa005, ref structure);
                     }
                     else {
                         RECT rect;

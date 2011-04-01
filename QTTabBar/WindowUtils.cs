@@ -73,11 +73,7 @@ namespace QTTabBarLib {
             REBARBANDINFO structure = new REBARBANDINFO();
             structure.cbSize = Marshal.SizeOf(structure);
             structure.fMask = 1;
-            IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
-            Marshal.StructureToPtr(structure, ptr, false);
-            IntPtr ptr2 = PInvoke.SendMessage(hwndReBar, 0x405, IntPtr.Zero, ptr);
-            structure = (REBARBANDINFO)Marshal.PtrToStructure(ptr, typeof(REBARBANDINFO));
-            Marshal.FreeHGlobal(ptr);
+            IntPtr ptr2 = PInvoke.SendMessage(hwndReBar, 0x405, IntPtr.Zero, ref structure);
             return ((ptr2 != IntPtr.Zero) && ((structure.fStyle & 0x100) != 0));
         }
 
@@ -99,11 +95,7 @@ namespace QTTabBarLib {
                 structure.cbSize = Marshal.SizeOf(structure);
                 structure.fMask = 0x110;
                 for(int i = 0; i < num; i++) {
-                    IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
-                    Marshal.StructureToPtr(structure, ptr, false);
-                    PInvoke.SendMessage(hwndRebar, 0x405, (IntPtr)i, ptr);
-                    structure = (REBARBANDINFO)Marshal.PtrToStructure(ptr, typeof(REBARBANDINFO));
-                    Marshal.FreeHGlobal(ptr);
+                    PInvoke.SendMessage(hwndRebar, 0x405, (IntPtr)i, ref structure);
                     if((PInvoke.GetClassName(structure.hwndChild) == "ToolbarWindow32") && (structure.wID == 1)) {
                         PInvoke.SendMessage(hwndRebar, 0x423, (IntPtr)i, fShow ? ((IntPtr)1) : IntPtr.Zero);
                         return;

@@ -175,29 +175,14 @@ namespace QTTabBarLib.Interop {
         [DllImport("user32.dll")]
         public static extern bool IsZoomed(IntPtr hWnd);
         public static RECT ListView_GetItemRect(IntPtr hwnd, int iItem, int iSubItem, int code) {
-            RECT structure = new RECT();
-            structure.left = code;
-            structure.top = iSubItem;
-            IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
-            Marshal.StructureToPtr(structure, ptr, false);
-            if(iSubItem == 0) {
-                SendMessage(hwnd, 0x100e, (IntPtr)iItem, ptr);
-            }
-            else {
-                SendMessage(hwnd, 0x1038, (IntPtr)iItem, ptr);
-            }
-            structure = (RECT)Marshal.PtrToStructure(ptr, typeof(RECT));
-            Marshal.FreeHGlobal(ptr);
+            RECT structure = new RECT {left = code, top = iSubItem};
+            SendMessage(hwnd, iSubItem == 0 ? 0x100Eu : 0x1038u, (IntPtr)iItem, ref structure);
             return structure;
         }
 
         public static int ListView_HitTest(IntPtr hwnd, IntPtr lParam) {
-            LVHITTESTINFO structure = new LVHITTESTINFO();
-            structure.pt = QTUtility2.PointFromLPARAM(lParam);
-            IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
-            Marshal.StructureToPtr(structure, ptr, false);
-            int num = (int)SendMessage(hwnd, 0x1012, IntPtr.Zero, ptr);
-            Marshal.FreeHGlobal(ptr);
+            LVHITTESTINFO structure = new LVHITTESTINFO {pt = QTUtility2.PointFromLPARAM(lParam)};
+            int num = (int)SendMessage(hwnd, 0x1012, IntPtr.Zero, ref structure);
             return num;
         }
         

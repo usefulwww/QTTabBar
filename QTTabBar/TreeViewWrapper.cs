@@ -42,14 +42,10 @@ namespace QTTabBarLib {
 
         private void HandleClick(Point pt, Keys modifierKeys) {
             IShellItem item = null;
-            IntPtr ptr = IntPtr.Zero;
             try {
                 TVHITTESTINFO structure = new TVHITTESTINFO { pt = pt };
-                ptr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
-                Marshal.StructureToPtr(structure, ptr, false);
-                IntPtr wParam = PInvoke.SendMessage(treeController.Handle, 0x1111, IntPtr.Zero, ptr);
+                IntPtr wParam = PInvoke.SendMessage(treeController.Handle, 0x1111, IntPtr.Zero, ref structure);
                 if(wParam != IntPtr.Zero) {
-                    structure = (TVHITTESTINFO)Marshal.PtrToStructure(ptr, typeof(TVHITTESTINFO));
                     if((structure.flags & 0x10) == 0 && (structure.flags & 0x80) == 0) {
                         treeControl.HitTest(pt, out item);
                         if(item != null) {
@@ -66,9 +62,6 @@ namespace QTTabBarLib {
             finally {
                 if(item != null) {
                     Marshal.ReleaseComObject(item);
-                }
-                if(ptr != IntPtr.Zero) {
-                    Marshal.FreeHGlobal(ptr);
                 }
             }
         }
