@@ -29,7 +29,8 @@ namespace QTTabBarLib {
         private static readonly HookLibCallback fpHookResult = HookResult;
         private static IntPtr hHookLib;
         private static int[] hookStatus = Enumerable.Repeat(-1, Enum.GetNames(typeof(Hooks)).Length).ToArray();
-
+        
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate void HookLibCallback(int hookId, int retcode);
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate int InitShellBrowserHookDelegate(IntPtr shellBrowser);
