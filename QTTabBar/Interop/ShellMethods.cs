@@ -240,11 +240,11 @@ namespace QTTabBarLib.Interop {
                     IntPtr ptr;
                     if(PInvoke.SHBindToParent(pIDL, riid, out ppv, out ptr) == 0) {
                         IntPtr[] apidl = new IntPtr[] { ptr };
-                        int num2 = ppv.GetAttributesOf(1, apidl, ref rgfInOut);
+                        int hr = ppv.GetAttributesOf(1, apidl, ref rgfInOut);
                         if(fValidate) {
-                            return (uint)num2;
+                            return (hr >= 0) ? 0 : uint.MaxValue;
                         }
-                        if(num2 == 0L) {
+                        if(hr >= 0) {
                             return rgfInOut;
                         }
                     }
