@@ -1585,20 +1585,13 @@ namespace QTTabBarLib {
         private static IntPtr SendCOPYDATASTRUCT_IDL(IntPtr hWnd, IntPtr wParam, byte[] idl, IntPtr dwData) {
             if((idl == null) || (idl.Length == 0)) {
                 return (IntPtr)(-1);
-            }
-            COPYDATASTRUCT structure = new COPYDATASTRUCT();
+            }    
             int length = idl.Length;
-            IntPtr destination = Marshal.AllocHGlobal(length);
-            Marshal.Copy(idl, 0, destination, length);
-            structure.lpData = destination;
-            structure.cbData = length;
-            structure.dwData = dwData;
-            IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
-            Marshal.StructureToPtr(structure, ptr, false);
-            IntPtr ptr3 = PInvoke.SendMessage(hWnd, 0x4a, wParam, ptr);
-            Marshal.FreeHGlobal(destination);
-            Marshal.FreeHGlobal(ptr);
-            return ptr3;
+            using(SafePtr destination = new SafePtr(length)) {
+                Marshal.Copy(idl, 0, destination, length);
+                COPYDATASTRUCT structure = new COPYDATASTRUCT { lpData = destination, cbData = length, dwData = dwData };
+                return PInvoke.SendMessage(hWnd, 0x4a, wParam, ref structure);
+            }
         }
 
         public void SetCompositionState(bool fCompositionEnabled) {

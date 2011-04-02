@@ -395,17 +395,14 @@ namespace QTTabBarLib {
             if(string.IsNullOrEmpty(strMsg)) {
                 strMsg = "null";
             }
-            COPYDATASTRUCT structure = new COPYDATASTRUCT();
-            IntPtr hglobal = Marshal.StringToHGlobalUni(strMsg);
-            structure.lpData = hglobal;
-            structure.cbData = (strMsg.Length + 1) * 2;
-            structure.dwData = dwData;
-            IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
-            Marshal.StructureToPtr(structure, ptr, false);
-            IntPtr ptr3 = PInvoke.SendMessage(hWnd, WM.COPYDATA, wParam, ptr);
-            Marshal.FreeHGlobal(hglobal);
-            Marshal.FreeHGlobal(ptr);
-            return ptr3;
+            using(SafePtr hglobal = new SafePtr(strMsg)) {
+                COPYDATASTRUCT structure = new COPYDATASTRUCT {
+                    lpData = hglobal,
+                    cbData = (strMsg.Length + 1)*2,
+                    dwData = dwData
+                };
+                return PInvoke.SendMessage(hWnd, WM.COPYDATA, wParam, ref structure);
+            }
         }
 
         public static string StringJoin<T>(this IEnumerable<T> list, string separator) {

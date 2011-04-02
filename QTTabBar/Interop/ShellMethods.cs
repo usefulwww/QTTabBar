@@ -101,23 +101,21 @@ namespace QTTabBarLib.Interop {
         public static bool DeleteFile(List<string> lstPaths, bool fShiftKey, IntPtr hwnd) {
             string s = MakeFILEOPPATHS(lstPaths);
             if(s.Length > 1) {
-                SHFILEOPSTRUCT lpFileOp = new SHFILEOPSTRUCT();
-                lpFileOp.hwnd = hwnd;
-                lpFileOp.wFunc = 3;
-                lpFileOp.pFrom = Marshal.StringToHGlobalUni(s);
-                lpFileOp.fFlags = fShiftKey ? ((short)0x4000) : ((short)0x40);
-                try {
-                    if(PInvoke.SHFileOperation(ref lpFileOp) == 0) {
-                        return !lpFileOp.fAnyOperationsAborted;
+                using(SafePtr pFrom = new SafePtr(s)) {
+                    SHFILEOPSTRUCT lpFileOp = new SHFILEOPSTRUCT {
+                        hwnd = hwnd,
+                        wFunc = 3,
+                        pFrom = pFrom,
+                        fFlags = fShiftKey ? ((short)0x4000) : ((short)0x40)
+                    };
+                    try {
+                        if(PInvoke.SHFileOperation(ref lpFileOp) == 0) {
+                            return !lpFileOp.fAnyOperationsAborted;
+                        }
                     }
-                }
-                catch(Exception exception) {
-                    QTUtility2.MakeErrorLog(exception);
-                }
-                finally {
-                    if(lpFileOp.pFrom != IntPtr.Zero) {
-                        Marshal.FreeHGlobal(lpFileOp.pFrom);
-                    }
+                    catch(Exception exception) {
+                        QTUtility2.MakeErrorLog(exception);
+                    }                    
                 }
             }
             return false;
@@ -549,27 +547,23 @@ namespace QTTabBarLib.Interop {
                         if(IsTargetPathContained(paths, pathTarget)) {
                             num = (short)(num | 8);
                         }
-                        SHFILEOPSTRUCT lpFileOp = new SHFILEOPSTRUCT();
-                        lpFileOp.hwnd = hwnd;
-                        lpFileOp.wFunc = prefferdDropEffect ? 1 : 2;
-                        lpFileOp.pFrom = Marshal.StringToHGlobalUni(s);
-                        lpFileOp.pTo = Marshal.StringToHGlobalUni(pathTarget + '\0');
-                        lpFileOp.fFlags = num;
-                        try {
-                            if(PInvoke.SHFileOperation(ref lpFileOp) == 0) {
-                                return !lpFileOp.fAnyOperationsAborted;
+                        using(SafePtr pFrom = new SafePtr(s))
+                        using(SafePtr pTo = new SafePtr(pathTarget + '\0')) {
+                            SHFILEOPSTRUCT lpFileOp = new SHFILEOPSTRUCT {
+                                hwnd = hwnd,
+                                wFunc = prefferdDropEffect ? 1 : 2,
+                                pFrom = pFrom,
+                                pTo = pTo,
+                                fFlags = num
+                            };
+                            try {
+                                if(PInvoke.SHFileOperation(ref lpFileOp) == 0) {
+                                    return !lpFileOp.fAnyOperationsAborted;
+                                }
                             }
-                        }
-                        catch(Exception exception) {
-                            QTUtility2.MakeErrorLog(exception);
-                        }
-                        finally {
-                            if(lpFileOp.pFrom != IntPtr.Zero) {
-                                Marshal.FreeHGlobal(lpFileOp.pFrom);
-                            }
-                            if(lpFileOp.pTo != IntPtr.Zero) {
-                                Marshal.FreeHGlobal(lpFileOp.pTo);
-                            }
+                            catch(Exception exception) {
+                                QTUtility2.MakeErrorLog(exception);
+                            }                            
                         }
                     }
                 }
@@ -822,22 +816,18 @@ namespace QTTabBarLib.Interop {
             return zero;
         }
 
-        public static void ShowProperties(byte[] idl) {
-            SHELLEXECUTEINFO structure = new SHELLEXECUTEINFO();
-            structure.cbSize = Marshal.SizeOf(structure);
-            structure.fMask = 0x40c;
-            structure.lpVerb = Marshal.StringToHGlobalUni("properties");
-            try {
-                using(IDLWrapper wrapper = new IDLWrapper(idl)) {
-                    if(wrapper.Available) {
-                        structure.lpIDList = wrapper.PIDL;
-                        PInvoke.ShellExecuteEx(ref structure);
-                    }
-                }
-            }
-            finally {
-                if(structure.lpVerb != IntPtr.Zero) {
-                    Marshal.FreeHGlobal(structure.lpVerb);
+        public static void ShowProperties(byte[] idl, IntPtr hwnd = default(IntPtr)) {
+            using(SafePtr sptr = new SafePtr("properties"))
+            using(IDLWrapper wrapper = new IDLWrapper(idl)) {
+                if(wrapper.Available) {
+                    SHELLEXECUTEINFO structure = new SHELLEXECUTEINFO {
+                        hwnd = hwnd,
+                        fMask = 0x40C,
+                        lpVerb = sptr,
+                        lpIDList = wrapper.PIDL
+                    };
+                    structure.cbSize = Marshal.SizeOf(structure);
+                    PInvoke.ShellExecuteEx(ref structure);
                 }
             }
         }

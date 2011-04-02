@@ -2469,11 +2469,8 @@ namespace QTTabBarLib {
         private void Handle_MButtonUp_Tree(MSG msg) {
             IntPtr ptr;
             if(ShellBrowser.IsFolderTreeVisible(out ptr) && msg.hwnd == ptr) {
-                TVHITTESTINFO structure = new TVHITTESTINFO();
-                structure.pt = QTUtility2.PointFromLPARAM(msg.lParam);
-                IntPtr ptr2 = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
-                Marshal.StructureToPtr(structure, ptr2, false);
-                IntPtr wParam = PInvoke.SendMessage(ptr, 0x1111, IntPtr.Zero, ptr2);
+                TVHITTESTINFO structure = new TVHITTESTINFO {pt = QTUtility2.PointFromLPARAM(msg.lParam)};
+                IntPtr wParam = PInvoke.SendMessage(ptr, 0x1111, IntPtr.Zero, ref structure);
                 if(wParam != IntPtr.Zero) {
                     int num = (int)PInvoke.SendMessage(ptr, 0x1127, wParam, (IntPtr)2);
                     if((num & 2) == 0) {
@@ -3045,13 +3042,9 @@ namespace QTTabBarLib {
         private void HandleLBUTTON_Tree(MSG msg, bool fMouseDown) {
             IntPtr ptr;
             if(ShellBrowser.IsFolderTreeVisible(out ptr) && msg.hwnd == ptr) {
-                TVHITTESTINFO structure = new TVHITTESTINFO();
-                structure.pt = QTUtility2.PointFromLPARAM(msg.lParam);
-                IntPtr ptr2 = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
-                Marshal.StructureToPtr(structure, ptr2, false);
-                IntPtr wParam = PInvoke.SendMessage(ptr, 0x1111, IntPtr.Zero, ptr2);
+                TVHITTESTINFO structure = new TVHITTESTINFO {pt = QTUtility2.PointFromLPARAM(msg.lParam)};
+                IntPtr wParam = PInvoke.SendMessage(ptr, 0x1111, IntPtr.Zero, ref structure);
                 if(wParam != IntPtr.Zero) {
-                    structure = (TVHITTESTINFO)Marshal.PtrToStructure(ptr2, typeof(TVHITTESTINFO));
                     bool flag;
                     if(fMouseDown) {
                         flag = (((structure.flags != 1) && (structure.flags != 0x10)) && ((structure.flags & 2) == 0)) && ((structure.flags & 4) == 0);
@@ -3066,7 +3059,6 @@ namespace QTTabBarLib {
                         }
                     }
                 }
-                Marshal.FreeHGlobal(ptr2);
             }
         }        
 
@@ -4933,38 +4925,34 @@ namespace QTTabBarLib {
                         if(bmpRebar != null) {
                             switch(((QTUtility.ConfigValues[11] & 0x60) | (QTUtility.ConfigValues[13] & 1))) {
                                 case 1: {
-                                        if(!flag) {
-                                            rebarController.DefWndProc(ref m);
-                                        }
-                                        int num2 = (int)PInvoke.SendMessage(rebarController.Handle, 0x40c, IntPtr.Zero, IntPtr.Zero);
-                                        RECT rect2;
-                                        IntPtr lParam = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(RECT)));
-                                        graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-                                        for(int i = 0; i < num2; i++) {
-                                            IntPtr ptr2 = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(RECT)));
-                                            PInvoke.SendMessage(rebarController.Handle, 0x422, (IntPtr)i, ptr2);
-                                            RECT rect3 = (RECT)Marshal.PtrToStructure(ptr2, typeof(RECT));
-                                            Marshal.FreeHGlobal(ptr2);
-                                            if(IntPtr.Zero != PInvoke.SendMessage(rebarController.Handle, 0x409, (IntPtr)i, lParam)) {
-                                                rect2 = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT));
-                                                rect2.left -= !QTUtility.IsXP ? 4 : rect3.left;
-                                                rect2.top -= rect3.top;
-                                                rect2.right += rect3.right;
-                                                rect2.bottom += rect3.bottom;
-                                                graphics.DrawImage(bmpRebar, rect2.ToRectangle());
-                                            }
-                                        }
-                                        Marshal.FreeHGlobal(lParam);
-                                        break;
+                                    if(!flag) {
+                                        rebarController.DefWndProc(ref m);
                                     }
+                                    int num2 = (int)PInvoke.SendMessage(rebarController.Handle, 0x40c, IntPtr.Zero, IntPtr.Zero);
+                                    graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                                    RECT rect2 = new RECT();
+                                    RECT rect3 = new RECT();
+                                    for(int i = 0; i < num2; i++) {
+                                        PInvoke.SendMessage(rebarController.Handle, 0x422, (IntPtr)i, ref rect3);
+                                        if(PInvoke.SendMessage(rebarController.Handle, 0x409, (IntPtr)i, ref rect2) == IntPtr.Zero) {
+                                            continue;
+                                        }
+                                        rect2.left -= !QTUtility.IsXP ? 4 : rect3.left;
+                                        rect2.top -= rect3.top;
+                                        rect2.right += rect3.right;
+                                        rect2.bottom += rect3.bottom;
+                                        graphics.DrawImage(bmpRebar, rect2.ToRectangle());
+                                    }
+                                    break;
+                                }
                                 case 0x20: {
-                                        if(!flag) {
-                                            rebarController.DefWndProc(ref m);
-                                        }
-                                        Rectangle destRect = new Rectangle(Point.Empty, bmpRebar.Size);
-                                        graphics.DrawImage(bmpRebar, destRect, destRect, GraphicsUnit.Pixel);
-                                        break;
+                                    if(!flag) {
+                                        rebarController.DefWndProc(ref m);
                                     }
+                                    Rectangle destRect = new Rectangle(Point.Empty, bmpRebar.Size);
+                                    graphics.DrawImage(bmpRebar, destRect, destRect, GraphicsUnit.Pixel);
+                                    break;
+                                }
                                 case 0x40:
                                     if(textureBrushRebar == null) {
                                         textureBrushRebar = new TextureBrush(bmpRebar);
@@ -7103,27 +7091,15 @@ namespace QTTabBarLib {
                             return true;
 
                         case Commands.CloseAllButCurrent:
-                            if(tabBar.tabControl1.TabCount > 1) {
-                                foreach(QTabItem item in tabBar.tabControl1.TabPages) {
-                                    if(item != tabBar.CurrentTab) {
-                                        tabBar.CloseTab(item);
-                                    }
-                                }
-                            }
+                            tabBar.CloseAllTabsExcept(tabBar.CurrentTab);
                             return true;
 
                         case Commands.CloseAllButOne: {
-                                TabWrapper wrapper = arg as TabWrapper;
-                                if(wrapper == null) {
-                                    break;
-                                }
-                                foreach(QTabItem item2 in tabBar.tabControl1.TabPages) {
-                                    if(item2 != wrapper.Tab) {
-                                        tabBar.CloseTab(item2);
-                                    }
-                                }
-                                return true;
-                            }
+                            TabWrapper wrapper = arg as TabWrapper;
+                            if(wrapper == null) break;
+                            tabBar.CloseAllTabsExcept(wrapper.Tab);
+                            return true;
+                        }
                         case Commands.CloseWindow:
                             WindowUtils.CloseExplorer(tabBar.ExplorerHandle, 2);
                             return true;
@@ -7190,27 +7166,16 @@ namespace QTTabBarLib {
                             return true;
 
                         case Commands.ShowProperties: {
-                                if((arg == null) || !(arg is Address)) {
-                                    break;
-                                }
-                                Address address = (Address)arg;
-                                IntPtr pv = AddressToPIDL(address);
-                                if(!(pv != IntPtr.Zero)) {
-                                    break;
-                                }
-                                SHELLEXECUTEINFO structure = new SHELLEXECUTEINFO();
-                                structure.cbSize = Marshal.SizeOf(structure);
-                                structure.hwnd = tabBar.ExplorerHandle;
-                                structure.fMask = 0x40c;
-                                structure.lpVerb = Marshal.StringToHGlobalUni("properties");
-                                structure.lpIDList = pv;
-                                PInvoke.ShellExecuteEx(ref structure);
-                                PInvoke.CoTaskMemFree(pv);
-                                if(structure.lpVerb != IntPtr.Zero) {
-                                    Marshal.FreeHGlobal(structure.lpVerb);
-                                }
-                                return true;
+                            if((arg == null) || !(arg is Address)) {
+                                break;
                             }
+                            Address address = (Address)arg;
+                            using(IDLWrapper wrapper = new IDLWrapper(AddressToPIDL(address))) {
+                                if(!wrapper.Available) break;
+                                ShellMethods.ShowProperties(wrapper.IDL, tabBar.ExplorerHandle);
+                                return true;
+                            }                               
+                        }
                         case Commands.SetModalState:
                             if(((arg == null) || !(arg is bool)) || !((bool)arg)) {
                                 tabBar.NowModalDialogShown = false;

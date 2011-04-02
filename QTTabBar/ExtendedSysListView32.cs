@@ -297,21 +297,20 @@ namespace QTTabBarLib {
                 case FVM.LIST:
                     if(QTUtility.IsXP) {
                         rect = GetItemRect(iItem, LVIR.ICON);
-                        LVITEM structure = new LVITEM();
-                        structure.pszText = Marshal.AllocHGlobal(520);
-                        structure.cchTextMax = 260;
-                        structure.iItem = iItem;
-                        structure.mask = 1;
-                        IntPtr zero = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
-                        Marshal.StructureToPtr(structure, zero, false);
-                        PInvoke.SendMessage(Handle, LVM.GETITEM, IntPtr.Zero, zero);
-                        int num4 = (int)PInvoke.SendMessage(Handle, LVM.GETSTRINGWIDTH, IntPtr.Zero, structure.pszText);
-                        num4 += 20;
-                        Marshal.FreeHGlobal(structure.pszText);
-                        Marshal.FreeHGlobal(zero);
-                        rect.right += num4;
-                        rect.top += 2;
-                        rect.bottom += 2;
+                        using(SafePtr pszText = new SafePtr(520)) {
+                            LVITEM structure = new LVITEM {
+                                pszText = pszText,
+                                cchTextMax = 260,
+                                iItem = iItem,
+                                mask = 1
+                            };
+                            PInvoke.SendMessage(Handle, LVM.GETITEM, IntPtr.Zero, ref structure);
+                            int num4 = (int)PInvoke.SendMessage(Handle, LVM.GETSTRINGWIDTH, IntPtr.Zero, pszText);
+                            num4 += 20;
+                            rect.right += num4;
+                            rect.top += 2;
+                            rect.bottom += 2;                            
+                        }
                     }
                     else {
                         rect = GetItemRect(iItem, LVIR.LABEL);
@@ -668,8 +667,8 @@ namespace QTTabBarLib {
             IntPtr hWnd = GetEditControl();
             if(hWnd == IntPtr.Zero) return;
 
-            IntPtr lParam = Marshal.AllocHGlobal(520);
-            if((int)PInvoke.SendMessage(hWnd, WM.GETTEXT, (IntPtr)260, lParam) > 0) {
+            using(SafePtr lParam = new SafePtr(520)) {
+                if((int)PInvoke.SendMessage(hWnd, WM.GETTEXT, (IntPtr)260, lParam) <= 0) return;
                 string str3 = Marshal.PtrToStringUni(lParam);
                 if(str3.Length > 2) {
                     int num = str3.LastIndexOf(".");
@@ -684,17 +683,11 @@ namespace QTTabBarLib {
                     }
                 }
             }
-            Marshal.FreeHGlobal(lParam);
         }
 
         private RECT GetItemRect(int iItem, int LVIRCode = LVIR.BOUNDS) {
-            RECT rect = new RECT();
-            rect.left = LVIRCode;
-            IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(rect));
-            Marshal.StructureToPtr(rect, ptr, false);
-            PInvoke.SendMessage(Handle, LVM.GETITEMRECT, (IntPtr)iItem, ptr);
-            rect = (RECT)Marshal.PtrToStructure(ptr, typeof(RECT));
-            Marshal.FreeHGlobal(ptr);
+            RECT rect = new RECT {left = LVIRCode};
+            PInvoke.SendMessage(Handle, LVM.GETITEMRECT, (IntPtr)iItem, ref rect);
             return rect;
         }
 
@@ -702,12 +695,8 @@ namespace QTTabBarLib {
             if(screenCoords) {
                 PInvoke.ScreenToClient(ListViewController.Handle, ref pt);
             }
-            LVHITTESTINFO structure = new LVHITTESTINFO();
-            structure.pt = pt;
-            IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
-            Marshal.StructureToPtr(structure, ptr, false);
-            int num = (int)PInvoke.SendMessage(ListViewController.Handle, LVM.HITTEST, IntPtr.Zero, ptr);
-            Marshal.FreeHGlobal(ptr);
+            LVHITTESTINFO structure = new LVHITTESTINFO {pt = pt};
+            int num = (int)PInvoke.SendMessage(ListViewController.Handle, LVM.HITTEST, IntPtr.Zero, ref structure);
             return num;
         }
 
@@ -755,20 +744,13 @@ namespace QTTabBarLib {
             if(screenCoords) {
                 PInvoke.ScreenToClient(ListViewController.Handle, ref pt);
             }
-            LVHITTESTINFO structure = new LVHITTESTINFO();
-            structure.pt = pt;
-            IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
-            Marshal.StructureToPtr(structure, ptr, false);
-            if(!QTUtility.IsXP) {
-                PInvoke.SendMessage(ListViewController.Handle, LVM.HITTEST, (IntPtr)(-1), ptr);
-                structure = (LVHITTESTINFO)Marshal.PtrToStructure(ptr, typeof(LVHITTESTINFO));
-                Marshal.FreeHGlobal(ptr);
-                return structure.flags == 1 /* LVHT_NOWHERE */;
+            LVHITTESTINFO structure = new LVHITTESTINFO {pt = pt};
+            if(QTUtility.IsXP) {
+                return -1 == (int)PInvoke.SendMessage(ListViewController.Handle, LVM.HITTEST, IntPtr.Zero, ref structure);
             }
             else {
-                int num = (int)PInvoke.SendMessage(ListViewController.Handle, LVM.HITTEST, IntPtr.Zero, ptr);
-                Marshal.FreeHGlobal(ptr);
-                return num == -1;
+                PInvoke.SendMessage(ListViewController.Handle, LVM.HITTEST, (IntPtr)(-1), ref structure);
+                return structure.flags == 1 /* LVHT_NOWHERE */;
             }
         }
     }

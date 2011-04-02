@@ -578,14 +578,14 @@ namespace QTTabBarLib {
             try {
                 IntPtr ptr;
                 if(PInvoke.RegOpenKeyEx((IntPtr)(-2147483647), lpSubKey, 0, 0x20019, out ptr) == 0) {
-                    int num2;
-                    IntPtr lpData = Marshal.AllocHGlobal(4);
-                    if(PInvoke.RegQueryValueEx(ptr, "IconUnderline", IntPtr.Zero, out num2, lpData, ref lpcbData) == 0) {
-                        byte[] destination = new byte[4];
-                        Marshal.Copy(lpData, destination, 0, 4);
-                        iIconUnderLineVal = destination[0];
+                    using(SafePtr lpData = new SafePtr(4)) {
+                        int num2;
+                        if(PInvoke.RegQueryValueEx(ptr, "IconUnderline", IntPtr.Zero, out num2, lpData, ref lpcbData) == 0) {
+                            byte[] destination = new byte[4];
+                            Marshal.Copy(lpData, destination, 0, 4);
+                            iIconUnderLineVal = destination[0];
+                        }                        
                     }
-                    Marshal.FreeHGlobal(lpData);
                     PInvoke.RegCloseKey(ptr);
                 }
                 using(RegistryKey key = Registry.CurrentUser.OpenSubKey(lpSubKey, false)) {

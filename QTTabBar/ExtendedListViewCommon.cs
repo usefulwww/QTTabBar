@@ -164,41 +164,40 @@ namespace QTTabBarLib {
         public override void HandleF2() {
             IntPtr hWnd = GetEditControl();
             if(hWnd == IntPtr.Zero) return;
-            IntPtr lParam = Marshal.AllocHGlobal(520);
-            if(0 < ((int)PInvoke.SendMessage(hWnd, 13, (IntPtr)260, lParam))) {
-                string str = Marshal.PtrToStringUni(lParam);
-                if(str.Length > 2) {
-                    int num = str.LastIndexOf(".");
-                    if(num != -1) {
-                        IntPtr ptr3 = PInvoke.SendMessage(hWnd, 0xb0, IntPtr.Zero, IntPtr.Zero);
-                        int start = QTUtility2.GET_X_LPARAM(ptr3);
-                        int length = QTUtility2.GET_Y_LPARAM(ptr3);
-                        if((length - start) >= 0) {
-                            if((start == 0) && (length == num)) {
-                                start = length = num;
-                            }
-                            else if((start == length) && (length == num)) {
-                                start = num + 1;
-                                length = str.Length;
-                            }
-                            else if((start == (num + 1)) && (length == str.Length)) {
-                                start = 0;
-                                length = -1;
-                            }
-                            else if((start == 0) && (length == str.Length)) {
-                                start = 0;
-                                length = 0;
-                            }
-                            else {
-                                start = 0;
-                                length = num;
-                            }
-                            PInvoke.SendMessage(hWnd, 0xb1, (IntPtr)start, (IntPtr)length);
-                        }
-                    }
-                }
+            string str;
+            using(SafePtr lParam = new SafePtr(520)) {
+                if(0 >= ((int)PInvoke.SendMessage(hWnd, 13, (IntPtr)260, lParam))) return;
+                str = Marshal.PtrToStringUni(lParam);
             }
-            Marshal.FreeHGlobal(lParam);
+            if(str.Length <= 2) return;
+            int num = str.LastIndexOf(".");
+            if(num != -1) {
+                IntPtr ptr3 = PInvoke.SendMessage(hWnd, 0xb0, IntPtr.Zero, IntPtr.Zero);
+                int start = QTUtility2.GET_X_LPARAM(ptr3);
+                int length = QTUtility2.GET_Y_LPARAM(ptr3);
+                if((length - start) >= 0) {
+                    if((start == 0) && (length == num)) {
+                        start = length = num;
+                    }
+                    else if((start == length) && (length == num)) {
+                        start = num + 1;
+                        length = str.Length;
+                    }
+                    else if((start == (num + 1)) && (length == str.Length)) {
+                        start = 0;
+                        length = -1;
+                    }
+                    else if((start == 0) && (length == str.Length)) {
+                        start = 0;
+                        length = 0;
+                    }
+                    else {
+                        start = 0;
+                        length = num;
+                    }
+                    PInvoke.SendMessage(hWnd, 0xb1, (IntPtr)start, (IntPtr)length);
+                }   
+            }
         }
 
         public override void HandleShiftKey() {
