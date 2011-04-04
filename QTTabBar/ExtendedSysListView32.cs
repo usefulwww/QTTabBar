@@ -56,10 +56,6 @@ namespace QTTabBarLib {
             if(msg.Msg == 0xb1 /* EM_SETSEL */ && msg.WParam.ToInt32() != -1) {
                 msg.LParam = EditController.OptionalHandle;
                 EditController.MessageCaptured -= EditController_MessageCaptured;
-
-                // This point, we could just call EditController.ReleaseHandle(),
-                // but doing so here seems to cause strange effects on XP.  Ah
-                // well, this is good enough.
             }
             return false;
         }

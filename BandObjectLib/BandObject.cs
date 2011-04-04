@@ -42,22 +42,26 @@ namespace BandObjectLib {
         // Windows 7.
         internal sealed class RebarBreakFixer : NativeWindow {
             private BandObject parent;
-            bool monitorSetInfo = true;
+            public bool MonitorSetInfo { get; set; }
+            public bool Enabled { get; set; }
+
             public RebarBreakFixer(IntPtr hwnd, BandObject parent) {
                 this.parent = parent;
+                Enabled = true;
+                MonitorSetInfo = true;
                 AssignHandle(hwnd);
             }
 
-            public void ToggleSetInfoMonitor(bool on) {
-                monitorSetInfo = on;
-            }
-
             protected override void WndProc(ref Message m) {
+                if(!Enabled) {
+                    base.WndProc(ref m);
+                    return;
+                }
 
                 // When the bars are first loaded, they will always have 
                 // RBBS_BREAK set.  Catch RB_SETBANDINFO to fix this.
                 if(m.Msg == RB.SETBANDINFO) {
-                    if(monitorSetInfo) {
+                    if(MonitorSetInfo) {
                         REBARBANDINFO pInfo = (REBARBANDINFO)Marshal.PtrToStructure(m.LParam, typeof(REBARBANDINFO));
                         if(pInfo.hwndChild == parent.Handle && (pInfo.fMask & RBBIM.STYLE) != 0) {
 
@@ -99,10 +103,10 @@ namespace BandObjectLib {
                             info.fMask = RBBIM.STYLE;
                             IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(info));
                             Marshal.StructureToPtr(info, ptr, false);
-                            bool reset = monitorSetInfo;
-                            monitorSetInfo = false;
+                            bool reset = MonitorSetInfo;
+                            MonitorSetInfo = false;
                             SendMessage(parent.ReBarHandle, RB.SETBANDINFO, (IntPtr)i, ptr);
-                            monitorSetInfo = reset;
+                            MonitorSetInfo = reset;
                             Marshal.FreeHGlobal(ptr);
 
                             // Return without calling WndProc twice!
@@ -143,11 +147,7 @@ namespace BandObjectLib {
                 BandObjectSite = null;
             }
             if(RebarSubclass != null) {
-                RebarSubclass.ReleaseHandle();
-                RebarSubclass = null;
-            }
-            if(RebarSubclass != null) {
-                RebarSubclass.ReleaseHandle();
+                RebarSubclass.Enabled = false;
                 RebarSubclass = null;
             }
         }
@@ -275,7 +275,7 @@ namespace BandObjectLib {
                     RebarSubclass = new RebarBreakFixer(ReBarHandle, this);
                 }
 
-                RebarSubclass.ToggleSetInfoMonitor(true);
+                RebarSubclass.MonitorSetInfo = true;
                 if(result == null || result.IsCompleted) {    
                     result = BeginInvoke(new UnsetInfoDelegate(UnsetInfo));
                 }
@@ -304,7 +304,7 @@ namespace BandObjectLib {
 
         private void UnsetInfo() {
             if(RebarSubclass != null) {
-                RebarSubclass.ToggleSetInfoMonitor(false);
+                RebarSubclass.MonitorSetInfo = false;
             }
         }
 

@@ -20,8 +20,6 @@ using System.Windows.Forms;
 
 namespace QTTabBarLib {
     public sealed class NativeWindowController : NativeWindow {
-        private IntPtr hwndOptional;
-
         internal event MessageEventHandler MessageCaptured;
 
         public NativeWindowController(IntPtr hwnd) {
@@ -43,14 +41,7 @@ namespace QTTabBarLib {
             }
         }
 
-        public IntPtr OptionalHandle {
-            get {
-                return hwndOptional;
-            }
-            set {
-                hwndOptional = value;
-            }
-        }
+        public IntPtr OptionalHandle { get; set; }
 
         internal delegate bool MessageEventHandler(ref Message msg);
     }
