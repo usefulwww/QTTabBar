@@ -116,12 +116,13 @@ namespace QTTabBarLib {
 
         public override void Dispose(bool fDisposing) {
             if(fDisposed) return;
+            // Never call NativeWindow.ReleaseHandle().  EVER!!!
             if(ListViewController != null) {
-                ListViewController.ReleaseHandle();
+                ListViewController.MessageCaptured -= ListViewController_MessageCaptured;
                 ListViewController = null;
             }
             if(ShellViewController != null) {
-                ShellViewController.ReleaseHandle();
+                ShellViewController.MessageCaptured -= ShellViewController_MessageCaptured;
                 ShellViewController = null;
             }
             if(timer_HoverSubDirTipMenu != null) {
