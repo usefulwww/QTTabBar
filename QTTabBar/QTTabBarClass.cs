@@ -72,6 +72,7 @@ namespace QTTabBarLib {
         private volatile bool FirstNavigationCompleted;
         private bool fAutoNavigating;
         private bool fNavigatedByTabSelection;
+        private bool fNeedsNewWindowPusle;
         private bool fNowInTray;
         private bool fNowQuitting;
         private bool fNowRestoring;
@@ -170,6 +171,7 @@ namespace QTTabBarLib {
         private readonly uint WM_HEADERINALLVIEWS = PInvoke.RegisterWindowMessage("QTTabBar_HeaderInAllViews");
         private readonly uint WM_LISTREFRESHED = PInvoke.RegisterWindowMessage("QTTabBar_ListRefreshed");
         private readonly uint WM_SHOWHIDEBARS = PInvoke.RegisterWindowMessage("QTTabBar_ShowHideBars");
+        private readonly uint WM_NEWWINDOW = PInvoke.RegisterWindowMessage("QTTabBar_NewWindow");
         
         public delegate void FolderMiddleClickedHandler(IDLWrapper item, Keys modkeys);
 
@@ -2183,6 +2185,15 @@ namespace QTTabBarLib {
                 }
                 catch(COMException) {
                 }
+                return true;
+            }
+            else if(msg.Msg == WM_NEWWINDOW) {
+                if(fNeedsNewWindowPusle && msg.LParam != IntPtr.Zero) {
+                    Marshal.WriteIntPtr(msg.LParam, Marshal.GetIDispatchForObject(Explorer));
+                    msg.Result = (IntPtr)1;
+                    fNeedsNewWindowPusle = false;
+                }
+                return true;
             }
 
             switch(msg.Msg) {
@@ -6523,6 +6534,26 @@ namespace QTTabBarLib {
                         }
                         break;
                 }
+                
+                if(m.Msg == WM_NEWWINDOW) {
+                    using(IDLWrapper wrapper = new IDLWrapper(PInvoke.ILClone(m.LParam))) {
+                        if(QTUtility.CheckConfig(Settings.NoTabsFromOutside)
+                                || QTUtility2.IsShellPathButNotFileSystem(wrapper.Path)
+                                || wrapper.Path.PathEquals(QTUtility.PATH_SEARCHFOLDER)
+                                || QTUtility.NoCapturePathsList.Any(path => wrapper.Path.PathEquals(path))
+                                || ModifierKeys == Keys.Control) {
+                            m.Result = IntPtr.Zero;
+                        }
+                        else {
+                            fNeedsNewWindowPusle = true;
+                            OpenNewTab(wrapper, false, false);
+                            WindowUtils.BringExplorerToFront(ExplorerHandle);
+                            m.Result = (IntPtr)1;
+                        }
+                    }
+                    return;
+                }
+                
                 if(m.Msg != WM.COPYDATA) {
                     base.WndProc(ref m);
                     return;

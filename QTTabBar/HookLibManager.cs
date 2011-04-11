@@ -57,6 +57,9 @@ namespace QTTabBarLib {
             TravelToEntry,                  // Clear Search bar = back
             OnActivateSelection,            // Recently activated files
             SetNavigationState,             // Breadcrumb Bar Middle-click
+            CreateInstance,
+            ShowWindow,                     // New Explorer window capturing
+            UpdateWindowList,               // Compatibility with SHOpenFolderAndSelectItems
         }
 
         static HookLibManager() {

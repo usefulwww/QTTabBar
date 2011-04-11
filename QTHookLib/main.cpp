@@ -52,6 +52,7 @@ public:
 // A few more undocumented interfaces and classes, of which we only really need the IIDs.
 MIDL_INTERFACE("0B907F92-1B63-40C6-AA54-0D3117F03578") IListControlHost     : public IUnknown {};
 MIDL_INTERFACE("3050F679-98B5-11CF-BB82-00AA00BDCE0B") ITravelLogEx         : public IUnknown {};
+MIDL_INTERFACE("489E9453-869B-4BCC-A1C7-48B5285FD9D8") ICommonExplorerHost  : public IUnknown {};
 MIDL_INTERFACE("E93D4057-B9A2-42A5-8AF8-E5BBF177D365") IShellNavigationBand : public IUnknown {};
 MIDL_INTERFACE("596742A5-1393-4E13-8765-AE1DF71ACAFB") CBreadcrumbBar {};
 
@@ -67,6 +68,9 @@ DECLARE_HOOK( 7, HRESULT, QueryInterface, (IRawElementProviderSimple* _this, REF
 DECLARE_HOOK( 8, HRESULT, TravelToEntry, (ITravelLogEx* _this, IUnknown* punk, /* ITravelLogEntry */ IUnknown* ptle))
 DECLARE_HOOK( 9, HRESULT, OnActivateSelection, (IListControlHost* _this, DWORD dwModifierKeys))
 DECLARE_HOOK(10, HRESULT, SetNavigationState, (IShellNavigationBand* _this, unsigned long state))
+DECLARE_HOOK(11, HRESULT, CreateInstance, (IClassFactory* _this, IUnknown* pUnkOuter, REFIID riid, void** ppvObject))
+DECLARE_HOOK(12, HRESULT, ShowWindow, (ICommonExplorerHost* _this, PCIDLIST_ABSOLUTE pidl, DWORD flags, POINT pt, DWORD mystery))
+DECLARE_HOOK(13, HRESULT, UpdateWindowList, (IShellBrowserService* _this))
 
 // Messages
 unsigned int WM_REGISTERDRAGDROP;
@@ -77,6 +81,7 @@ unsigned int WM_LISTREFRESHED;
 unsigned int WM_ISITEMSVIEW;
 unsigned int WM_ACTIVATESEL;
 unsigned int WM_BREADCRUMBDPA;
+unsigned int WM_NEWWINDOW;
 
 // Callback function
 typedef void (*HOOKLIB_CALLBACK)(int hookId, int retcode);
@@ -85,6 +90,7 @@ HOOKLIB_CALLBACK fpHookResult = NULL;
 // Other stuff
 HMODULE hModAutomation = NULL;
 FARPROC fpRealRREP = NULL;
+FARPROC fpRealCI = NULL;
 
 extern "C" __declspec(dllexport) int Initialize(HOOKLIB_CALLBACK cb);
 extern "C" __declspec(dllexport) int Dispose();
@@ -128,6 +134,7 @@ int Initialize(HOOKLIB_CALLBACK cb) {
     WM_ISITEMSVIEW      = RegisterWindowMessageA("QTTabBar_IsItemsView");
     WM_ACTIVATESEL      = RegisterWindowMessageA("QTTabBar_ActivateSelection");
     WM_BREADCRUMBDPA    = RegisterWindowMessageA("QTTabBar_BreadcrumbDPA");
+    WM_NEWWINDOW        = RegisterWindowMessageA("QTTabBar_NewWindow");
 
     // Create and enable the CoCreateInstance, RegisterDragDrop, and SHCreateShellFolderView hooks.
     CREATE_HOOK(&CoCreateInstance, CoCreateInstance);
@@ -151,6 +158,15 @@ int Initialize(HOOKLIB_CALLBACK cb) {
         CREATE_HOOK(vtable[4], SetNavigationState);
         psnb->Release();
     }
+
+    // Get an instance of ExplorerFrame.dll's CClassFactory so we can hook it.
+    IClassFactory* pcf = NULL;
+    if(SUCCEEDED(CoGetClassObject(CLSID_NamespaceTreeControl, CLSCTX_INPROC_SERVER, NULL, IID_IClassFactory, (LPVOID*)&pcf))) {
+        void** vtable = *reinterpret_cast<void***>(pcf);
+        fpRealCI = (FARPROC)(vtable[3]);
+        CREATE_HOOK(fpRealCI, CreateInstance);
+        pcf->Release();
+    }
     return MH_OK;
 }
 
@@ -168,11 +184,15 @@ int InitShellBrowserHook(IShellBrowser* psb) {
 
     IShellBrowserService* psbs = NULL;
     if(SUCCEEDED(psb->QueryInterface(__uuidof(IShellBrowserService), reinterpret_cast<void**>(&psbs)))) {
+        void** vtable = *reinterpret_cast<void***>(psbs);
+        // Hook the 11th entry in this IShellBrowserService's VTable, which is UpdateWindowList
+        CREATE_HOOK(vtable[10], UpdateWindowList);
+
         IUnknown* ptl = NULL;
         if(SUCCEEDED(psbs->GetTravelLog(&ptl))) {
             ITravelLogEx* ptlex = NULL;
             if(SUCCEEDED(ptl->QueryInterface(__uuidof(ITravelLogEx), reinterpret_cast<void**>(&ptlex)))) {
-                void** vtable = *reinterpret_cast<void***>(ptlex);
+                vtable = *reinterpret_cast<void***>(ptlex);
                 // Hook the 11th entry in this ITravelLogEx's VTable, which is TravelToEntry
                 CREATE_HOOK(vtable[11], TravelToEntry);
                 ptlex->Release();
@@ -361,4 +381,70 @@ HRESULT WINAPI DetourSetNavigationState(IShellNavigationBand* _this, unsigned lo
         pow->Release();
     }
     return ret;
+}
+
+// The purpose of this hook is just to set another hook.  It is disabled once the other hook is set.
+HRESULT WINAPI DetourCreateInstance(IClassFactory* _this, IUnknown *pUnkOuter, REFIID riid, void **ppvObject) {
+     HRESULT hr = fpCreateInstance(_this, pUnkOuter, riid, ppvObject);
+     if(SUCCEEDED(hr)) {
+          IUnknown* punk = (IUnknown*)(*ppvObject);
+          ICommonExplorerHost* pceh;
+          if(SUCCEEDED(punk->QueryInterface(__uuidof(ICommonExplorerHost), (void**)&pceh))) {
+               void** vtable = *reinterpret_cast<void***>(pceh);
+               CREATE_HOOK(vtable[3], ShowWindow);
+               MH_DisableHook(fpRealCI);
+               pceh->Release();
+          }
+     }
+     return hr;
+}
+
+// The purpose of this hook is to alert QTTabBar that a new window is opening, so that we can 
+// intercept it if the user has enabled the appropriate option.
+HRESULT WINAPI DetourShowWindow(ICommonExplorerHost* _this, PCIDLIST_ABSOLUTE pidl, DWORD flags, POINT pt, DWORD mystery) {
+    HWND hwnd = 0;
+    HKEY hKey;
+    if(RegOpenKeyExA(HKEY_CURRENT_USER, "Software\\Quizo\\QTTabBar", 0L, KEY_READ, &hKey) == ERROR_SUCCESS) {
+        BYTE bBuf[8] = {0};
+        DWORD dwSize = 8;
+        if(RegQueryValueExA(hKey, "Handle", NULL, NULL, bBuf, &dwSize) == ERROR_SUCCESS) {
+            hwnd = *(HWND*)bBuf; // HWNDs are guaranteed to be safe to truncate.
+            if(!IsWindow(hwnd)) hwnd = 0;
+        }
+        RegCloseKey(hKey);
+    }
+    return hwnd != 0 && SendMessage(hwnd, WM_NEWWINDOW, NULL, reinterpret_cast<LPARAM>(pidl)) != 0
+            ? S_OK
+            : fpShowWindow(_this, pidl, flags, pt, mystery);
+}
+
+// The SHOpenFolderAndSelectItems function opens an Explorer window and waits for a New Window
+// notification from IShellWindows.  The purpose of this hook is to wake up those threads by
+// faking such a notification.  It's important that it happens after IShellBrowser::OnNavigate is
+// called by the real Explorer window, which happens in IShellBrowserService::UpdateWindowList.
+HRESULT WINAPI DetourUpdateWindowList(IShellBrowserService* _this) {
+    HRESULT hr = fpUpdateWindowList(_this);
+    IShellBrowser* psb;
+    LRESULT result = 0;
+    if(SUCCEEDED(_this->QueryInterface(__uuidof(IShellBrowser), reinterpret_cast<void**>(&psb)))) {
+        HWND hwnd;
+        if(SUCCEEDED(psb->GetWindow(&hwnd))) {
+            HWND parent = GetParent(hwnd);
+            if(parent != 0) hwnd = parent;
+            IDispatch* pdisp = NULL;
+            if(SendMessage(parent, WM_NEWWINDOW, NULL, reinterpret_cast<WPARAM>(&pdisp)) != 0 && pdisp != NULL) {
+                IShellWindows* psw;
+                if(SUCCEEDED(CoCreateInstance(CLSID_ShellWindows, NULL, CLSCTX_ALL, IID_IShellWindows, (void**)&psw))) {
+                    long cookie;
+                    if(SUCCEEDED(psw->Register(pdisp, (long)hwnd, SWC_EXPLORER, &cookie))) {
+                        psw->Revoke(cookie);
+                    }
+                    psw->Release();                    
+                }
+                pdisp->Release();
+            }
+        }
+        psb->Release();
+    }
+    return hr;
 }
