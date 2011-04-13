@@ -34,12 +34,14 @@
     __TYPE__##name fp##name = NULL;             /* Pointer to original function */  \
     const int hook##name = id;                  /* Hook ID                      */ 
 
-// Hook creation macro
+// Hook creation macros
 #define CREATE_HOOK(address, name) {                                                            \
     MH_STATUS ret = MH_CreateHook(address, &Detour##name, reinterpret_cast<void**>(&fp##name)); \
     if(ret == MH_OK) ret = MH_EnableHook(address);                                              \
     fpHookResult(hook##name, ret);                                                              \
 }
+#define CREATE_COM_HOOK(punk, idx, name) \
+    CREATE_HOOK((*reinterpret_cast<void***>(punk))[idx], name)
 
 // The undocumented IShellBrowserService interface, of which we only need one function.
 MIDL_INTERFACE("DFBC7E30-F9E5-455F-88F8-FA98C1E494CA")
@@ -154,8 +156,7 @@ int Initialize(HOOKLIB_CALLBACK cb) {
     IShellNavigationBand* psnb;
     HRESULT hr = CoCreateInstance(__uuidof(CBreadcrumbBar), NULL, CLSCTX_INPROC_SERVER, __uuidof(IShellNavigationBand), (void**)&psnb);
     if(SUCCEEDED(hr)) {
-        void** vtable = *reinterpret_cast<void***>(psnb);
-        CREATE_HOOK(vtable[4], SetNavigationState);
+        CREATE_COM_HOOK(psnb, 4, SetNavigationState)
         psnb->Release();
     }
 
@@ -178,23 +179,18 @@ int InitShellBrowserHook(IShellBrowser* psb) {
         return MH_OK;
     }
 
-    // Hook the 11th entry in this IShellBrowser's VTable, which is BrowseObject
-    void** vtable = *reinterpret_cast<void***>(psb);
-    CREATE_HOOK(vtable[11], BrowseObject);
+    CREATE_COM_HOOK(psb, 11, BrowseObject);
 
     IShellBrowserService* psbs = NULL;
     if(SUCCEEDED(psb->QueryInterface(__uuidof(IShellBrowserService), reinterpret_cast<void**>(&psbs)))) {
-        void** vtable = *reinterpret_cast<void***>(psbs);
-        // Hook the 11th entry in this IShellBrowserService's VTable, which is UpdateWindowList
-        CREATE_HOOK(vtable[10], UpdateWindowList);
+
+        CREATE_COM_HOOK(psbs, 10, UpdateWindowList);
 
         IUnknown* ptl = NULL;
         if(SUCCEEDED(psbs->GetTravelLog(&ptl))) {
             ITravelLogEx* ptlex = NULL;
             if(SUCCEEDED(ptl->QueryInterface(__uuidof(ITravelLogEx), reinterpret_cast<void**>(&ptlex)))) {
-                vtable = *reinterpret_cast<void***>(ptlex);
-                // Hook the 11th entry in this ITravelLogEx's VTable, which is TravelToEntry
-                CREATE_HOOK(vtable[11], TravelToEntry);
+                CREATE_COM_HOOK(ptlex, 11, TravelToEntry);
                 ptlex->Release();
             }
             ptl->Release();
@@ -247,24 +243,18 @@ HRESULT WINAPI DetourSHCreateShellFolderView(const SFV_CREATE* pcsfv, IShellView
     IShellView* dummy;
     if(SUCCEEDED(ret) && SUCCEEDED((*ppsv)->QueryInterface(IID_CDefView, reinterpret_cast<void**>(&dummy)))) {
         dummy->Release();
-
-        // Hook the 3rd entry in this IShellFolderViewCB's VTable, which is MessageSFVCB
-        void** vtable = *reinterpret_cast<void***>(pcsfv->psfvcb);
-        CREATE_HOOK(vtable[3], MessageSFVCB);
+        
+        CREATE_COM_HOOK(pcsfv->psfvcb, 3, MessageSFVCB);
 
         IShellView3* psv3;
         if(SUCCEEDED((*ppsv)->QueryInterface(__uuidof(IShellView3), reinterpret_cast<void**>(&psv3)))) {
-            // Hook the 20th entry in this IShellView3's VTable, which is CreateFolderView3
-            vtable = *reinterpret_cast<void***>(psv3);
-            CREATE_HOOK(vtable[20], CreateViewWindow3);
+            CREATE_COM_HOOK(psv3, 20, CreateViewWindow3);
             psv3->Release();
         }
 
         IListControlHost* plch;
         if(SUCCEEDED((*ppsv)->QueryInterface(__uuidof(IListControlHost), reinterpret_cast<void**>(&plch)))) {
-            // Hook the 3rd entry in this IListControlHost's VTable, which is OnActivateSelection
-            vtable = *reinterpret_cast<void***>(plch);
-            CREATE_HOOK(vtable[3], OnActivateSelection);
+            CREATE_COM_HOOK(plch, 3, OnActivateSelection);
             plch->Release();
         }
 
@@ -315,9 +305,7 @@ HRESULT WINAPI DetourMessageSFVCB(IShellFolderViewCB* _this, UINT uMsg, WPARAM w
 // The purpose of this hook is just to set another hook.  It is disabled once the other hook is set.
 LRESULT WINAPI DetourUiaReturnRawElementProvider(HWND hwnd, WPARAM wParam, LPARAM lParam, IRawElementProviderSimple* el) {
     if(fpQueryInterface == NULL && (LONG)lParam == OBJID_CLIENT && SendMessage(hwnd, WM_ISITEMSVIEW, 0, 0) == 1) {
-        // Hook the 0th entry in UIItemsViewElementProvider's VTable, which is QueryInterface
-        void** vtable = *reinterpret_cast<void***>(el);
-        CREATE_HOOK(vtable[0], QueryInterface);
+        CREATE_COM_HOOK(el, 0, QueryInterface);
         // Disable this hook, no need for it anymore.
         MH_DisableHook(fpRealRREP);
     }
@@ -390,8 +378,7 @@ HRESULT WINAPI DetourCreateInstance(IClassFactory* _this, IUnknown *pUnkOuter, R
           IUnknown* punk = (IUnknown*)(*ppvObject);
           ICommonExplorerHost* pceh;
           if(SUCCEEDED(punk->QueryInterface(__uuidof(ICommonExplorerHost), (void**)&pceh))) {
-               void** vtable = *reinterpret_cast<void***>(pceh);
-               CREATE_HOOK(vtable[3], ShowWindow);
+               CREATE_COM_HOOK(pceh, 3, ShowWindow);
                MH_DisableHook(fpRealCI);
                pceh->Release();
           }
