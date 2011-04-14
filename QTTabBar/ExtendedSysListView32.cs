@@ -652,11 +652,11 @@ namespace QTTabBarLib {
         }
 
         private void OnFileRename(IDLWrapper idl) {
-            if(!idl.Available || idl.IsFolder) return;
+            if(!idl.Available || idl.IsFileSystemFolder) return;
             string path = idl.Path;
             if(File.Exists(path)) {
                 string extension = Path.GetExtension(path);
-                if(!string.IsNullOrEmpty(extension) && (extension.Equals(".lnk", StringComparison.OrdinalIgnoreCase) || extension.Equals(".url", StringComparison.OrdinalIgnoreCase))) {
+                if(!string.IsNullOrEmpty(extension) && extension.PathEquals(".lnk")) {
                     return;
                 }
             }
