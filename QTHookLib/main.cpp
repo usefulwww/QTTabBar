@@ -42,7 +42,7 @@
     fpHookResult(hook##name, ret);                                                              \
 }
 #define CREATE_COM_HOOK(punk, idx, name) \
-    CREATE_HOOK((*(void***)((IUnknown*)punk))[idx], name)
+    CREATE_HOOK((*(void***)((IUnknown*)(punk)))[idx], name)
 
 // A few undocumented interfaces and classes, of which we only really need the IIDs.
 MIDL_INTERFACE("0B907F92-1B63-40C6-AA54-0D3117F03578") IListControlHost     : public IUnknown {};
@@ -242,14 +242,12 @@ int Dispose() {
 // Detour Functions
 //////////////////////////////
 
-// The purpose of this hook is to intercept the creation of the INameSpaceTreeControl object, and 
+// The purpose of this hook is to intercept the creation of the NameSpaceTreeControl object, and 
 // send a reference to the control to QTTabBar.  We can use this reference to hit test the
 // control, which is how opening new tabs from middle-click works.
 HRESULT WINAPI DetourCoCreateInstance(REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWORD dwClsContext, REFIID riid, LPVOID FAR* ppv) {
     HRESULT ret = fpCoCreateInstance(rclsid, pUnkOuter, dwClsContext, riid, ppv);
-    if(SUCCEEDED(ret) && (
-            IsEqualIID(riid, __uuidof(INameSpaceTreeControl)) || 
-            IsEqualIID(riid, __uuidof(INameSpaceTreeControl2)))) {
+    if(SUCCEEDED(ret) && IsEqualIID(rclsid, CLSID_NamespaceTreeControl)) {
         PostThreadMessage(GetCurrentThreadId(), WM_NEWTREECONTROL, (WPARAM)(*ppv), NULL);
     }  
     return ret;
