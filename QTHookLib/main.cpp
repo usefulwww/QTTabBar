@@ -19,6 +19,7 @@
 #include <ShObjIdl.h>
 #include <Shlobj.h>
 #include <UIAutomationCore.h>
+#include "CComPtr.h"
 #include "MinHook.h"
 
 #if defined _M_X64
@@ -41,14 +42,25 @@
     fpHookResult(hook##name, ret);                                                              \
 }
 #define CREATE_COM_HOOK(punk, idx, name) \
-    CREATE_HOOK((*reinterpret_cast<void***>(punk))[idx], name)
+    CREATE_HOOK((*(void***)((IUnknown*)punk))[idx], name)
+
+// A few undocumented interfaces and classes, of which we only really need the IIDs.
+MIDL_INTERFACE("0B907F92-1B63-40C6-AA54-0D3117F03578") IListControlHost     : public IUnknown {};
+MIDL_INTERFACE("66A9CB08-4802-11d2-A561-00A0C92DBFE8") ITravelLog           : public IUnknown {};
+MIDL_INTERFACE("3050F679-98B5-11CF-BB82-00AA00BDCE0B") ITravelLogEx         : public IUnknown {};
+MIDL_INTERFACE("7EBFDD87-AD18-11d3-A4C5-00C04F72D6B8") ITravelLogEntry      : public IUnknown {};
+MIDL_INTERFACE("489E9453-869B-4BCC-A1C7-48B5285FD9D8") ICommonExplorerHost  : public IUnknown {};
+MIDL_INTERFACE("A86304A7-17CA-4595-99AB-523043A9C4AC") IExplorerFactory 	: public IUnknown {};
+MIDL_INTERFACE("E93D4057-B9A2-42A5-8AF8-E5BBF177D365") IShellNavigationBand : public IUnknown {};
+MIDL_INTERFACE("596742A5-1393-4E13-8765-AE1DF71ACAFB") CBreadcrumbBar {};
+MIDL_INTERFACE("93A56381-E0CD-485A-B60E-67819E12F81B") CExplorerFactoryServer {};
 
 // Win7's IShellBrowserService interface, of which we only need one function.
 MIDL_INTERFACE("DFBC7E30-F9E5-455F-88F8-FA98C1E494CA")
 IShellBrowserService_7 : public IUnknown {
 public:
     virtual HRESULT STDMETHODCALLTYPE Unused0() = 0;
-    virtual HRESULT STDMETHODCALLTYPE GetTravelLog(/* ITravelLog */ IUnknown** ppTravelLog) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetTravelLog(ITravelLog** ppTravelLog) = 0;
 };
 
 // Vista's IShellBrowserService.
@@ -59,17 +71,8 @@ public:
     virtual HRESULT STDMETHODCALLTYPE Unused1() = 0;
     virtual HRESULT STDMETHODCALLTYPE Unused2() = 0;
     virtual HRESULT STDMETHODCALLTYPE Unused3() = 0;
-    virtual HRESULT STDMETHODCALLTYPE GetTravelLog(/* ITravelLog */ IUnknown** ppTravelLog) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetTravelLog(ITravelLog** ppTravelLog) = 0;
 };
-	
-// A few more undocumented interfaces and classes, of which we only really need the IIDs.
-MIDL_INTERFACE("0B907F92-1B63-40C6-AA54-0D3117F03578") IListControlHost     : public IUnknown {};
-MIDL_INTERFACE("3050F679-98B5-11CF-BB82-00AA00BDCE0B") ITravelLogEx         : public IUnknown {};
-MIDL_INTERFACE("489E9453-869B-4BCC-A1C7-48B5285FD9D8") ICommonExplorerHost  : public IUnknown {};
-MIDL_INTERFACE("A86304A7-17CA-4595-99AB-523043A9C4AC") IExplorerFactory 	: public IUnknown {};
-MIDL_INTERFACE("E93D4057-B9A2-42A5-8AF8-E5BBF177D365") IShellNavigationBand : public IUnknown {};
-MIDL_INTERFACE("596742A5-1393-4E13-8765-AE1DF71ACAFB") CBreadcrumbBar {};
-MIDL_INTERFACE("93A56381-E0CD-485A-B60E-67819E12F81B") CExplorerFactoryServer {};
 
 // Hooks
 DECLARE_HOOK( 0, HRESULT, CoCreateInstance, (REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWORD dwClsContext, REFIID riid, LPVOID FAR* ppv))
@@ -80,7 +83,7 @@ DECLARE_HOOK( 4, HRESULT, CreateViewWindow3, (IShellView3* _this, IShellBrowser*
 DECLARE_HOOK( 5, HRESULT, MessageSFVCB, (IShellFolderViewCB* _this, UINT uMsg, WPARAM wParam, LPARAM lParam))
 DECLARE_HOOK( 6, LRESULT, UiaReturnRawElementProvider, (HWND hwnd, WPARAM wParam, LPARAM lParam, IRawElementProviderSimple* el))
 DECLARE_HOOK( 7, HRESULT, QueryInterface, (IRawElementProviderSimple* _this, REFIID riid, void** ppvObject))
-DECLARE_HOOK( 8, HRESULT, TravelToEntry, (ITravelLogEx* _this, IUnknown* punk, /* ITravelLogEntry */ IUnknown* ptle))
+DECLARE_HOOK( 8, HRESULT, TravelToEntry, (ITravelLogEx* _this, IUnknown* punk, ITravelLogEntry* ptle))
 DECLARE_HOOK( 9, HRESULT, OnActivateSelection, (IListControlHost* _this, DWORD dwModifierKeys))
 DECLARE_HOOK(10, HRESULT, SetNavigationState, (IShellNavigationBand* _this, unsigned long state))
 DECLARE_HOOK(11, HRESULT, ShowWindow_Vista, (IExplorerFactory* _this, PCIDLIST_ABSOLUTE pidl, DWORD flags, DWORD mystery1, DWORD mystery2, POINT pt))
@@ -166,30 +169,24 @@ int Initialize(HOOKLIB_CALLBACK cb) {
     }
     
     // Create an instance of the breadcrumb bar so we can hook it.
-    IShellNavigationBand* psnb;
-    HRESULT hr = CoCreateInstance(__uuidof(CBreadcrumbBar), NULL, CLSCTX_INPROC_SERVER, __uuidof(IShellNavigationBand), (void**)&psnb);
-    if(SUCCEEDED(hr)) {
+    CComPtr<IShellNavigationBand> psnb;
+    if(psnb.Create(__uuidof(CBreadcrumbBar), CLSCTX_INPROC_SERVER)) {
         CREATE_COM_HOOK(psnb, 4, SetNavigationState)
-        psnb->Release();
     }
 
 
     // Create an instance of CExplorerFactoryServer so we can hook it.
     // The interface in question is different on Vista and 7.
-    IUnknown* punk = NULL;
-    hr = CoCreateInstance(__uuidof(CExplorerFactoryServer), NULL, CLSCTX_INPROC_SERVER, __uuidof(IUnknown), (void**)&punk);
-    if(SUCCEEDED(hr)) {
-        ICommonExplorerHost* pceh;
-        IExplorerFactory* pef;
-        if(SUCCEEDED(punk->QueryInterface(__uuidof(ICommonExplorerHost), reinterpret_cast<void**>(&pceh)))) {
+    CComPtr<IUnknown> punk;
+    if(punk.Create(__uuidof(CExplorerFactoryServer), CLSCTX_INPROC_SERVER)) {
+        CComPtr<ICommonExplorerHost> pceh;
+        CComPtr<IExplorerFactory> pef;
+        if(pceh.QueryFrom(punk)) {
             CREATE_COM_HOOK(pceh, 3, ShowWindow_7)
-            pceh->Release();
         }
-        else if(SUCCEEDED(punk->QueryInterface(__uuidof(IExplorerFactory), reinterpret_cast<void**>(&pef)))) {
+        else if(pef.QueryFrom(punk)) {
             CREATE_COM_HOOK(pef, 3, ShowWindow_Vista)
-            pef->Release();
         }
-        punk->Release();
     }
     return MH_OK;
 }
@@ -202,32 +199,29 @@ int InitShellBrowserHook(IShellBrowser* psb) {
         return MH_OK;
     }
 
+    // Create the BrowseObject hook
     CREATE_COM_HOOK(psb, 11, BrowseObject);
 
     // Vista and 7 have different IShellBrowserService interfaces.
     // Hook UpdateWindowList in whichever one we have, and get the TravelLog.
-    IShellBrowserService_7* psbs7 = NULL;
-    IShellBrowserService_Vista* psbsv = NULL;
-    IUnknown* ptl = NULL;
-    if(SUCCEEDED(psb->QueryInterface(__uuidof(IShellBrowserService_7), reinterpret_cast<void**>(&psbs7)))) {
+    CComPtr<IShellBrowserService_7> psbs7;
+    CComPtr<IShellBrowserService_Vista> psbsv;
+    CComPtr<ITravelLog> ptl;
+    if(psbs7.QueryFrom(psb)) {
         CREATE_COM_HOOK(psbs7, 10, UpdateWindowList);
-        if(!SUCCEEDED(psbs7->GetTravelLog(&ptl))) ptl = NULL;
-        psbs7->Release();
+        psbs7->GetTravelLog(&ptl);
     }
-    else if(SUCCEEDED(psb->QueryInterface(__uuidof(IShellBrowserService_Vista), reinterpret_cast<void**>(&psbsv)))) {
+    else if(psbsv.QueryFrom(psb)) {
         CREATE_COM_HOOK(psbsv, 17, UpdateWindowList);
-        if(!SUCCEEDED(psbsv->GetTravelLog(&ptl))) ptl = NULL;
-        psbsv->Release();
+        psbsv->GetTravelLog(&ptl);
     }
 
     // Hook ITravelLogEx::TravelToEntry to catch the Search band navigation
     if(ptl != NULL) {
-        ITravelLogEx* ptlex = NULL;
-        if(SUCCEEDED(ptl->QueryInterface(__uuidof(ITravelLogEx), reinterpret_cast<void**>(&ptlex)))) {
+        CComPtr<ITravelLogEx> ptlex;
+        if(ptlex.QueryFrom(ptl)) {
             CREATE_COM_HOOK(ptlex, 11, TravelToEntry);
-            ptlex->Release();
         }
-        ptl->Release();
     }
     return MH_OK;
 }
@@ -256,7 +250,7 @@ HRESULT WINAPI DetourCoCreateInstance(REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWOR
     if(SUCCEEDED(ret) && (
             IsEqualIID(riid, __uuidof(INameSpaceTreeControl)) || 
             IsEqualIID(riid, __uuidof(INameSpaceTreeControl2)))) {
-        PostThreadMessage(GetCurrentThreadId(), WM_NEWTREECONTROL, reinterpret_cast<WPARAM>(*ppv), NULL);
+        PostThreadMessage(GetCurrentThreadId(), WM_NEWTREECONTROL, (WPARAM)(*ppv), NULL);
     }  
     return ret;
 }
@@ -265,29 +259,26 @@ HRESULT WINAPI DetourCoCreateInstance(REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWOR
 // the real IDropTarget.  This is much more reliable than using the GetProp method.
 HRESULT WINAPI DetourRegisterDragDrop(IN HWND hwnd, IN LPDROPTARGET pDropTarget) {
     LPDROPTARGET* ppDropTarget = &pDropTarget;
-    SendMessage(hwnd, WM_REGISTERDRAGDROP, reinterpret_cast<WPARAM>(ppDropTarget), NULL);
+    SendMessage(hwnd, WM_REGISTERDRAGDROP, (WPARAM)ppDropTarget, NULL);
     return fpRegisterDragDrop(hwnd, *ppDropTarget);
 }
 
 // The purpose of this hook is just to set other hooks.  It is disabled once the other hooks are set.
 HRESULT WINAPI DetourSHCreateShellFolderView(const SFV_CREATE* pcsfv, IShellView** ppsv) {
     HRESULT ret = fpSHCreateShellFolderView(pcsfv, ppsv);
-    IShellView* dummy;
-    if(SUCCEEDED(ret) && SUCCEEDED((*ppsv)->QueryInterface(IID_CDefView, reinterpret_cast<void**>(&dummy)))) {
-        dummy->Release();
-        
+    CComPtr<IShellView> psv(*ppsv);
+    if(SUCCEEDED(ret) && psv.Implements(IID_CDefView)) {
+
         CREATE_COM_HOOK(pcsfv->psfvcb, 3, MessageSFVCB);
 
-        IShellView3* psv3;
-        if(SUCCEEDED((*ppsv)->QueryInterface(__uuidof(IShellView3), reinterpret_cast<void**>(&psv3)))) {
+        CComPtr<IShellView3> psv3;
+        if(psv3.QueryFrom(psv)) {
             CREATE_COM_HOOK(psv3, 20, CreateViewWindow3);
-            psv3->Release();
         }
 
-        IListControlHost* plch;
-        if(SUCCEEDED((*ppsv)->QueryInterface(__uuidof(IListControlHost), reinterpret_cast<void**>(&plch)))) {
+        CComPtr<IListControlHost> plch;
+        if(plch.QueryFrom(psv)) {
             CREATE_COM_HOOK(plch, 3, OnActivateSelection);
-            plch->Release();
         }
 
         // Disable this hook, no need for it anymore.
@@ -304,7 +295,7 @@ HRESULT WINAPI DetourBrowseObject(IShellBrowser* _this, PCUIDLIST_RELATIVE pidl,
     if(SUCCEEDED(_this->GetWindow(&hwnd))) {
         HWND parent = GetParent(hwnd);
         if(parent != 0) hwnd = parent;
-        result = SendMessage(hwnd, WM_BROWSEOBJECT, reinterpret_cast<WPARAM>(&wFlags), reinterpret_cast<LPARAM>(pidl));
+        result = SendMessage(hwnd, WM_BROWSEOBJECT, (WPARAM)(&wFlags), (LPARAM)pidl);
     } 
     return result == 0 ? fpBrowseObject(_this, pidl, wFlags) : S_FALSE;
 }
@@ -352,18 +343,17 @@ HRESULT WINAPI DetourQueryInterface(IRawElementProviderSimple* _this, REFIID rii
 }
 
 // The purpose of this hook is to make clearing a search go back to the original directory.
-HRESULT WINAPI DetourTravelToEntry(ITravelLogEx* _this, IUnknown* punk, /* ITravelLogEntry */ IUnknown* ptle) {
-    IShellBrowser* psb;
+HRESULT WINAPI DetourTravelToEntry(ITravelLogEx* _this, IUnknown* punk, ITravelLogEntry* ptle) {
+    CComPtr<IShellBrowser> psb;
     LRESULT result = 0;
-    if(punk != NULL && SUCCEEDED(punk->QueryInterface(__uuidof(IShellBrowser), reinterpret_cast<void**>(&psb)))) {
+    if(punk != NULL && psb.QueryFrom(punk)) {
         HWND hwnd;
         if(SUCCEEDED(psb->GetWindow(&hwnd))) {
             HWND parent = GetParent(hwnd);
             if(parent != 0) hwnd = parent;
             UINT wFlags = SBSP_NAVIGATEBACK | SBSP_SAMEBROWSER;
-            result = SendMessage(parent, WM_BROWSEOBJECT, reinterpret_cast<WPARAM>(&wFlags), NULL);
+            result = SendMessage(parent, WM_BROWSEOBJECT, (WPARAM)(&wFlags), NULL);
         }
-        psb->Release();
     }
     return result == 0 ? fpTravelToEntry(_this, punk, ptle) : S_OK;
 }
@@ -371,14 +361,13 @@ HRESULT WINAPI DetourTravelToEntry(ITravelLogEx* _this, IUnknown* punk, /* ITrav
 // The purpose of this hook is let QTTabBar handle activating the selection, so that recently
 // opened files can be logged (among other features).
 HRESULT WINAPI DetourOnActivateSelection(IListControlHost* _this, DWORD dwModifierKeys) {
-    IShellView* psv = NULL;
+    CComPtr<IShellView> psv;
     LRESULT result = 0;
-    if(SUCCEEDED(_this->QueryInterface(__uuidof(IShellView), reinterpret_cast<void**>(&psv)))) {
+    if(psv.QueryFrom(_this)) {
         HWND hwnd;
         if(SUCCEEDED(psv->GetWindow(&hwnd))) {
-            result = SendMessage(hwnd, WM_ACTIVATESEL, reinterpret_cast<WPARAM>(&dwModifierKeys), 0);
+            result = SendMessage(hwnd, WM_ACTIVATESEL, (WPARAM)(&dwModifierKeys), 0);
         }
-        psv->Release();
     }
     return result == 0 ? fpOnActivateSelection(_this, dwModifierKeys) : S_OK;
 }
@@ -392,13 +381,12 @@ HRESULT WINAPI DetourSetNavigationState(IShellNavigationBand* _this, unsigned lo
     // be quite unsettling.  Unfortunately, I see no way around it.  It's been in the same
     // location since the first Vista release, so I guess it should be safe...
     HDPA hdpa = (HDPA)(((void**)_this)[6]);
-    IOleWindow* pow = NULL;
-    if(SUCCEEDED(_this->QueryInterface(__uuidof(IOleWindow), reinterpret_cast<void**>(&pow)))) {
+    CComPtr<IOleWindow> pow;
+    if(pow.QueryFrom(_this)) {
         HWND hwnd;
         if(SUCCEEDED(pow->GetWindow(&hwnd))) {
-            SendMessage(hwnd, WM_BREADCRUMBDPA, NULL, reinterpret_cast<LPARAM>(hdpa));
+            SendMessage(hwnd, WM_BREADCRUMBDPA, NULL, (LPARAM)hdpa);
         }
-        pow->Release();
     }
     return ret;
 }
@@ -418,7 +406,7 @@ bool DetourShowWindow(PCIDLIST_ABSOLUTE pidl) {
         }
         RegCloseKey(hKey);
     }
-    return hwnd != 0 && SendMessage(hwnd, WM_NEWWINDOW, NULL, reinterpret_cast<LPARAM>(pidl)) != 0;
+    return hwnd != 0 && SendMessage(hwnd, WM_NEWWINDOW, NULL, (LPARAM)pidl) != 0;
 }
 HRESULT WINAPI DetourShowWindow_7(ICommonExplorerHost* _this, PCIDLIST_ABSOLUTE pidl, DWORD flags, POINT pt, DWORD mystery) {
     return DetourShowWindow(pidl) ? S_OK : fpShowWindow_7(_this, pidl, flags, pt, mystery);
@@ -433,27 +421,24 @@ HRESULT WINAPI DetourShowWindow_Vista(IExplorerFactory* _this, PCIDLIST_ABSOLUTE
 // called by the real Explorer window, which happens in IShellBrowserService::UpdateWindowList.
 HRESULT WINAPI DetourUpdateWindowList(/* IShellBrowserService */ IUnknown* _this) {
     HRESULT hr = fpUpdateWindowList(_this);
-    IShellBrowser* psb;
+    CComPtr<IShellBrowser> psb;
     LRESULT result = 0;
-    if(SUCCEEDED(_this->QueryInterface(__uuidof(IShellBrowser), reinterpret_cast<void**>(&psb)))) {
+    if(psb.QueryFrom(_this)) {
         HWND hwnd;
         if(SUCCEEDED(psb->GetWindow(&hwnd))) {
             HWND parent = GetParent(hwnd);
             if(parent != 0) hwnd = parent;
-            IDispatch* pdisp = NULL;
-            if(SendMessage(parent, WM_NEWWINDOW, NULL, reinterpret_cast<WPARAM>(&pdisp)) != 0 && pdisp != NULL) {
-                IShellWindows* psw;
-                if(SUCCEEDED(CoCreateInstance(CLSID_ShellWindows, NULL, CLSCTX_ALL, IID_IShellWindows, (void**)&psw))) {
+            CComPtr<IDispatch> pdisp;
+            if(SendMessage(parent, WM_NEWWINDOW, NULL, (WPARAM)(&pdisp)) != 0 && pdisp != NULL) {
+                CComPtr<IShellWindows> psw;
+                if(psw.Create(CLSID_ShellWindows, CLSCTX_ALL)) {
                     long cookie;
                     if(SUCCEEDED(psw->Register(pdisp, (long)hwnd, SWC_EXPLORER, &cookie))) {
                         psw->Revoke(cookie);
                     }
-                    psw->Release();                    
                 }
-                pdisp->Release();
             }
         }
-        psb->Release();
     }
     return hr;
 }
