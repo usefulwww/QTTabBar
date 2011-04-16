@@ -81,73 +81,99 @@
                         <File Id="f6" Name="QTHookLib64.dll" Source="..\QTHookLib\bin\Release\QTHookLib64.dll" KeyPath="yes" />
                     </Component>
                     
-                    <!-- Reg Keys-->
-                    <Component Id="QTTabBarReg" Win64="yes" Guid="27af1a85-9a08-4c79-bdeb-d73fd4bd9574" DisableRegistryReflection="yes">
-                        <RegistryKey Root="HKLM" Key="Software\Microsoft\Internet Explorer\Toolbar" Action="create" >
-                            <RegistryValue Name="{d2bf470e-ed1c-487f-a333-2bd8835eb6ce}" Value="QTTabBar" Type="string" Action="write" KeyPath="yes" />
-                        </RegistryKey>
-                    </Component>
-                    <Component Id="QTButtonBarReg" Win64="yes" Guid="27af1a85-9a09-4c79-bdeb-d73fd4bd9574" DisableRegistryReflection="yes">
-                        <RegistryKey Root="HKLM" Key="Software\Microsoft\Internet Explorer\Toolbar" Action="create" >
-                            <RegistryValue Name="{d2bf470e-ed1c-487f-a666-2bd8835eb6ce}" Value="QTButtonBar" Type="string" Action="write" KeyPath="yes"/>
-                        </RegistryKey>
-                    </Component>
-                    <Component Id="AutoLoaderReg" Win64="yes" Guid="27af1a85-9a10-4c79-bdeb-d73fd4bd9574" DisableRegistryReflection="yes">
-                        <RegistryKey Root="HKLM" Key="Software\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\{d2bf470e-ed1c-487f-a777-2bd8835eb6ce}" Action="createAndRemoveOnUninstall">
-                            <RegistryValue Value="QTTabBar AutoLoader" Type="string" Action="write" KeyPath="yes"/>
-                        </RegistryKey>
-                    </Component>
-                    <Component Id="InstallDate" Win64="yes" Guid="27af1a85-9a11-4c79-bdeb-d73fd4bd9574" DisableRegistryReflection="yes">
-                        <RegistryKey Root="HKLM" Key="Software\Quizo\QTTabBar" Action="createAndRemoveOnUninstall">
-                            <RegistryValue Name="InstallDate" Value="[Date] [Time]" Type="string" Action="write" KeyPath ="yes" />
-                            <RegistryValue Name="InstallPath" Value="[INSTALLLOCATION]" Type="string" Action="write" />
-                        </RegistryKey>
-                    </Component>
                     
-                    <!-- COM Objects -->
-                    <?foreach compName in QTTabBarClass;QTButtonBar;QTCoTaskBarClass;AutoLoader ?>
-                        <?if $(var.compName) = QTTabBarClass?>
-                            <?define compGUID = {D2BF470E-ED1C-487F-A333-2BD8835EB6CE}?>
-                            <?define compDesc = QTTabBar?>
-                        <?elseif $(var.compName) = QTButtonBar?>
-                            <?define compGUID = {D2BF470E-ED1C-487F-A666-2BD8835EB6CE}?>
-                            <?define compDesc = QTTab Standard Buttons?>
-                        <?elseif $(var.compName) = QTCoTaskBarClass?>
-                            <?define compGUID = {D2BF470E-ED1C-487F-A555-2BD8835EB6CE}?>
-                            <?define compDesc = QTTab Desktop Tool?>
-                        <?elseif $(var.compName) = AutoLoader?>
-                            <?define compGUID = {D2BF470E-ED1C-487F-A777-2BD8835EB6CE}?>
-                            <?define compDesc = QTTabBar AutoLoader?>
+                    <?foreach arch in x86;x64 ?>
+                        <?if $(var.arch) = x64?>
+                            <?define win64 = yes?>
+                        <?elseif $(var.arch) = x86?>
+                            <?define win64 = no?>
                         <?endif?>
-                        <Component Id="$(var.compName)" Win64="yes" DisableRegistryReflection="yes">
-                            <?if $(var.compName) = QTCoTaskBarClass?>
-                                <Condition>
-                                    <![CDATA[VersionNT<>601]]>
-                                </Condition>
+
+                        <!-- Reg Keys-->
+                        <Component Id="QTTabBarReg_$(var.arch)" Win64="$(var.win64)" DisableRegistryReflection="$(var.win64)">
+                            <?if $(var.arch) = x64?>
+                                <Condition>VersionNT64</Condition>
                             <?endif?>
-                            <Class Id="$(var.compGUID)" Context="InprocServer32" Description="$(var.compDesc)" ThreadingModel="both" ForeignServer="mscoree.dll" >
-                                <ProgId Id="QTTabBarLib.$(var.compName)" Description="QTTabBarLib.$(var.compName)" />
-                            </Class>
-                            <RegistryKey Root="HKCR" Key="CLSID\$(var.compGUID)" Action="createAndRemoveOnUninstall">
+                            <RegistryKey Root="HKLM" Key="Software\Microsoft\Internet Explorer\Toolbar" Action="create" >
+                                <RegistryValue Name="{d2bf470e-ed1c-487f-a333-2bd8835eb6ce}" Value="QTTabBar" Type="string" Action="write" KeyPath="yes" />
+                            </RegistryKey>
+                        </Component>
+                        <Component Id="QTButtonBarReg_$(var.arch)" Win64="$(var.win64)" DisableRegistryReflection="$(var.win64)">
+                            <?if $(var.arch) = x64?>
+                                <Condition>VersionNT64</Condition>
+                            <?endif?>
+                            <RegistryKey Root="HKLM" Key="Software\Microsoft\Internet Explorer\Toolbar" Action="create" >
+                                <RegistryValue Name="{d2bf470e-ed1c-487f-a666-2bd8835eb6ce}" Value="QTButtonBar" Type="string" Action="write" KeyPath="yes"/>
+                            </RegistryKey>
+                        </Component>
+                        <Component Id="AutoLoaderReg_$(var.arch)" Win64="$(var.win64)" DisableRegistryReflection="$(var.win64)">
+                            <?if $(var.arch) = x64?>
+                                <Condition>VersionNT64</Condition>
+                            <?endif?>
+                            <RegistryKey Root="HKLM" Key="Software\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\{d2bf470e-ed1c-487f-a777-2bd8835eb6ce}" Action="createAndRemoveOnUninstall">
+                                <RegistryValue Value="QTTabBar AutoLoader" Type="string" Action="write" KeyPath="yes"/>
+                            </RegistryKey>
+                        </Component>
+                        <Component Id="InstallDate_$(var.arch)" Win64="$(var.win64)" DisableRegistryReflection="$(var.win64)">
+                            <?if $(var.arch) = x64?>
+                                <Condition>VersionNT64</Condition>
+                            <?endif?>
+                            <RegistryKey Root="HKLM" Key="Software\Quizo\QTTabBar" Action="createAndRemoveOnUninstall">
+                                <RegistryValue Name="InstallDate" Value="[Date] [Time]" Type="string" Action="write" KeyPath ="yes" />
+                                <RegistryValue Name="InstallPath" Value="[INSTALLLOCATION]" Type="string" Action="write" />
+                            </RegistryKey>
+                        </Component>
+                    
+                        <!-- COM Objects -->
+                        <?foreach compName in QTTabBarClass;QTButtonBar;QTCoTaskBarClass;AutoLoader ?>
+                            <?if $(var.compName) = QTTabBarClass?>
+                                <?define compGUID = {D2BF470E-ED1C-487F-A333-2BD8835EB6CE}?>
+                                <?define compDesc = QTTabBar?>
+                            <?elseif $(var.compName) = QTButtonBar?>
+                                <?define compGUID = {D2BF470E-ED1C-487F-A666-2BD8835EB6CE}?>
+                                <?define compDesc = QTTab Standard Buttons?>
+                            <?elseif $(var.compName) = QTCoTaskBarClass?>
+                                <?define compGUID = {D2BF470E-ED1C-487F-A555-2BD8835EB6CE}?>
+                                <?define compDesc = QTTab Desktop Tool?>
+                            <?elseif $(var.compName) = AutoLoader?>
+                                <?define compGUID = {D2BF470E-ED1C-487F-A777-2BD8835EB6CE}?>
+                                <?define compDesc = QTTabBar AutoLoader?>
+                            <?endif?>
+                            <Component Id="$(var.compName)_$(var.arch)" Win64="$(var.win64)" DisableRegistryReflection="$(var.win64)">
                                 <?if $(var.compName) = QTCoTaskBarClass?>
-                                    <RegistryKey Key="Implemented Categories\{00021492-0000-0000-C000-000000000046}" Action="createAndRemoveOnUninstall" />
-                                <?endif?>                                        
-                                <RegistryKey Key="Implemented Categories\{62C8FE65-4EBB-45e7-B440-6E39B2CDBF29}" Action="createAndRemoveOnUninstall" />
-                                <RegistryValue Name="MenuText" Value="$(var.compDesc)" Type="string" Action="write" />
-                                <RegistryValue Name="HelpText" Value="$(var.compDesc)" Type="string" Action="write" />
-                                <RegistryKey Key="InprocServer32" Action="createAndRemoveOnUninstall">
-                                    <RegistryValue Name="Class" Value="QTTabBarLib.$(var.compName)" Type="string" Action="write" />
-                                    <RegistryValue Name="Assembly" Value="$(var.StrongName)" Type="string" Action="write" />
-                                    <RegistryValue Name="RuntimeVersion" Value="[RUNTIMEVERSION]" Type="string" Action="write" />
-                                    <RegistryKey Key="1.0.0.0" Action="createAndRemoveOnUninstall">
+                                    <?if $(var.arch) = x64?>
+                                        <Condition><![CDATA[VersionNT<>601 AND VersionNT64]]></Condition>
+                                    <?else?>
+                                        <Condition><![CDATA[VersionNT<>601]]></Condition>
+                                    <?endif?>
+                                <?elseif $(var.arch) = x64?>
+                                    <Condition>VersionNT64</Condition>
+                                <?endif?>
+
+                                <Class Id="$(var.compGUID)" Context="InprocServer32" Description="$(var.compDesc)" ThreadingModel="both" ForeignServer="mscoree.dll" >
+                                    <ProgId Id="QTTabBarLib.$(var.compName)" Description="QTTabBarLib.$(var.compName)" />
+                                </Class>
+                                <RegistryKey Root="HKCR" Key="CLSID\$(var.compGUID)" Action="createAndRemoveOnUninstall">
+                                    <?if $(var.compName) = QTCoTaskBarClass?>
+                                        <RegistryKey Key="Implemented Categories\{00021492-0000-0000-C000-000000000046}" Action="createAndRemoveOnUninstall" />
+                                    <?endif?>                                        
+                                    <RegistryKey Key="Implemented Categories\{62C8FE65-4EBB-45e7-B440-6E39B2CDBF29}" Action="createAndRemoveOnUninstall" />
+                                    <RegistryValue Name="MenuText" Value="$(var.compDesc)" Type="string" Action="write" />
+                                    <RegistryValue Name="HelpText" Value="$(var.compDesc)" Type="string" Action="write" />
+                                    <RegistryKey Key="InprocServer32" Action="createAndRemoveOnUninstall">
                                         <RegistryValue Name="Class" Value="QTTabBarLib.$(var.compName)" Type="string" Action="write" />
                                         <RegistryValue Name="Assembly" Value="$(var.StrongName)" Type="string" Action="write" />
                                         <RegistryValue Name="RuntimeVersion" Value="[RUNTIMEVERSION]" Type="string" Action="write" />
+                                        <RegistryKey Key="1.0.0.0" Action="createAndRemoveOnUninstall">
+                                            <RegistryValue Name="Class" Value="QTTabBarLib.$(var.compName)" Type="string" Action="write" />
+                                            <RegistryValue Name="Assembly" Value="$(var.StrongName)" Type="string" Action="write" />
+                                            <RegistryValue Name="RuntimeVersion" Value="[RUNTIMEVERSION]" Type="string" Action="write" />
+                                        </RegistryKey>
                                     </RegistryKey>
                                 </RegistryKey>
-                            </RegistryKey>
-                        </Component>
-                    <?endforeach ?>                                        
+                            </Component>
+                        <?endforeach ?>
+                    <?endforeach ?>
                 </Directory>
             </Directory>
         </Directory>
@@ -161,17 +187,19 @@
             <ComponentRef Id="HookLibrary32" />
             <ComponentRef Id="HookLibrary64" />
 
-            <!-- RegKeys -->
-            <ComponentRef Id="QTTabBarReg" />
-            <ComponentRef Id="QTButtonBarReg" />
-            <ComponentRef Id="AutoLoaderReg" />
-            <ComponentRef Id="InstallDate" />
+            <?foreach arch in x86;x64 ?>
+                <!-- RegKeys -->
+                <ComponentRef Id="QTTabBarReg_$(var.arch)" />
+                <ComponentRef Id="QTButtonBarReg_$(var.arch)" />
+                <ComponentRef Id="AutoLoaderReg_$(var.arch)" />
+                <ComponentRef Id="InstallDate_$(var.arch)" />
             
-            <!-- COM Objects -->
-            <ComponentRef Id="QTTabBarClass" />
-            <ComponentRef Id="QTCoTaskBarClass" />
-            <ComponentRef Id="QTButtonBar" />
-            <ComponentRef Id="AutoLoader" />
+                <!-- COM Objects -->
+                <ComponentRef Id="QTTabBarClass_$(var.arch)" />
+                <ComponentRef Id="QTCoTaskBarClass_$(var.arch)" />
+                <ComponentRef Id="QTButtonBar_$(var.arch)" />
+                <ComponentRef Id="AutoLoader_$(var.arch)" />
+            <?endforeach?>
         </Feature>
 
         <CustomAction Id="PreventDowngrading" Error="Newer version already installed." />
