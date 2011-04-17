@@ -153,6 +153,7 @@ namespace QTTabBarLib {
                 string path = Path.Combine(appdataQT, "QTTabBarException.log");
                 using(StreamWriter writer = new StreamWriter(path, true)) {
                     writer.WriteLine(DateTime.Now.ToString());
+                    writer.WriteLine(".NET ver: " + Environment.Version);
                     writer.WriteLine("OS ver: " + Environment.OSVersion.Version);
                     writer.WriteLine("QT ver: " + MakeVersionString());
                     if(!string.IsNullOrEmpty(optional)) {
