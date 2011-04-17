@@ -79,8 +79,12 @@ namespace QTTabBarLib {
                         }
                     }
                 }
+                catch(ReflectionTypeLoadException exception) {
+                    QTUtility2.MakeErrorLog(exception, "Failed to load plugin assembly.\r\n" 
+                            + exception.LoaderExceptions.StringJoin("\r\n") + "\r\n" + path);
+                }
                 catch(Exception exception) {
-                    QTUtility2.MakeErrorLog(exception, "failed get asm\r\n" + path);
+                    QTUtility2.MakeErrorLog(exception, "Failed to load plugin assembly.\r\n" + path);
                 }
             }
         }
