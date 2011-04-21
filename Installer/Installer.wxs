@@ -226,8 +226,8 @@
             <Custom Action="CheckOldVersion" Before="AppSearch">(NOT UPGRADINGPRODUCTCODE) AND (NOT REMOVE) AND (NOT Installed) AND (NOT UPGRADEFOUND)</Custom>
             <Custom Action="FailOldVersion1" After="CheckOldVersion">OBSOLETEVERSION=1</Custom>
             <Custom Action="FailOldVersion2" After="FailOldVersion1">OBSOLETEVERSION=2</Custom>
-            <Custom Action="SetRuntime4" After="LaunchConditions">NETFRAMEWORK40CLIENT</Custom>
-            <Custom Action="SetRuntimeNot4" After="SetRuntime4">NOT NETFRAMEWORK40CLIENT</Custom>
+            <Custom Action="SetRuntime4" After="LaunchConditions">NOT NETFRAMEWORK35</Custom>
+            <Custom Action="SetRuntimeNot4" After="SetRuntime4">NETFRAMEWORK35</Custom>
         </InstallUISequence>
 
         <UI>
