@@ -24,6 +24,7 @@
 #include <psapi.h>
 #include <tchar.h>
 #include <vector>
+#include "../QTHookLib/CComPtr.h"
 
 #define WIXAPI __stdcall
 
@@ -50,61 +51,41 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 }
 
 void GetExplorerWindows(std::vector<PairHwndPath>& windows, BOOL needPaths) {
-    IShellWindows *psw;
-    if(SUCCEEDED(CoCreateInstance(CLSID_ShellWindows, NULL, CLSCTX_ALL, IID_IShellWindows, (void**)&psw))) {
-        VARIANT v;
-        V_VT(&v) = VT_I4;
-        IDispatch* pdisp;
-        for(V_I4(&v) = 0; psw->Item(v, &pdisp) == S_OK; V_I4(&v)++) {
-            IWebBrowserApp *pwba;
-            if(SUCCEEDED(pdisp->QueryInterface(IID_IWebBrowserApp, (void**)&pwba))) {
-                PairHwndPath pair;
-                if(SUCCEEDED(pwba->get_HWND((LONG_PTR*)&pair.hwnd))) {
-                    IServiceProvider *psp;
-                    if(needPaths && SUCCEEDED(pwba->QueryInterface(IID_IServiceProvider, (void**)&psp))) {
-                        IShellBrowser *psb;
-                        if(SUCCEEDED(psp->QueryService(SID_STopLevelBrowser, IID_IShellBrowser, (void**)&psb))) {
-                            IShellView *psv;
-                            if(SUCCEEDED(psb->QueryActiveShellView(&psv))) {
-                                IFolderView *pfv;
-                                if(SUCCEEDED(psv->QueryInterface(IID_IFolderView, (void**)&pfv))) {
-                                    IPersistFolder2 *ppf2;
-                                    if(SUCCEEDED(pfv->GetFolder(IID_IPersistFolder2, (void**)&ppf2))) {
-                                        LPITEMIDLIST pidlFolder;
-                                        if(SUCCEEDED(ppf2->GetCurFolder(&pidlFolder))) {
-                                            if(!SHGetPathFromIDList(pidlFolder, pair.path)) {
-                                                IShellFolder* psf;
-                                                LPCITEMIDLIST pidlLast;
-                                                if(SUCCEEDED(SHBindToParent(pidlFolder, IID_IShellFolder, (void**)&psf, &pidlLast))) {
-                                                    STRRET strret;
-                                                    if(SUCCEEDED(psf->GetDisplayNameOf(pidlLast, 0x8000, &strret))) {
-                                                        StrRetToBuf(&strret, pidlLast, pair.path, MAX_PATH);
-                                                    }
-                                                    else {
-                                                        pair.path[0] = 0;
-                                                    }
-                                                    psf->Release();
-                                                }
-                                            }
-                                            CoTaskMemFree(pidlFolder);
-                                        }
-                                        ppf2->Release();
-                                    }
-                                    pfv->Release();
-                                }
-                                psv->Release();
-                            }
-                            psb->Release();
-                        }
-                        psp->Release();
-                    }
-                    windows.push_back(pair);
-                }
-                pwba->Release();
-            }
-            pdisp->Release();
+    CComPtr<IShellWindows> psw;
+    if(!psw.Create(CLSID_ShellWindows, CLSCTX_ALL)) return;
+    VARIANT v;
+    V_VT(&v) = VT_I4;
+    CComPtr<IDispatch> pdisp;
+    for(V_I4(&v) = 0; psw->Item(v, &pdisp) == S_OK; V_I4(&v)++) {
+        CComPtr<IWebBrowserApp> pwba;
+        if(!pwba.QueryFrom(pdisp)) continue;
+        PairHwndPath pair;
+        if(!SUCCEEDED(pwba->get_HWND((LONG_PTR*)&pair.hwnd))) continue;
+        pair.path[0] = 0;
+
+        CComPtr<IServiceProvider> psp;
+        CComPtr<IShellBrowser> psb;
+        CComPtr<IShellView> psv;
+        CComPtr<IFolderView> pfv;
+        CComPtr<IPersistFolder2> ppf2;
+        CComPtr<IShellFolder> psf;
+        LPITEMIDLIST pidlFolder = NULL;
+        LPCITEMIDLIST pidlLast = NULL;
+        STRRET strret;
+        if(needPaths
+                && psp.QueryFrom(pwba)
+                && SUCCEEDED(psp->QueryService(SID_STopLevelBrowser, IID_IShellBrowser, (void**)&psb))
+                && SUCCEEDED(psb->QueryActiveShellView(&psv))
+                && pfv.QueryFrom(psv)
+                && SUCCEEDED(pfv->GetFolder(IID_IPersistFolder2, (void**)&ppf2))
+                && SUCCEEDED(ppf2->GetCurFolder(&pidlFolder))
+                && !SHGetPathFromIDList(pidlFolder, pair.path)
+                && SUCCEEDED(SHBindToParent(pidlFolder, IID_IShellFolder, (void**)&psf, &pidlLast))
+                && SUCCEEDED(psf->GetDisplayNameOf(pidlLast, 0x8000, &strret))) {
+            StrRetToBuf(&strret, pidlLast, pair.path, MAX_PATH);
         }
-        psw->Release();
+        if(pidlFolder != NULL) CoTaskMemFree(pidlFolder);
+        windows.push_back(pair);
     }
 }
 
@@ -163,7 +144,7 @@ UINT WIXAPI CheckOldVersion(MSIHANDLE hInstaller) {
 
     // Check if it's uninstalled, but the user hasn't restarted Explorer yet.
     // Do this by making sure explorer.exe does not have our dll loaded.
-    int guess = 1024;
+    DWORD guess = 1024;
     DWORD* aProcesses;
     DWORD cbNeeded, cProcesses;
     BOOL fFound = false;
@@ -180,7 +161,7 @@ UINT WIXAPI CheckOldVersion(MSIHANDLE hInstaller) {
         guess *= 2;
     }
 
-    for(int i = 0; i < cProcesses && !fFound; ++i) {
+    for(DWORD i = 0; i < cProcesses && !fFound; ++i) {
         TCHAR szProcessName[MAX_PATH] = _T("");
         HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, aProcesses[i]);
 
@@ -212,7 +193,7 @@ UINT WIXAPI CheckOldVersion(MSIHANDLE hInstaller) {
             }
             
             // Look for QTTabBar.dll or QTTabBar.ni.dll (native image)
-            for(int j = 0; j < cMods; ++j) {
+            for(DWORD j = 0; j < cMods; ++j) {
                 TCHAR szModName[MAX_PATH];
                 if(GetModuleBaseName(hProcess, aMods[j], szModName, sizeof(szModName) / sizeof(TCHAR))) {
                     if(_tcscmp(szModName, _T("QTTabBar.dll")) == 0 || _tcscmp(szModName, _T("QTTabBar.ni.dll")) == 0) {
