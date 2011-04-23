@@ -23,8 +23,8 @@
 
     <?define SkuName = "QTTabBar"?>
     <?define RTMProductVersion="1.5.0" ?>
-    <?define ProductVersion="1.5.1" ?> <!-- Change the last number to the svn revision before release -->
-    <?define VersionString="Dev Build" ?> <!-- Change to correct version before release, eg, 1.5.0.0 Beta 1 -->
+    <?define ProductVersion="1.5.260" ?> <!-- Change the last number to the svn revision before release -->
+    <?define VersionString="1.5.0.0 Beta 2" ?> <!-- Change to correct version before release, eg, 1.5.0.0 Beta 1 -->
     <?define UpgradeCode="{ec9baff7-58fb-40cb-9f67-1c438a7524a5}"?> <!-- NEVER CHANGE THIS, EVER!! -->
     <?define Manufacturer="Quizo and Paul Accisano"?>
     <?define ProductCode="*"?>

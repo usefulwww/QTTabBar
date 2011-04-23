@@ -1340,6 +1340,7 @@ namespace QTTabBarLib {
                 fSearchBoxInputStart = true;
                 strSearch = text;
                 iSearchResultCount = -1;
+                // TODO: If the item count is less than a certain cutoff, skip the timer and just call it directly.
                 timerSerachBox_Search.Start();
             }
         }
@@ -1350,7 +1351,7 @@ namespace QTTabBarLib {
             IShellView ppshv = null;
             IShellFolder shellFolder = null;
             IntPtr zero = IntPtr.Zero;
-            bool flag = false;
+            bool addedItems = false;
             try {
                 if(ShellBrowser.GetIShellBrowser().QueryActiveShellView(out ppshv) == 0) {
                     int num;
@@ -1398,18 +1399,29 @@ namespace QTTabBarLib {
                         if(!ShellMethods.GetShellFolder(zero, out shellFolder)) {
                             return false;
                         }
-                        bool flag2 = (pluginManager != null) && (pluginManager.IFilterCore != null);
+                        bool useFC = (pluginManager != null) && (pluginManager.IFilterCore != null);
                         IFilterCore iFilterCore = null;
                         QTPlugin.Interop.IShellFolder folder3 = null;
-                        if(flag2) {
+                        if(useFC) {
                             iFilterCore = pluginManager.IFilterCore;
                             folder3 = (QTPlugin.Interop.IShellFolder)shellFolder;
                         }
-                        List<IntPtr> collection = new List<IntPtr>();
-                        for(int i = 0; i < num2; i++) {
-                            IntPtr ptr4;
-                            if(view2.Item(i, out ptr4) == 0) {
-                                if((flag2 && iFilterCore.IsMatch(folder3, ptr4, regex)) || (!flag2 && CheckDisplayName(shellFolder, ptr4, regex))) {
+
+                        if(!useFC && (regex.ToString().Length == 0 || regex.ToString() == ".*")) {
+                            addedItems = lstPUITEMIDCHILD.Count > 0;
+                            foreach(IntPtr pIDLChild in lstPUITEMIDCHILD) {
+                                int num7;
+                                view3.AddObject(pIDLChild, out num7);
+                                PInvoke.CoTaskMemFree(pIDLChild);
+                            }
+                            lstPUITEMIDCHILD.Clear();
+                        }
+                        else {
+                            List<IntPtr> collection = new List<IntPtr>();
+                            for(int i = 0; i < num2; i++) {
+                                IntPtr ptr4;
+                                if(view2.Item(i, out ptr4) != 0) continue;
+                                if((useFC && iFilterCore.IsMatch(folder3, ptr4, regex)) || (!useFC && CheckDisplayName(shellFolder, ptr4, regex))) {
                                     PInvoke.CoTaskMemFree(ptr4);
                                 }
                                 else {
@@ -1421,21 +1433,20 @@ namespace QTTabBarLib {
                                     }
                                 }
                             }
-                        }
-                        int count = lstPUITEMIDCHILD.Count;
-                        for(int j = 0; j < count; j++) {
-                            IntPtr pIDLChild = lstPUITEMIDCHILD[j];
-                            if((flag2 && iFilterCore.IsMatch(folder3, pIDLChild, regex)) || (!flag2 && CheckDisplayName(shellFolder, pIDLChild, regex))) {
+                            int count = lstPUITEMIDCHILD.Count;
+                            for(int j = 0; j < count; j++) {
+                                IntPtr pIDLChild = lstPUITEMIDCHILD[j];
+                                if((!useFC || !iFilterCore.IsMatch(folder3, pIDLChild, regex)) && (useFC || !CheckDisplayName(shellFolder, pIDLChild, regex))) continue;
                                 int num7;
                                 lstPUITEMIDCHILD.RemoveAt(j);
                                 count--;
                                 j--;
                                 view3.AddObject(pIDLChild, out num7);
                                 PInvoke.CoTaskMemFree(pIDLChild);
-                                flag = true;
+                                addedItems = true;
                             }
+                            lstPUITEMIDCHILD.AddRange(collection);
                         }
-                        lstPUITEMIDCHILD.AddRange(collection);
                         view2.ItemCount(2, out iSearchResultCount);
                     }
                     finally {
@@ -1451,7 +1462,7 @@ namespace QTTabBarLib {
             }
             catch(Exception exception) {
                 QTUtility2.MakeErrorLog(exception);
-                flag = false;
+                addedItems = false;
             }
             finally {
                 if(ppshv != null) {
@@ -1464,7 +1475,7 @@ namespace QTTabBarLib {
                     PInvoke.CoTaskMemFree(zero);
                 }
             }
-            return flag;
+            return addedItems;
         }
 
         protected override bool ShouldHaveBreak() {
