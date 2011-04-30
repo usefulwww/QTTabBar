@@ -72,7 +72,7 @@ namespace QTTabBarLib {
         private volatile bool FirstNavigationCompleted;
         private bool fAutoNavigating;
         private bool fNavigatedByTabSelection;
-        private bool fNeedsNewWindowPusle;
+        private bool fNeedsNewWindowPulse;
         private bool fNowInTray;
         private bool fNowQuitting;
         private bool fNowRestoring;
@@ -2188,10 +2188,10 @@ namespace QTTabBarLib {
                 return true;
             }
             else if(msg.Msg == WM_NEWWINDOW) {
-                if(fNeedsNewWindowPusle && msg.LParam != IntPtr.Zero) {
+                if(fNeedsNewWindowPulse && msg.LParam != IntPtr.Zero) {
                     Marshal.WriteIntPtr(msg.LParam, Marshal.GetIDispatchForObject(Explorer));
                     msg.Result = (IntPtr)1;
-                    fNeedsNewWindowPusle = false;
+                    fNeedsNewWindowPulse = false;
                 }
                 return true;
             }
@@ -6545,7 +6545,7 @@ namespace QTTabBarLib {
                             m.Result = IntPtr.Zero;
                         }
                         else {
-                            fNeedsNewWindowPusle = true;
+                            fNeedsNewWindowPulse = true;
                             OpenNewTab(wrapper, false, false);
                             WindowUtils.BringExplorerToFront(ExplorerHandle);
                             m.Result = (IntPtr)1;
