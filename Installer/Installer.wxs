@@ -51,8 +51,8 @@
         <PropertyRef Id="NETFRAMEWORK40CLIENT"/>
         
         <Directory Id="TARGETDIR" Name="SourceDir">
-            <Directory Id="ProgramFilesFolder">
-                <Directory Id="INSTALLLOCATION" Name="QTTabBar">
+            <Directory Id="CommonAppDataFolder">
+                <Directory Id="INSTALLLOCATION" Name="$(var.SkuName)">
                     <!-- Files -->
                     <Component Id="ShellLibrary" Guid="27af1a85-9a01-4c79-bdeb-d73fd4bd9574" Win64="yes" DisableRegistryReflection="yes">
                         <File Id="f1" Assembly=".net" KeyPath="yes" Name="Interop.SHDocVw.dll" Source="..\BandObjectLib\bin\Release\Interop.SHDocVw.dll">
@@ -120,7 +120,6 @@
                             <?endif?>
                             <RegistryKey Root="HKLM" Key="Software\Quizo\QTTabBar" Action="createAndRemoveOnUninstall">
                                 <RegistryValue Name="InstallDate" Value="[Date] [Time]" Type="string" Action="write" KeyPath ="yes" />
-                                <RegistryValue Name="InstallPath" Value="[INSTALLLOCATION]" Type="string" Action="write" />
                             </RegistryKey>
                         </Component>
                     
@@ -236,9 +235,8 @@
         </UI>
 
         <Property Id="ALLUSERS" Value="1" />
-        <Property Id="WIXUI_INSTALLDIR" Value="INSTALLLOCATION" />
         <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Close all Explorer windows and reopen them as tabs" />
         <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
-        <UIRef Id="WixUI_InstallDir" />
+        <UIRef Id="WixUI_Minimal" />
     </Product>
 </Wix>
