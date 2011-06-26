@@ -341,7 +341,9 @@ namespace QTTabBarLib {
         }
 
         public static Point PointFromLPARAM(IntPtr lParam) {
-            return new Point(((int)lParam) & 0xffff, (((int)lParam) >> 0x10) & 0xffff);
+            return new Point(
+                (short)(((int)lParam) & 0xffff),
+                (short)((((int)lParam) >> 0x10) & 0xffff));
         }
 
         public static T[] ReadRegBinary<T>(string regValueName, RegistryKey rkUserApps) {
