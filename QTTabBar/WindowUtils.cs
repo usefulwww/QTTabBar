@@ -65,43 +65,5 @@ namespace QTTabBarLib {
                 return ((key != null) && (((int)key.GetValue("SeparateProcess", 0)) != 0));
             }
         }
-
-        public static bool IsToolbarLocked(IntPtr hwndReBar) {
-            if((hwndReBar == IntPtr.Zero) || !PInvoke.IsWindow(hwndReBar)) {
-                return false;
-            }
-            REBARBANDINFO structure = new REBARBANDINFO();
-            structure.cbSize = Marshal.SizeOf(structure);
-            structure.fMask = 1;
-            IntPtr ptr2 = PInvoke.SendMessage(hwndReBar, 0x405, IntPtr.Zero, ref structure);
-            return ((ptr2 != IntPtr.Zero) && ((structure.fStyle & 0x100) != 0));
-        }
-
-        public static void LockToolbar(bool fLock, IntPtr hwndExplr, IntPtr hwndReBar) {
-            if(IsToolbarLocked(hwndReBar) ^ fLock) {
-                if(!QTUtility.IsXP) {
-                    PInvoke.SendMessage(GetShellTabWindowClass(hwndExplr), 0x111, (IntPtr)0xa20c, IntPtr.Zero);
-                }
-                else {
-                    PInvoke.SendMessage(hwndExplr, 0x111, (IntPtr)0xa20c, IntPtr.Zero);
-                }
-            }
-        }
-
-        public static void ShowMenuBar(bool fShow, IntPtr hwndRebar) {
-            if((hwndRebar != IntPtr.Zero) && PInvoke.IsWindow(hwndRebar)) {
-                int num = (int)PInvoke.SendMessage(hwndRebar, 0x40c, IntPtr.Zero, IntPtr.Zero);
-                REBARBANDINFO structure = new REBARBANDINFO();
-                structure.cbSize = Marshal.SizeOf(structure);
-                structure.fMask = 0x110;
-                for(int i = 0; i < num; i++) {
-                    PInvoke.SendMessage(hwndRebar, 0x405, (IntPtr)i, ref structure);
-                    if((PInvoke.GetClassName(structure.hwndChild) == "ToolbarWindow32") && (structure.wID == 1)) {
-                        PInvoke.SendMessage(hwndRebar, 0x423, (IntPtr)i, fShow ? ((IntPtr)1) : IntPtr.Zero);
-                        return;
-                    }
-                }
-            }
-        }
     }
 }

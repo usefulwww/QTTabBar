@@ -85,6 +85,7 @@
     <Compile Include="HookLibManager.cs" />
     <Compile Include="Interop\TBBUTTON.cs" />
     <Compile Include="Interop\TBBUTTONINFO.cs" />
+    <Compile Include="RebarController.cs" />
     <Compile Include="SafePtr.cs" />
     <Compile Include="TreeViewWrapper.cs" />
     <Compile Include="Interop\INameSpaceTreeControl.cs" />

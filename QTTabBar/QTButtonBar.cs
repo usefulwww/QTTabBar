@@ -263,7 +263,8 @@ namespace QTTabBarLib {
             bool fRefreshRequired = false;
             if(e.ClickedItem != menuCustomize) {
                 if(e.ClickedItem != menuLockItem) {
-                    WindowUtils.LockToolbar(!menuLockToolbar.Checked, ExplorerHandle, ReBarHandle);
+                    QTTabBarClass tabBar = QTUtility.instanceManager.GetTabBar(ExplorerHandle);
+                    tabBar.rebarController.Locked = !menuLockToolbar.Checked;
                     return;
                 }
                 menuLockItem.Checked = !menuLockItem.Checked;
@@ -339,7 +340,8 @@ namespace QTTabBarLib {
         }
 
         private void contextMenu_Opening(object sender, CancelEventArgs e) {
-            menuLockToolbar.Checked = WindowUtils.IsToolbarLocked(ReBarHandle);
+            QTTabBarClass tabBar = QTUtility.instanceManager.GetTabBar(ExplorerHandle);
+            menuLockToolbar.Checked = tabBar.rebarController.Locked;
         }
 
         private void copyButton_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e) {
@@ -1177,7 +1179,7 @@ namespace QTTabBarLib {
             if(fRefreshRequired) {
                 QTTabBarClass tabBar = QTUtility.instanceManager.GetTabBar(ExplorerHandle);
                 if(tabBar != null) {
-                    tabBar.RefreshRebar();
+                    tabBar.rebarController.RefreshHeight();
                 }
             }
         }

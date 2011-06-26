@@ -44,7 +44,6 @@ namespace QTTabBarLib {
     public sealed class QTTabBarClass : BandObject {
         private int BandHeight;
         private VisualStyleRenderer bgRenderer;
-        private Bitmap bmpRebar;
         private BreadcrumbBar breadcrumbBar;
         private ToolStripButton buttonBack;
         private ToolStripButton buttonForward;
@@ -117,7 +116,7 @@ namespace QTTabBarLib {
         private bool NowTopMost;
         private static OptionsDialog optionsDialog;
         private PluginManager pluginManager;
-        private NativeWindowController rebarController;
+        internal RebarController rebarController;
         private ShellBrowserEx ShellBrowser;
         private string strDraggingDrive;
         private string strDraggingStartPath;
@@ -126,7 +125,6 @@ namespace QTTabBarLib {
         private QTabControl tabControl1;
         private QTabItem tabForDD;
         private TabSwitchForm tabSwitcher;
-        private TextureBrush textureBrushRebar;
         private Timer timerOnTab;
         private Timer timerSelectionChanged;
         private static bool TMP_fPaintBG;
@@ -855,7 +853,7 @@ namespace QTTabBarLib {
                         explorerController = null;
                     }
                     if(rebarController != null) {
-                        rebarController.ReleaseHandle();
+                        rebarController.Dispose();
                         rebarController = null;
                     }
                     if(!QTUtility.IsXP && (travelBtnController != null)) {
@@ -971,14 +969,6 @@ namespace QTTabBarLib {
                     }
                 }
                 LogEntryDic.Clear();
-                if(bmpRebar != null) {
-                    bmpRebar.Dispose();
-                    bmpRebar = null;
-                }
-                if(textureBrushRebar != null) {
-                    textureBrushRebar.Dispose();
-                    textureBrushRebar = null;
-                }
                 fFinalRelease = true;
                 base.CloseDW(dwReserved);
             }
@@ -1189,7 +1179,7 @@ namespace QTTabBarLib {
                     }
                 }
                 if(e.ClickedItem == tsmiLockToolbar) {
-                    WindowUtils.LockToolbar(!tsmiLockToolbar.Checked, ExplorerHandle, ReBarHandle);
+                    rebarController.Locked = !tsmiLockToolbar.Checked;
                 }
                 else if(e.ClickedItem == tsmiMergeWindows) {
                     MergeAllWindows();
@@ -1223,7 +1213,7 @@ namespace QTTabBarLib {
             }
             tsmiExecuted.Enabled = tsmiExecuted.DropDownItems.Count > 0;
             tsmiMergeWindows.Enabled = QTUtility.InstancesCount > 1;
-            tsmiLockToolbar.Checked = WindowUtils.IsToolbarLocked(ReBarHandle);
+            tsmiLockToolbar.Checked = rebarController.Locked;
             if((lstPluginMenuItems_Sys != null) && (lstPluginMenuItems_Sys.Count > 0)) {
                 foreach(ToolStripItem item in lstPluginMenuItems_Sys) {
                     item.Dispose();
@@ -1592,30 +1582,6 @@ namespace QTTabBarLib {
             tab.ToolTipText = QTUtility2.MakePathDisplayText(path, true);
             AddInsertTab(tab);
             return tab;
-        }
-
-        private void CreateRebarImage() {
-            if(bmpRebar != null) {
-                bmpRebar.Dispose();
-                bmpRebar = null;
-            }
-            if(textureBrushRebar != null) {
-                textureBrushRebar.Dispose();
-                textureBrushRebar = null;
-            }
-            if(File.Exists(QTUtility.Path_RebarImage)) {
-                try {
-                    using(Bitmap bitmap = new Bitmap(QTUtility.Path_RebarImage)) {
-                        bmpRebar = new Bitmap(bitmap, bitmap.Size);
-                        textureBrushRebar = new TextureBrush(bmpRebar);
-                        if(Path.GetExtension(QTUtility.Path_RebarImage).PathEquals(".bmp")) {
-                            bmpRebar.MakeTransparent(Color.Magenta);
-                        }
-                    }
-                }
-                catch {
-                }
-            }
         }
 
         internal static Bitmap[] CreateTabImage() {
@@ -2873,16 +2839,7 @@ namespace QTTabBarLib {
                 }
                 else {
                     if(imkey == QTUtility.ShortcutKeys[0x1a]) {
-                        WindowUtils.ShowMenuBar(QTUtility.CheckConfig(Settings.HideMenuBar), ReBarHandle);
-                        if(QTUtility.CheckConfig(Settings.HideMenuBar)) {
-                            QTUtility.ConfigValues[7] = (byte)(QTUtility.ConfigValues[7] & 0xf7);
-                        }
-                        else {
-                            QTUtility.ConfigValues[7] = (byte)(QTUtility.ConfigValues[7] | 8);
-                        }
-                        using(RegistryKey rkey = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
-                            rkey.SetValue("Config", QTUtility.ConfigValues);
-                        }
+                        rebarController.MenuBarShown = !rebarController.MenuBarShown;
                         return true;
                     }
                     if(((imkey == QTUtility.ShortcutKeys[0x1b]) || (imkey == QTUtility.ShortcutKeys[0x1c])) || (((imkey == QTUtility.ShortcutKeys[0x1d]) || (imkey == QTUtility.ShortcutKeys[30])) || (imkey == QTUtility.ShortcutKeys[0x1f]))) {
@@ -3523,9 +3480,6 @@ namespace QTTabBarLib {
             if(!SyncButtonBarCurrent(0x100)) {
                 new WaitTimeoutCallback(WaitTimeout).BeginInvoke(0x7d0, AsyncComplete_ButtonBarPlugin, null);
             }
-            if(QTUtility.CheckConfig(Settings.HideMenuBar)) {
-                WindowUtils.ShowMenuBar(false, ReBarHandle);
-            }
             if(QTUtility.CheckConfig(Settings.SaveTransparency) && (QTUtility.WindowAlpha < 0xff)) {
                 PInvoke.SetWindowLongPtr(ExplorerHandle, -20, PInvoke.Ptr_OP_OR(PInvoke.GetWindowLongPtr(ExplorerHandle, -20), 0x80000));
                 PInvoke.SetLayeredWindowAttributes(ExplorerHandle, 0, QTUtility.WindowAlpha, 2);
@@ -3675,15 +3629,7 @@ namespace QTTabBarLib {
             explorerController = new NativeWindowController(ExplorerHandle);
             explorerController.MessageCaptured += explorerController_MessageCaptured;
             if(ReBarHandle != IntPtr.Zero) {
-                rebarController = new NativeWindowController(ReBarHandle);
-                rebarController.MessageCaptured += rebarController_MessageCaptured;
-                if(QTUtility.CheckConfig(Settings.ToolbarBGColor)) {
-                    if(QTUtility.DefaultRebarCOLORREF == -1) {
-                        QTUtility.DefaultRebarCOLORREF = (int)PInvoke.SendMessage(ReBarHandle, 0x414, IntPtr.Zero, IntPtr.Zero);
-                    }
-                    int num2 = QTUtility2.MakeCOLORREF(QTUtility.RebarBGColor);
-                    PInvoke.SendMessage(ReBarHandle, 0x413, IntPtr.Zero, (IntPtr)num2);
-                }
+                rebarController = new RebarController(this, ReBarHandle, BandObjectSite as IOleCommandTarget);
             }
             if(!QTUtility.IsXP) {
                 TravelToolBarHandle = GetTravelToolBarWindow32();
@@ -4916,78 +4862,6 @@ namespace QTTabBarLib {
             }
         }
 
-        private bool rebarController_MessageCaptured(ref Message m) {
-            if((m.Msg == WM.ERASEBKGND) && (QTUtility.CheckConfig(Settings.ToolbarBGColor) || QTUtility.CheckConfig(Settings.RebarImage))) {
-                bool flag = false;
-                using(Graphics graphics = Graphics.FromHdc(m.WParam)) {
-                    RECT rect;
-                    PInvoke.GetWindowRect(rebarController.Handle, out rect);
-                    Rectangle rectangle = new Rectangle(0, 0, rect.Width, rect.Height);
-                    if(QTUtility.CheckConfig(Settings.ToolbarBGColor)) {
-                        using(SolidBrush brush = new SolidBrush(QTUtility.RebarBGColor)) {
-                            graphics.FillRectangle(brush, rectangle);
-                            flag = true;
-                        }
-                    }
-                    if((VisualStyleRenderer.IsSupported && QTUtility.CheckConfig(Settings.RebarImage)) && (QTUtility.Path_RebarImage.Length > 0)) {
-                        if(bmpRebar == null) {
-                            CreateRebarImage();
-                        }
-                        if(bmpRebar != null) {
-                            switch(((QTUtility.ConfigValues[11] & 0x60) | (QTUtility.ConfigValues[13] & 1))) {
-                                case 1: {
-                                    if(!flag) {
-                                        rebarController.DefWndProc(ref m);
-                                    }
-                                    int num2 = (int)PInvoke.SendMessage(rebarController.Handle, 0x40c, IntPtr.Zero, IntPtr.Zero);
-                                    graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-                                    RECT rect2 = new RECT();
-                                    RECT rect3 = new RECT();
-                                    for(int i = 0; i < num2; i++) {
-                                        PInvoke.SendMessage(rebarController.Handle, 0x422, (IntPtr)i, ref rect3);
-                                        if(PInvoke.SendMessage(rebarController.Handle, 0x409, (IntPtr)i, ref rect2) == IntPtr.Zero) {
-                                            continue;
-                                        }
-                                        rect2.left -= !QTUtility.IsXP ? 4 : rect3.left;
-                                        rect2.top -= rect3.top;
-                                        rect2.right += rect3.right;
-                                        rect2.bottom += rect3.bottom;
-                                        graphics.DrawImage(bmpRebar, rect2.ToRectangle());
-                                    }
-                                    break;
-                                }
-                                case 0x20: {
-                                    if(!flag) {
-                                        rebarController.DefWndProc(ref m);
-                                    }
-                                    Rectangle destRect = new Rectangle(Point.Empty, bmpRebar.Size);
-                                    graphics.DrawImage(bmpRebar, destRect, destRect, GraphicsUnit.Pixel);
-                                    break;
-                                }
-                                case 0x40:
-                                    if(textureBrushRebar == null) {
-                                        textureBrushRebar = new TextureBrush(bmpRebar);
-                                    }
-                                    graphics.FillRectangle(textureBrushRebar, rectangle);
-                                    break;
-
-                                default:
-                                    graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-                                    graphics.DrawImage(bmpRebar, rectangle);
-                                    break;
-                            }
-                            flag = true;
-                        }
-                    }
-                }
-                if(flag) {
-                    m.Result = (IntPtr)1;
-                    return true;
-                }
-            }
-            return false;
-        }
-
         internal void RefreshOptions(bool fAutoSubText, bool fPaintBG, string oldPath_LangFile) {
             if(QTUtility.Path_LanguageFile != oldPath_LangFile) {
                 if(File.Exists(QTUtility.Path_LanguageFile)) {
@@ -5048,36 +4922,6 @@ namespace QTTabBarLib {
             }
         }
 
-        internal void RefreshRebar() {
-            try {
-                SuspendLayout();
-                tabControl1.SuspendLayout();
-                IOleCommandTarget bandObjectSite = BandObjectSite as IOleCommandTarget;
-                if(bandObjectSite != null) {
-                    Guid pguidCmdGroup = ExplorerGUIDs.CGID_DeskBand;
-                    bandObjectSite.Exec(ref pguidCmdGroup, 0, 0, IntPtr.Zero, IntPtr.Zero);
-                    if(!QTUtility.IsXP) {
-                        IntPtr windowLongPtr = PInvoke.GetWindowLongPtr(ReBarHandle, -8);
-                        NMHDR structure = new NMHDR {hwndFrom = ReBarHandle, idFrom = (IntPtr)0xa005, code = -831};
-                        PInvoke.SendMessage(windowLongPtr, 0x4e, (IntPtr)0xa005, ref structure);
-                    }
-                    else {
-                        RECT rect;
-                        PInvoke.GetWindowRect(ExplorerHandle, out rect);
-                        int num = (rect.Height << 0x10) | rect.Width;
-                        PInvoke.SendMessage(ExplorerHandle, 5, IntPtr.Zero, (IntPtr)num);
-                    }
-                }
-            }
-            catch(COMException exception) {
-                QTUtility2.MakeErrorLog(exception);
-            }
-            finally {
-                tabControl1.ResumeLayout();
-                ResumeLayout();
-            }
-        }
-
         private void RefreshTabBar(bool fRebarBGCanceled) {
             SuspendLayout();
             tabControl1.SuspendLayout();
@@ -5113,23 +4957,7 @@ namespace QTTabBarLib {
                 iType = 2;
             }
             SetBarRows(tabControl1.SetTabRowType(iType));
-            if(ReBarHandle != IntPtr.Zero) {
-                if(fRebarBGCanceled && (QTUtility.DefaultRebarCOLORREF != -1)) {
-                    PInvoke.SendMessage(ReBarHandle, 0x413, IntPtr.Zero, (IntPtr)QTUtility.DefaultRebarCOLORREF);
-                }
-                else if(QTUtility.CheckConfig(Settings.ToolbarBGColor)) {
-                    if(QTUtility.DefaultRebarCOLORREF == -1) {
-                        QTUtility.DefaultRebarCOLORREF = (int)PInvoke.SendMessage(ReBarHandle, 0x414, IntPtr.Zero, IntPtr.Zero);
-                    }
-                    int num2 = QTUtility2.MakeCOLORREF(QTUtility.RebarBGColor);
-                    PInvoke.SendMessage(ReBarHandle, 0x413, IntPtr.Zero, (IntPtr)num2);
-                }
-                IntPtr hWnd = PInvoke.GetWindowLongPtr(ReBarHandle, -8);
-                if(hWnd != IntPtr.Zero) {
-                    PInvoke.RedrawWindow(hWnd, IntPtr.Zero, IntPtr.Zero, 0x289);
-                }
-            }
-            WindowUtils.ShowMenuBar(!QTUtility.CheckConfig(Settings.HideMenuBar), ReBarHandle);
+            rebarController.RefreshBG(fRebarBGCanceled);
             if(QTUtility.CheckConfig(Settings.AlternateRowColors)) {
                 Color color = QTUtility2.MakeColor(QTUtility.ShellViewRowCOLORREF_Background);
                 if(QTUtility.sbAlternate == null) {
@@ -5141,9 +4969,6 @@ namespace QTTabBarLib {
             }
             foreach(QTabItem item in tabControl1.TabPages) {
                 item.RefreshRectangle();
-            }
-            if(QTUtility.CheckConfig(Settings.RebarImage)) {
-                CreateRebarImage();
             }
             ShellBrowser.SetUsingListView(QTUtility.CheckConfig(Settings.ForceSysListView));
             tabControl1.ResumeLayout();
@@ -5338,7 +5163,7 @@ namespace QTTabBarLib {
 
         private void SetBarRows(int count) {
             BandHeight = (count * (QTUtility.TabHeight - 3)) + 5;
-            RefreshRebar();
+            rebarController.RefreshHeight();
         }
 
         internal static void SetStringClipboard(string str) {
