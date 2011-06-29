@@ -332,7 +332,7 @@ namespace QTTabBarLib {
             int focusedIdx = ShellBrowser.GetFocusedIndex();
             int itemCount = ShellBrowser.GetItemCount();
             int selectMe = -1;
-            int viewMode = ShellBrowser.ViewMode;
+            FVM viewMode = ShellBrowser.ViewMode;
             if(viewMode == FVM.TILE && QTUtility.IsXP) {
                 viewMode = FVM.ICON;
             }

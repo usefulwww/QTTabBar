@@ -83,6 +83,7 @@
     </Compile>
     <Compile Include="AbstractListView.cs" />
     <Compile Include="HookLibManager.cs" />
+    <Compile Include="Interop\ShellConstants.cs" />
     <Compile Include="Interop\TBBUTTON.cs" />
     <Compile Include="Interop\TBBUTTONINFO.cs" />
     <Compile Include="RebarController.cs" />
@@ -148,7 +149,6 @@
     <Compile Include="Interop\DTTOPTS.cs" />
     <Compile Include="Interop\EnumWndProc.cs" />
     <Compile Include="Interop\FOLDERSETTINGS.cs" />
-    <Compile Include="Interop\FolderViewMode.cs" />
     <Compile Include="Interop\HDITEM.cs" />
     <Compile Include="Interop\HookProc.cs" />
     <Compile Include="Interop\ICONINFO.cs" />

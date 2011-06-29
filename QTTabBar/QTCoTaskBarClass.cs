@@ -218,7 +218,7 @@ namespace QTTabBarLib {
                         timerISV.Start();
                     }
                     else {
-                        ShellBrowser = new ShellBrowserEx((IShellBrowser)Marshal.GetObjectForIUnknown(pUnk), true);
+                        ShellBrowser = new ShellBrowserEx((IShellBrowser)Marshal.GetObjectForIUnknown(pUnk));
 
                         listView = new ExtendedSysListView32(ShellBrowser, PInvoke.GetParent(hwndListView), hwndListView, ThisHandle);
                         listView.MouseActivate += ListView_MouseActivate;

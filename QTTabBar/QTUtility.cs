@@ -465,11 +465,11 @@ namespace QTTabBarLib {
                         return path;
                     }
                     if(ITEMIDLIST_Dic_Session.TryGetValue(path, out buffer)) {
-                        IntPtr pIDL = ShellMethods.CreateIDL(buffer);
-                        if(pIDL != IntPtr.Zero) {
-                            ImageListGlobal.Images.Add(path, GetIcon(pIDL));
-                            PInvoke.CoTaskMemFree(pIDL);
-                            return path;
+                        using(IDLWrapper w = new IDLWrapper(buffer)) {
+                            if(w.Available) {
+                                ImageListGlobal.Images.Add(path, GetIcon(w.PIDL));
+                                return path;
+                            }
                         }
                     }
                     return "noimage";
@@ -723,12 +723,10 @@ namespace QTTabBarLib {
                     case 5:
                         byte[] buffer;
                         if(ITEMIDLIST_Dic_Session.TryGetValue(irk.ImageKey, out buffer)) {
-                            IntPtr pIDL = ShellMethods.CreateIDL(buffer);
-                            if(!(pIDL != IntPtr.Zero)) {
-                                return;
+                            using(IDLWrapper w = new IDLWrapper(buffer)) {
+                                if(!w.Available) return;
+                                ImageListGlobal.Images.Add(irk.ImageKey, GetIcon(w.PIDL));
                             }
-                            ImageListGlobal.Images.Add(irk.ImageKey, GetIcon(pIDL));
-                            PInvoke.CoTaskMemFree(pIDL);
                         }
                         return;
 

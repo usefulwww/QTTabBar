@@ -670,39 +670,39 @@ namespace QTTabBarLib {
         }
 
         private void ChangeViewMode(bool fUp) {
-            int pViewMode = ShellBrowser.ViewMode;
-            FolderViewMode mode = (FolderViewMode)pViewMode;
+            FVM orig = ShellBrowser.ViewMode;
+            FVM mode = orig;
             switch(mode) {
-                case FolderViewMode.FVM_ICON:
-                    mode = fUp ? FolderViewMode.FVM_TILE : FolderViewMode.FVM_LIST;
+                case FVM.ICON:
+                    mode = fUp ? FVM.TILE : FVM.LIST;
                     break;
 
-                case FolderViewMode.FVM_LIST:
-                    mode = fUp ? FolderViewMode.FVM_ICON : FolderViewMode.FVM_DETAILS;
+                case FVM.LIST:
+                    mode = fUp ? FVM.ICON : FVM.DETAILS;
                     break;
 
-                case FolderViewMode.FVM_DETAILS:
+                case FVM.DETAILS:
                     if(fUp) {
-                        mode = FolderViewMode.FVM_LIST;
+                        mode = FVM.LIST;
                     }
                     break;
 
-                case FolderViewMode.FVM_THUMBNAIL:
-                    mode = fUp ? FolderViewMode.FVM_THUMBSTRIP : FolderViewMode.FVM_TILE;
+                case FVM.THUMBNAIL:
+                    mode = fUp ? FVM.THUMBSTRIP : FVM.TILE;
                     break;
 
-                case FolderViewMode.FVM_TILE:
-                    mode = fUp ? FolderViewMode.FVM_THUMBNAIL : FolderViewMode.FVM_ICON;
+                case FVM.TILE:
+                    mode = fUp ? FVM.THUMBNAIL : FVM.ICON;
                     break;
 
-                case FolderViewMode.FVM_THUMBSTRIP:
+                case FVM.THUMBSTRIP:
                     if(!fUp) {
-                        mode = FolderViewMode.FVM_THUMBNAIL;
+                        mode = FVM.THUMBNAIL;
                     }
                     break;
             }
-            if(pViewMode != (int)mode) {
-                ShellBrowser.ViewMode = (int)mode;
+            if(mode != orig) {
+                ShellBrowser.ViewMode = mode;
             }
         }
 
@@ -1937,6 +1937,7 @@ namespace QTTabBarLib {
         private void Explorer_NavigateComplete2(object pDisp, ref object URL) {
             string path = (string)URL;
             lastCompletedBrowseObjectIDL = lastAttemptedBrowseObjectIDL;
+            ShellBrowser.OnNavigateComplete();
             if(!IsShown) {
                 DoFirstNavigation(false, path);
             }            
@@ -2111,14 +2112,14 @@ namespace QTTabBarLib {
             }
             
             if(msg.Msg == WM_BROWSEOBJECT) {
-                uint flags = (uint)Marshal.ReadInt32(msg.WParam);
-                if((flags & 0x4000 /* SBSP_NAVIGATEBACK */) != 0) {
+                SBSP flags = (SBSP)Marshal.ReadInt32(msg.WParam);
+                if((flags & SBSP.NAVIGATEBACK) != 0) {
                     msg.Result = (IntPtr)1;
                     if(!NavigateCurrentTab(true) && CloseTab(CurrentTab, true) && tabControl1.TabCount == 0) {
                         WindowUtils.CloseExplorer(ExplorerHandle, 2);
                     }
                 }
-                else if((flags & 0x8000 /* SBSP_NAVIGATEFORWARD */) != 0) {
+                else if((flags & SBSP.NAVIGATEFORWARD) != 0) {
                     msg.Result = (IntPtr)1;
                     NavigateCurrentTab(false);
                 }
@@ -2127,7 +2128,7 @@ namespace QTTabBarLib {
                     if(msg.LParam != IntPtr.Zero) {
                         pidl = PInvoke.ILClone(msg.LParam);
                     }
-                    bool autonav = (flags & 0x100 /* SBSP_AUTONAVIGATE */) != 0;
+                    bool autonav = (flags & SBSP.AUTONAVIGATE) != 0;
                     using(IDLWrapper wrapper = new IDLWrapper(pidl)) {
                         msg.Result = (IntPtr)(BeforeNavigate(wrapper, autonav) ? 1 : 0);
                     }
@@ -3166,7 +3167,7 @@ namespace QTTabBarLib {
                     string str;
                     if(ShellBrowser.TryGetSelection(out addressArray, out str, false) && (addressArray.Length > 0)) {
                         List<Address> list = new List<Address>(addressArray);
-                        wrapper1 = new IDLWrapper(ShellMethods.CreateIDL(list[0].ITEMIDLIST));
+                        wrapper1 = new IDLWrapper(list[0]);
                         list.RemoveAt(0);
                         addressArray = list.ToArray();
                         flag = (addressArray.Length > 0) || (modKeys == Keys.Shift);
@@ -4472,7 +4473,7 @@ namespace QTTabBarLib {
                 }
                 QTUtility.TMPTargetIDL = QTUtility.TMPIDLList[0];
                 using(IDLWrapper wrapper3 = new IDLWrapper(QTUtility.TMPTargetIDL)) {
-                    ShellBrowser.Navigate(wrapper3, 2);
+                    ShellBrowser.Navigate(wrapper3, SBSP.NEWBROWSER);
                     return;
                 }
             }
@@ -4683,13 +4684,13 @@ namespace QTTabBarLib {
                         }
                     }
                 }
-                uint wFlags = 2;
+                SBSP wFlags = SBSP.NEWBROWSER;
                 if(flag2) {
                     if(flag) {
                         if(CheckProcessID(ExplorerHandle, WindowUtils.GetShellTrayWnd()) || WindowUtils.IsExplorerProcessSeparated()) {
                             PInvoke.SetRedraw(ExplorerHandle, false);
                             ShowFolderTree(false);
-                            wFlags |= 0x20;
+                            wFlags |= SBSP.EXPLOREMODE;
                             new WaitTimeoutCallback(WaitTimeout).BeginInvoke(200, AsyncComplete_FolderTree, true);
                         }
                         else {
@@ -4700,7 +4701,7 @@ namespace QTTabBarLib {
                         if(QTUtility.IsXP) {
                             QTUtility.RestoreFolderTree_Hide = true;
                         }
-                        wFlags |= 0x20;
+                        wFlags |= SBSP.EXPLOREMODE;
                     }
                 }
                 else if(flag) {
@@ -5245,7 +5246,7 @@ namespace QTTabBarLib {
                 }
                 using(IDLWrapper wrapper = new IDLWrapper(QTUtility.PATH_SEARCHFOLDER)) {
                     if(wrapper.Available) {
-                        ShellBrowser.Navigate(wrapper, 2);
+                        ShellBrowser.Navigate(wrapper, SBSP.NEWBROWSER);
                     }
                     return;
                 }
@@ -6822,48 +6823,6 @@ namespace QTTabBarLib {
                 return false;
             }
 
-            private static byte[] AddressToIDL(Address address) {
-                if((address.ITEMIDLIST != null) && (address.ITEMIDLIST.Length != 0)) {
-                    return address.ITEMIDLIST;
-                }
-                if(!string.IsNullOrEmpty(address.Path)) {
-                    IntPtr pIDL = PInvoke.ILCreateFromPath(address.Path);
-                    if(pIDL != IntPtr.Zero) {
-                        byte[] iDLData = ShellMethods.GetIDLData(pIDL);
-                        PInvoke.CoTaskMemFree(pIDL);
-                        return iDLData;
-                    }
-                }
-                return null;
-            }
-
-            private static string AddressToPath(Address address) {
-                string str = string.Empty;
-                if(string.IsNullOrEmpty(address.Path)) {
-                    IntPtr pidl = AddressToPIDL(address);
-                    if(pidl != IntPtr.Zero) {
-                        StringBuilder pszPath = new StringBuilder(260);
-                        if(PInvoke.SHGetPathFromIDList(pidl, pszPath)) {
-                            str = pszPath.ToString();
-                        }
-                        PInvoke.CoTaskMemFree(pidl);
-                    }
-                    return str;
-                }
-                return address.Path;
-            }
-
-            private static IntPtr AddressToPIDL(Address address) {
-                IntPtr zero = IntPtr.Zero;
-                if((address.ITEMIDLIST != null) && (address.ITEMIDLIST.Length != 0)) {
-                    return ShellMethods.CreateIDL(address.ITEMIDLIST);
-                }
-                if(!string.IsNullOrEmpty(address.Path)) {
-                    zero = PInvoke.ILCreateFromPath(address.Path);
-                }
-                return zero;
-            }
-
             internal void ClearEvents() {
                 TabChanged = null;
                 TabAdded = null;
@@ -6879,8 +6838,10 @@ namespace QTTabBarLib {
             }
 
             public bool CreateTab(Address address, int index, bool fLocked, bool fSelect) {
-                address.ITEMIDLIST = AddressToIDL(address);
-                address.Path = AddressToPath(address);
+                using(IDLWrapper wrapper = new IDLWrapper(address)) {
+                    address.ITEMIDLIST = wrapper.IDL;
+                    address.Path = wrapper.Path;
+                }
                 if((address.ITEMIDLIST == null) || (address.ITEMIDLIST.Length <= 0)) {
                     return false;
                 }
@@ -6904,7 +6865,7 @@ namespace QTTabBarLib {
             }
 
             public bool CreateWindow(Address address) {
-                using(IDLWrapper wrapper = new IDLWrapper(AddressToPIDL(address))) {
+                using(IDLWrapper wrapper = new IDLWrapper(address)) {
                     if(wrapper.Available) {
                         tabBar.OpenNewWindow(wrapper);
                         return true;
@@ -7026,7 +6987,7 @@ namespace QTTabBarLib {
                                 break;
                             }
                             Address address = (Address)arg;
-                            using(IDLWrapper wrapper = new IDLWrapper(AddressToPIDL(address))) {
+                            using(IDLWrapper wrapper = new IDLWrapper(address)) {
                                 if(!wrapper.Available) break;
                                 ShellMethods.ShowProperties(wrapper.IDL, tabBar.ExplorerHandle);
                                 return true;
@@ -7358,7 +7319,7 @@ namespace QTTabBarLib {
                 public bool Browse(Address address) {
                     if(tab != null) {
                         tabBar.tabControl1.SelectTab(tab);
-                        using(IDLWrapper wrapper = new IDLWrapper(AddressToPIDL(address))) {
+                        using(IDLWrapper wrapper = new IDLWrapper(address)) {
                             return tabBar.ShellBrowser.Navigate(wrapper) == 0;
                         }
                     }

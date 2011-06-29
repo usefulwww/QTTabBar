@@ -1378,7 +1378,7 @@ namespace QTTabBarLib {
                         QTUtility2.MakeErrorLog(null, "failed current pidl");
                         return false;
                     }
-                    view2.ItemCount(2, out num);
+                    view2.ItemCount(SVGIO.ALLVIEW, out num);
                     AbstractListView lvw = QTUtility.instanceManager.GetTabBar(ExplorerHandle).GetListView();
                     lvw.SetRedraw(false);
                     try {
@@ -1449,7 +1449,7 @@ namespace QTTabBarLib {
                             }
                             lstPUITEMIDCHILD.AddRange(collection);
                         }
-                        view2.ItemCount(2, out iSearchResultCount);
+                        view2.ItemCount(SVGIO.ALLVIEW, out iSearchResultCount);
                     }
                     finally {
                         lvw.SetRedraw(true);

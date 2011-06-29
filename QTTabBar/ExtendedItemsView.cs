@@ -145,7 +145,7 @@ namespace QTTabBarLib {
             int focusedIdx = ShellBrowser.GetFocusedIndex();
             int itemCount = ShellBrowser.GetItemCount();
             int selectMe = -1;
-            int viewMode = ShellBrowser.ViewMode;
+            FVM viewMode = ShellBrowser.ViewMode;
             switch(viewMode) {
                 case FVM.CONTENT:
                 case FVM.DETAILS:
