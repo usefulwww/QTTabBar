@@ -62,12 +62,7 @@ namespace QTTabBarLib {
         }
 
         static HookLibManager() {
-            string installPath = "";
-            using(RegistryKey key = Registry.LocalMachine.OpenSubKey(@"Software\Quizo\QTTabBar")) {
-                if(key != null) {
-                    installPath = (string)key.GetValue("InstallPath", "");
-                }
-            }
+            string installPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "QTTabBar");
             string filename = IntPtr.Size == 8 ? "QTHookLib64.dll" : "QTHookLib32.dll";
             hHookLib = PInvoke.LoadLibrary(Path.Combine(installPath, filename));
             int retcode = -1;

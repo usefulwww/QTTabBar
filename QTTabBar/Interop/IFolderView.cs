@@ -24,17 +24,17 @@ namespace QTTabBarLib.Interop {
     [ComImport, SuppressUnmanagedCodeSecurity, Guid("cde725b0-ccc9-4519-917e-325d72fab4ce"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public interface IFolderView {
         [PreserveSig]
-        int GetCurrentViewMode(ref int pViewMode);
+        int GetCurrentViewMode(ref FVM pViewMode);
         [PreserveSig]
-        int SetCurrentViewMode(int ViewMode);
+        int SetCurrentViewMode(FVM ViewMode);
         [PreserveSig]
         int GetFolder(ref Guid riid, out IPersistFolder2 ppv);
         [PreserveSig]
         int Item(int iItemIndex, out IntPtr ppidl);
         [PreserveSig]
-        int ItemCount(uint uFlags, out int pcItems);
+        int ItemCount(SVGIO uFlags, out int pcItems);
         [PreserveSig]
-        int Items(uint uFlags, ref Guid riid, out IEnumIDList ppv);
+        int Items(SVGIO uFlags, ref Guid riid, out IEnumIDList ppv);
         [PreserveSig]
         int GetSelectionMarkedItem(out int piItem);
         [PreserveSig]
@@ -48,8 +48,8 @@ namespace QTTabBarLib.Interop {
         [PreserveSig]
         int GetAutoArrange();
         [PreserveSig]
-        int SelectItem(int iItem, uint dwFlags);
+        int SelectItem(int iItem, SVSIF dwFlags);
         [PreserveSig]
-        int SelectAndPositionItems(uint cidl, IntPtr apidl, IntPtr apt, int dwFlags);
+        int SelectAndPositionItems(uint cidl, IntPtr apidl, IntPtr apt, SVSIF dwFlags);
     }
 }

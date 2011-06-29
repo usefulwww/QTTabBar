@@ -114,6 +114,9 @@ namespace QTTabBarLib {
             }
         }
 
+        public IDLWrapper() : this(IntPtr.Zero) {
+        }
+
         public IDLWrapper(IntPtr pIDL) {
             attributes = 0xfffffff0;
             this.pIDL = pIDL;
@@ -133,26 +136,18 @@ namespace QTTabBarLib {
 
         public IDLWrapper(string path, bool fMsgModal = false) {
             attributes = 0xfffffff0;
-            if(!string.IsNullOrEmpty(path)) {
-                this.path = path;
-                if(path.Contains("???") && dicCacheIDLs.TryGetValue(path, out idl)) {
-                    pIDL = ShellMethods.CreateIDL(idl);
-                }
-                else {
-                    pIDL = TranslateLocation(path);
-                    if(pIDL == IntPtr.Zero) {
-                        if(PathIsNetwork(this.path) && TryPing(this.path)) {
-                            Application.DoEvents();
-                            MessageForm.Show(IntPtr.Zero, "Timed out:    \"" + this.path + "\"", "Timed Out", MessageBoxIcon.Hand, 0x2710, fMsgModal);
-                        }
-                        else {
-                            pIDL = PInvoke.ILCreateFromPath(path);
-                        }
-                    }
-                    else {
-                        fSpecial = true;
-                    }
-                }
+            if(string.IsNullOrEmpty(path)) return;
+            InitFromPath(path, fMsgModal);
+        }
+
+        public IDLWrapper(Address ad) {
+            attributes = 0xfffffff0;
+            pIDL = IntPtr.Zero;
+            if(ad.ITEMIDLIST != null && ad.ITEMIDLIST.Length > 0) {
+                pIDL = ShellMethods.CreateIDL(ad.ITEMIDLIST);
+            }
+            if(pIDL == IntPtr.Zero && !string.IsNullOrEmpty(ad.Path)) {
+                InitFromPath(ad.Path);
             }
         }
 
@@ -161,6 +156,28 @@ namespace QTTabBarLib {
             this.path = path;
             this.idl = idl;
             this.pIDL = pIDL;
+        }
+
+        private void InitFromPath(string path, bool fMsgModal = false) {
+            this.path = path;
+            if(path.Contains("???") && dicCacheIDLs.TryGetValue(path, out idl)) {
+                pIDL = ShellMethods.CreateIDL(idl);
+            }
+            else {
+                pIDL = TranslateLocation(path);
+                if(pIDL == IntPtr.Zero) {
+                    if(PathIsNetwork(this.path) && TryPing(this.path)) {
+                        Application.DoEvents();
+                        MessageForm.Show(IntPtr.Zero, "Timed out:    \"" + this.path + "\"", "Timed Out", MessageBoxIcon.Hand, 0x2710, fMsgModal);
+                    }
+                    else {
+                        pIDL = PInvoke.ILCreateFromPath(path);
+                    }
+                }
+                else {
+                    fSpecial = true;
+                }
+            }
         }
 
         public static void AddCache(string path, byte[] idl) {

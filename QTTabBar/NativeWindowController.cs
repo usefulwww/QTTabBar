@@ -41,6 +41,12 @@ namespace QTTabBarLib {
             }
         }
 
+        // The real ReleaseHandle is unsafe.  NEVER EVER EVER call it!
+        // Just clear the event subscription list instead.
+        public override void ReleaseHandle() {
+            MessageCaptured = null;
+        }
+
         public IntPtr OptionalHandle { get; set; }
 
         internal delegate bool MessageEventHandler(ref Message msg);

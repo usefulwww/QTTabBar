@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -52,6 +52,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -70,6 +72,7 @@
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppLauncher.cs" />
@@ -83,9 +86,15 @@
     </Compile>
     <Compile Include="AbstractListView.cs" />
     <Compile Include="HookLibManager.cs" />
+    <Compile Include="Interop\ShellConstants.cs" />
     <Compile Include="Interop\TBBUTTON.cs" />
     <Compile Include="Interop\TBBUTTONINFO.cs" />
+    <Compile Include="OptionsDialog2.xaml.cs">
+      <DependentUpon>OptionsDialog2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="RebarController.cs" />
     <Compile Include="SafePtr.cs" />
+    <Compile Include="Config.cs" />
     <Compile Include="TreeViewWrapper.cs" />
     <Compile Include="Interop\INameSpaceTreeControl.cs" />
     <Compile Include="Interop\IOleWindow.cs" />
@@ -147,7 +156,6 @@
     <Compile Include="Interop\DTTOPTS.cs" />
     <Compile Include="Interop\EnumWndProc.cs" />
     <Compile Include="Interop\FOLDERSETTINGS.cs" />
-    <Compile Include="Interop\FolderViewMode.cs" />
     <Compile Include="Interop\HDITEM.cs" />
     <Compile Include="Interop\HookProc.cs" />
     <Compile Include="Interop\ICONINFO.cs" />
@@ -350,6 +358,12 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="OptionsDialog2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

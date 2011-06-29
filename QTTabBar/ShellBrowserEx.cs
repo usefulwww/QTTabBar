@@ -26,70 +26,45 @@ using QTTabBarLib.Interop;
 
 namespace QTTabBarLib {
     public class ShellBrowserEx : IDisposable {
-        private bool shared;
         private IShellBrowser shellBrowser;
+        private IFolderView folderView;
 
-        public ShellBrowserEx(IShellBrowser shellBrowser, bool shared = false) {
+        public ShellBrowserEx(IShellBrowser shellBrowser) {
             this.shellBrowser = shellBrowser;
-            this.shared = shared;
+            OnNavigateComplete();
         }
 
-        public int ViewMode {
+        public FVM ViewMode {
             get {
-                int pViewMode = 0;
-                using(FVWrapper w = GetFolderView()) {
-                    return w != null && w.FolderView.GetCurrentViewMode(ref pViewMode) == 0
-                            ? pViewMode : FVM.ICON;
-                }
+                FVM pViewMode = 0;
+                return folderView != null && folderView.GetCurrentViewMode(ref pViewMode) == 0
+                        ? pViewMode : FVM.ICON;
             }
             set {
-                using(FVWrapper w = GetFolderView()) {
-                    if(w != null) {
-                        w.FolderView.SetCurrentViewMode(value);
-                    }
-                }
+                if(folderView != null) folderView.SetCurrentViewMode(value);
             }
         }
 
         public void Dispose() {
             if(shellBrowser != null) {
-                if(shared) {
-                    Marshal.ReleaseComObject(shellBrowser);
-                }
-                else {
-                    Marshal.FinalReleaseComObject(shellBrowser);
-                }
+                Marshal.FinalReleaseComObject(shellBrowser);
                 shellBrowser = null;
+            }
+            if(folderView != null) {
+                Marshal.ReleaseComObject(folderView);
+                folderView = null;
             }
         }
 
         public int GetFocusedIndex() {
-            using(FVWrapper w = GetFolderView()) {
-                if(w == null) {
-                    return -1;
-                }
-                int focusedIndex;
-                if(w.FolderView.GetFocusedItem(out focusedIndex) == 0) {
-                    return focusedIndex;
-                }
-            }
-            return -1;
+            int focusedIndex;
+            return folderView != null && folderView.GetFocusedItem(out focusedIndex) == 0 
+                    ? focusedIndex : -1;
         }
 
         public IDLWrapper GetFocusedItem() {
             int focusedIndex = GetFocusedIndex();
-            return focusedIndex == -1 ? new IDLWrapper(IntPtr.Zero) : GetItem(focusedIndex);
-        }
-
-        private FVWrapper GetFolderView() {
-            IShellView ppshv;
-            if(shellBrowser.QueryActiveShellView(out ppshv) == 0) {
-                IFolderView view = ppshv as IFolderView;
-                if(view != null) {
-                    return new FVWrapper(view);
-                }
-            }
-            return null;
+            return focusedIndex == -1 ? new IDLWrapper() : GetItem(focusedIndex);
         }
 
         public IShellBrowser GetIShellBrowser() {
@@ -97,52 +72,38 @@ namespace QTTabBarLib {
         }
 
         public IDLWrapper GetItem(int idx, bool noAppend = false) {
-            using(FVWrapper w = GetFolderView()) {
-                if(w == null) {
-                    return null;
+            if(folderView == null) return new IDLWrapper();
+            IntPtr ppidl = IntPtr.Zero;
+            try {
+                folderView.Item(idx, out ppidl);
+                if(noAppend || ppidl == IntPtr.Zero) {
+                    return new IDLWrapper(ppidl);
                 }
-                IntPtr ppidl = IntPtr.Zero;
-                try {
-                    w.FolderView.Item(idx, out ppidl);
-                    if(noAppend || ppidl == IntPtr.Zero) {
-                        return new IDLWrapper(ppidl);
-                    }
-                    using(IDLWrapper path = GetShellPath(w.FolderView)) {
-                        return new IDLWrapper(PInvoke.ILCombine(path.PIDL, ppidl));
-                    }
-                }
-                finally {
-                    if(ppidl != IntPtr.Zero && !noAppend) {
-                        PInvoke.CoTaskMemFree(ppidl);
-                    }
+                using(IDLWrapper path = GetShellPath()) {
+                    return new IDLWrapper(PInvoke.ILCombine(path.PIDL, ppidl));
                 }
             }
+            finally {
+                if(ppidl != IntPtr.Zero && !noAppend) {
+                    PInvoke.CoTaskMemFree(ppidl);
+                }
+            }
+            
         }
 
         public int GetItemCount() {
             int count;
-            using(FVWrapper w = GetFolderView()) {
-                if(w == null) {
-                    return 0;
-                }
-                w.FolderView.ItemCount(2, out count);
-            }
-            return count;
+            return folderView != null && folderView.ItemCount(SVGIO.ALLVIEW, out count) == 0 ? count : 0;
         }
 
         public IEnumerable<IDLWrapper> GetItems(bool selectedOnly = false, bool noAppend = false) {
+            if(folderView == null) yield break;
             Guid guid = ExplorerGUIDs.IID_IEnumIDList;
             IEnumIDList list = null;
             try {
-                using(FVWrapper w = GetFolderView())
-                using(IDLWrapper path = noAppend ? null : GetShellPath(w.FolderView)) {
-                    if(w == null) {
-                        yield break;
-                    }
-                    w.FolderView.Items(0x80000000 | (selectedOnly ? 1u : 2u), ref guid, out list);
-                    if(list == null) {
-                        yield break;
-                    }
+                using(IDLWrapper path = noAppend ? null : GetShellPath()) {
+                    folderView.Items(SVGIO.FLAG_VIEWORDER | (selectedOnly ? SVGIO.SELECTION : SVGIO.ALLVIEW), ref guid, out list);
+                    if(list == null) yield break;
                     IntPtr ptr;
                     while(list.Next(1, out ptr, null) == 0) {
                         using(IDLWrapper wrapper1 = new IDLWrapper(ptr)) {
@@ -168,17 +129,11 @@ namespace QTTabBarLib {
 
         public int GetSelectedCount() {
             int count;
-            using(FVWrapper w = GetFolderView()) {
-                if(w == null) {
-                    return 0;
-                }
-                w.FolderView.ItemCount(1, out count);
-            }
-            return count;
+            return folderView != null && folderView.ItemCount(SVGIO.SELECTION, out count) == 0 ? count : 0;
         }
 
-        private static IDLWrapper GetShellPath(IFolderView folderView) {
-            if(folderView == null) return null;
+        public IDLWrapper GetShellPath() {
+            if(folderView == null) return new IDLWrapper();
             IPersistFolder2 ppv = null;
             try {
                 Guid riid = ExplorerGUIDs.IID_IPersistFolder2;
@@ -195,15 +150,7 @@ namespace QTTabBarLib {
                     Marshal.ReleaseComObject(ppv);
                 }
             }
-            return new IDLWrapper(IntPtr.Zero);
-        }
-
-        public IDLWrapper GetShellPath() {
-            using(FVWrapper w = GetFolderView()) {
-                return w == null 
-                        ? new IDLWrapper(IntPtr.Zero) 
-                        : GetShellPath(w.FolderView);
-            }
+            return new IDLWrapper();
         }
 
         public IDLWrapper ILAppend(IntPtr ptr) {
@@ -224,12 +171,24 @@ namespace QTTabBarLib {
 
         public bool IsFolderTreeVisible(out IntPtr hwnd) {
             hwnd = IntPtr.Zero;
-            return (QTUtility.IsXP && (0 == shellBrowser.GetControlWindow(3, out hwnd)));
+            return QTUtility.IsXP && shellBrowser != null && 0 == shellBrowser.GetControlWindow(3, out hwnd);
         }
 
-        // TODO: make flags an enum
-        public int Navigate(IDLWrapper idlw, uint flags = 1u) {
-            if(idlw.Available) {
+        // Call this on navigate to refresh the FolderView
+        public void OnNavigateComplete() {
+            if(shellBrowser == null) return;
+            if(folderView != null) {
+                Marshal.ReleaseComObject(folderView);
+                folderView = null;
+            }
+            IShellView ppshv;
+            if(shellBrowser.QueryActiveShellView(out ppshv) == 0) {
+                folderView = ppshv as IFolderView;
+            }
+        }
+
+        public int Navigate(IDLWrapper idlw, SBSP flags = SBSP.SAMEBROWSER) {
+            if(idlw.Available && shellBrowser != null) {
                 try {
                     return shellBrowser.BrowseObject(idlw.PIDL, flags);
                 }
@@ -240,29 +199,19 @@ namespace QTTabBarLib {
         }
 
         public void SelectItem(int idx) {
-            using(FVWrapper w = GetFolderView()) {
-                if(w != null) {
-                    w.FolderView.SelectItem(idx, 29);
-                    /* SVSI_SELECT | SVSI_DESELECTOTHERS | SVSI_ENSUREVISIBLE | SVSI_FOCUSED */
-                }
-            }
-        }
-
-        public bool SelectionAvailable() {
-            using(FVWrapper w = GetFolderView()) {
-                int items;
-                return w != null && w.FolderView.ItemCount(1, out items) == 0;
-            }
+            if(folderView != null) folderView.SelectItem(idx, SVSIF.SELECT | SVSIF.DESELECTOTHERS | SVSIF.ENSUREVISIBLE | SVSIF.FOCUSED);
         }
 
         internal void SetStatusText(string status) {
-            shellBrowser.SetStatusTextSB(status);
+            if(shellBrowser != null) shellBrowser.SetStatusTextSB(status);
         }
 
         public void SetUsingListView(bool listview) {
-            IFolderViewOptions fvo = shellBrowser as IFolderViewOptions;
-            if(fvo != null) {
-                fvo.SetFolderViewOptions(FVO.VISTALAYOUT, listview ? FVO.VISTALAYOUT : FVO.DEFAULT);
+            if(shellBrowser != null) {
+                IFolderViewOptions fvo = shellBrowser as IFolderViewOptions;
+                if(fvo != null) {
+                    fvo.SetFolderViewOptions(FVO.VISTALAYOUT, listview ? FVO.VISTALAYOUT : FVO.DEFAULT);
+                }                
             }
         }
 
@@ -295,7 +244,7 @@ namespace QTTabBarLib {
         }
 
         public bool TryGetSelection(out Address[] adSelectedItems, bool fDisplayName) {
-            if(!SelectionAvailable()) {
+            if(GetSelectedCount() == 0) {
                 adSelectedItems = new Address[0];
                 return false;
             }
@@ -313,88 +262,53 @@ namespace QTTabBarLib {
             return TryGetSelection(out adSelectedItems, fDisplayName);
         }
 
-        // TODO: Clean
         public bool TrySetSelection(Address[] addresses, string pathToFocus, bool fDeselectOthers) {
-            if(addresses != null) {
-                IShellFolder ppshf = null;
-                IShellView ppshv = null;
-                try {
-                    if(shellBrowser.QueryActiveShellView(out ppshv) == 0) {
-                        IntPtr ptr3;
-                        if(PInvoke.SHGetDesktopFolder(out ppshf) != 0) {
-                            return false;
-                        }
-                        bool flag = true;
-                        bool flag2 = false;
-                        bool flag3 = !string.IsNullOrEmpty(pathToFocus);
-                        uint pchEaten = 0;
-                        uint pdwAttributes = 0;
-                        if(fDeselectOthers) {
-                            ((IFolderView)ppshv).SelectItem(0, 4);
-                        }
-                        foreach(Address address in addresses) {
-                            IntPtr zero = IntPtr.Zero;
-                            if((address.ITEMIDLIST != null) && (address.ITEMIDLIST.Length > 0)) {
-                                zero = ShellMethods.CreateIDL(address.ITEMIDLIST);
+            IShellView shellView = folderView as IShellView;
+            if(addresses == null || folderView == null || shellView == null) return false;
+            try {
+                bool fFirst = true;
+                bool fFocused = false;
+                bool fFocusingNeeded = !string.IsNullOrEmpty(pathToFocus);
+
+                if(fDeselectOthers) folderView.SelectItem(0, SVSIF.DESELECTOTHERS);
+
+                foreach(Address ad in addresses) {
+                    using(IDLWrapper wrapper = new IDLWrapper(ad)) {
+                        if(!wrapper.Available) continue;
+                        IntPtr pIDLCHILD = PInvoke.ILFindLastID(wrapper.PIDL);
+                        SVSIF svsi = SVSIF.SELECT;
+                        if(fFirst) {
+                            svsi |= SVSIF.ENSUREVISIBLE;
+                            if(!fFocusingNeeded) {
+                                fFocused = true;
+                                svsi |= SVSIF.FOCUSED;
                             }
-                            if((((zero != IntPtr.Zero) || (address.Path == null)) || ((address.Path.Length <= 0) || (ppshf.ParseDisplayName(IntPtr.Zero, IntPtr.Zero, address.Path, ref pchEaten, out zero, ref pdwAttributes) == 0))) && (zero != IntPtr.Zero)) {
-                                IntPtr pidlItem = PInvoke.ILFindLastID(zero);
-                                uint uFlags = 1;
-                                if(flag) {
-                                    uFlags |= 8;
-                                    if(!flag3) {
-                                        flag2 = true;
-                                        uFlags |= 0x10;
-                                    }
-                                    if(fDeselectOthers) {
-                                        uFlags |= 4;
-                                    }
-                                    flag = false;
-                                }
-                                if((!flag2 && flag3) && (address.Path == pathToFocus)) {
-                                    flag2 = true;
-                                    uFlags |= 0x10;
-                                }
-                                ppshv.SelectItem(pidlItem, uFlags);
-                                PInvoke.CoTaskMemFree(zero);
-                            }
+                            if(fDeselectOthers)
+                                svsi |= SVSIF.DESELECTOTHERS;
+                            fFirst = false;
                         }
-                        if((!flag2 && flag3) && (ppshf.ParseDisplayName(IntPtr.Zero, IntPtr.Zero, pathToFocus, ref pchEaten, out ptr3, ref pdwAttributes) == 0)) {
-                            IntPtr ptr4 = PInvoke.ILFindLastID(ptr3);
-                            ppshv.SelectItem(ptr4, 0x18);
-                            PInvoke.CoTaskMemFree(ptr3);
+
+                        if(!fFocused && ad.Path == pathToFocus) {
+                            fFocused = true;
+                            svsi |= SVSIF.FOCUSED;
                         }
-                        return true;
+
+                        shellView.SelectItem(pIDLCHILD, svsi);
                     }
                 }
-                catch(Exception exception) {
-                    QTUtility2.MakeErrorLog(exception);
-                }
-                finally {
-                    if(ppshv != null) {
-                        Marshal.ReleaseComObject(ppshv);
-                    }
-                    if(ppshf != null) {
-                        Marshal.ReleaseComObject(ppshf);
+
+                if(!fFocused && fFocusingNeeded) {
+                    using(IDLWrapper wrapper = new IDLWrapper(pathToFocus)) {
+                        IntPtr pIDLFOCUSCHILD = PInvoke.ILFindLastID(wrapper.PIDL);
+                        shellView.SelectItem(pIDLFOCUSCHILD, SVSIF.FOCUSED | SVSIF.ENSUREVISIBLE);
                     }
                 }
+                return true;
+            }
+            catch(Exception ex) {
+                QTUtility2.MakeErrorLog(ex);
             }
             return false;
-        }
-
-        private class FVWrapper : IDisposable {
-            public FVWrapper(IFolderView folderView) {
-                FolderView = folderView;
-            }
-
-            public IFolderView FolderView { get; private set; }
-
-            public void Dispose() {
-                if(FolderView != null) {
-                    Marshal.ReleaseComObject(FolderView);
-                    FolderView = null;
-                }
-            }
         }
     }
 }

@@ -40,7 +40,7 @@ namespace QTTabBarLib.Interop {
         [PreserveSig]
         int TranslateAcceleratorSB(MSG pmsg, ushort wID);
         [PreserveSig]
-        int BrowseObject(IntPtr pidl, uint wFlags);
+        int BrowseObject(IntPtr pidl, SBSP wFlags);
         [PreserveSig]
         int GetViewStateStream(uint grfMode, out IntPtr ppStrm);
         [PreserveSig]

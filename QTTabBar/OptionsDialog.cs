@@ -29,6 +29,8 @@ using Microsoft.Win32;
 using QTPlugin;
 using QTTabBarLib.Interop;
 using ContentAlignment = System.Drawing.ContentAlignment;
+using OpenFileDialog = System.Windows.Forms.OpenFileDialog;
+using SaveFileDialog = System.Windows.Forms.SaveFileDialog;
 
 namespace QTTabBarLib {
     internal sealed class OptionsDialog : Form {

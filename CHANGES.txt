@@ -1,3 +1,21 @@
+======= 1.5.0.0 Beta 2 =======
+Bugs Fixed:
+    Fixed scrolling lag buildup when using the ItemsView.
+    Fixed massive memory leak (!)
+    Fixed navigation on Homegroup Libraries.
+    Refined Windows searches no longer show up in the navigation history.
+    Clearing the Search bar now navigates back, instead of navigating to Libraries.
+    Middle-clicking on the Navigation Pane now respects the relevant option.
+    Fixed various problems occuring when Explorer is in single-click mode.
+    Fixed extension deselect when renaming .zip and .url files on XP.
+    IFilter-based Plugins, such as Megimo Loader, are no longer unloaded when the Options dialog is closed.
+    Support for systems with only .NET 4 and not .NET 3.5.
+    Support for both the x64 and x86 versions of Explorer on Vista x64.
+    
+New Features:
+    Capturing new Explorer instances is now MUCH smoother in most cases, and supports selecting items.
+    Middle-clicking on Vista and 7's Breadcrumb Bar will open the target folder in a new tab.
+
 ======= 1.5.0.0 Beta 1 =======
 Bugs Fixed:
     Minor tweaks, fixes, and polish all around.
