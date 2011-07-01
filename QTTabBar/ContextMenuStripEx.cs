@@ -63,8 +63,8 @@ namespace QTTabBarLib {
 
         public static void InitializeMenuRenderer() {
             bool flag = false;
-            if(QTUtility.CheckConfig(Settings.NonDefaultMenu)) {
-                if(QTUtility.CheckConfig(Settings.XPStyleMenus)) {
+            if(Config.NonDefaultMenu) {
+                if(Config.XPStyleMenus) {
                     if(nCurrentRenderer != 1) {
                         menuRenderer = new XPMenuRenderer(false);
                         nCurrentRenderer = 1;

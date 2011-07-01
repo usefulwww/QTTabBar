@@ -74,7 +74,7 @@ namespace QTTabBarLib {
 
                 case WM.MBUTTONUP:
                     // TODO
-                    if(/*!QTUtility.CheckConfig(Settings.NoMidClickTree) &&*/ treeControl != null && TreeViewMiddleClicked != null) {
+                    if(/*!Config.NoMidClickTree &&*/ treeControl != null && TreeViewMiddleClicked != null) {
                         HandleClick(QTUtility2.PointFromLPARAM(msg.LParam), Control.ModifierKeys);
                     }
                     break;

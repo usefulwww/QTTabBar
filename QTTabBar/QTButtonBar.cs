@@ -455,7 +455,7 @@ namespace QTTabBarLib {
                 timerSearchBox_Rearrange = null;
             }
             ClearToolStripItems();
-            toolStrip.ShowItemToolTips = QTUtility.CheckConfig(Settings.ShowTooltips);
+            toolStrip.ShowItemToolTips = Config.ShowTooltips;
             Height = LargeButton ? 0x22 : 0x1a;
             bool flag = (ConfigValues[0] & 0x20) == 0x20;
             bool flag2 = (ConfigValues[0] & 0x10) == 0x10;
@@ -479,7 +479,7 @@ namespace QTTabBarLib {
                             item = new ToolStripDropDownButton();
                             string[] strArray = QTUtility.TextResourcesDic["ButtonBar_Misc"];
                             DropDownMenuBase base2 = new DropDownMenuBase(components);
-                            base2.ShowCheckMargin = QTUtility.CheckConfig(Settings.NonDefaultMenu) && !QTUtility.CheckConfig(Settings.XPStyleMenus);
+                            base2.ShowCheckMargin = Config.NonDefaultMenu && !Config.XPStyleMenus;
                             base2.ShowImageMargin = false;
                             base2.Items.AddRange(new ToolStripItem[] { new ToolStripMenuItem(strArray[0]), new ToolStripMenuItem(strArray[1]), new ToolStripMenuItem(strArray[2]), new ToolStripMenuItem(strArray[3]), new ToolStripMenuItem(strArray[4]), new ToolStripMenuItem(strArray[6]) });
                             base2.ItemClicked += copyButton_DropDownItemClicked;

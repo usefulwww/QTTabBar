@@ -202,12 +202,12 @@ namespace QTTabBarLib {
         }
 
         public override void HandleShiftKey() {
-            if(!QTUtility.CheckConfig(Settings.PreviewsWithShift)) {
+            if(!Config.ShowPreviewsWithShift) {
                 HideThumbnailTooltip(5);
             }
 
-            if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
-                if(QTUtility.CheckConfig(Settings.SubDirTipsWithShift)) {
+            if(Config.ShowSubDirTips) {
+                if(Config.SubDirTipsWithShift) {
                     if(MouseIsOverListView()) {
                         RefreshSubDirTip();
                     }
@@ -391,8 +391,8 @@ namespace QTTabBarLib {
 
         protected virtual void OnDragOver(Point pt) {
             timer_HoverSubDirTipMenu.Enabled = false;
-            if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
-                if(QTUtility.CheckConfig(Settings.SubDirTipsWithShift)) {
+            if(Config.ShowSubDirTips) {
+                if(Config.SubDirTipsWithShift) {
                     if(Control.ModifierKeys == Keys.Shift) {
                         timer_HoverSubDirTipMenu_Tick(null, null);
                     }
@@ -410,7 +410,7 @@ namespace QTTabBarLib {
         }
 
         protected bool OnGetInfoTip(int iItem, bool byKey) {
-            if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews) && (!QTUtility.CheckConfig(Settings.PreviewsWithShift) ^ (Control.ModifierKeys == Keys.Shift))) {
+            if(Config.ShowTooltipPreviews && (!Config.ShowPreviewsWithShift ^ (Control.ModifierKeys == Keys.Shift))) {
                 if(((thumbnailTooltip != null) && thumbnailTooltip.IsShowing) && (iItem == thumbnailIndex)) {
                     return true;
                 }
@@ -429,9 +429,9 @@ namespace QTTabBarLib {
 
         protected void OnHotItemChanged(int iItem) {
             Keys modifierKeys = Control.ModifierKeys;
-            if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews)) {
+            if(Config.ShowTooltipPreviews) {
                 if((thumbnailTooltip != null) && (thumbnailTooltip.IsShowing || fThumbnailPending)) {
-                    if(!QTUtility.CheckConfig(Settings.PreviewsWithShift) ^ (modifierKeys == Keys.Shift)) {
+                    if(!Config.ShowPreviewsWithShift ^ (modifierKeys == Keys.Shift)) {
                         if(iItem != thumbnailIndex) {
                             if(iItem > -1 && IsTrackingItemName()) {
                                 if(ShowThumbnailTooltip(iItem, Control.MousePosition, false)) {
@@ -464,8 +464,8 @@ namespace QTTabBarLib {
         }
 
         protected bool OnKeyDown(Keys key) {
-            if(QTUtility.CheckConfig(Settings.ShowTooltipPreviews)) {
-                if(QTUtility.CheckConfig(Settings.PreviewsWithShift)) {
+            if(Config.ShowTooltipPreviews) {
+                if(Config.ShowPreviewsWithShift) {
                     if(key != Keys.ShiftKey) {
                         HideThumbnailTooltip(2);
                     }
@@ -474,8 +474,8 @@ namespace QTTabBarLib {
                     HideThumbnailTooltip(2);
                 }
             }
-            if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips)) {
-                if(QTUtility.CheckConfig(Settings.SubDirTipsWithShift)) {
+            if(Config.ShowSubDirTips) {
+                if(Config.SubDirTipsWithShift) {
                     if(key != Keys.ShiftKey) {
                         HideSubDirTip(3);
                     }
@@ -485,7 +485,7 @@ namespace QTTabBarLib {
                 }
             }
 
-            if(QTUtility.CheckConfig(Settings.CursorLoop) && Control.ModifierKeys == Keys.None) {
+            if(Config.WrapArrowKeySelection && Control.ModifierKeys == Keys.None) {
                 if(key == Keys.Left || key == Keys.Right || key == Keys.Up || key == Keys.Down) {
                     return HandleCursorLoop(key);
                 }
@@ -523,8 +523,8 @@ namespace QTTabBarLib {
             if(fDragging) {
                 OnDragOver(Control.MousePosition);
             }
-            else if(!QTUtility.CheckConfig(Settings.NoShowSubDirTips) && Control.MouseButtons == MouseButtons.None) {
-                if((!QTUtility.CheckConfig(Settings.SubDirTipsWithShift) ^ (Control.ModifierKeys == Keys.Shift)) && hwndExplorer == PInvoke.GetForegroundWindow()) {
+            else if(Config.ShowSubDirTips && Control.MouseButtons == MouseButtons.None) {
+                if((!Config.SubDirTipsWithShift ^ (Control.ModifierKeys == Keys.Shift)) && hwndExplorer == PInvoke.GetForegroundWindow()) {
                     int iItem = GetHotItem();
                     if(subDirTip != null && (subDirTip.MouseIsOnThis() || subDirTip.MenuIsShowing)) {
                         return;

@@ -15,32 +15,40 @@
 //    You should have received a copy of the GNU General Public License
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-
 namespace QTTabBarLib {
+
+    public enum TabPos {
+        Rightmost,
+        Right,
+        Left,
+        Leftmost,
+        LastActive,
+    }
+
+    public enum StretchMode {
+        Full,
+        Real,
+        Tile,
+    }
+
     public static class Config {
-        
         // Window
-        public static bool NoTabsFromOutside { get; set; }
-        public static bool RestoreTabs { get; set; }
-        public static bool RestoreLockedTabs { get; set; }
-        public static bool NeverCloseWndLocked { get; set; }
-        public static bool NeverCloseWindow { get; set; }
+        public static bool CaptureNewWindows { get; set; }
+        public static bool RestoreSession { get; set; }
+        public static bool RestoreOnlyLocked { get; set; }
+        public static bool CloseBtnClosesUnlockedTabs { get; set; }
+        public static bool CloseBtnClosesSingleTab { get; set; }
         public static bool TrayOnClose { get; set; }
         public static bool TrayOnMinimize { get; set; }
 
         // Tabs
-        // public static int NewTabPosition { get; set; }
-        // public static int NextAfterClosed { get; set; }
+        public static TabPos NewTabPosition { get; set; }
+        public static TabPos NextAfterClosed { get; set; }
         public static bool ActivateNewTab { get; set; }
-        public static bool DontOpenSame { get; set; }
-        public static bool NoRenameAmbTabs { get; set; }
-        public static bool DragDropOntoTabs { get; set; }
-        public static bool FolderIcon { get; set; }
+        public static bool NeverOpenSame { get; set; }
+        public static bool RenameAmbTabs { get; set; }
+        public static bool DragOverTabOpensSDT { get; set; }
+        public static bool ShowFolderIcon { get; set; }
         public static bool ShowSubDirTipOnTab { get; set; }
         public static bool ShowDriveLetters { get; set; }
         public static bool ShowTabCloseButtons { get; set; }
@@ -48,14 +56,14 @@ namespace QTTabBarLib {
         public static bool TabCloseBtnsOnHover { get; set; }
         public static bool ShowNavButtons { get; set; }
         public static bool NavButtonsOnRight { get; set; }
-        public static bool MultipleRow1 { get; set; }
-        public static bool MultipleRow2 { get; set; }
+        public static bool MultipleTabRows { get; set; }
+        public static bool ActiveTabOnBottomRow { get; set; }
 
         // Tweaks
         public static bool AlwaysShowHeaders { get; set; }
-        public static bool ExtWhileRenaming { get; set; }
+        public static bool KillExtWhileRenaming { get; set; }
         public static bool F2Selection { get; set; }
-        public static bool CursorLoop { get; set; }
+        public static bool WrapArrowKeySelection { get; set; }
         public static bool BackspaceUpLevel { get; set; }
         public static bool HorizontalScroll { get; set; }
         public static bool ForceSysListView { get; set; }
@@ -64,13 +72,13 @@ namespace QTTabBarLib {
         public static bool AlternateRowColors { get; set; }
 
         // Tooltips
-        public static bool NoShowSubDirTips { get; set; }
+        public static bool ShowSubDirTips { get; set; }
         public static bool SubDirTipsPreview { get; set; } 
         public static bool SubDirTipsFiles { get; set; }
         public static bool SubDirTipsWithShift { get; set; }
         public static bool ShowTooltipPreviews { get; set; }
-        public static bool PreviewsWithShift { get; set; }
-        public static bool PreviewInfo { get; set; }
+        public static bool ShowPreviewsWithShift { get; set; }
+        public static bool ShowPreviewInfo { get; set; }
         // public static int PreviewWidth { get; set; }
         // public static int PreviewHeight { get; set; }
         // public static Font PreviewFont { get; set; }
@@ -78,9 +86,9 @@ namespace QTTabBarLib {
 
         // Misc
         // public static bool TaskbarThumbnails { get; set; }
-        public static bool NoHistory { get; set; }
+        public static bool KeepHistory { get; set; }
         // public static int TabHistoryCount { get; set; }
-        public static bool NoRecentFiles { get; set; }
+        public static bool KeepRecentFiles { get; set; }
         // public static int FileHistoryCount { get; set; }
         // public static int NetworkTimeout { get; set; }
         public static bool AutoUpdate { get; set; }
@@ -107,10 +115,10 @@ namespace QTTabBarLib {
         // public static Color TabShadHotColor { get; set; }
         public static bool TabTitleShadows { get; set; }
         // public static int TabTextAlignment { get; set; }
-        public static bool ToolbarBGColor { get; set; }
+        public static bool UseRebarBGColor { get; set; }
         // public static Color RebarColor { get; set; }
         public static bool UseRebarImage { get; set; }
-        // public static int RebarStretchMode { get; set; }
+        public static StretchMode RebarStretchMode { get; set; }
         // public static string RebarImageFile { get; set; }
         public static bool RebarImageActual { get; set; }
         // public static int RebarSizeMarginL { get; set; }
@@ -159,6 +167,13 @@ namespace QTTabBarLib {
         public static bool XPStyleMenus        { get; set; }
         public static bool NonDefaultMenu      { get; set; }
         public static bool DisableSound        { get; set; }
-        
+    }
+
+    public static class ConfigManager {
+        static void ReadConfig() {
+        }
+
+        static void WriteConfig() {
+        }
     }
 }

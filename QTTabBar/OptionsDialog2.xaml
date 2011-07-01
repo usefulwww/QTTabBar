@@ -54,7 +54,7 @@
                         <RadioButton Content="Do not capture new&#x0a;Explorer windows" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="1" />
                     </Grid>
                     <Label Background="#FFF0F2F5" BorderBrush="#FFE2E4E7" BorderThickness="0,0,0,1" Content="Session saving" FontSize="11" FontWeight="Bold" Foreground="#FF3B3B3B" Height="22" Padding="6,2,0,2" Margin="0,14,0,9" />
-                    <RadioButton Content="Do not restore anything from the previous session" Height="16" Margin="13,1,0,1" GroupName="Session" />
+                    <RadioButton Content="Start a new session each time" Height="16" Margin="13,1,0,1" GroupName="Session" />
                     <RadioButton Content="Restore all tabs from the previous session" Height="16" Margin="13,1,0,1" GroupName="Session" />
                     <RadioButton Content="Restore only the locked tabs from the previous session" Height="16" Margin="13,1,0,1" GroupName="Session" />
                     <Label Background="#FFF0F2F5" BorderBrush="#FFE2E4E7" BorderThickness="0,0,0,1" Content="When the close button is clicked" FontSize="11" FontWeight="Bold" Foreground="#FF3B3B3B" Height="22" Padding="6,2,0,2" Margin="0,14,0,9" />

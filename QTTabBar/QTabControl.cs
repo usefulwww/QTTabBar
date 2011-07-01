@@ -573,7 +573,7 @@ namespace QTTabBarLib {
                     g.DrawImage(bmpFolIconBG, new Rectangle(rect.X - 2, rect.Y - 2, rect.Width + 4, rect.Height + 4));
                 }
                 g.DrawImage(QTUtility.ImageListGlobal.Images[base2.ImageKey], rect);
-                if(QTUtility.CheckConfig(Settings.ShowDriveLetters)) {
+                if(Config.ShowDriveLetters) {
                     string pathInitial = ((QTabItem)base2).PathInitial;
                     if(pathInitial.Length > 0) {
                         DrawDriveLetter(g, pathInitial, fntDriveLetter, rect, bSelected);
@@ -1175,51 +1175,48 @@ namespace QTTabBarLib {
 
         public void RefreshOptions(bool fInit) {
             if(fInit) {
-                if(QTUtility.CheckConfig(Settings.MultipleRow1)) {
-                    iMultipleType = 1;
+                if(Config.MultipleTabRows) {
+                    iMultipleType = Config.ActiveTabOnBottomRow ? 1 : 2;
                 }
-                else if(QTUtility.CheckConfig(Settings.MultipleRow2)) {
-                    iMultipleType = 2;
-                }
-                fDrawFolderImg = QTUtility.CheckConfig(Settings.FolderIcon);
+                fDrawFolderImg = Config.ShowFolderIcon;
             }
             else {
                 colorSet = new Color[] { QTUtility.TabTextColor_Active, QTUtility.TabTextColor_Inactv, QTUtility.TabHiliteColor, QTUtility.TabTextColor_ActivShdw, QTUtility.TabTextColor_InAtvShdw };
                 brshActive.Color = colorSet[0];
                 brshInactv.Color = colorSet[1];
             }
-            fShowToolTips = QTUtility.CheckConfig(Settings.ShowTooltips);
-            if(QTUtility.CheckConfig(Settings.FixedWidthTabs)) {
+            fShowToolTips = Config.ShowTooltips;
+            if(Config.FixedWidthTabs) {
                 sizeMode = TabSizeMode.Fixed;
                 fLimitSize = false;
             }
             else {
                 sizeMode = TabSizeMode.Normal;
-                fLimitSize = QTUtility.CheckConfig(Settings.LimitedWidthTabs);
+                fLimitSize = Config.LimitedWidthTabs;
             }
             itemSize = new Size(QTUtility.TabWidth, QTUtility.TabHeight);
             if((QTUtility.MaxTabWidth >= QTUtility.MinTabWidth) && (QTUtility.MinTabWidth > 9)) {
                 maxAllowedTabWidth = QTUtility.MaxTabWidth;
                 minAllowedTabWidth = QTUtility.MinTabWidth;
             }
-            fActiveTxtBold = QTUtility.CheckConfig(Settings.ActiveTabInBold);
-            fForceClassic = QTUtility.CheckConfig(Settings.UseTabSkin);
+            fActiveTxtBold = Config.ActiveTabInBold;
+            fForceClassic = Config.UseTabSkin;
             SetFont(QTUtility.TabFont);
             sizingMargin = QTUtility.TabImageSizingMargin + new Padding(0, 0, 1, 1);
-            if(QTUtility.CheckConfig(Settings.UseTabSkin) && (QTUtility.Path_TabImage.Length > 0)) {
+            if(Config.UseTabSkin && (QTUtility.Path_TabImage.Length > 0)) {
                 SetTabImages(QTTabBarClass.CreateTabImage());
             }
             else {
                 SetTabImages(null);
             }
-            tabTextAlignment = QTUtility.CheckConfig(Settings.AlignTabTextCenter) ? StringAlignment.Center : StringAlignment.Near;
-            fAutoSubText = !QTUtility.CheckConfig(Settings.NoRenameAmbTabs);
-            fDrawShadow = QTUtility.CheckConfig(Settings.TabTitleShadows);
-            fDrawCloseButton = QTUtility.CheckConfig(Settings.ShowTabCloseButtons) && !QTUtility.CheckConfig(Settings.TabCloseBtnsWithAlt);
-            fCloseBtnOnHover = QTUtility.CheckConfig(Settings.TabCloseBtnsOnHover);
-            fShowSubDirTip = QTUtility.CheckConfig(Settings.ShowSubDirTipOnTab);
-            if(!fInit && (fDrawFolderImg != QTUtility.CheckConfig(Settings.FolderIcon))) {
-                fDrawFolderImg = QTUtility.CheckConfig(Settings.FolderIcon);
+            tabTextAlignment = Config.AlignTabTextCenter ? StringAlignment.Center : StringAlignment.Near;
+            fAutoSubText = Config.RenameAmbTabs;
+            fDrawShadow = Config.TabTitleShadows;
+            fDrawCloseButton = Config.ShowTabCloseButtons && !Config.TabCloseBtnsWithAlt;
+            fCloseBtnOnHover = Config.TabCloseBtnsOnHover;
+            fShowSubDirTip = Config.ShowSubDirTipOnTab;
+            if(!fInit && (fDrawFolderImg != Config.ShowFolderIcon)) {
+                fDrawFolderImg = Config.ShowFolderIcon;
                 if(fDrawFolderImg) {
                     foreach(QTabItemBase base2 in TabPages) {
                         base2.ImageKey = base2.ImageKey;

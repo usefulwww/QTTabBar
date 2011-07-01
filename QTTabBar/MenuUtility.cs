@@ -315,7 +315,7 @@ namespace QTTabBarLib {
         }
 
         private static void qmi_File_MouseMove(object sender, MouseEventArgs e) {
-            if(QTUtility.CheckConfig(Settings.ShowTooltips)) {
+            if(Config.ShowTooltips) {
                 QMenuItem item = (QMenuItem)sender;
                 if((item.ToolTipText == null) && !string.IsNullOrEmpty(item.Path)) {
                     string str = item.Path.StartsWith("::") ? item.Text : Path.GetFileName(item.Path);

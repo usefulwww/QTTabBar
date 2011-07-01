@@ -72,10 +72,10 @@ namespace QTTabBarLib {
                     cmbHashType.SelectedIndex = num3;
                 }
             }
-            chbFullPath.Checked = QTUtility.CheckConfig(Settings.HashFullPath);
-            chbClearOnClose.Checked = QTUtility.CheckConfig(Settings.HashClearOnClose);
-            chbShowResult.Checked = QTUtility.CheckConfig(Settings.ShowHashResult);
-            chbTopMost.Checked = !QTUtility.CheckConfig(Settings.HashTopMost);
+            chbFullPath.Checked = Config.HashFullPath;
+            chbClearOnClose.Checked = Config.HashClearOnClose;
+            chbShowResult.Checked = Config.ShowHashResult;
+            chbTopMost.Checked = !Config.HashTopMost;
             PInvoke.DragAcceptFiles(Handle, true);
         }
 

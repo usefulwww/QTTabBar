@@ -77,7 +77,7 @@ namespace QTTabBarLib {
                 return true;
             }
             else if(msg.Msg == WM.COMMAND) {
-                if(!QTUtility.CheckConfig(Settings.NoCaptureMidClick) && (Control.ModifierKeys & Keys.Shift) != 0 && hdpa != IntPtr.Zero && MiddleClicked != null) {
+                if(!Config.NoCaptureMidClick && (Control.ModifierKeys & Keys.Shift) != 0 && hdpa != IntPtr.Zero && MiddleClicked != null) {
                     int itemId = PInvoke.LoWord(msg.WParam.ToInt32());
                     int idx = CommandToIndex(itemId);
                     if(idx >= 0 && idx < ButtonCount()) {
@@ -91,7 +91,7 @@ namespace QTTabBarLib {
 
         private bool BreadcrumbController_MessageCaptured(ref Message msg) {
             if(msg.Msg == WM.MBUTTONUP) {
-                if(!QTUtility.CheckConfig(Settings.NoCaptureMidClick) && hdpa != IntPtr.Zero && MiddleClicked != null) {
+                if(!Config.NoCaptureMidClick && hdpa != IntPtr.Zero && MiddleClicked != null) {
                     int idx = HitTest(QTUtility2.PointFromLPARAM(msg.LParam));
                     if(idx >= 0 && idx <= ButtonCount()) {
                         DoItemMiddleClick(IndexToCommand(idx), Control.ModifierKeys);

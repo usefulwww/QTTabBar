@@ -31,89 +31,6 @@ using QTPlugin;
 using QTTabBarLib.Interop;
 
 namespace QTTabBarLib {
-    public enum Settings : uint {
-        NeverCloseWndLocked = 8 * 00 + 0, // 0x01,
-        NeverCloseWindow    = 8 * 00 + 1, // 0x02,
-        FixedWidthTabs      = 8 * 00 + 2, // 0x04,
-        ShowTooltips        = 8 * 00 + 3, // 0x08,
-        RestoreTabs         = 8 * 00 + 4, // 0x10,
-        CloseWhenGroup      = 8 * 00 + 5, // 0x20,
-        DontOpenSame        = 8 * 00 + 6, // 0x40,
-        ActivateNewTab      = 8 * 00 + 7, // 0x80,
-        NoCaptureMidClick   = 8 * 05 + 0, // 0x01,
-        NoHistory           = 8 * 05 + 1, // 0x02,
-        LimitedWidthTabs    = 8 * 05 + 2, // 0x04,
-        UseTabSkin          = 8 * 05 + 3, // 0x08,
-        ActiveTabInBold     = 8 * 05 + 4, // 0x10,
-        CaptureX1X2         = 8 * 05 + 5, // 0x20,
-        NavButtonsOnRight   = 8 * 05 + 6, // 0x40,
-        ShowNavButtons      = 8 * 05 + 7, // 0x80,
-        ShowHashResult      = 8 * 06 + 0, // 0x01,
-        NoWindowResizing    = 8 * 06 + 1, // 0x02,
-        NoNewWndFolderTree  = 8 * 06 + 2, // 0x04,
-        RestoreLockedTabs   = 8 * 06 + 3, // 0x08,
-        DontCaptureNewWnds  = 8 * 06 + 4, // 0x10,
-        NoRecentFiles       = 8 * 06 + 5, // 0x20,
-        NoDblClickUpLevel   = 8 * 06 + 6, // 0x40,
-        MidClickNewWindow   = 8 * 06 + 7, // 0x80,
-        BackspaceUpLevel    = 8 * 07 + 0, // 0x01,
-        FolderIcon          = 8 * 07 + 1, // 0x02,
-        ToolbarBGColor      = 8 * 07 + 2, // 0x04,
-        HideMenuBar         = 8 * 07 + 3, // 0x08,
-        MultipleRow2        = 8 * 07 + 4, // 0x10,
-        MultipleRow1        = 8 * 07 + 5, // 0x20,
-        /* [unused]         = 8 * 07 + 6, // 0x40, */
-        HashTopMost         = 8 * 07 + 7, // 0x80,
-        PreviewsWithShift   = 8 * 08 + 0, // 0x01,
-        ShowTooltipPreviews = 8 * 08 + 1, // 0x02,
-        SaveTransparency    = 8 * 08 + 2, // 0x04,
-        AlternateRowColors  = 8 * 08 + 3, // 0x08,
-        HashFullPath        = 8 * 08 + 4, // 0x10,
-        ExtWhileRenaming    = 8 * 08 + 5, // 0x20,
-        ToggleFullRowSelect = 8 * 08 + 6, // 0x40,
-        DetailsGridLines    = 8 * 08 + 7, // 0x80,
-        ForceSysListView    = 8 * 09 + 0, // 0x01,
-        HashClearOnClose    = 8 * 09 + 1, // 0x02,
-        SubDirTipsPreview   = 8 * 09 + 2, // 0x04,
-        SubDirTipsFiles     = 8 * 09 + 3, // 0x08,
-        SubDirTipsHidden    = 8 * 09 + 4, // 0x10,
-        SubDirTipsWithShift = 8 * 09 + 5, // 0x20,
-        NoShowSubDirTips    = 8 * 09 + 6, // 0x40,
-        AlwaysShowHeaders   = 8 * 09 + 7, // 0x80,
-        F2Selection         = 8 * 10 + 0, // 0x01,
-        TrayOnClose         = 8 * 10 + 1, // 0x02,
-        SubDirTipsSystem    = 8 * 10 + 2, // 0x04,
-        CtrlWheelChangeView = 8 * 10 + 3, // 0x08,
-        HorizontalScroll    = 8 * 10 + 4, // 0x10,
-        NoRenameAmbTabs     = 8 * 10 + 5, // 0x20,
-        NoTabsFromOutside   = 8 * 10 + 6, // 0x40,
-        DragDropOntoTabs    = 8 * 10 + 7, // 0x80,
-        TabCloseBtnsOnHover = 8 * 11 + 0, // 0x01,
-        CursorLoop          = 8 * 11 + 1, // 0x02,
-        TabCloseBtnsWithAlt = 8 * 11 + 2, // 0x04,
-        ShowSubDirTipOnTab  = 8 * 11 + 3, // 0x08,
-        ShowTabCloseButtons = 8 * 11 + 4, // 0x10,
-        RebarImageActual    = 8 * 11 + 5, // 0x20,
-        RebarImageTile      = 8 * 11 + 6, // 0x40,
-        RebarImage          = 8 * 11 + 7, // 0x80,
-        RebarImageStretch2  = 8 * 13 + 0, // 0x01,
-        TabTitleShadows     = 8 * 13 + 1, // 0x02,
-        NoTabSwitcher       = 8 * 13 + 2, // 0x04,
-        NoMidClickTree      = 8 * 13 + 3, // 0x08, 
-        XPStyleMenus        = 8 * 13 + 4, // 0x10,
-        NonDefaultMenu      = 8 * 13 + 5, // 0x20,
-        AlignTabTextCenter  = 8 * 13 + 6, // 0x40,
-        TrayOnMinimize      = 8 * 13 + 7, // 0x80,
-        /* [unused]         = 8 * 14 + 0, // 0x01, */
-        /* [unused]         = 8 * 14 + 1, // 0x02, */
-        AllRecentFiles      = 8 * 14 + 2, // 0x04, */
-        PreviewInfo         = 8 * 14 + 3, // 0x08,
-        DisableSound        = 8 * 14 + 4, // 0x10,
-        ShowDriveLetters    = 8 * 14 + 5, // 0x20,
-        KeepOnSeparate      = 8 * 14 + 6, // 0x40,
-        AutoUpdate          = 8 * 14 + 7, // 0x80,
-    }
-
     internal static class QTUtility {
         internal static string Action_BarDblClick;
         internal static Version BetaRevision = new Version(0, 3);
@@ -225,16 +142,16 @@ namespace QTTabBarLib {
             try {
                 IsXP = Environment.OSVersion.Version.Major <= 5;
                 // TODO: make this more comprehensible 
-                ConfigValues = new byte[] { 200, 0, 4, 0, 4, 0x60, 0x10, 0x22, 2, 8, 0xe0, 8, 0, 0x20, 0, 0 };
-                if(IsXP) {
-                    ConfigValues[13] = 0x30;
-                }
-                SetConfigAt(Settings.AutoUpdate, true);
+                //ConfigValues = new byte[] { 200, 0, 4, 0, 4, 0x60, 0x10, 0x22, 2, 8, 0xe0, 8, 0, 0x20, 0, 0 };
+                //if(IsXP) {
+                    //ConfigValues[13] = 0x30;
+                //}
+                //SetConfigAt(Settings.AutoUpdate, true); // TODO
                 using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
                     if(key != null) {
                         float num;
                         byte[] inputValues = (byte[])key.GetValue("Config");
-                        ConfigValues = GetSettingValue(inputValues, ConfigValues, false);
+                        //ConfigValues = GetSettingValue(inputValues, ConfigValues, false);
                         string path = (string)key.GetValue("LanguageFile", string.Empty);
                         if((path.Length > 0) && File.Exists(path)) {
                             Path_LanguageFile = path;
@@ -281,7 +198,7 @@ namespace QTTabBarLib {
                                 ClosedTabHistoryList = new PathList(collection, MaxCount_History);
                             }
                         }
-                        if(CheckConfig(Settings.AllRecentFiles)) {
+                        if(Config.AllRecentFiles) {
                             MaxCount_Executed = QTUtility2.GetRegistryValueSafe(key, "Max_RecentFile", 0x10);
                             using(RegistryKey key3 = key.CreateSubKey("RecentFiles")) {
                                 if(key3 != null) {
@@ -347,12 +264,6 @@ namespace QTTabBarLib {
             catch(Exception exception) {
                 QTUtility2.MakeErrorLog(exception);
             }
-        }
-
-        public static bool CheckConfig(Settings setting) {
-            int index = (int)setting >> 3;
-            byte value = (byte)(1 << ((int)setting & 7));
-            return ((ConfigValues[index] & value) == value);
         }
 
         public static bool ExtHasIcon(string ext) {
@@ -603,84 +514,7 @@ namespace QTTabBarLib {
         }
 
         public static TabBarOption GetTabBarOption() {
-            Dictionary<int, object> dictionary = new Dictionary<int, object>();
-            dictionary[0] = CheckConfig(Settings.ActivateNewTab);
-            dictionary[1] = CheckConfig(Settings.DontOpenSame);
-            dictionary[2] = CheckConfig(Settings.CloseWhenGroup);
-            dictionary[3] = CheckConfig(Settings.ShowTooltips);
-            dictionary[4] = CheckConfig(Settings.CaptureX1X2);
-            dictionary[5] = CheckConfig(Settings.ShowNavButtons);
-            dictionary[6] = !CheckConfig(Settings.NoHistory);
-            dictionary[7] = !CheckConfig(Settings.NoRecentFiles);
-            dictionary[8] = CheckConfig(Settings.DragDropOntoTabs);
-            dictionary[9] = !CheckConfig(Settings.NoRenameAmbTabs);
-            dictionary[10] = CheckConfig(Settings.MidClickNewWindow);
-            dictionary[11] = !CheckConfig(Settings.NoDblClickUpLevel);
-            dictionary[12] = CheckConfig(Settings.NoWindowResizing);
-            dictionary[13] = CheckConfig(Settings.SaveTransparency);
-            dictionary[14] = !CheckConfig(Settings.DontCaptureNewWnds);
-            dictionary[15] = !CheckConfig(Settings.NoNewWndFolderTree);
-            dictionary[16] = CheckConfig(Settings.NoTabsFromOutside);
-            dictionary[17] = !CheckConfig(Settings.HorizontalScroll);
-            dictionary[18] = !CheckConfig(Settings.CtrlWheelChangeView);
-            dictionary[19] = CheckConfig(Settings.NeverCloseWindow);
-            dictionary[20] = CheckConfig(Settings.NeverCloseWndLocked);
-            dictionary[21] = CheckConfig(Settings.RestoreTabs);
-            dictionary[22] = CheckConfig(Settings.RestoreLockedTabs);
-            dictionary[23] = CheckConfig(Settings.UseTabSkin);
-            dictionary[24] = CheckConfig(Settings.FolderIcon);
-            dictionary[25] = CheckConfig(Settings.ActiveTabInBold);
-            dictionary[26] = CheckConfig(Settings.ToolbarBGColor);
-            dictionary[27] = CheckConfig(Settings.HideMenuBar);
-            dictionary[28] = CheckConfig(Settings.BackspaceUpLevel);
-            dictionary[29] = CheckConfig(Settings.ToggleFullRowSelect) ^ !IsXP;
-            dictionary[30] = CheckConfig(Settings.DetailsGridLines);
-            dictionary[31] = CheckConfig(Settings.AlternateRowColors);
-            dictionary[32] = CheckConfig(Settings.ShowTooltipPreviews);
-            dictionary[33] = CheckConfig(Settings.PreviewsWithShift);
-            dictionary[34] = !CheckConfig(Settings.NoShowSubDirTips);
-            dictionary[35] = CheckConfig(Settings.SubDirTipsWithShift);
-            dictionary[36] = !CheckConfig(Settings.SubDirTipsPreview);
-            dictionary[37] = CheckConfig(Settings.SubDirTipsHidden);
-            dictionary[38] = CheckConfig(Settings.SubDirTipsSystem);
-            dictionary[39] = CheckConfig(Settings.SubDirTipsFiles);
-            dictionary[40] = !CheckConfig(Settings.ExtWhileRenaming);
-            dictionary[41] = CheckConfig(Settings.TrayOnClose);
-            dictionary[42] = CheckConfig(Settings.ForceSysListView);
-            dictionary[43] = CheckConfig(Settings.AlwaysShowHeaders);
-            dictionary[0x10000] = CheckConfig(Settings.NavButtonsOnRight) ? 1 : 0;
-            dictionary[0x10001] = MaxCount_History;
-            dictionary[0x10002] = ConfigValues[1];
-            dictionary[0x10003] = ConfigValues[2];
-            dictionary[0x10004] = ConfigValues[3];
-            dictionary[0x10005] = ConfigValues[4];
-            dictionary[0x10006] = CheckConfig(Settings.MultipleRow1) ? 1 : (CheckConfig(Settings.MultipleRow2) ? 2 : 0);
-            dictionary[0x10007] = CheckConfig(Settings.NoCaptureMidClick) ? 1 : 0;
-            dictionary[0x10008] = TabHeight;
-            dictionary[0x10009] = CheckConfig(Settings.FixedWidthTabs) ? 1 : (CheckConfig(Settings.LimitedWidthTabs) ? 2 : 0);
-            dictionary[0x1000a] = TabWidth;
-            dictionary[0x1000b] = MaxTabWidth;
-            dictionary[0x1000c] = MinTabWidth;
-            dictionary[0x1000d] = PreviewMaxWidth;
-            dictionary[0x1000e] = PreviewMaxHeight;
-            dictionary[0x20000] = Path_LanguageFile;
-            dictionary[0x20001] = Action_BarDblClick;
-            dictionary[0x20002] = Path_TabImage;
-            dictionary[0x20003] = (TabFont == null) ? Control.DefaultFont.Name : TabFont.Name;
-            dictionary[0x20004] = Path_PluginLangFile;
-            dictionary[0x20005] = PreviewFontName;
-            dictionary[0x40000] = TabTextColor_Active;
-            dictionary[0x40001] = TabTextColor_Inactv;
-            dictionary[0x40002] = RebarBGColor;
-            dictionary[0x40003] = QTUtility2.MakeColor(ShellViewRowCOLORREF_Text);
-            dictionary[0x40004] = QTUtility2.MakeColor(ShellViewRowCOLORREF_Background);
-            dictionary[0x40005] = TabHiliteColor;
-            dictionary[0x80000] = TabImageSizingMargin;
-            dictionary[0x80001] = (TabFont == null) ? Control.DefaultFont.Size : TabFont.Size;
-            dictionary[0x80002] = PreviewExtsList_Txt.ToArray();
-            dictionary[0x80003] = PreviewExtsList_Img.ToArray();
-            dictionary[0x80004] = PreviewFontSize;
-            return new TabBarOption(dictionary);
+            return null; // TODO
         }
 
         private static bool IsNetworkRootFolder(string path) {
@@ -1076,17 +910,6 @@ namespace QTTabBarLib {
                 }
             }
         }
-
-        public static void SetConfigAt(Settings setting, bool fOn) {
-            int index = (int)setting >> 3;
-            byte value = (byte)(1 << ((int)setting & 7));
-            if (fOn) {
-                ConfigValues[index] = (byte)(ConfigValues[index] | value);
-            }
-            else {
-                ConfigValues[index] = (byte)(ConfigValues[index] & ((byte)(0xff - value)));
-            }
-        }
         
         private static void SetImageKey(string key, string itemPath) {
             if(!ImageListGlobal.Images.ContainsKey(key)) {
@@ -1095,132 +918,7 @@ namespace QTTabBarLib {
         }
 
         public static void SetTabBarOption(TabBarOption tabBarOption, QTTabBarClass tabBar) {
-            bool fAutoSubText = !CheckConfig(Settings.NoRenameAmbTabs);
-            bool fPaintBG = CheckConfig(Settings.ToolbarBGColor);
-            string str = Path_LanguageFile;
-            Dictionary<int, object> dictionary = tabBarOption.Dictionary;
-            Dictionary<int, object> dictionary2 = GetTabBarOption().Dictionary;
-            Dictionary<int, object> dictionary3 = new Dictionary<int, object>(dictionary2);
-            foreach(int num in dictionary3.Keys.Intersect(dictionary.Keys)) {
-                object obj2 = dictionary[num];
-                if(((((num < 0x10000) && (obj2 is bool)) || (((0x10000 <= num) && (num < 0x20000)) && (obj2 is int))) || ((((0x20000 <= num) && (num < 0x40000)) && (obj2 is string)) || (((0x40000 <= num) && (num < 0x80000)) && (obj2 is Color)))) || ((((num == 0x80000) && (obj2 is Padding)) || ((num == 0x80001) && (obj2 is float))) || ((((num == 0x80002) && (obj2 is string[])) || ((num == 0x80003) && (obj2 is string[]))) || ((num == 0x80004) && (obj2 is float))))) {
-                    dictionary2[num] = dictionary[num];
-                }
-            }
-            SetConfigAt(Settings.ActivateNewTab, (bool)dictionary2[0]);
-            SetConfigAt(Settings.DontOpenSame, (bool)dictionary2[1]);
-            SetConfigAt(Settings.CloseWhenGroup, (bool)dictionary2[2]);
-            SetConfigAt(Settings.ShowTooltips, (bool)dictionary2[3]);
-            SetConfigAt(Settings.CaptureX1X2, (bool)dictionary2[4]);
-            SetConfigAt(Settings.ShowNavButtons, (bool)dictionary2[5]);
-            SetConfigAt(Settings.NoHistory, !((bool)dictionary2[6]));
-            SetConfigAt(Settings.NoRecentFiles, !((bool)dictionary2[7]));
-            SetConfigAt(Settings.DragDropOntoTabs, (bool)dictionary2[8]);
-            SetConfigAt(Settings.NoRenameAmbTabs, !((bool)dictionary2[9]));
-            SetConfigAt(Settings.MidClickNewWindow, (bool)dictionary2[10]);
-            SetConfigAt(Settings.NoDblClickUpLevel, !((bool)dictionary2[11]));
-            SetConfigAt(Settings.NoWindowResizing, (bool)dictionary2[12]);
-            SetConfigAt(Settings.SaveTransparency, (bool)dictionary2[13]);
-            SetConfigAt(Settings.DontCaptureNewWnds, !((bool)dictionary2[14]));
-            SetConfigAt(Settings.NoNewWndFolderTree, !((bool)dictionary2[15]));
-            SetConfigAt(Settings.NoTabsFromOutside, (bool)dictionary2[0x10]);
-            SetConfigAt(Settings.HorizontalScroll, !((bool)dictionary2[0x11]));
-            SetConfigAt(Settings.CtrlWheelChangeView, !((bool)dictionary2[0x12]));
-            SetConfigAt(Settings.NeverCloseWindow, (bool)dictionary2[0x13]);
-            SetConfigAt(Settings.NeverCloseWndLocked, (bool)dictionary2[20]);
-            SetConfigAt(Settings.RestoreTabs, (bool)dictionary2[0x15]);
-            SetConfigAt(Settings.RestoreLockedTabs, (bool)dictionary2[0x16]);
-            SetConfigAt(Settings.UseTabSkin, (bool)dictionary2[0x17]);
-            SetConfigAt(Settings.FolderIcon, (bool)dictionary2[0x18]);
-            SetConfigAt(Settings.ActiveTabInBold, (bool)dictionary2[0x19]);
-            SetConfigAt(Settings.ToolbarBGColor, (bool)dictionary2[0x1a]);
-            SetConfigAt(Settings.HideMenuBar, (bool)dictionary2[0x1b]);
-            SetConfigAt(Settings.BackspaceUpLevel, (bool)dictionary2[0x1c]);
-            SetConfigAt(Settings.ToggleFullRowSelect, ((bool)dictionary2[0x1d]) ^ !IsXP);
-            SetConfigAt(Settings.DetailsGridLines, (bool)dictionary2[30]);
-            SetConfigAt(Settings.AlternateRowColors, (bool)dictionary2[0x1f]);
-            SetConfigAt(Settings.ShowTooltipPreviews, (bool)dictionary2[0x20]);
-            SetConfigAt(Settings.PreviewsWithShift, (bool)dictionary2[0x21]);
-            SetConfigAt(Settings.NoShowSubDirTips, !((bool)dictionary2[0x22]));
-            SetConfigAt(Settings.SubDirTipsWithShift, (bool)dictionary2[0x23]);
-            SetConfigAt(Settings.SubDirTipsPreview, !((bool)dictionary2[0x24]));
-            SetConfigAt(Settings.SubDirTipsHidden, (bool)dictionary2[0x25]);
-            SetConfigAt(Settings.SubDirTipsSystem, (bool)dictionary2[0x26]);
-            SetConfigAt(Settings.SubDirTipsFiles, (bool)dictionary2[0x27]);
-            SetConfigAt(Settings.ExtWhileRenaming, !((bool)dictionary2[40]));
-            SetConfigAt(Settings.TrayOnClose, (bool)dictionary2[0x29]);
-            SetConfigAt(Settings.ForceSysListView, (bool)dictionary2[42]);
-            SetConfigAt(Settings.AlwaysShowHeaders, (bool)dictionary2[43]);
-            SetConfigAt(Settings.NavButtonsOnRight, ((int)dictionary2[0x10000]) == 1);
-            MaxCount_History = ValidateMaxMin((int)dictionary2[0x10001], 0x40, 1);
-            ConfigValues[1] = (byte)ValidateMaxMin((int)dictionary2[0x10002], 3, 0);
-            ConfigValues[2] = (byte)ValidateMaxMin((int)dictionary2[0x10003], 4, 0);
-            ConfigValues[3] = (byte)ValidateMaxMin((int)dictionary2[0x10004], 8, 0);
-            ConfigValues[4] = (byte)ValidateMaxMin((int)dictionary2[0x10005], 11, 0);
-            if(((int)dictionary2[0x10006]) == 0) {
-                ConfigValues[7] = (byte)(ConfigValues[7] & 0xcf);
-            }
-            else if(((int)dictionary2[0x10006]) == 1) {
-                ConfigValues[7] = (byte)(ConfigValues[7] | 0x20);
-                ConfigValues[7] = (byte)(ConfigValues[7] & 0xef);
-            }
-            else {
-                ConfigValues[7] = (byte)(ConfigValues[7] | 0x10);
-                ConfigValues[7] = (byte)(ConfigValues[7] & 0xdf);
-            }
-            if(((int)dictionary2[0x10007]) == 1) {
-                ConfigValues[5] = (byte)(ConfigValues[5] | 1);
-            }
-            else {
-                ConfigValues[5] = (byte)(ConfigValues[5] & 0xfe);
-            }
-            TabHeight = ValidateMaxMin((int)dictionary2[0x10008], 50, 10);
-            if(((int)dictionary2[0x10009]) == 0) {
-                ConfigValues[0] = (byte)(ConfigValues[0] & 0xfb);
-                ConfigValues[5] = (byte)(ConfigValues[5] & 0xfb);
-            }
-            else if(((int)dictionary2[0x10009]) == 1) {
-                ConfigValues[0] = (byte)(ConfigValues[0] | 4);
-                ConfigValues[5] = (byte)(ConfigValues[5] & 0xfb);
-            }
-            else {
-                ConfigValues[0] = (byte)(ConfigValues[0] & 0xfb);
-                ConfigValues[5] = (byte)(ConfigValues[5] | 4);
-            }
-            TabWidth = ValidateMaxMin((int)dictionary2[0x1000a], 0x200, 10);
-            MaxTabWidth = ValidateMaxMin((int)dictionary2[0x1000b], 0x200, 10);
-            MinTabWidth = ValidateMaxMin((int)dictionary2[0x1000c], 0x200, 10);
-            if(MaxTabWidth < MinTabWidth) {
-                MinTabWidth = MaxTabWidth;
-            }
-            PreviewMaxWidth = ValidateMaxMin((int)dictionary2[0x1000d], 0x780, 0x80);
-            PreviewMaxHeight = ValidateMaxMin((int)dictionary2[0x1000e], 0x4b0, 0x60);
-            Path_LanguageFile = (string)dictionary2[0x20000];
-            Action_BarDblClick = (string)dictionary2[0x20001];
-            Path_TabImage = (string)dictionary2[0x20002];
-            if(TabFont == null) {
-                Font defaultFont = Control.DefaultFont;
-                if(((defaultFont.FontFamily.Name != ((string)dictionary2[0x20003])) || (defaultFont.Size != ((float)dictionary2[0x80001]))) && (((float)dictionary2[0x80001]) > 0f)) {
-                    TabFont = new Font((string)dictionary2[0x20003], (float)dictionary2[0x80001]);
-                }
-            }
-            else if((((float)dictionary2[0x80001]) > 0f) && ((TabFont.Name != ((string)dictionary2[0x20003])) || (TabFont.Size != ((float)dictionary2[0x80001])))) {
-                TabFont = new Font((string)dictionary2[0x20003], (float)dictionary2[0x80001]);
-            }
-            Path_PluginLangFile = (string)dictionary2[0x20004];
-            PreviewFontName = (string)dictionary2[0x20005];
-            TabTextColor_Active = (Color)dictionary2[0x40000];
-            TabTextColor_Inactv = (Color)dictionary2[0x40001];
-            RebarBGColor = (Color)dictionary2[0x40002];
-            ShellViewRowCOLORREF_Text = QTUtility2.MakeCOLORREF((Color)dictionary2[0x40003]);
-            ShellViewRowCOLORREF_Background = QTUtility2.MakeCOLORREF((Color)dictionary2[0x40004]);
-            TabHiliteColor = (Color)dictionary2[0x40005];
-            TabImageSizingMargin = (Padding)dictionary2[0x80000];
-            PreviewExtsList_Txt = new List<string>((string[])dictionary2[0x80002]);
-            PreviewExtsList_Img = new List<string>((string[])dictionary2[0x80003]);
-            PreviewFontSize = (float)dictionary2[0x80004];
-            OptionsDialog.WriteRegistry(TabFont, PreviewExtsList_Txt.ToArray(), PreviewExtsList_Img.ToArray());
-            tabBar.RefreshOptions(fAutoSubText, fPaintBG, str);
+            // TODO
         }
 
         private static int ValidateMaxMin(int value, int max, int min) {
