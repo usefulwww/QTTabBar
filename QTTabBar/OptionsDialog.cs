@@ -4113,7 +4113,7 @@ namespace QTTabBarLib {
             chbRestoreLocked.Checked = (QTUtility.ConfigValues[6] & 8) == 8;
             chbFoldrTree.Checked = (QTUtility.ConfigValues[6] & 4) == 0;
             chbWndUnresizable.Checked = (QTUtility.ConfigValues[6] & 2) == 2;
-            if(Config.KeepRecentFiles) {
+            if(Config.Misc.KeepRecentFiles) {
                 if(Config.AllRecentFiles) {
                     chbSaveExecuted.CheckState = CheckState.Checked;
                 }
@@ -4164,7 +4164,7 @@ namespace QTTabBarLib {
             btnHiliteClsc.ForeColor = QTUtility.TabHiliteColor;
             btnShadowAct.ForeColor = QTUtility.TabTextColor_ActivShdw;
             btnShadowIna.ForeColor = QTUtility.TabTextColor_InAtvShdw;
-            chbTabTitleShadow.Checked = Config.TabTitleShadows;
+            chbTabTitleShadow.Checked = Config.Skin.TabTitleShadows;
             btnShadowAct.Enabled = btnShadowIna.Enabled = chbTabTitleShadow.Checked;
             textBoxAction_BarDblClck.Text = QTUtility.Action_BarDblClick;
             QTUtility.RefreshGroupsDic();
@@ -4186,8 +4186,8 @@ namespace QTTabBarLib {
             }
             chbForceSysListView.Enabled = chbAlwaysShowHeader.Enabled =
                      Environment.OSVersion.Version.ToString().StartsWith("6.1.");
-            chbForceSysListView.Checked = Config.ForceSysListView;
-            chbAlwaysShowHeader.Checked = Config.AlwaysShowHeaders;
+            chbForceSysListView.Checked = Config.Tweaks.ForceSysListView;
+            chbAlwaysShowHeader.Checked = Config.Tweaks.AlwaysShowHeaders;
             btnToolBarBGClr.Enabled = chbToolbarBGClr.Checked = (QTUtility.ConfigValues[7] & 4) == 4;
             btnToolBarBGClr.BackColor = QTUtility.RebarBGColor;
             chbFolderIcon.Checked = (QTUtility.ConfigValues[7] & 2) == 2;
@@ -4218,9 +4218,9 @@ namespace QTTabBarLib {
                 chbRebarBGImage.Enabled = tbRebarImagePath.Enabled = btnRebarImage.Enabled = cmbRebarBGImageMode.Enabled = false;
             }
             chbWndRestrAlpha.Checked = (QTUtility.ConfigValues[8] & 4) == 4;
-            chbShowPreview.Checked = Config.ShowTooltipPreviews;
-            chbPreviewMode.Checked = Config.ShowPreviewsWithShift;
-            chbPreviewInfo.Checked = !Config.ShowPreviewInfo;
+            chbShowPreview.Checked = Config.Tips.ShowTooltipPreviews;
+            chbPreviewMode.Checked = Config.Tips.ShowPreviewsWithShift;
+            chbPreviewInfo.Checked = !Config.Tips.ShowPreviewInfo;
             nudPreviewMaxWidth.Enabled = nudPreviewMaxHeight.Enabled = cmbTextExts.Enabled = btnAddTextExt.Enabled = btnDelTextExt.Enabled = btnDefaultTextExt.Enabled = cmbImgExts.Enabled = btnAddImgExt.Enabled = btnDelImgExt.Enabled = btnDefaultImgExt.Enabled = btnPreviewFont.Enabled = btnPreviewFontDefault.Enabled = chbPreviewInfo.Enabled = chbPreviewMode.Enabled = chbShowPreview.Checked;
             nudPreviewMaxWidth.Value = QTUtility.PreviewMaxWidth;
             nudPreviewMaxHeight.Value = QTUtility.PreviewMaxHeight;
@@ -4231,29 +4231,29 @@ namespace QTTabBarLib {
                 catch {
                 }
             }
-            chbSubDirTip.Checked = Config.ShowSubDirTips;
-            chbSubDirTipMode.Checked = Config.SubDirTipsWithShift;
+            chbSubDirTip.Checked = Config.Tips.ShowSubDirTips;
+            chbSubDirTipMode.Checked = Config.Tips.SubDirTipsWithShift;
             chbSubDirTipModeHidden.Checked = Config.SubDirTipsHidden;
-            chbSubDirTipModeFile.Checked = Config.SubDirTipsFiles;
-            chbSubDirTipPreview.Checked = !Config.SubDirTipsPreview;
+            chbSubDirTipModeFile.Checked = Config.Tips.SubDirTipsFiles;
+            chbSubDirTipPreview.Checked = !Config.Tips.SubDirTipsPreview;
             chbSubDirTipMode.Enabled = chbSubDirTipModeHidden.Enabled = chbSubDirTipModeFile.Enabled = chbSubDirTipPreview.Enabled = chbSubDirTip.Checked;
             chbSubDirTipModeSystem.Checked = Config.SubDirTipsSystem;
             nudMaxUndo.Value = QTUtility.MaxCount_History;
             nudMaxRecentFile.Value = QTUtility.MaxCount_Executed;
-            chbDD.Checked = Config.DragOverTabOpensSDT;
-            chbNoTabFromOuteside.Checked = Config.CaptureNewWindows;
-            chbHolizontalScroll.Checked = !Config.HorizontalScroll;
+            chbDD.Checked = Config.Tabs.DragOverTabOpensSDT;
+            chbNoTabFromOuteside.Checked = Config.Window.CaptureNewWindows;
+            chbHolizontalScroll.Checked = !Config.Tweaks.HorizontalScroll;
             chbWhlChangeView.Checked = !Config.CtrlWheelChangeView;
-            chbAutoSubText.Checked = !Config.RenameAmbTabs;
-            chbSendToTray.Checked = Config.TrayOnClose;
-            chbSendToTrayOnMinimize.Checked = Config.TrayOnMinimize;
-            chbF2Selection.Checked = !Config.F2Selection;
-            chbTabCloseBtnAlt.Enabled = chbTabCloseBtnHover.Enabled = chbTabCloseButton.Checked = Config.ShowTabCloseButtons;
-            chbTabCloseBtnAlt.Checked = Config.TabCloseBtnsWithAlt;
-            chbTabCloseBtnHover.Checked = Config.TabCloseBtnsOnHover;
-            chbCursorLoop.Checked = Config.WrapArrowKeySelection;
+            chbAutoSubText.Checked = !Config.Tabs.RenameAmbTabs;
+            chbSendToTray.Checked = Config.Window.TrayOnClose;
+            chbSendToTrayOnMinimize.Checked = Config.Window.TrayOnMinimize;
+            chbF2Selection.Checked = !Config.Tweaks.F2Selection;
+            chbTabCloseBtnAlt.Enabled = chbTabCloseBtnHover.Enabled = chbTabCloseButton.Checked = Config.Tabs.ShowCloseButtons;
+            chbTabCloseBtnAlt.Checked = Config.Tabs.CloseBtnsWithAlt;
+            chbTabCloseBtnHover.Checked = Config.Tabs.CloseBtnsOnHover;
+            chbCursorLoop.Checked = Config.Tweaks.WrapArrowKeySelection;
             chbDriveLetter.Enabled = chbSubDirTipOnTab.Enabled = chbFolderIcon.Checked;
-            chbSubDirTipOnTab.Checked = Config.ShowSubDirTipOnTab;
+            chbSubDirTipOnTab.Checked = Config.Tabs.ShowSubDirTipOnTab;
             nudNetworkTimeOut.Value = IDLWrapper.iPingTimeOutMS / 0x3e8;
             textBoxLang.Text = QTUtility.Path_LanguageFile;
             if(Config.NonDefaultMenu) {
@@ -4268,9 +4268,9 @@ namespace QTTabBarLib {
                 cmbMenuRenderer.SelectedIndex = 0;
             }
             chbTabSwitcher.Checked = !Config.NoTabSwitcher;
-            chbAutoUpdate.Checked = Config.AutoUpdate;
+            chbAutoUpdate.Checked = Config.Misc.AutoUpdate;
             chbRemoveOnSeparate.Checked = !Config.KeepOnSeparate;
-            chbDriveLetter.Checked = Config.ShowDriveLetters;
+            chbDriveLetter.Checked = Config.Tabs.ShowDriveLetters;
             chbPlaySound.Checked = !Config.DisableSound;
             InitializePluginView();
             textBoxPluginLang.Text = QTUtility.Path_PluginLangFile;

@@ -137,7 +137,7 @@ namespace QTTabBarLib {
         }
 
         private void AddMenuItems_History() {
-            if(((ConfigValues[2] & 0x40) == 0) && Config.KeepHistory) {
+            if(((ConfigValues[2] & 0x40) == 0) && Config.Misc.KeepHistory) {
                 if(ExpandState[1]) {
                     contextMenu.AddItem(labelHistoryTitle, "labelH");
                     contextMenu.AddItemsRange(UndoClosedItemsList.ToArray(), "historyItem");
@@ -150,7 +150,7 @@ namespace QTTabBarLib {
         }
 
         private void AddMenuItems_Recent() {
-            if(((ConfigValues[2] & 1) == 0) && Config.KeepRecentFiles) {
+            if(((ConfigValues[2] & 1) == 0) && Config.Misc.KeepRecentFiles) {
                 if(ExpandState[3]) {
                     contextMenu.AddItem(labelRecentFileTitle, "labelR");
                     contextMenu.AddItemsRange(RecentFileItemsList.ToArray(), "recentItem");
@@ -754,17 +754,17 @@ namespace QTTabBarLib {
             int key = ((int)wParam) | ((int)ModifierKeys);
             if(((int)wParam) == 0x10) {
                 if(!fRepeat) {
-                    if(!Config.ShowPreviewsWithShift) {
+                    if(!Config.Tips.ShowPreviewsWithShift) {
                         listView.HideThumbnailTooltip();
                     }
-                    if(Config.ShowSubDirTips && !Config.SubDirTipsWithShift && !listView.SubDirTipMenuIsShowing()) {
+                    if(Config.Tips.ShowSubDirTips && !Config.Tips.SubDirTipsWithShift && !listView.SubDirTipMenuIsShowing()) {
                         listView.HideSubDirTip();
                     }
                 }
                 return false;
             }
             if(key == 0x71) {
-                if(!Config.F2Selection) {
+                if(!Config.Tweaks.F2Selection) {
                     // TODO
                     // QTTabBarClass.HandleF2(this.hwndListView);
                 }
@@ -794,7 +794,7 @@ namespace QTTabBarLib {
                 return true;
             }
             if(key == QTUtility.ShortcutKeys[0x26]) {
-                if(Config.ShowSubDirTips) {
+                if(Config.Tips.ShowSubDirTips) {
                     if(!fRepeat) {
                         DoFileTools(5);
                     }
@@ -846,7 +846,7 @@ namespace QTTabBarLib {
                     modKey = Keys.Control;
                 }
             }
-            if(!Config.ActivateNewTab) {
+            if(!Config.Tabs.ActivateNewTab) {
                 if((modKey & Keys.Shift) == Keys.Shift) {
                     modKey &= ~Keys.Shift;
                 }
@@ -1027,7 +1027,7 @@ namespace QTTabBarLib {
         }
 
         private void InsertMenuItems_History() {
-            if(((ConfigValues[2] & 0x40) == 0) && Config.KeepHistory) {
+            if(((ConfigValues[2] & 0x40) == 0) && Config.Misc.KeepHistory) {
                 if(ExpandState[1]) {
                     int index = contextMenu.Items.IndexOf(labelHistoryTitle);
                     if(index != -1) {
@@ -1043,7 +1043,7 @@ namespace QTTabBarLib {
         }
 
         private void InsertMenuItems_Recent() {
-            if(((ConfigValues[2] & 1) == 0) && Config.KeepRecentFiles) {
+            if(((ConfigValues[2] & 1) == 0) && Config.Misc.KeepRecentFiles) {
                 if(ExpandState[3]) {
                     int index = contextMenu.Items.IndexOf(labelRecentFileTitle);
                     if(index != -1) {
@@ -1106,7 +1106,7 @@ namespace QTTabBarLib {
         }
 
         private bool ListView_SelectionActivated(Keys modKeys) {
-            bool fEnqExec = Config.KeepRecentFiles;
+            bool fEnqExec = Config.Misc.KeepRecentFiles;
             return HandleTabFolderActions(-1, modKeys, fEnqExec);
         }
 
@@ -1538,10 +1538,10 @@ namespace QTTabBarLib {
                     item2.Dispose();
                 }
             }
-            if(((ConfigValues[2] & 0x40) == 0) && Config.KeepHistory) {
+            if(((ConfigValues[2] & 0x40) == 0) && Config.Misc.KeepHistory) {
                 UndoClosedItemsList = MenuUtility.CreateUndoClosedItems(null);
             }
-            if(((ConfigValues[2] & 1) == 0) && Config.KeepRecentFiles) {
+            if(((ConfigValues[2] & 1) == 0) && Config.Misc.KeepRecentFiles) {
                 RecentFileItemsList = MenuUtility.CreateRecentFilesItems();
             }
         }
@@ -1665,7 +1665,7 @@ namespace QTTabBarLib {
                 startInfo.WorkingDirectory = Path.GetDirectoryName(path);
                 startInfo.ErrorDialog = true;
                 Process.Start(startInfo);
-                if(Config.KeepRecentFiles) {
+                if(Config.Misc.KeepRecentFiles) {
                     QTUtility.ExecutedPathsList.Add(path);
                 }
             }
@@ -1699,7 +1699,7 @@ namespace QTTabBarLib {
                     }
                 }
                 Keys modifierKeys = ModifierKeys;
-                if(!Config.ActivateNewTab) {
+                if(!Config.Tabs.ActivateNewTab) {
                     switch(modifierKeys) {
                         case Keys.Shift:
                             modifierKeys = Keys.None;

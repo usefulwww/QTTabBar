@@ -75,7 +75,7 @@ namespace QTTabBarLib {
             rebarController = new NativeWindowController(hwndReBar);
             rebarController.MessageCaptured += MessageCaptured;
 
-            if(Config.UseRebarBGColor) {
+            if(Config.Skin.UseRebarBGColor) {
                 if(QTUtility.DefaultRebarCOLORREF == -1) {
                     QTUtility.DefaultRebarCOLORREF = (int)PInvoke.SendMessage(Handle, RB.GETBKCOLOR, IntPtr.Zero, IntPtr.Zero);
                 }
@@ -163,7 +163,7 @@ namespace QTTabBarLib {
                 // Restore the default BG color
                 PInvoke.SendMessage(Handle, RB.SETBKCOLOR, IntPtr.Zero, (IntPtr)QTUtility.DefaultRebarCOLORREF);
             }
-            else if(Config.UseRebarBGColor) {
+            else if(Config.Skin.UseRebarBGColor) {
                 // Save the default color and set the new one
                 if(QTUtility.DefaultRebarCOLORREF == -1) {
                     QTUtility.DefaultRebarCOLORREF = (int)PInvoke.SendMessage(Handle, RB.GETBKCOLOR, IntPtr.Zero, IntPtr.Zero);
@@ -176,7 +176,7 @@ namespace QTTabBarLib {
             if(hWnd != IntPtr.Zero) {
                 PInvoke.RedrawWindow(hWnd, IntPtr.Zero, IntPtr.Zero, 0x289);
             }
-            if(Config.UseRebarImage) {
+            if(Config.Skin.UseRebarImage) {
                 CreateRebarImage();
             }
         }
@@ -198,7 +198,7 @@ namespace QTTabBarLib {
                 return false;
             }
 
-            if(m.Msg == WM.ERASEBKGND && (Config.UseRebarBGColor || Config.UseRebarImage)) {
+            if(m.Msg == WM.ERASEBKGND && (Config.Skin.UseRebarBGColor || Config.Skin.UseRebarImage)) {
                 bool fFilled = false;
                 using(Graphics graphics = Graphics.FromHdc(m.WParam)) {
                     RECT rect;
@@ -206,7 +206,7 @@ namespace QTTabBarLib {
                     Rectangle rectangle = new Rectangle(0, 0, rect.Width, rect.Height);
 
                     // Fill the Rebar background color
-                    if(Config.UseRebarBGColor) {
+                    if(Config.Skin.UseRebarBGColor) {
                         using(SolidBrush brush = new SolidBrush(QTUtility.RebarBGColor)) {
                             graphics.FillRectangle(brush, rectangle);
                             fFilled = true;
@@ -214,12 +214,12 @@ namespace QTTabBarLib {
                     }
 
                     // Draw the Rebar image
-                    if(VisualStyleRenderer.IsSupported && Config.UseRebarImage && QTUtility.Path_RebarImage.Length > 0) {
+                    if(VisualStyleRenderer.IsSupported && Config.Skin.UseRebarImage && QTUtility.Path_RebarImage.Length > 0) {
                         if(bmpRebar == null) {
                             CreateRebarImage();
                         }
                         if(bmpRebar != null) {
-                            switch(Config.RebarStretchMode) {
+                            switch(Config.Skin.RebarStretchMode) {
                                 /* *case 1: { // Stretch on each band
                                     // TODO
                                     if(!fFilled) rebarController.DefWndProc(ref m);

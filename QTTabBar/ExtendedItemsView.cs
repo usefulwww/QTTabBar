@@ -207,12 +207,12 @@ namespace QTTabBarLib {
         }
 
         public override void HandleShiftKey() {
-            if(!Config.ShowPreviewsWithShift) {
+            if(!Config.Tips.ShowPreviewsWithShift) {
                 HideThumbnailTooltip(5);
             }
 
-            if(Config.ShowSubDirTips) {
-                if(Config.SubDirTipsWithShift) {
+            if(Config.Tips.ShowSubDirTips) {
+                if(Config.Tips.SubDirTipsWithShift) {
                     if(MouseIsOverListView()) {
                         // HandleShiftKey is called by a Hook callback, which apparently causes
                         // problems with automation.  Use PostMessage to update the SubDirTip later.
@@ -279,8 +279,8 @@ namespace QTTabBarLib {
             if(thumbnailTooltip != null && (thumbnailTooltip.IsShowing || fThumbnailPending)) {
                 return true;
             }
-            if(!fDragging && Config.ShowSubDirTips &&
-                    (!Config.SubDirTipsWithShift || (Control.ModifierKeys & Keys.Shift) != 0) &&
+            if(!fDragging && Config.Tips.ShowSubDirTips &&
+                    (!Config.Tips.SubDirTipsWithShift || (Control.ModifierKeys & Keys.Shift) != 0) &&
                     Control.MouseButtons == MouseButtons.None &&
                     hwndExplorer == PInvoke.GetForegroundWindow()) {
                 return true;

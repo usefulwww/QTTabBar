@@ -866,7 +866,7 @@ namespace QTTabBarLib.Interop {
                 if(flag) {
                     bool fSearchHidden = Config.SubDirTipsHidden;
                     bool fSearchSystem = Config.SubDirTipsSystem;
-                    bool flag4 = Config.SubDirTipsFiles;
+                    bool flag4 = Config.Tips.SubDirTipsFiles;
                     path = targetIfFolderLink.FullName;
                     using(FindFile file = new FindFile(path, fSearchHidden, fSearchSystem)) {
                         return (file.SubDirectoryExists() || (flag4 && file.SubFileExists()));

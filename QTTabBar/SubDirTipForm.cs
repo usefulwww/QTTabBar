@@ -265,7 +265,7 @@ namespace QTTabBarLib {
                     }
                     list.Sort(tsmiComparer);
                 }
-                if(!Config.SubDirTipsFiles) {
+                if(!Config.Tips.SubDirTipsFiles) {
                     return list;
                 }
                 int num2 = 0;
@@ -667,7 +667,7 @@ namespace QTTabBarLib {
             item.MouseUp += tsmi_MouseUp;
             bool fSearchHidden = Config.SubDirTipsHidden;
             bool fSearchSystem = Config.SubDirTipsSystem;
-            bool flag3 = Config.SubDirTipsFiles;
+            bool flag3 = Config.Tips.SubDirTipsFiles;
             bool flag4;
             using(FindFile file = new FindFile(item.TargetPath, fSearchHidden, fSearchSystem)) {
                 flag4 = file.SubDirectoryExists() || (flag3 && file.SubFileExists());
@@ -993,7 +993,7 @@ namespace QTTabBarLib {
 
         private bool ShowThumbnailTooltip(ToolStripMenuItemEx tsmi, bool fKey) {
             if((menuIsShowing && (draggingPath == null)) && !fSuppressThumbnail) {
-                if((!Config.SubDirTipsPreview ^ (ModifierKeys == Keys.Shift)) && ThumbnailTooltipForm.ExtIsSupported(Path.GetExtension(tsmi.ThumbnailPath).ToLower())) {
+                if((!Config.Tips.SubDirTipsPreview ^ (ModifierKeys == Keys.Shift)) && ThumbnailTooltipForm.ExtIsSupported(Path.GetExtension(tsmi.ThumbnailPath).ToLower())) {
                     if(iThumbnailIndex == tsmi.ThumbnailIndex) {
                         return false;
                     }
