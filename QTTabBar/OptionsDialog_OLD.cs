@@ -33,7 +33,7 @@ using OpenFileDialog = System.Windows.Forms.OpenFileDialog;
 using SaveFileDialog = System.Windows.Forms.SaveFileDialog;
 
 namespace QTTabBarLib {
-    internal sealed class OptionsDialog : Form {
+    internal sealed class OptionsDialog_OLD : Form {
         private static int[] arrSpecialFolderCSIDLs;
         private static string[] arrSpecialFolderDipNms;
         private Button btnActTxtClr;
@@ -264,7 +264,7 @@ namespace QTTabBarLib {
         private TreeView treeViewGroup;
         private TreeView treeViewUserApps;
 
-        public OptionsDialog(PluginManager pluginManager, FormMethodInvoker callBack) {
+        public OptionsDialog_OLD(PluginManager pluginManager, FormMethodInvoker callBack) {
             InitializeStaticFields();
             this.pluginManager = pluginManager;
             this.callBack = callBack;
@@ -3642,6 +3642,7 @@ namespace QTTabBarLib {
         }
 
         private void SaveSettings(bool fApply) {
+            /*
             bool flag = Config.HashFullPath;
             bool flag2 = Config.HashClearOnClose;
             bool flag3 = Config.ShowHashResult;
@@ -3948,7 +3949,7 @@ namespace QTTabBarLib {
             for(int j = 1; j < cmbImgExts.Items.Count; j++) {
                 list2.Add(cmbImgExts.Items[j].ToString());
             }
-            WriteRegistry(btnTabFont.Font, list.ToArray(), list2.ToArray());
+            WriteRegistry(btnTabFont.Font, list.ToArray(), list2.ToArray()); */
         }
 
         private void SaveShortcuts() {

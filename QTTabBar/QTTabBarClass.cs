@@ -114,7 +114,6 @@ namespace QTTabBarLib {
         private bool NowTabDragging;
         private bool NowTabsAddingRemoving;
         private bool NowTopMost;
-        private static OptionsDialog optionsDialog;
         private PluginManager pluginManager;
         internal RebarController rebarController;
         private ShellBrowserEx ShellBrowser;
@@ -127,9 +126,6 @@ namespace QTTabBarLib {
         private TabSwitchForm tabSwitcher;
         private Timer timerOnTab;
         private Timer timerSelectionChanged;
-        private static bool TMP_fPaintBG;
-        private static string TMP_strOldLangPath;
-        private static bool TMPfNowOptionDialogOpening;
         private ToolStripEx toolStrip;
         private ToolTip toolTipForDD;
         private NativeWindowController travelBtnController;
@@ -940,15 +936,7 @@ namespace QTTabBarLib {
                         dropTargetWrapper.Dispose();
                         dropTargetWrapper = null;
                     }
-                    if((optionsDialog != null) && fOptionDialogCreated) {
-                        fOptionDialogCreated = false;
-                        try {
-                            optionsDialog.Invoke(new MethodInvoker(odCallback_Close));
-                        }
-                        catch(Exception exception) {
-                            QTUtility2.MakeErrorLog(exception, "optionDialogDisposing");
-                        }
-                    }
+                    OptionsDialog.ForceClose();
                     if(tabSwitcher != null) {
                         tabSwitcher.Dispose();
                         tabSwitcher = null;
@@ -1161,7 +1149,7 @@ namespace QTTabBarLib {
 
         private void contextMenuSys_ItemClicked(object sender, ToolStripItemClickedEventArgs e) {
             if(e.ClickedItem == tsmiOption) {
-                OpenOptionsDialog();
+                OptionsDialog.Open();
             }
             else if(e.ClickedItem == tsmiCloseAllButCurrent) {
                 if(tabControl1.TabCount != 1) {
@@ -2807,7 +2795,7 @@ namespace QTTabBarLib {
                 }
                 if(imkey == QTUtility.ShortcutKeys[20]) {
                     if(!fRepeat) {
-                        OpenOptionsDialog();
+                        OptionsDialog.Open();
                     }
                     return true;
                 }
@@ -4293,37 +4281,7 @@ namespace QTTabBarLib {
             }
         }
 
-        private void odCallback_Activate() {
-            if(optionsDialog.WindowState == FormWindowState.Minimized) {
-                optionsDialog.WindowState = FormWindowState.Normal;
-            }
-            else {
-                optionsDialog.Activate();
-            }
-        }
-
-        private void odCallback_Close() {
-            optionsDialog.OwnerWindowClosing();
-        }
-
-        private void odCallback_DialogResult(object o) {
-            if(o is string) {
-                Invoke(new FormMethodInvoker(odCallback_PluginOption), new object[] { o });
-            }
-            else if(o is List<PluginAssembly>) {
-                Invoke(new FormMethodInvoker(odCallback_ManagePlugin), new object[] { o });
-            }
-            else {
-                DialogResult result = (DialogResult)o;
-                if(result != DialogResult.Yes) {
-                    optionsDialog = null;
-                }
-                if((result == DialogResult.OK) || (result == DialogResult.Yes)) {
-                    Invoke(new MethodInvoker(odCallback_RefreshOptions));
-                }
-            }
-        }
-
+        // TODO
         private void odCallback_ManagePlugin(object o) {
             lstTempAssemblies_Refresh = (List<PluginAssembly>)o;
             SyncTabBarBroadcastPlugin(Handle);
@@ -4355,17 +4313,6 @@ namespace QTTabBarLib {
                 }
             }
             PluginManager.SaveButtonOrder();
-        }
-
-        private void odCallback_PluginOption(object o) {
-            Plugin plugin;
-            if(pluginManager.TryGetPlugin((string)o, out plugin) && (plugin.Instance != null)) {
-                plugin.Instance.OnOption();
-            }
-        }
-
-        private void odCallback_RefreshOptions() {
-            RefreshOptions(tabControl1.AutoSubText, TMP_fPaintBG, TMP_strOldLangPath);
         }
 
         private void OnAwake() {
@@ -4728,34 +4675,6 @@ namespace QTTabBarLib {
             }
         }
 
-        private void OpenOptionsDialog() {
-            if(TMPfNowOptionDialogOpening) return;
-            if(optionsDialog == null) {
-                TMPfNowOptionDialogOpening = true;
-                TMP_fPaintBG = Config.Skin.UseRebarBGColor;
-                TMP_strOldLangPath = QTUtility.Path_LanguageFile;
-                fOptionDialogCreated = true;
-                Thread thread = new Thread(OpenOptionsDialogCore);
-                thread.SetApartmentState(ApartmentState.STA);
-                thread.Start();
-            }
-            else {
-                optionsDialog.Invoke(new MethodInvoker(odCallback_Activate));
-            }
-        }
-
-        private void OpenOptionsDialogCore() {
-            bool checkForIllegalCrossThreadCalls = CheckForIllegalCrossThreadCalls;
-            CheckForIllegalCrossThreadCalls = false;
-            using(optionsDialog = new OptionsDialog(pluginManager, odCallback_DialogResult)) {
-                TMPfNowOptionDialogOpening = false;
-                optionsDialog.ShowDialog();
-            }
-            optionsDialog = null;
-            fOptionDialogCreated = false;
-            CheckForIllegalCrossThreadCalls = checkForIllegalCrossThreadCalls;
-        }
-
         private void pluginitems_Click(object sender, EventArgs e) {
             ToolStripMenuItem item = (ToolStripMenuItem)sender;
             string name = item.Name;
@@ -4808,7 +4727,7 @@ namespace QTTabBarLib {
                     return;
 
                 case 6:
-                    OpenOptionsDialog();
+                    OptionsDialog.Open();
                     return;
 
                 case 7:
@@ -4985,7 +4904,7 @@ namespace QTTabBarLib {
             if(QTUtility.instanceManager.TryGetButtonBarHandle(ExplorerHandle, out ptr)) {
                 QTUtility2.SendCOPYDATASTRUCT(ptr, (IntPtr)10, "refreshText", IntPtr.Zero);
             }
-            OptionsDialog.RefreshTexts();
+            OptionsDialog_OLD.RefreshTexts();
         }
 
         [ComRegisterFunction]
@@ -6947,7 +6866,7 @@ namespace QTTabBarLib {
                             return true;
 
                         case Commands.OpenTabBarOptionDialog:
-                            tabBar.OpenOptionsDialog();
+                            OptionsDialog.Open();
                             return true;
 
                         case Commands.OpenButtonBarOptionDialog:

@@ -86,8 +86,8 @@
     <Compile Include="Interop\ShellConstants.cs" />
     <Compile Include="Interop\TBBUTTON.cs" />
     <Compile Include="Interop\TBBUTTONINFO.cs" />
-    <Compile Include="OptionsDialog2.xaml.cs">
-      <DependentUpon>OptionsDialog2.xaml</DependentUpon>
+    <Compile Include="OptionsDialog.xaml.cs">
+      <DependentUpon>OptionsDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="RebarController.cs" />
     <Compile Include="SafePtr.cs" />
@@ -233,7 +233,7 @@
     </Compile>
     <Compile Include="NativeWindowController.cs" />
     <Compile Include="NavigationCompleteCallback.cs" />
-    <Compile Include="OptionsDialog.cs">
+    <Compile Include="OptionsDialog_OLD.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="PathData.cs" />
@@ -357,7 +357,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="OptionsDialog2.xaml">
+    <Page Include="OptionsDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
