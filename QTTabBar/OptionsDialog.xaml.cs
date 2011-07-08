@@ -55,7 +55,9 @@ namespace QTTabBarLib {
 
         public static void ForceClose() {
             lock(typeof(OptionsDialog)) {
-                instance.Dispatcher.Invoke(new Action(() => instance.Close()));
+                if(instance != null) {
+                    instance.Dispatcher.Invoke(new Action(() => instance.Close()));
+                }
             }
         }
 
