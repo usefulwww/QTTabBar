@@ -720,7 +720,7 @@ namespace QTTabBarLib {
                     hwndTabBar = QTUtility2.ReadRegHandle("Handle", key);
                 }
                 if((hwndTabBar == IntPtr.Zero) || !PInvoke.IsWindow(hwndTabBar)) {                              // what?! --.
-                    hwndTabBar = QTUtility.instanceManager.CurrentHandle;                                       //          v
+                    hwndTabBar = InstanceManager.CurrentHandle;                                       //          v
                     if((idlw.Available && ((hwndTabBar == IntPtr.Zero) || !PInvoke.IsWindow(hwndTabBar))) && ShellBrowser.Navigate(idlw)  == 0) {
                         fOpened = true;
                         if(fNeedWait) {

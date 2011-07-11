@@ -34,6 +34,7 @@ namespace QTTabBarLib {
         private TextureBrush textureBrushRebar; 
         private Bitmap bmpRebar;
         private NativeWindowController rebarController;
+        private int DefaultRebarCOLORREF = -1;
 
         public IntPtr Handle { get; private set; }
 
@@ -76,8 +77,8 @@ namespace QTTabBarLib {
             rebarController.MessageCaptured += MessageCaptured;
 
             if(Config.Skin.UseRebarBGColor) {
-                if(QTUtility.DefaultRebarCOLORREF == -1) {
-                    QTUtility.DefaultRebarCOLORREF = (int)PInvoke.SendMessage(Handle, RB.GETBKCOLOR, IntPtr.Zero, IntPtr.Zero);
+                if(DefaultRebarCOLORREF == -1) {
+                    DefaultRebarCOLORREF = (int)PInvoke.SendMessage(Handle, RB.GETBKCOLOR, IntPtr.Zero, IntPtr.Zero);
                 }
                 int num2 = QTUtility2.MakeCOLORREF(QTUtility.RebarBGColor);
                 PInvoke.SendMessage(Handle, RB.SETBKCOLOR, IntPtr.Zero, (IntPtr)num2);
@@ -159,18 +160,20 @@ namespace QTTabBarLib {
         }
 
         public void RefreshBG(bool fRebarBGCanceled) {
-            if(fRebarBGCanceled && QTUtility.DefaultRebarCOLORREF != -1) {
-                // Restore the default BG color
-                PInvoke.SendMessage(Handle, RB.SETBKCOLOR, IntPtr.Zero, (IntPtr)QTUtility.DefaultRebarCOLORREF);
-            }
-            else if(Config.Skin.UseRebarBGColor) {
+            if(Config.Skin.UseRebarBGColor) {
                 // Save the default color and set the new one
-                if(QTUtility.DefaultRebarCOLORREF == -1) {
-                    QTUtility.DefaultRebarCOLORREF = (int)PInvoke.SendMessage(Handle, RB.GETBKCOLOR, IntPtr.Zero, IntPtr.Zero);
+                if(DefaultRebarCOLORREF == -1) {
+                    DefaultRebarCOLORREF = (int)PInvoke.SendMessage(Handle, RB.GETBKCOLOR, IntPtr.Zero, IntPtr.Zero);
                 }
                 int c = QTUtility2.MakeCOLORREF(QTUtility.RebarBGColor);
                 PInvoke.SendMessage(Handle, RB.SETBKCOLOR, IntPtr.Zero, (IntPtr)c);
             }
+            else if(DefaultRebarCOLORREF != -1) {
+                // Restore the default BG color
+                PInvoke.SendMessage(Handle, RB.SETBKCOLOR, IntPtr.Zero, (IntPtr)DefaultRebarCOLORREF);
+                DefaultRebarCOLORREF = -1;
+            }
+
             // Refresh the rebar
             IntPtr hWnd = PInvoke.GetWindowLongPtr(Handle, -8);
             if(hWnd != IntPtr.Zero) {

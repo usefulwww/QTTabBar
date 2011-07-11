@@ -135,6 +135,7 @@
                     </StackPanel>
                     <Label Content="Tweaks that can be used with either List View" Height="22" Padding="6,2,0,2" Background="#FFF0F2F5" BorderBrush="#FFE2E4E7" BorderThickness="0,0,0,1" FontWeight="Bold" Margin="0,14,0,9" Foreground="#FF3B3B3B" FontSize="11" />
                     <CheckBox Content="Display column headers in all view modes (Windows Vista/7)" Height="16" Padding="4,0,0,0" Margin="13,1,0,1" />
+                    <CheckBox Content="Use the standard filesystem view for Library folders (Windows 7)" Height="16" Padding="4,0,0,0" Margin="13,1,0,1" />
                     <CheckBox Content="Deselect file extension when renaming files (Windows XP)" Height="16" Padding="4,0,0,0" Margin="13,1,0,1" />
                     <CheckBox Content="Cycle selection with F2 while renaming" Height="16" Padding="4,0,0,0" Margin="13,1,0,1" />
                     <CheckBox Content="Wrap around when moving the selection with the arrow keys" Height="16" Padding="4,0,0,0" Margin="13,1,0,1" />

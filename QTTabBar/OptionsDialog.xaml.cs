@@ -30,6 +30,7 @@ namespace QTTabBarLib {
         private static Thread instanceThread;
 
         public static void Open() {
+            // TODO: Primary process only
             lock(typeof(OptionsDialog)) {
                 if(instance == null) {
                     instanceThread = new Thread(ThreadEntry);
@@ -70,6 +71,13 @@ namespace QTTabBarLib {
             }
             lock(typeof(OptionsDialog)) {
                 instance = null;
+            }
+        }
+
+        private static void UpdateOptions() {
+            QTTabBarClass tabBar = InstanceManager.CurrentTabBar;
+            if(tabBar != null) {
+                tabBar.Invoke(new Action(tabBar.RefreshOptions));
             }
         }
 

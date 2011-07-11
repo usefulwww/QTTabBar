@@ -39,7 +39,6 @@ namespace QTTabBarLib {
         internal static string CreateWindowTMPGroup = string.Empty;
         internal static string CreateWindowTMPPath = string.Empty;
         internal static Version CurrentVersion = new Version(1, 5, 0, 0);
-        internal static int DefaultRebarCOLORREF = -1;
         internal static Dictionary<string, int> dicGroupNamesAndKeys = new Dictionary<string, int>();
         internal static Dictionary<int, string> dicGroupShortcutKeys = new Dictionary<int, string>();
         internal static Dictionary<string, int[]> dicPluginShortcutKeys = new Dictionary<string, int[]>();
@@ -59,7 +58,6 @@ namespace QTTabBarLib {
         internal const string IMAGEKEY_NOEXT = "noext";
         internal const string IMAGEKEY_NOIMAGE = "noimage";
         internal static ImageList ImageListGlobal;
-        internal static InstanceManager instanceManager = new InstanceManager();
         internal static int InstancesCount;
         internal static readonly bool IsRTL;
         internal static readonly bool IsXP;
@@ -780,7 +778,7 @@ namespace QTTabBarLib {
         }
 
         public static void RegisterPrimaryInstance(IntPtr hwndExplr, QTTabBarClass tabBar) {
-            instanceManager.PushInstance(hwndExplr, tabBar);
+            InstanceManager.PushInstance(hwndExplr, tabBar);
             using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
                 QTUtility2.WriteRegHandle("Handle", key, tabBar.Handle);
             }

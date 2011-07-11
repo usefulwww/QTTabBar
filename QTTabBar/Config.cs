@@ -216,6 +216,13 @@ namespace QTTabBarLib {
             Lang
         }
 
+        static ConfigManager() {
+            foreach(ConfigCats cat in Enum.GetValues(typeof(ConfigCats))) {
+                SetDefaults(cat);
+            }
+            ReadConfig();
+        }
+
         public static void ReadConfig() {
             const string RegPath = @"Software\Quizo\QTTabBar\Config\"; // TODO
             foreach(var cls in typeof(Config).GetNestedTypes()) {

@@ -871,7 +871,7 @@ namespace QTTabBarLib {
                         hwndNotifyIconParent = IntPtr.Zero;
                         if(dicNotifyIcon.Count > 0) {
                             foreach(IntPtr ptr in dicNotifyIcon.Keys) {
-                                IntPtr tabBarHandle = QTUtility.instanceManager.GetTabBarHandle(ptr);
+                                IntPtr tabBarHandle = InstanceManager.GetTabBarHandle(ptr);
                                 if(1 == ((int)QTUtility2.SendCOPYDATASTRUCT(tabBarHandle, (IntPtr)0x30, "createNI", IntPtr.Zero))) {
                                     break;
                                 }
@@ -893,9 +893,9 @@ namespace QTTabBarLib {
                                 select item2.CurrentPath).ToArray();
                         QTUtility2.WriteRegBinary(list, "TabsLocked", key);
                         key.SetValue("StartUpGroups", QTUtility.StartUpGroupList.StringJoin(";"));
-                        if(QTUtility.instanceManager.RemoveInstance(ExplorerHandle, this)) {
-                            QTUtility.instanceManager.NextInstanceExists();
-                            QTUtility2.WriteRegHandle("Handle", key, QTUtility.instanceManager.CurrentHandle);
+                        if(InstanceManager.RemoveInstance(ExplorerHandle, this)) {
+                            InstanceManager.NextInstanceExists();
+                            QTUtility2.WriteRegHandle("Handle", key, InstanceManager.CurrentHandle);
                         }
                         if(Config.SaveTransparency) {
                             if(0x80000 != ((int)PInvoke.Ptr_OP_AND(PInvoke.GetWindowLongPtr(ExplorerHandle, -20), 0x80000))) {
@@ -1137,7 +1137,7 @@ namespace QTTabBarLib {
             IntPtr tag = (IntPtr)e.ClickedItem.Tag;
             int index = ((ToolStripMenuItem)sender).DropDownItems.IndexOf(e.ClickedItem);
             ShowTaskbarItem(tag, true);
-            QTTabBarClass tabBar = QTUtility.instanceManager.GetTabBar(tag);
+            QTTabBarClass tabBar = InstanceManager.GetTabBar(tag);
             if((tabBar != null) && (index > -1)) {
                 tabBar.Invoke(new NavigationCompleteCallback(contextMenuNotifyIcon_SubItems_SelectTab), new object[] { tabBar, (IntPtr)index });
             }
@@ -1471,7 +1471,7 @@ namespace QTTabBarLib {
                 PInvoke.GetWindowText(ptr, lpString, lpString.Capacity);
                 ToolStripMenuItem item = new ToolStripMenuItem(lpString.ToString());
                 item.Tag = ptr;
-                QTTabBarClass tabBar = QTUtility.instanceManager.GetTabBar(ptr);
+                QTTabBarClass tabBar = InstanceManager.GetTabBar(ptr);
                 if(tabBar != null) {
                     string currentAddress = tabBar.CurrentAddress;
                     if(currentAddress.Length > 0) {
@@ -1775,7 +1775,7 @@ namespace QTTabBarLib {
                     return;
                 }
                 if(QTUtility.InstancesCount > 1) {
-                    if((ModifierKeys == Keys.Control) || !QTUtility.instanceManager.NextInstanceExists()) {
+                    if((ModifierKeys == Keys.Control) || !InstanceManager.NextInstanceExists()) {
                         InitializeOpenedWindow();
                         AddStartUpTabs(string.Empty, path);
                     }
@@ -2557,7 +2557,7 @@ namespace QTTabBarLib {
 
         private void HandleF5() {
             IntPtr ptr;
-            if(QTUtility.instanceManager.TryGetButtonBarHandle(ExplorerHandle, out ptr)) {
+            if(InstanceManager.TryGetButtonBarHandle(ExplorerHandle, out ptr)) {
                 QTUtility2.SendCOPYDATASTRUCT(ptr, (IntPtr)9, "browser_refresh", IntPtr.Zero);
             }
         }
@@ -2827,7 +2827,7 @@ namespace QTTabBarLib {
                         else if(imkey == QTUtility.ShortcutKeys[0x19]) {
                             num7 = 5;
                         }
-                        if(QTUtility.instanceManager.TryGetButtonBarHandle(ExplorerHandle, out ptr2)) {
+                        if(InstanceManager.TryGetButtonBarHandle(ExplorerHandle, out ptr2)) {
                             return (1 == ((int)QTUtility2.SendCOPYDATASTRUCT(ptr2, (IntPtr)4, "fromTab", (IntPtr)num7)));
                         }
                     }
@@ -2892,7 +2892,7 @@ namespace QTTabBarLib {
                                 num11 = (byte)(num11 - 12);
                             }
                             PInvoke.SetLayeredWindowAttributes(ExplorerHandle, 0, num11, 2);
-                            if(QTUtility.instanceManager.TryGetButtonBarHandle(ExplorerHandle, out ptr3)) {
+                            if(InstanceManager.TryGetButtonBarHandle(ExplorerHandle, out ptr3)) {
                                 QTUtility2.SendCOPYDATASTRUCT(ptr3, (IntPtr)7, "track", (IntPtr)num11);
                             }
                             if(num11 == 0xff) {
@@ -2913,7 +2913,7 @@ namespace QTTabBarLib {
                     }
                     else if(imkey == QTUtility.ShortcutKeys[0x25]) {
                         IntPtr ptr4;
-                        if(QTUtility.instanceManager.TryGetButtonBarHandle(ExplorerHandle, out ptr4) && PInvoke.IsWindow(ptr4)) {
+                        if(InstanceManager.TryGetButtonBarHandle(ExplorerHandle, out ptr4) && PInvoke.IsWindow(ptr4)) {
                             QTUtility2.SendCOPYDATASTRUCT(ptr4, (IntPtr)8, null, IntPtr.Zero);
                             return true;
                         }
@@ -3044,7 +3044,7 @@ namespace QTTabBarLib {
                     return true;
                 }
                 flag = (control == tabControl1) || (handle == Handle);
-                if(!flag && QTUtility.instanceManager.TryGetButtonBarHandle(ExplorerHandle, out ptr2)) {
+                if(!flag && InstanceManager.TryGetButtonBarHandle(ExplorerHandle, out ptr2)) {
                     flag = (handle == ptr2) || (handle == listView.Handle); // TODO make sure this didn't break
                 }
             }
@@ -3663,7 +3663,7 @@ namespace QTTabBarLib {
 
         private void ListView_ItemCountChanged(int count) {
             IntPtr ptr;
-            if(QTUtility.instanceManager.TryGetButtonBarHandle(ExplorerHandle, out ptr)) {
+            if(InstanceManager.TryGetButtonBarHandle(ExplorerHandle, out ptr)) {
                 QTUtility2.SendCOPYDATASTRUCT(ptr, (IntPtr)14, null, IntPtr.Zero);
             }
             return;
@@ -3961,7 +3961,7 @@ namespace QTTabBarLib {
 
         private void MergeAllWindows() {
             List<IntPtr> list = new List<IntPtr>();
-            foreach(IntPtr ptr in QTUtility.instanceManager.ExplorerHandles()) {
+            foreach(IntPtr ptr in InstanceManager.ExplorerHandles()) {
                 if(ptr != ExplorerHandle) {
                     list.Add(ptr);
                 }
@@ -3969,7 +3969,7 @@ namespace QTTabBarLib {
             try {
                 tabControl1.SetRedraw(false);
                 foreach(IntPtr ptr2 in list) {
-                    QTTabBarClass tabBar = QTUtility.instanceManager.GetTabBar(ptr2);
+                    QTTabBarClass tabBar = InstanceManager.GetTabBar(ptr2);
                     if(tabBar != null) {
                         foreach(QTabItem item in tabBar.tabControl1.TabPages) {
                             item.Clone(true).ResetOwner(tabControl1);
@@ -4098,7 +4098,7 @@ namespace QTTabBarLib {
         }
 
         private static void NavigateOnOldWindow(string path) {
-            QTUtility2.SendCOPYDATASTRUCT(QTUtility.instanceManager.CurrentHandle, new IntPtr(0x10), path, IntPtr.Zero);
+            QTUtility2.SendCOPYDATASTRUCT(InstanceManager.CurrentHandle, new IntPtr(0x10), path, IntPtr.Zero);
         }
 
         private void NavigateToFirstOrLast(bool fBack) {
@@ -4789,7 +4789,12 @@ namespace QTTabBarLib {
             }
         }
 
-        internal void RefreshOptions(bool fAutoSubText, bool fPaintBG, string oldPath_LangFile) {
+        internal void RefreshOptions() {
+            // TODO
+            bool fAutoSubText = false;
+            bool fPaintBG = false;
+            string oldPath_LangFile = "";
+
             if(QTUtility.Path_LanguageFile != oldPath_LangFile) {
                 if(File.Exists(QTUtility.Path_LanguageFile)) {
                     QTUtility.TextResourcesDic = QTUtility.ReadLanguageFile(QTUtility.Path_LanguageFile);
@@ -4804,9 +4809,6 @@ namespace QTTabBarLib {
             bool fRebarBGCanceled = fPaintBG && !Config.Skin.UseRebarBGColor;
             RefreshTabBar(fRebarBGCanceled);
             SyncTabBarBroadcast(Handle, fRebarBGCanceled);
-            if(fRebarBGCanceled) {
-                QTUtility.DefaultRebarCOLORREF = -1;
-            }
             QTUtility.ClosedTabHistoryList.MaxCapacity = QTUtility.MaxCount_History;
             QTUtility.ExecutedPathsList.MaxCapacity = QTUtility.MaxCount_Executed;
             SyncButtonBarBroadCast(0x100);
@@ -4901,7 +4903,7 @@ namespace QTTabBarLib {
 
         private void RefreshTexts() {
             IntPtr ptr;
-            if(QTUtility.instanceManager.TryGetButtonBarHandle(ExplorerHandle, out ptr)) {
+            if(InstanceManager.TryGetButtonBarHandle(ExplorerHandle, out ptr)) {
                 QTUtility2.SendCOPYDATASTRUCT(ptr, (IntPtr)10, "refreshText", IntPtr.Zero);
             }
             OptionsDialog_OLD.RefreshTexts();
@@ -5497,7 +5499,7 @@ namespace QTTabBarLib {
                 num += 8;
             }
             try {
-                foreach(IntPtr ptr in QTUtility.instanceManager.ButtonBarHandles().Where(PInvoke.IsWindow)) {
+                foreach(IntPtr ptr in InstanceManager.ButtonBarHandles().Where(PInvoke.IsWindow)) {
                     QTUtility2.SendCOPYDATASTRUCT(ptr, (IntPtr)1, "fromTabBC", (IntPtr)num);
                 }
             }
@@ -5509,7 +5511,7 @@ namespace QTTabBarLib {
         private bool SyncButtonBarCurrent(int mask) {
             IntPtr ptr;
             bool flag = false;
-            if(QTUtility.instanceManager.TryGetButtonBarHandle(ExplorerHandle, out ptr)) {
+            if(InstanceManager.TryGetButtonBarHandle(ExplorerHandle, out ptr)) {
                 int num = mask << 0x10;
                 if(mask != 0x100) {
                     int index = tabControl1.TabPages.IndexOf(CurrentTab);
@@ -5550,7 +5552,7 @@ namespace QTTabBarLib {
 
         private static void SyncTabBarBroadcast(IntPtr hwndThis, bool fRebarBGCanceled) {
             try {
-                foreach(IntPtr ptr in QTUtility.instanceManager.TabBarHandles().Where(PInvoke.IsWindow)) {
+                foreach(IntPtr ptr in InstanceManager.TabBarHandles().Where(PInvoke.IsWindow)) {
                     if(ptr != hwndThis) {
                         QTUtility2.SendCOPYDATASTRUCT(ptr, (IntPtr)0x11, "refresh", fRebarBGCanceled ? ((IntPtr)1) : IntPtr.Zero);
                     }
@@ -5563,7 +5565,7 @@ namespace QTTabBarLib {
 
         private static void SyncTabBarBroadcastPlugin(IntPtr hwndThis) {
             try {
-                foreach(IntPtr ptr in QTUtility.instanceManager.TabBarHandles()) {
+                foreach(IntPtr ptr in InstanceManager.TabBarHandles()) {
                     if(ptr != hwndThis) {
                         QTUtility2.SendCOPYDATASTRUCT(ptr, (IntPtr)0x12, "refreshPlugin", IntPtr.Zero);
                     }
@@ -5752,7 +5754,7 @@ namespace QTTabBarLib {
                     else {
                         RECT rect2;
                         IntPtr ptr;
-                        if(QTUtility.instanceManager.TryGetButtonBarHandle(ExplorerHandle, out ptr) && PInvoke.IsWindowVisible(ptr)) {
+                        if(InstanceManager.TryGetButtonBarHandle(ExplorerHandle, out ptr) && PInvoke.IsWindowVisible(ptr)) {
                             PInvoke.GetWindowRect(ptr, out rect2);
                             if(PInvoke.PtInRect(ref rect2, pt)) {
                                 flag = true;
@@ -6443,7 +6445,7 @@ namespace QTTabBarLib {
                                 if((Config.Window.TrayOnClose && (notifyIcon != null)) && (dicNotifyIcon != null)) {
                                     Dictionary<IntPtr, int> dictionary = new Dictionary<IntPtr, int>(dicNotifyIcon);
                                     foreach(IntPtr ptr in dictionary.Keys) {
-                                        QTTabBarClass tabBar = QTUtility.instanceManager.GetTabBar(ptr);
+                                        QTTabBarClass tabBar = InstanceManager.GetTabBar(ptr);
                                         if((tabBar != null) && (tabBar.CurrentAddress == str)) {
                                             ShowTaskbarItem(ptr, true);
                                             return;
@@ -6870,7 +6872,7 @@ namespace QTTabBarLib {
                             return true;
 
                         case Commands.OpenButtonBarOptionDialog:
-                            if(!QTUtility.instanceManager.TryGetButtonBarHandle(tabBar.ExplorerHandle, out ptr)) {
+                            if(!InstanceManager.TryGetButtonBarHandle(tabBar.ExplorerHandle, out ptr)) {
                                 break;
                             }
                             QTUtility2.SendCOPYDATASTRUCT(ptr, (IntPtr)12, "showop", IntPtr.Zero);
@@ -6880,7 +6882,7 @@ namespace QTTabBarLib {
                             return tabBar.ShellBrowser.IsFolderTreeVisible();
 
                         case Commands.IsButtonBarVisible:
-                            return QTUtility.instanceManager.TryGetButtonBarHandle(tabBar.ExplorerHandle, out ptr);
+                            return InstanceManager.TryGetButtonBarHandle(tabBar.ExplorerHandle, out ptr);
 
                         case Commands.ShowFolderTree:
                             if(!QTUtility.IsXP || !(arg is bool)) {
@@ -6890,7 +6892,7 @@ namespace QTTabBarLib {
                             return true;
 
                         case Commands.ShowButtonBar:
-                            if(!QTUtility.instanceManager.TryGetButtonBarHandle(tabBar.ExplorerHandle, out ptr)) {
+                            if(!InstanceManager.TryGetButtonBarHandle(tabBar.ExplorerHandle, out ptr)) {
                             }
                             break;
 
@@ -6929,7 +6931,7 @@ namespace QTTabBarLib {
                             break;
 
                         case Commands.SetSearchBoxStr:
-                            if(((arg == null) || !(arg is string)) || !QTUtility.instanceManager.TryGetButtonBarHandle(tabBar.ExplorerHandle, out ptr)) {
+                            if(((arg == null) || !(arg is string)) || !InstanceManager.TryGetButtonBarHandle(tabBar.ExplorerHandle, out ptr)) {
                                 break;
                             }
                             return (IntPtr.Zero == QTUtility2.SendCOPYDATASTRUCT(ptr, (IntPtr)0x10, (string)arg, IntPtr.Zero));
@@ -7168,7 +7170,7 @@ namespace QTTabBarLib {
             public void UpdateItem(IBarButton barItem, bool fEnabled, bool fRefreshImage) {
                 IntPtr ptr;
                 string strMsg = pluginManager.InstanceToFullName(barItem, false);
-                if((strMsg.Length > 0) && QTUtility.instanceManager.TryGetButtonBarHandle(tabBar.ExplorerHandle, out ptr)) {
+                if((strMsg.Length > 0) && InstanceManager.TryGetButtonBarHandle(tabBar.ExplorerHandle, out ptr)) {
                     int num = 0;
                     if(fEnabled) {
                         num |= 1;

@@ -307,7 +307,7 @@ namespace QTTabBarLib {
             DropDownMenuReorderable reorderable = (DropDownMenuReorderable)sender;
             string str = TrackGroupContextMenu(e.ClickedItem.Text, e.IsKey ? e.Point : Control.MousePosition, reorderable.Handle);
             if(!string.IsNullOrEmpty(str)) {
-                QTUtility2.SendCOPYDATASTRUCT(QTUtility.instanceManager.CurrentHandle, (IntPtr)0xf30, str, IntPtr.Zero);
+                QTUtility2.SendCOPYDATASTRUCT(InstanceManager.CurrentHandle, (IntPtr)0xf30, str, IntPtr.Zero);
             }
             else {
                 e.HRESULT = 0xfffd;

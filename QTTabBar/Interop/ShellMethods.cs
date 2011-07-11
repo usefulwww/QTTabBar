@@ -702,7 +702,7 @@ namespace QTTabBarLib.Interop {
                             try {
                                 string directoryName = Path.GetDirectoryName(idlw.Path);
                                 if(Directory.Exists(directoryName)) {
-                                    IntPtr currentHandle = QTUtility.instanceManager.CurrentHandle;
+                                    IntPtr currentHandle = InstanceManager.CurrentHandle;
                                     if(PInvoke.IsWindow(currentHandle)) {
                                         QTUtility2.SendCOPYDATASTRUCT(currentHandle, (IntPtr)0x10, directoryName, IntPtr.Zero);
                                         num4 = 0xfffe;

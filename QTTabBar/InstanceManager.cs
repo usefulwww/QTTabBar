@@ -22,13 +22,13 @@ using System.Threading;
 using QTTabBarLib.Interop;
 
 namespace QTTabBarLib {
-    internal sealed class InstanceManager {
-        private Dictionary<IntPtr, IntPtr> dicBtnBarHandle = new Dictionary<IntPtr, IntPtr>();
-        private ReaderWriterLock rwLockBtnBar = new ReaderWriterLock();
-        private ReaderWriterLock rwLockTabBar = new ReaderWriterLock();
-        private StackDictionary<IntPtr, InstancePair> sdInstancePair = new StackDictionary<IntPtr, InstancePair>();
+    internal static class InstanceManager {
+        private static Dictionary<IntPtr, IntPtr> dicBtnBarHandle = new Dictionary<IntPtr, IntPtr>();
+        private static ReaderWriterLock rwLockBtnBar = new ReaderWriterLock();
+        private static ReaderWriterLock rwLockTabBar = new ReaderWriterLock();
+        private static StackDictionary<IntPtr, InstancePair> sdInstancePair = new StackDictionary<IntPtr, InstancePair>();
 
-        public void AddButtonBarHandle(IntPtr hwndExplr, IntPtr hwndBtnBar) {
+        public static void AddButtonBarHandle(IntPtr hwndExplr, IntPtr hwndBtnBar) {
             try {
                 rwLockBtnBar.AcquireWriterLock(-1);
                 dicBtnBarHandle[hwndExplr] = hwndBtnBar;
@@ -38,11 +38,7 @@ namespace QTTabBarLib {
             }
         }
 
-        public IEnumerable<IntPtr> ButtonBarHandles() {
-            //<ButtonBarHandles>d__a _a = new <ButtonBarHandles>d__a(-2);
-            //_a.<>4__this = this;
-            //return _a;
-
+        public static IEnumerable<IntPtr> ButtonBarHandles() {
             try {
                 rwLockBtnBar.AcquireReaderLock(-1);
                 foreach(IntPtr hwndBB in dicBtnBarHandle.Values) {
@@ -54,11 +50,7 @@ namespace QTTabBarLib {
             }
         }
 
-        public IEnumerable<IntPtr> ExplorerHandles() {
-            //<ExplorerHandles>d__5 d__ = new <ExplorerHandles>d__5(-2);
-            //d__.<>4__this = this;
-            //return d__;
-
+        public static IEnumerable<IntPtr> ExplorerHandles() {
             try {
                 rwLockTabBar.AcquireReaderLock(-1);
                 foreach(IntPtr hwnd in sdInstancePair.Keys) {
@@ -70,7 +62,7 @@ namespace QTTabBarLib {
             }
         }
 
-        public QTTabBarClass GetTabBar(IntPtr hwndExplr) {
+        public static QTTabBarClass GetTabBar(IntPtr hwndExplr) {
             QTTabBarClass class2;
             try {
                 InstancePair pair;
@@ -86,7 +78,7 @@ namespace QTTabBarLib {
             return class2;
         }
 
-        public IntPtr GetTabBarHandle(IntPtr hwndExplr) {
+        public static IntPtr GetTabBarHandle(IntPtr hwndExplr) {
             IntPtr zero;
             try {
                 InstancePair pair;
@@ -102,7 +94,7 @@ namespace QTTabBarLib {
             return zero;
         }
 
-        public bool NextInstanceExists() {
+        public static bool NextInstanceExists() {
             try {
                 rwLockTabBar.AcquireWriterLock(-1);
                 while(sdInstancePair.Count > 0) {
@@ -120,7 +112,7 @@ namespace QTTabBarLib {
             return false;
         }
 
-        public void PushInstance(IntPtr hwndExplr, QTTabBarClass tabBar) {
+        public static void PushInstance(IntPtr hwndExplr, QTTabBarClass tabBar) {
             try {
                 rwLockTabBar.AcquireWriterLock(-1);
                 sdInstancePair.Push(hwndExplr, new InstancePair(tabBar, tabBar.Handle));
@@ -130,7 +122,7 @@ namespace QTTabBarLib {
             }
         }
 
-        public void RemoveButtonBarHandle(IntPtr hwndExplr) {
+        public static void RemoveButtonBarHandle(IntPtr hwndExplr) {
             try {
                 rwLockBtnBar.AcquireWriterLock(-1);
                 dicBtnBarHandle.Remove(hwndExplr);
@@ -140,7 +132,7 @@ namespace QTTabBarLib {
             }
         }
 
-        public bool RemoveInstance(IntPtr hwndExplr, QTTabBarClass tabBar) {
+        public static bool RemoveInstance(IntPtr hwndExplr, QTTabBarClass tabBar) {
             bool flag2;
             try {
                 rwLockTabBar.AcquireWriterLock(-1);
@@ -154,11 +146,7 @@ namespace QTTabBarLib {
             return flag2;
         }
 
-        public IEnumerable<IntPtr> TabBarHandles() {
-            //<TabBarHandles>d__0 d__ = new <TabBarHandles>d__0(-2);
-            //d__.<>4__this = this;
-            //return d__;
-
+        public static IEnumerable<IntPtr> TabBarHandles() {
             try {
                 rwLockTabBar.AcquireReaderLock(-1);
                 foreach(InstancePair ip in sdInstancePair.Values) {
@@ -170,7 +158,7 @@ namespace QTTabBarLib {
             }
         }
 
-        public bool TryGetButtonBarHandle(IntPtr hwndExplr, out IntPtr hwndButtonBar) {
+        public static bool TryGetButtonBarHandle(IntPtr hwndExplr, out IntPtr hwndButtonBar) {
             try {
                 IntPtr ptr;
                 rwLockBtnBar.AcquireReaderLock(-1);
@@ -186,7 +174,7 @@ namespace QTTabBarLib {
             return false;
         }
 
-        public IntPtr CurrentHandle {
+        public static IntPtr CurrentHandle {
             get {
                 IntPtr zero;
                 try {
@@ -206,7 +194,7 @@ namespace QTTabBarLib {
             }
         }
 
-        public QTTabBarClass CurrentTabBar {
+        public static QTTabBarClass CurrentTabBar {
             get {
                 QTTabBarClass class2;
                 try {
@@ -223,415 +211,7 @@ namespace QTTabBarLib {
             }
         }
 
-#if false
-    [CompilerGenerated]
-    private sealed class <ButtonBarHandles>d__a : IEnumerator<IntPtr>, IEnumerable<IntPtr>, IEnumerable, IEnumerator, IDisposable
-    {
-      private int <>1__state;
-      private IntPtr <>2__current;
-      public InstanceManager <>4__this;
-      public Dictionary<IntPtr, IntPtr>.ValueCollection.Enumerator <>7__wrapc;
-      public IntPtr <hwndBB>5__b;
-      
-      [DebuggerHidden]
-      public <ButtonBarHandles>d__a(int <>1__state)
-      {
-        this.<>1__state = <>1__state;
-      }
-      
-      private bool MoveNext()
-      {
-        try
-        {
-          switch (this.<>1__state)
-          {
-            case 0:
-              this.<>1__state = -1;
-              this.<>1__state = 1;
-              this.<>4__this.rwLockBtnBar.AcquireReaderLock(-1);
-              this.<>7__wrapc = this.<>4__this.dicBtnBarHandle.Values.GetEnumerator();
-              this.<>1__state = 2;
-              while (this.<>7__wrapc.MoveNext())
-              {
-                this.<hwndBB>5__b = this.<>7__wrapc.Current;
-                this.<>2__current = this.<hwndBB>5__b;
-                this.<>1__state = 3;
-                return true;
-              Label_007F:
-                this.<>1__state = 2;
-              }
-              this.<>1__state = 1;
-              this.<>7__wrapc.Dispose();
-              this.<>1__state = -1;
-              this.<>4__this.rwLockBtnBar.ReleaseReaderLock();
-              break;
-            
-            case 3:
-              goto Label_007F;
-          }
-          return false;
-        }
-        fault
-        {
-          ((IDisposable) this).Dispose();
-        }
-      }
-      
-      [DebuggerHidden]
-      IEnumerator<IntPtr> IEnumerable<IntPtr>.GetEnumerator()
-      {
-        if (Interlocked.CompareExchange(ref this.<>1__state, 0, -2) == -2)
-        {
-          return this;
-        }
-        InstanceManager.<ButtonBarHandles>d__a _a = new InstanceManager.<ButtonBarHandles>d__a(0);
-        _a.<>4__this = this.<>4__this;
-        return _a;
-      }
-      
-      [DebuggerHidden]
-      IEnumerator IEnumerable.GetEnumerator()
-      {
-        return this.System.Collections.Generic.IEnumerable<System.IntPtr>.GetEnumerator();
-      }
-      
-      [DebuggerHidden]
-      void IEnumerator.Reset()
-      {
-        throw new NotSupportedException();
-      }
-      
-      void IDisposable.Dispose()
-      {
-        switch (this.<>1__state)
-        {
-          case 1:
-          case 2:
-          case 3:
-            try
-            {
-              switch (this.<>1__state)
-              {
-                case 2:
-                case 3:
-                  try
-                  {
-                  }
-                  finally
-                  {
-                    this.<>1__state = 1;
-                    this.<>7__wrapc.Dispose();
-                  }
-                  break;
-              }
-            }
-            finally
-            {
-              this.<>1__state = -1;
-              this.<>4__this.rwLockBtnBar.ReleaseReaderLock();
-            }
-            break;
-          
-          default:
-            return;
-        }
-      }
-      
-      IntPtr IEnumerator<IntPtr>.Current
-      {
-        [DebuggerHidden]
-        get
-        {
-          return this.<>2__current;
-        }
-      }
-      
-      object IEnumerator.Current
-      {
-        [DebuggerHidden]
-        get
-        {
-          return this.<>2__current;
-        }
-      }
-    }
-    
-    [CompilerGenerated]
-    private sealed class <ExplorerHandles>d__5 : IEnumerator<IntPtr>, IEnumerable<IntPtr>, IEnumerable, IEnumerator, IDisposable
-    {
-      private int <>1__state;
-      private IntPtr <>2__current;
-      public InstanceManager <>4__this;
-      public IEnumerator<IntPtr> <>7__wrap7;
-      public IntPtr <hwnd>5__6;
-      
-      [DebuggerHidden]
-      public <ExplorerHandles>d__5(int <>1__state)
-      {
-        this.<>1__state = <>1__state;
-      }
-      
-      private bool MoveNext()
-      {
-        try
-        {
-          switch (this.<>1__state)
-          {
-            case 0:
-              this.<>1__state = -1;
-              this.<>1__state = 1;
-              this.<>4__this.rwLockTabBar.AcquireReaderLock(-1);
-              this.<>7__wrap7 = this.<>4__this.sdInstancePair.Keys.GetEnumerator();
-              this.<>1__state = 2;
-              while (this.<>7__wrap7.MoveNext())
-              {
-                this.<hwnd>5__6 = this.<>7__wrap7.Current;
-                this.<>2__current = this.<hwnd>5__6;
-                this.<>1__state = 3;
-                return true;
-              Label_007F:
-                this.<>1__state = 2;
-              }
-              this.<>1__state = 1;
-              if (this.<>7__wrap7 != null)
-              {
-                this.<>7__wrap7.Dispose();
-              }
-              this.<>1__state = -1;
-              this.<>4__this.rwLockTabBar.ReleaseReaderLock();
-              break;
-            
-            case 3:
-              goto Label_007F;
-          }
-          return false;
-        }
-        fault
-        {
-          ((IDisposable) this).Dispose();
-        }
-      }
-      
-      [DebuggerHidden]
-      IEnumerator<IntPtr> IEnumerable<IntPtr>.GetEnumerator()
-      {
-        if (Interlocked.CompareExchange(ref this.<>1__state, 0, -2) == -2)
-        {
-          return this;
-        }
-        InstanceManager.<ExplorerHandles>d__5 d__ = new InstanceManager.<ExplorerHandles>d__5(0);
-        d__.<>4__this = this.<>4__this;
-        return d__;
-      }
-      
-      [DebuggerHidden]
-      IEnumerator IEnumerable.GetEnumerator()
-      {
-        return this.System.Collections.Generic.IEnumerable<System.IntPtr>.GetEnumerator();
-      }
-      
-      [DebuggerHidden]
-      void IEnumerator.Reset()
-      {
-        throw new NotSupportedException();
-      }
-      
-      void IDisposable.Dispose()
-      {
-        switch (this.<>1__state)
-        {
-          case 1:
-          case 2:
-          case 3:
-            try
-            {
-              switch (this.<>1__state)
-              {
-                case 2:
-                case 3:
-                  try
-                  {
-                  }
-                  finally
-                  {
-                    this.<>1__state = 1;
-                    if (this.<>7__wrap7 != null)
-                    {
-                      this.<>7__wrap7.Dispose();
-                    }
-                  }
-                  break;
-              }
-            }
-            finally
-            {
-              this.<>1__state = -1;
-              this.<>4__this.rwLockTabBar.ReleaseReaderLock();
-            }
-            break;
-          
-          default:
-            return;
-        }
-      }
-      
-      IntPtr IEnumerator<IntPtr>.Current
-      {
-        [DebuggerHidden]
-        get
-        {
-          return this.<>2__current;
-        }
-      }
-      
-      object IEnumerator.Current
-      {
-        [DebuggerHidden]
-        get
-        {
-          return this.<>2__current;
-        }
-      }
-    }
-    
-    [CompilerGenerated]
-    private sealed class <TabBarHandles>d__0 : IEnumerator<IntPtr>, IEnumerable<IntPtr>, IEnumerable, IEnumerator, IDisposable
-    {
-      private int <>1__state;
-      private IntPtr <>2__current;
-      public InstanceManager <>4__this;
-      public IEnumerator<InstanceManager.InstancePair> <>7__wrap2;
-      public InstanceManager.InstancePair <ip>5__1;
-      
-      [DebuggerHidden]
-      public <TabBarHandles>d__0(int <>1__state)
-      {
-        this.<>1__state = <>1__state;
-      }
-      
-      private bool MoveNext()
-      {
-        try
-        {
-          switch (this.<>1__state)
-          {
-            case 0:
-              this.<>1__state = -1;
-              this.<>1__state = 1;
-              this.<>4__this.rwLockTabBar.AcquireReaderLock(-1);
-              this.<>7__wrap2 = this.<>4__this.sdInstancePair.Values.GetEnumerator();
-              this.<>1__state = 2;
-              while (this.<>7__wrap2.MoveNext())
-              {
-                this.<ip>5__1 = this.<>7__wrap2.Current;
-                this.<>2__current = this.<ip>5__1.hwnd;
-                this.<>1__state = 3;
-                return true;
-              Label_0084:
-                this.<>1__state = 2;
-              }
-              this.<>1__state = 1;
-              if (this.<>7__wrap2 != null)
-              {
-                this.<>7__wrap2.Dispose();
-              }
-              this.<>1__state = -1;
-              this.<>4__this.rwLockTabBar.ReleaseReaderLock();
-              break;
-            
-            case 3:
-              goto Label_0084;
-          }
-          return false;
-        }
-        fault
-        {
-          ((IDisposable) this).Dispose();
-        }
-      }
-      
-      [DebuggerHidden]
-      IEnumerator<IntPtr> IEnumerable<IntPtr>.GetEnumerator()
-      {
-        if (Interlocked.CompareExchange(ref this.<>1__state, 0, -2) == -2)
-        {
-          return this;
-        }
-        InstanceManager.<TabBarHandles>d__0 d__ = new InstanceManager.<TabBarHandles>d__0(0);
-        d__.<>4__this = this.<>4__this;
-        return d__;
-      }
-      
-      [DebuggerHidden]
-      IEnumerator IEnumerable.GetEnumerator()
-      {
-        return this.System.Collections.Generic.IEnumerable<System.IntPtr>.GetEnumerator();
-      }
-      
-      [DebuggerHidden]
-      void IEnumerator.Reset()
-      {
-        throw new NotSupportedException();
-      }
-      
-      void IDisposable.Dispose()
-      {
-        switch (this.<>1__state)
-        {
-          case 1:
-          case 2:
-          case 3:
-            try
-            {
-              switch (this.<>1__state)
-              {
-                case 2:
-                case 3:
-                  try
-                  {
-                  }
-                  finally
-                  {
-                    this.<>1__state = 1;
-                    if (this.<>7__wrap2 != null)
-                    {
-                      this.<>7__wrap2.Dispose();
-                    }
-                  }
-                  break;
-              }
-            }
-            finally
-            {
-              this.<>1__state = -1;
-              this.<>4__this.rwLockTabBar.ReleaseReaderLock();
-            }
-            break;
-          
-          default:
-            return;
-        }
-      }
-      
-      IntPtr IEnumerator<IntPtr>.Current
-      {
-        [DebuggerHidden]
-        get
-        {
-          return this.<>2__current;
-        }
-      }
-      
-      object IEnumerator.Current
-      {
-        [DebuggerHidden]
-        get
-        {
-          return this.<>2__current;
-        }
-      }
-    }
-#endif
+        public delegate void TabBarCommand(QTTabBarClass tabBar);
 
         [StructLayout(LayoutKind.Sequential)]
         private struct InstancePair {
