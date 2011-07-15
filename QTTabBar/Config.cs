@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Reflection;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Windows.Forms;
@@ -55,116 +56,255 @@ namespace QTTabBarLib {
         public MouseTargets target;
     }
 
-    public static class Config {
+    [Serializable]
+    public class Config {
 
-       public static class Window {
-            public static bool CaptureNewWindows        { get; set; }
-            public static bool RestoreSession           { get; set; }
-            public static bool RestoreOnlyLocked        { get; set; }
-            public static bool CloseBtnClosesUnlocked   { get; set; }
-            public static bool CloseBtnClosesSingleTab  { get; set; }
-            public static bool TrayOnClose              { get; set; }
-            public static bool TrayOnMinimize           { get; set; }
+        public static _Window Window    { get { return ConfigManager.LoadedConfig.window; } }
+        public static _Tabs Tabs        { get { return ConfigManager.LoadedConfig.tabs; } }
+        public static _Tweaks Tweaks    { get { return ConfigManager.LoadedConfig.tweaks; } }
+        public static _Tips Tips        { get { return ConfigManager.LoadedConfig.tips; } }
+        public static _Misc Misc        { get { return ConfigManager.LoadedConfig.misc; } }
+        public static _Skin Skin        { get { return ConfigManager.LoadedConfig.skin; } }
+        public static _BBar BBar        { get { return ConfigManager.LoadedConfig.bbar; } }
+        public static _Mouse Mouse      { get { return ConfigManager.LoadedConfig.mouse; } }
+        public static _Lang Lang        { get { return ConfigManager.LoadedConfig.lang; } }
+
+        public _Window window = new _Window();
+        public _Tabs tabs = new _Tabs();
+        public _Tweaks tweaks = new _Tweaks();
+        public _Tips tips = new _Tips();
+        public _Misc misc = new _Misc();
+        public _Skin skin = new _Skin();
+        public _BBar bbar = new _BBar();
+        public _Mouse mouse = new _Mouse();
+        public _Lang lang = new _Lang();
+
+        [Serializable]
+        public class _Window {
+            public bool CaptureNewWindows        { get; set; }
+            public bool RestoreSession           { get; set; }
+            public bool RestoreOnlyLocked        { get; set; }
+            public bool CloseBtnClosesUnlocked   { get; set; }
+            public bool CloseBtnClosesSingleTab  { get; set; }
+            public bool TrayOnClose              { get; set; }
+            public bool TrayOnMinimize           { get; set; }
+
+            public _Window() {
+                CaptureNewWindows = false;
+                RestoreSession = false;
+                RestoreOnlyLocked = false;
+                CloseBtnClosesSingleTab = true;
+                CloseBtnClosesUnlocked = false;
+                TrayOnClose = false;
+                TrayOnMinimize = false;
+            }
         }
 
-        public static class Tabs {
-            public static TabPos NewTabPosition         { get; set; }
-            public static TabPos NextAfterClosed        { get; set; }
-            public static bool ActivateNewTab           { get; set; }
-            public static bool NeverOpenSame            { get; set; }
-            public static bool RenameAmbTabs            { get; set; }
-            public static bool DragOverTabOpensSDT      { get; set; }
-            public static bool ShowFolderIcon           { get; set; }
-            public static bool ShowSubDirTipOnTab       { get; set; }
-            public static bool ShowDriveLetters         { get; set; }
-            public static bool ShowCloseButtons         { get; set; }
-            public static bool CloseBtnsWithAlt         { get; set; }
-            public static bool CloseBtnsOnHover         { get; set; }
-            public static bool ShowNavButtons           { get; set; }
-            public static bool NavButtonsOnRight        { get; set; }
-            public static bool MultipleTabRows          { get; set; }
-            public static bool ActiveTabOnBottomRow     { get; set; }
+        [Serializable]
+        public class _Tabs {
+            public TabPos NewTabPosition         { get; set; }
+            public TabPos NextAfterClosed        { get; set; }
+            public bool ActivateNewTab           { get; set; }
+            public bool NeverOpenSame            { get; set; }
+            public bool RenameAmbTabs            { get; set; }
+            public bool DragOverTabOpensSDT      { get; set; }
+            public bool ShowFolderIcon           { get; set; }
+            public bool ShowSubDirTipOnTab       { get; set; }
+            public bool ShowDriveLetters         { get; set; }
+            public bool ShowCloseButtons         { get; set; }
+            public bool CloseBtnsWithAlt         { get; set; }
+            public bool CloseBtnsOnHover         { get; set; }
+            public bool ShowNavButtons           { get; set; }
+            public bool NavButtonsOnRight        { get; set; }
+            public bool MultipleTabRows          { get; set; }
+            public bool ActiveTabOnBottomRow     { get; set; }
+
+            public _Tabs() {
+                NewTabPosition = TabPos.Rightmost;
+                NextAfterClosed = TabPos.LastActive;
+                ActivateNewTab = true;
+                NeverOpenSame = true;
+                RenameAmbTabs = false;
+                DragOverTabOpensSDT = false;
+                ShowFolderIcon = true;
+                ShowSubDirTipOnTab = true;
+                ShowDriveLetters = false;
+                ShowCloseButtons = false;
+                CloseBtnsWithAlt = false;
+                CloseBtnsOnHover = false;
+                ShowNavButtons = false;
+                MultipleTabRows = true;
+                ActiveTabOnBottomRow = true;
+            }
         }
 
-        public static class Tweaks {
-            public static bool AlwaysShowHeaders        { get; set; }
-            public static bool KillExtWhileRenaming     { get; set; }
-            public static bool F2Selection              { get; set; }
-            public static bool WrapArrowKeySelection    { get; set; }
-            public static bool BackspaceUpLevel         { get; set; }
-            public static bool HorizontalScroll         { get; set; }
-            public static bool ForceSysListView         { get; set; }
-            public static bool ToggleFullRowSelect      { get; set; }
-            public static bool DetailsGridLines         { get; set; }
-            public static bool AlternateRowColors       { get; set; }
+        [Serializable]
+        public class _Tweaks {
+            public bool AlwaysShowHeaders        { get; set; }
+            public bool KillExtWhileRenaming     { get; set; }
+            public bool RedirectLibraryFolders   { get; set; }
+            public bool F2Selection              { get; set; }
+            public bool WrapArrowKeySelection    { get; set; }
+            public bool BackspaceUpLevel         { get; set; }
+            public bool HorizontalScroll         { get; set; }
+            public bool ForceSysListView         { get; set; }
+            public bool ToggleFullRowSelect      { get; set; }
+            public bool DetailsGridLines         { get; set; }
+            public bool AlternateRowColors       { get; set; }
+
+            public _Tweaks() {
+                AlwaysShowHeaders = false;
+                KillExtWhileRenaming = true;
+                RedirectLibraryFolders = false;
+                F2Selection = true;
+                WrapArrowKeySelection = false;
+                BackspaceUpLevel = false;
+                HorizontalScroll = true;
+                ForceSysListView = false;
+                ToggleFullRowSelect = false;
+                DetailsGridLines = false;
+                AlternateRowColors = false;
+            }
         }
 
-        public static class Tips {
-            public static bool ShowSubDirTips           { get; set; }
-            public static bool SubDirTipsPreview        { get; set; }
-            public static bool SubDirTipsFiles          { get; set; }
-            public static bool SubDirTipsWithShift      { get; set; }
-            public static bool ShowTooltipPreviews      { get; set; }
-            public static bool ShowPreviewsWithShift    { get; set; }
-            public static bool ShowPreviewInfo          { get; set; }
-            public static int PreviewMaxWidth           { get; set; }
-            public static int PreviewMaxHeight          { get; set; }
-            public static Font PreviewFont              { get; set; }
+        [Serializable]
+        public class _Tips {
+            public bool ShowSubDirTips           { get; set; }
+            public bool SubDirTipsPreview        { get; set; }
+            public bool SubDirTipsFiles          { get; set; }
+            public bool SubDirTipsWithShift      { get; set; }
+            public bool ShowTooltipPreviews      { get; set; }
+            public bool ShowPreviewsWithShift    { get; set; }
+            public bool ShowPreviewInfo          { get; set; }
+            public int PreviewMaxWidth           { get; set; }
+            public int PreviewMaxHeight          { get; set; }
+            public Font PreviewFont              { get; set; }
+
+            public _Tips() {
+                ShowSubDirTips = true;
+                SubDirTipsPreview = true;
+                SubDirTipsFiles = true;
+                SubDirTipsWithShift = false;
+                ShowTooltipPreviews = true;
+                ShowPreviewsWithShift = false;
+                ShowPreviewInfo = true;
+                PreviewMaxWidth = 512;
+                PreviewMaxHeight = 256;
+            }
         }
 
-        public static class Misc {
-            public static bool TaskbarThumbnails        { get; set; }
-            public static bool KeepHistory              { get; set; }
-            public static int TabHistoryCount           { get; set; }
-            public static bool KeepRecentFiles          { get; set; }
-            public static int FileHistoryCount          { get; set; }
-            public static int NetworkTimeout            { get; set; }
-            public static bool AutoUpdate               { get; set; }
-            public static bool UseIniFile               { get; set; }
+        [Serializable]
+        public class _Misc {
+            public bool TaskbarThumbnails        { get; set; }
+            public bool KeepHistory              { get; set; }
+            public int TabHistoryCount           { get; set; }
+            public bool KeepRecentFiles          { get; set; }
+            public int FileHistoryCount          { get; set; }
+            public int NetworkTimeout            { get; set; }
+            public bool AutoUpdate               { get; set; }
+            public bool UseIniFile               { get; set; }
+
+            public _Misc() {
+                TaskbarThumbnails = false;
+                KeepHistory = true;
+                TabHistoryCount = 15;
+                KeepRecentFiles = true;
+                FileHistoryCount = 15;
+                NetworkTimeout = 0; // TODO
+                AutoUpdate = true;
+                UseIniFile = false;
+            }
         }
 
-        public static class Skin {
-            public static bool UseTabSkin               { get; set; }
-            public static string TabImageFile           { get; set; }
-            public static Rectangle TabSizeMargin       { get; set; }
-            public static int TabHeight                 { get; set; }
-            public static int TabMinWidth               { get; set; }
-            public static int TabMaxWidth               { get; set; }
-            public static bool FixedWidthTabs           { get; set; }
-            public static Font TabTextFont              { get; set; }
-            public static Color TabTextActiveColor      { get; set; }
-            public static Color TabTextInactiveColor    { get; set; }
-            public static Color TabTextHotColor         { get; set; }
-            public static Color TabShadActiveColor      { get; set; }
-            public static Color TabShadInactiveColor    { get; set; }
-            public static Color TabShadHotColor         { get; set; }
-            public static bool TabTitleShadows          { get; set; }
-            public static bool TabTextCentered          { get; set; }
-            public static bool UseRebarBGColor          { get; set; }
-            public static Color RebarColor              { get; set; }
-            public static bool UseRebarImage            { get; set; }
-            public static StretchMode RebarStretchMode  { get; set; }
-            public static string RebarImageFile         { get; set; }
-            public static bool RebarImageSeperateBars   { get; set; }
-            public static Rectangle RebarSizeMargin     { get; set; }
-            public static bool ActiveTabInBold          { get; set; }
+        [Serializable]
+        public class _Skin {
+            public bool UseTabSkin               { get; set; }
+            public string TabImageFile           { get; set; }
+            public Rectangle TabSizeMargin       { get; set; }
+            public int TabHeight                 { get; set; }
+            public int TabMinWidth               { get; set; }
+            public int TabMaxWidth               { get; set; }
+            public bool FixedWidthTabs           { get; set; }
+            public Font TabTextFont              { get; set; }
+            public Color TabTextActiveColor      { get; set; }
+            public Color TabTextInactiveColor    { get; set; }
+            public Color TabTextHotColor         { get; set; }
+            public Color TabShadActiveColor      { get; set; }
+            public Color TabShadInactiveColor    { get; set; }
+            public Color TabShadHotColor         { get; set; }
+            public bool TabTitleShadows          { get; set; }
+            public bool TabTextCentered          { get; set; }
+            public bool UseRebarBGColor          { get; set; }
+            public Color RebarColor              { get; set; }
+            public bool UseRebarImage            { get; set; }
+            public StretchMode RebarStretchMode  { get; set; }
+            public string RebarImageFile         { get; set; }
+            public bool RebarImageSeperateBars   { get; set; }
+            public Rectangle RebarSizeMargin     { get; set; }
+            public bool ActiveTabInBold          { get; set; }
+
+            public _Skin() {
+                UseTabSkin = false;
+                TabImageFile = "";
+                TabSizeMargin = new Rectangle(0, 0, 0, 0);
+                TabHeight = 24;
+                TabMinWidth = 70; // TODO
+                TabMaxWidth = 150; // TODO
+                FixedWidthTabs = false;
+                TabTextActiveColor = Color.Black;
+                TabTextInactiveColor = Color.Black;
+                TabTextHotColor = Color.Black;
+                TabShadActiveColor = Color.Gray;
+                TabShadInactiveColor = Color.White;
+                TabShadHotColor = Color.White;
+                TabTitleShadows = false;
+                TabTextCentered = false;
+                UseRebarBGColor = false;
+                RebarColor = Color.Gray;
+                UseRebarImage = false;
+                RebarStretchMode = StretchMode.Full;
+                RebarImageFile = "";
+                RebarImageSeperateBars = false;
+                RebarSizeMargin = new Rectangle(0, 0, 0, 0);
+                ActiveTabInBold = false;
+            }
         }
 
-        public static class BBar {
-            public static bool LargeButtons             { get; set; }
-            public static bool LockSearchBarWidth       { get; set; }
-            public static bool ButtonText               { get; set; }
-            public static bool SelectiveText            { get; set; }
+        [Serializable]
+        public class _BBar {
+            public bool LargeButtons             { get; set; }
+            public bool LockSearchBarWidth       { get; set; }
+            public bool ButtonText               { get; set; }
+            public bool SelectiveText            { get; set; }
+
+            public _BBar() {
+                LargeButtons = true;
+                LockSearchBarWidth = false;
+                ButtonText = false;
+                SelectiveText = false;
+            }
         }
 
-        public static class Mouse {
-            public static bool MouseScrollsHotWnd       { get; set; }
-            public static Dictionary<MouseChord, MouseAction> MouseActions;
+        [Serializable]
+        public class _Mouse {
+            public bool MouseScrollsHotWnd       { get; set; }
+            public Dictionary<MouseChord, MouseAction> MouseActions;
+
+            public _Mouse() {
+                MouseScrollsHotWnd = false;
+                // TODO actions
+            }
         }
 
-        public static class Lang {
-            public static bool UseBuiltIn               { get; set; }
-            public static string LangFile               { get; set; }
+        [Serializable]
+        public class _Lang {
+            public bool UseBuiltIn               { get; set; }
+            public string LangFile               { get; set; }
+
+            public _Lang() {
+                UseBuiltIn = true;
+                LangFile = "English";
+            }
         }
 
         //-----------
@@ -204,6 +344,8 @@ namespace QTTabBarLib {
     }
 
     public static class ConfigManager {
+        public static Config LoadedConfig;
+
         public enum ConfigCats {
             Window,
             Tabs,
@@ -217,34 +359,35 @@ namespace QTTabBarLib {
         }
 
         static ConfigManager() {
-            foreach(ConfigCats cat in Enum.GetValues(typeof(ConfigCats))) {
-                SetDefaults(cat);
-            }
+            LoadedConfig = new Config();
             ReadConfig();
         }
 
         public static void ReadConfig() {
             const string RegPath = @"Software\Quizo\QTTabBar\Config\"; // TODO
-            foreach(var cls in typeof(Config).GetNestedTypes()) {
-                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegPath + cls.Name)) {
-                    foreach(var prop in cls.GetProperties()) {
+            foreach(FieldInfo field in typeof(Config).GetFields()) {
+                Type cls = field.FieldType;
+                object val = field.GetValue(LoadedConfig);
+                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegPath + cls.Name.Substring(1))) {
+                    foreach(PropertyInfo prop in cls.GetProperties()) {
                         object obj = key.GetValue(prop.Name);
                         if(obj == null) continue;
                         Type t = prop.PropertyType;
                         try {
                             if(t == typeof(bool)) {
-                                prop.SetValue(null, (int)obj != 0, null);
+                                prop.SetValue(val, (int)obj != 0, null);
                             }
                             if(t == typeof(int) || t == typeof(string)) {
-                                prop.SetValue(null, obj, null);
+                                prop.SetValue(val, obj, null);
                             }
                             else if(t.IsEnum) {
-                                prop.SetValue(null, Enum.Parse(t, obj.ToString()), null);
+                                prop.SetValue(val, Enum.Parse(t, obj.ToString()), null);
                             }
                             else {
                                 DataContractJsonSerializer ser = new DataContractJsonSerializer(t);
-                                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(obj.ToString()));
-                                prop.SetValue(null, ser.ReadObject(stream), null);
+                                using(MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(obj.ToString()))) {
+                                    prop.SetValue(val, ser.ReadObject(stream), null);
+                                }
                             }
                         }
                         catch {
@@ -257,129 +400,32 @@ namespace QTTabBarLib {
         }
         public static void WriteConfig() {
             const string RegPath = @"Software\Quizo\QTTabBar\Config\"; // TODO
-            foreach(var cls in typeof(Config).GetNestedTypes()) {
-                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegPath + cls.Name)) {
+            foreach(FieldInfo field in typeof(Config).GetFields()) {
+                Type cls = field.FieldType;
+                object val = field.GetValue(LoadedConfig);
+                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegPath + cls.Name.Substring(1))) {
                     foreach(var prop in cls.GetProperties()) {
                         Type t = prop.PropertyType;
                         if(t == typeof(bool)) {
-                            key.SetValue(prop.Name, (bool)prop.GetValue(null, null) ? 1 : 0);
+                            key.SetValue(prop.Name, (bool)prop.GetValue(val, null) ? 1 : 0);
                         }
                         else if(t == typeof(int) || t == typeof(string) || t.IsEnum) {
-                            key.SetValue(prop.Name, prop.GetValue(null, null));
+                            key.SetValue(prop.Name, prop.GetValue(val, null));
                         }
                         else {
                             DataContractJsonSerializer ser = new DataContractJsonSerializer(t);
-                            MemoryStream stream = new MemoryStream();
-                            ser.WriteObject(stream, prop.GetValue(null, null));
-                            stream.Seek(0, SeekOrigin.Begin);
-                            StreamReader reader = new StreamReader(stream);
-                            key.SetValue(prop.Name, reader.ReadToEnd());
+                            using(MemoryStream stream = new MemoryStream()) {
+                                ser.WriteObject(stream, prop.GetValue(val, null));
+                                stream.Position = 0;
+                                StreamReader reader = new StreamReader(stream);
+                                key.SetValue(prop.Name, reader.ReadToEnd());                                
+                            }
                         }
                     }
                 }
             }
 
             // TODO non-props
-        }
-
-        public static void SetDefaults(ConfigCats cat) {
-            switch(cat) {
-                case ConfigCats.Window:
-                    Config.Window.CaptureNewWindows = false;
-                    Config.Window.RestoreSession = false;
-                    Config.Window.RestoreOnlyLocked = false;
-                    Config.Window.CloseBtnClosesSingleTab = true;
-                    Config.Window.CloseBtnClosesUnlocked = false;
-                    Config.Window.TrayOnClose = false;
-                    Config.Window.TrayOnMinimize = false;
-                    break;
-
-                case ConfigCats.Tabs:
-                    Config.Tabs.NewTabPosition = TabPos.Rightmost;
-                    Config.Tabs.NextAfterClosed = TabPos.LastActive;
-                    Config.Tabs.ActivateNewTab = true;
-                    Config.Tabs.NeverOpenSame = true;
-                    Config.Tabs.RenameAmbTabs = false;
-                    Config.Tabs.DragOverTabOpensSDT = false;
-                    Config.Tabs.ShowFolderIcon = true;
-                    Config.Tabs.ShowSubDirTipOnTab = true;
-                    Config.Tabs.ShowDriveLetters = false;
-                    Config.Tabs.ShowCloseButtons = false;
-                    Config.Tabs.CloseBtnsWithAlt = false;
-                    Config.Tabs.CloseBtnsOnHover = false;
-                    Config.Tabs.ShowNavButtons = false;
-                    Config.Tabs.MultipleTabRows = true;
-                    Config.Tabs.ActiveTabOnBottomRow = true;
-                    break;
-
-                case ConfigCats.Tweaks:
-                    Config.Tweaks.AlwaysShowHeaders = false;
-                    Config.Tweaks.KillExtWhileRenaming = true;
-                    Config.Tweaks.F2Selection = true;
-                    Config.Tweaks.WrapArrowKeySelection = false;
-                    Config.Tweaks.BackspaceUpLevel = false;
-                    Config.Tweaks.HorizontalScroll = true;
-                    Config.Tweaks.ForceSysListView = false;
-                    Config.Tweaks.ToggleFullRowSelect = false;
-                    Config.Tweaks.DetailsGridLines = false;
-                    Config.Tweaks.AlternateRowColors = false;
-                    break;
-
-                case ConfigCats.Tips:
-                    Config.Tips.ShowSubDirTips = true;
-                    Config.Tips.SubDirTipsPreview = true;
-                    Config.Tips.SubDirTipsFiles = true;
-                    Config.Tips.SubDirTipsWithShift = false;
-                    Config.Tips.ShowTooltipPreviews = true;
-                    Config.Tips.ShowPreviewsWithShift = false;
-                    Config.Tips.ShowPreviewInfo = true;
-                    Config.Tips.PreviewMaxWidth = 512;
-                    Config.Tips.PreviewMaxHeight = 256;
-                    break;
-
-                case ConfigCats.Skin:
-                    Config.Skin.UseTabSkin = false;
-                    Config.Skin.TabImageFile = "";
-                    Config.Skin.TabSizeMargin = new Rectangle(0, 0, 0, 0);
-                    Config.Skin.TabHeight = 24;
-                    Config.Skin.TabMinWidth = 70; // TODO
-                    Config.Skin.TabMaxWidth = 150; // TODO
-                    Config.Skin.FixedWidthTabs = false;
-                    Config.Skin.TabTextActiveColor = Color.Black;
-                    Config.Skin.TabTextInactiveColor = Color.Black;
-                    Config.Skin.TabTextHotColor = Color.Black;
-                    Config.Skin.TabShadActiveColor = Color.Gray;
-                    Config.Skin.TabShadInactiveColor = Color.White;
-                    Config.Skin.TabShadHotColor = Color.White;
-                    Config.Skin.TabTitleShadows = false;
-                    Config.Skin.TabTextCentered = false;
-                    Config.Skin.UseRebarBGColor = false;
-                    Config.Skin.RebarColor = Color.Gray;
-                    Config.Skin.UseRebarImage = false;
-                    Config.Skin.RebarStretchMode = StretchMode.Full;
-                    Config.Skin.RebarImageFile = "";
-                    Config.Skin.RebarImageSeperateBars = false;
-                    Config.Skin.RebarSizeMargin = new Rectangle(0, 0, 0, 0);
-                    Config.Skin.ActiveTabInBold = false;
-                    break;
-
-                case ConfigCats.BBar:
-                    Config.BBar.LargeButtons = true;
-                    Config.BBar.LockSearchBarWidth = false;
-                    Config.BBar.ButtonText = false;
-                    Config.BBar.SelectiveText = false;
-                    break;
-
-                case ConfigCats.Mouse:
-                    Config.Mouse.MouseScrollsHotWnd = false;
-                    // TODO actions
-                    break;
-
-                case ConfigCats.Lang:
-                    Config.Lang.UseBuiltIn = true;
-                    Config.Lang.LangFile = "English";
-                    break;
-            }
         }
     }
 }
