@@ -76,7 +76,6 @@ namespace QTTabBarLib {
         private bool fNowQuitting;
         private bool fNowRestoring;
         private bool fNowTravelByTree;
-        private bool fOptionDialogCreated;
         private bool fToggleTabMenu;
         private IntPtr hHook_Key;
         private IntPtr hHook_Mouse;
