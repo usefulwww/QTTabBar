@@ -57,7 +57,107 @@
             <Setter Property="Margin"           Value="31,1,10,1"/>
             <Setter Property="Padding"          Value="0"/>
         </Style>
+        <DataTemplate x:Key="CategoryItemTemplate">
+            <Grid
+                Background="White"
+                Height="25"
+                Margin="0,1"
+                Width="128">
+                <TextBlock
+                    Margin="10,1"
+                    Text="{Binding Header}" 
+                    VerticalAlignment="Center"/>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="CategorySelectedTemplate">
+            <Grid
+                Background="White"
+                Height="25"
+                Margin="0,1"
+                Width="128">
+                <Image Source="C:\Users\Paul\Desktop\res\sel.png"/>
+                <TextBlock
+                    Margin="10,1"
+                    Text="{Binding Header}" 
+                    VerticalAlignment="Center"/>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="CategoryHotTemplate">
+            <Grid
+                Background="White"
+                Height="25"
+                Margin="0,1"
+                Width="128">
+                <Image Source="C:\Users\Paul\Desktop\res\hot.png"/>
+                <TextBlock
+                    Margin="10,1"
+                    Text="{Binding Header}" 
+                    VerticalAlignment="Center"/>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="CategorySelAndHotTemplate">
+            <Grid
+                Background="White"
+                Height="25"
+                Margin="0,1"
+                Width="128">
+                <Image Source="C:\Users\Paul\Desktop\res\selhot.png"/>
+                <TextBlock
+                    Margin="10,1"
+                    Text="{Binding Header}" 
+                    VerticalAlignment="Center"/>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="CategoryNoFocusTemplate">
+            <Grid
+                Background="White"
+                Height="25"
+                Margin="0,1"
+                Width="128">
+                <Image Source="C:\Users\Paul\Desktop\res\focuslost.png"/>
+                <TextBlock
+                    Margin="10,1"
+                    Text="{Binding Header}" 
+                    VerticalAlignment="Center"/>
+            </Grid>
+        </DataTemplate>
+        <Style x:Key="CategoryListContainerStyle"
+            TargetType="{x:Type ListBoxItem}">
+            <Setter Property="ContentTemplate"  Value="{StaticResource CategoryItemTemplate}" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <EventSetter
+                Event="PreviewMouseRightButtonDown"
+                Handler="ListBoxItem_PreviewMouseRightButtonDown" />
+            <EventSetter
+                Event="PreviewMouseDown"
+                Handler="ListBoxItem_PreviewMouseDown" />
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="ContentTemplate" Value="{StaticResource CategoryNoFocusTemplate}" />
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="ContentTemplate" Value="{StaticResource CategoryHotTemplate}" />
+                </Trigger>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsKeyboardFocused" Value="True"/>
+                        <Condition Property="IsSelected" Value="True"/>
+                    </MultiTrigger.Conditions>
+                    <Setter Property="ContentTemplate" Value="{StaticResource CategorySelectedTemplate}" />
+                </MultiTrigger>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsMouseOver" Value="True"/>
+                        <Condition Property="IsSelected" Value="True"/>
+                    </MultiTrigger.Conditions>
+                    <Setter Property="ContentTemplate" Value="{StaticResource CategorySelAndHotTemplate}" />
+                </MultiTrigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
+    
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    
     <DockPanel>
         <StackPanel
             DockPanel.Dock="Bottom"
@@ -100,14 +200,30 @@
                 Padding="0"
                 Width="75"/>
         </StackPanel>
-        <ListView
+        <ListView x:Name="lstCategories"
             DockPanel.Dock="Left"
+            ItemsSource="{Binding Items, ElementName=tabbedPanel}"
+            ItemContainerStyle="{StaticResource CategoryListContainerStyle}" 
             Margin="3"
-            Width="182"/>
-        <TabControl x:Name="tabbedPanel"
+            SelectionMode="Single"
+            Width="136">
+            <ListBox.Resources>
+                <SolidColorBrush 
+                    x:Key="{x:Static SystemColors.HighlightBrushKey}" 
+                    Color="White"/>
+                <SolidColorBrush 
+                    x:Key="{x:Static SystemColors.HighlightTextBrushKey}"
+                    Color="Black"/>
+                <SolidColorBrush 
+                    x:Key="{x:Static SystemColors.ControlBrushKey}"
+                    Color="White"/>
+            </ListBox.Resources>
+        </ListView>
+    	<TabControl x:Name="tabbedPanel"
             Background="{StaticResource {x:Static SystemColors.ControlLightLightBrushKey}}"
             Margin="3,3,5,3"
             Padding="0"
+            SelectedItem="{Binding SelectedItem, ElementName=lstCategories}"
             TabStripPlacement="Left">
             <TabItem x:Name="tabWindow"
                 Header="Window"

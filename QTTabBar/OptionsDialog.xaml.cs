@@ -23,6 +23,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 
 namespace QTTabBarLib {
     /// <summary>
@@ -114,6 +115,17 @@ namespace QTTabBarLib {
             if(tabBar != null) {
                 tabBar.Invoke(new Action(tabBar.RefreshOptions));
             }
+        }
+
+        private void ListBoxItem_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e) {
+            lstCategories.Focus();
+            e.Handled = true;
+        }
+
+        private void ListBoxItem_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
+            ((ListBoxItem)sender).Focus();
+            ((ListBoxItem)sender).IsSelected = true;
+            e.Handled = true;
         }
 
         private void btnResetPage_Click(object sender, RoutedEventArgs e) {
