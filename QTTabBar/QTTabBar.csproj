@@ -113,6 +113,16 @@
       <DependentUpon>OptionsDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="RebarController.cs" />
+    <Compile Include="Resources_Image.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources_Image.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Resources_String.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources_String.resx</DependentUpon>
+    </Compile>
     <Compile Include="SafePtr.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="TreeViewWrapper.cs" />
@@ -299,8 +309,6 @@
     </Compile>
     <Compile Include="QTUtility.cs" />
     <Compile Include="QTUtility2.cs" />
-    <Compile Include="Resources_Image.cs" />
-    <Compile Include="Resources_String.cs" />
     <Compile Include="StackDictionary%272.cs" />
     <Compile Include="SubDirTipForm.cs">
       <SubType>Form</SubType>
@@ -354,12 +362,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources_Image.resx">
-      <DependentUpon>Resources_Image.cs</DependentUpon>
-      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources_Image.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources_String.resx">
-      <DependentUpon>Resources_String.cs</DependentUpon>
-      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources_String.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -384,6 +392,162 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ButtonStrip24.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgBack.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgCloseButton_Cold.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgCloseButton_ColdAlt.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgCloseButton_Hot.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgCloseButton_Press.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgCurrent.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgCurTabCloning.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgCurTabDrag.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgFolIconBG.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgForward.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgGroupRoot.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgInsertL.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgInsertR.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgLocked.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgNavBack.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgNavFwd.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgNewTab.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgNewWindow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgOptions_Hot.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgOptions_NoFocus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgOptions_SelAndHot.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgOptions_Selected.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgSubDirBtnCold.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgSubDirBtnPress.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgUserAppsRoot.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgVistaMenu_Check.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgVistaMenu_LB.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgVistaMenu_LB_hot.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgVistaMenu_LM.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgVistaMenu_LM_hot.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgVistaMenu_MM.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgVistaMenu_MM_hot.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgVistaMenu_MT.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgVistaMenu_MT_hot.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgVistaMenu_RB.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgVistaMenu_RB_hot.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgVistaMenu_RM.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgVistaMenu_RM_hot.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgVistaMenu_RT.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgVistaMenu_RT_hot.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\menuClose.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\menuOpen.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\paypalBtn.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TitleBar.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ButtonStrip16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icoEmpty.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icoOption.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgVistaMenu_LT.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgVistaMenu_LT_hot.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgVistaMenu_MB.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgVistaMenu_MB_hot.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

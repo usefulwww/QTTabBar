@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,30 +117,23 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Misc_Strings" xml:space="preserve">
-    <value>Desktop Search;Image file is invalid.\r\n\r\nPlease specify 432 x 40 px image file.;Search Results in;shortcut</value>
+  <data name="ButtonBar_BtnName" xml:space="preserve">
+    <value>Separator;Go back;Go forward;Groups;Recently Closed;Applications;New window;Clone this;Lock;Copy Tool;TopMost;Close;Close all but current;Close window;Close left;Close right;Up one level;Reload;Search;Opacity;Search Box</value>
+  </data>
+  <data name="ButtonBar_Misc" xml:space="preserve">
+    <value>Path;Name;Current folder path;Current folder name;MD5; items;Paths of all open tabs</value>
   </data>
   <data name="ButtonBar_Option" xml:space="preserve">
     <value>&amp;Add;&amp;Remove;&amp;Close;&amp;Reset;&amp;Up;&amp;Down;&amp;Browse image...;Small icon;Large icon;&amp;Customize...;&amp;Lock menus;Re&amp;set image;Show text labels;Selective text;No text labels;Lock the size of the search box</value>
   </data>
-  <data name="ShortcutKeys_MsgReassign" xml:space="preserve">
-    <value>"{0}" is already assigned for "{1}".
-
-Do you want to reassign?;Confirmation of reassignment</value>
+  <data name="DialogButtons" xml:space="preserve">
+    <value>OK;Cancel;&amp;Apply;&amp;Default</value>
   </data>
-  <data name="ButtonBar_BtnName" xml:space="preserve">
-    <value>Separator;Go back;Go forward;Groups;Recently Closed;Applications;New window;Clone this;Lock;Copy Tool;TopMost;Close;Close all but current;Close window;Close left;Close right;Up one level;Reload;Search;Opacity;Search Box</value>
+  <data name="DragDropToolTip" xml:space="preserve">
+    <value>Copy to:;Move to:;Create shortcut in:</value>
   </data>
-  <data name="TabBar_Message" xml:space="preserve">
-    <value>QTTabBar failed to open
-
- "{0}".</value>
-  </data>
-  <data name="TabBar_Option" xml:space="preserve">
-    <value>Activate new tab;Reuse existing tab;Close all tabs when group opened;Show tooltips;Capture mouse X1/X2 buttons;Show navigation buttons;Tab history;Recent files;Use file Drag &amp;&amp; Drop onto tabs;Language file:;New tab location:;After current tab closed, activate:;When tab double-clicked:;When background double-clicked:;Path/Group name:;Multiple rows of tab;Rename ambiguous tabs automatically;When mouse wheel clicked on folder:;Up one level when dbl clicked on folder margin;No window resizing;Save window transparency;Capture new Explorer processes;Show folder tree when new process captured;Do not capture window as a new tab when opened from outside;Horizontal scroll with Shift + Wheel;Change view mode with Ctrl + Wheel (XP);Prevent window closing when tabs exist;Prevent window closing when tabs locked;Restore tabs;Restore locked tabs;Use tab image;Highlight color;Tab size:;Width;Height;Max;Min;Font;Bold active tab title;Tab title color;Active;Inactive;Default;Toolbar background color;Folder icon;Path;Arguments;Working directory;Plugin language file:;Hide menu bar;XP-compatibile BS key(Vista);Full row selection in details view;Grid lines for details view;Alternate row color in details view;Show preview tooltip;with Shift key down;Enable 'Sub folder tip';Show hidden objects;Show files;Eliminate file extension from selection when renaming(XP);Show system objects;Send window to Task Tray by clicking Close button;Max Width;Max Height;Toolbar background image;Change selection by F2 when renaming files;Show close button on tabs;When tab wheel-clicked:;Enable 'Sub folder tip' on Tabs;Open new window at...;With Alt key down;On mouse hover;Export settings...;Cursor loop;Network max timeout (seconds, 0 for system value);Send window to Task Tray on minimized;Text alignment;Menu renderer</value>
-  </data>
-  <data name="SiteURL" xml:space="preserve">
-    <value>http://qttabbar.sourceforge.net</value>
+  <data name="Misc_Strings" xml:space="preserve">
+    <value>Desktop Search;Image file is invalid.\r\n\r\nPlease specify 432 x 40 px image file.;Search Results in;shortcut</value>
   </data>
   <data name="PayPalURL" xml:space="preserve">
     <value>https://sourceforge.net/donate/index.php?group_id=312930</value>
@@ -148,91 +141,30 @@ Do you want to reassign?;Confirmation of reassignment</value>
   <data name="ShortcutKeys_ActionNames" xml:space="preserve">
     <value>Go back ( Alt + Left );Go forward ( Alt + Right );Go back to start;Go forward to end;Select next tab;Select previous tab;Select first tab;Select last tab;Close current tab;Close all but current;Close left;Close right;Close window ( Alt + F4 );Undo close;Clone current tab;Open current folder in new window;Lock / unlock current;Lock / unlock all;Browse folder;Create new group;Open option dialog;Show toolbar menu;Show current tab menu;Show group menu ( button bar );Show recent folder menu ( button bar );Show user application menu ( button bar );Show / hide menu bar;Copy selected files path;Copy selected files name;Copy current folder path;Copy current folder name;Check MD5 of selected files;Bring window to topmost;Transparency +;Transparency -;Focus file list;Focus search bar (Vista);Focus search box ( button bar );Show Subfolder Tip Menu for selected folder;Send window to Task Tray;Focus the Tab Bar</value>
   </data>
-  <data name="TaskBar_Titles" xml:space="preserve">
-    <value>Groups;Undo closed;Applications;Recently opened files</value>
+  <data name="ShortcutKeys_Groups" xml:space="preserve">
+    <value>QTTabBar;Plugin;User commands</value>
   </data>
-  <data name="TabBar_Option_Genre" xml:space="preserve">
-    <value>General;Tab;Window;Appearance;Groups;Applications;Plugins;Shortcut Keys;Misc.;Path</value>
+  <data name="ShortcutKeys_MsgReassign" xml:space="preserve">
+    <value>"{0}" is already assigned for "{1}".
+
+Do you want to reassign?;Confirmation of reassignment</value>
   </data>
-  <data name="DialogButtons" xml:space="preserve">
-    <value>OK;Cancel;&amp;Apply;&amp;Default</value>
+  <data name="SiteURL" xml:space="preserve">
+    <value>http://qttabbar.sourceforge.net</value>
   </data>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="paypalBtn" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        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
-</value>
+  <data name="TabBar_Menu" xml:space="preserve">
+    <value>Close;Close right;Close left;Close all but this;Add to Group;Create new Group;Lock;Clone this;New window;Copy path;Properties;Tab history;Groups;Undo closed;Last activated;Recently opened files;Browse folder;Close all but current;Close Window;Options;Unlock;Add to Application menu : ;items;Cancel;Branches;Remove this item from menu;O&amp;pen containing folder;Tab label;Tab order;Name;Path;Active;Lock the Toolbars;Merge tabs of other windows;Invert</value>
   </data>
-  <data name="TabBar_Option_DropDown" xml:space="preserve">
-    <value>Left;Right;Most right;Most left;Last activated;Up One Level;Close;Lock;Show menu;New window;Clone;Copy path;Properties; - ;Browse folder;Close all but current;Lock all;Restore last closed;Options;Close window;Clone current;multiple;New tab;Auto;Fixed;Limit tab width;Stretch;Tile;Real size;Left;Center;Vista;XP;Stretch on each band</value>
-  </data>
-  <data name="TabBar_Option_Buttons" xml:space="preserve">
-    <value>Clear;Up;Down;Add separator;Start Up;Plugin Option;Bg color;Txt color;Default;Set;Delete;Check now;Copy to clipboard</value>
+  <data name="TabBar_Message" xml:space="preserve">
+    <value>QTTabBar failed to open
+
+ "{0}".</value>
   </data>
   <data name="TabBar_NewGroup" xml:space="preserve">
     <value>Create New Group;Group name:;Add all tabs</value>
   </data>
-  <data name="TaskBar_Menu" xml:space="preserve">
-    <value>Taskbar;Desktop;Lock items;Draw title background;Menu by one click;Enable application shortcut keys</value>
-  </data>
-  <data name="ButtonBar_Misc" xml:space="preserve">
-    <value>Path;Name;Current folder path;Current folder name;MD5; items;Paths of all open tabs</value>
-  </data>
-  <data name="DragDropToolTip" xml:space="preserve">
-    <value>Copy to:;Move to:;Create shortcut in:</value>
-  </data>
-  <data name="TabBar_Menu" xml:space="preserve">
-    <value>Close;Close right;Close left;Close all but this;Add to Group;Create new Group;Lock;Clone this;New window;Copy path;Properties;Tab history;Groups;Undo closed;Last activated;Recently opened files;Browse folder;Close all but current;Close Window;Options;Unlock;Add to Application menu : ;items;Cancel;Branches;Remove this item from menu;O&amp;pen containing folder;Tab label;Tab order;Name;Path;Active;Lock the Toolbars;Merge tabs of other windows;Invert</value>
+  <data name="TabBar_Option" xml:space="preserve">
+    <value>Activate new tab;Reuse existing tab;Close all tabs when group opened;Show tooltips;Capture mouse X1/X2 buttons;Show navigation buttons;Tab history;Recent files;Use file Drag &amp;&amp; Drop onto tabs;Language file:;New tab location:;After current tab closed, activate:;When tab double-clicked:;When background double-clicked:;Path/Group name:;Multiple rows of tab;Rename ambiguous tabs automatically;When mouse wheel clicked on folder:;Up one level when dbl clicked on folder margin;No window resizing;Save window transparency;Capture new Explorer processes;Show folder tree when new process captured;Do not capture window as a new tab when opened from outside;Horizontal scroll with Shift + Wheel;Change view mode with Ctrl + Wheel (XP);Prevent window closing when tabs exist;Prevent window closing when tabs locked;Restore tabs;Restore locked tabs;Use tab image;Highlight color;Tab size:;Width;Height;Max;Min;Font;Bold active tab title;Tab title color;Active;Inactive;Default;Toolbar background color;Folder icon;Path;Arguments;Working directory;Plugin language file:;Hide menu bar;XP-compatibile BS key(Vista);Full row selection in details view;Grid lines for details view;Alternate row color in details view;Show preview tooltip;with Shift key down;Enable 'Sub folder tip';Show hidden objects;Show files;Eliminate file extension from selection when renaming(XP);Show system objects;Send window to Task Tray by clicking Close button;Max Width;Max Height;Toolbar background image;Change selection by F2 when renaming files;Show close button on tabs;When tab wheel-clicked:;Enable 'Sub folder tip' on Tabs;Open new window at...;With Alt key down;On mouse hover;Export settings...;Cursor loop;Network max timeout (seconds, 0 for system value);Send window to Task Tray on minimized;Text alignment;Menu renderer</value>
   </data>
   <data name="TabBar_Option2" xml:space="preserve">
     <value>On Folder Tree, open a new tab by wheel-click or click with shift key down (XP);Show tab switcher by Ctrl+Tab;Text shadow;Check for updates periodically;Remove original tab when creating new window;Indicate drive letter;Sound;Install a plugin;Options;Disable;Enable;Uninstall;About {0};If you uninstall this plugin, you must also uninstall 
@@ -241,14 +173,26 @@ Do you want to reassign?;Confirmation of reassignment</value>
 
 Are you sure you want to do this?;Display file information below images;Use old ListView control (Win7);Display column headers in all views (Win7)</value>
   </data>
-  <data name="ShortcutKeys_Groups" xml:space="preserve">
-    <value>QTTabBar;Plugin;User commands</value>
+  <data name="TabBar_Option_Buttons" xml:space="preserve">
+    <value>Clear;Up;Down;Add separator;Start Up;Plugin Option;Bg color;Txt color;Default;Set;Delete;Check now;Copy to clipboard</value>
+  </data>
+  <data name="TabBar_Option_DropDown" xml:space="preserve">
+    <value>Left;Right;Most right;Most left;Last activated;Up One Level;Close;Lock;Show menu;New window;Clone;Copy path;Properties; - ;Browse folder;Close all but current;Lock all;Restore last closed;Options;Close window;Clone current;multiple;New tab;Auto;Fixed;Limit tab width;Stretch;Tile;Real size;Left;Center;Vista;XP;Stretch on each band</value>
+  </data>
+  <data name="TabBar_Option_Genre" xml:space="preserve">
+    <value>General;Tab;Window;Appearance;Groups;Applications;Plugins;Shortcut Keys;Misc.;Path</value>
+  </data>
+  <data name="TaskBar_Menu" xml:space="preserve">
+    <value>Taskbar;Desktop;Lock items;Draw title background;Menu by one click;Enable application shortcut keys</value>
+  </data>
+  <data name="TaskBar_Titles" xml:space="preserve">
+    <value>Groups;Undo closed;Applications;Recently opened files</value>
   </data>
   <data name="UpdateCheck" xml:space="preserve">
     <value>New version found.
 
 {0}
 
-Press OK to go to the web site.;Your version of QTTabBar is up to date.;New development version found: </value>
+Press OK to go to the web site.;Your version of QTTabBar is up to date.;New development version found:</value>
   </data>
 </root>

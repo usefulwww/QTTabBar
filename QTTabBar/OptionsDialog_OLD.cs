@@ -2730,7 +2730,7 @@ namespace QTTabBarLib {
             tabPage9_Misc.TabIndex = 6;
             tabPage9_Misc.UseVisualStyleBackColor = true;
             btnPayPal.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
-            btnPayPal.BackgroundImage = Resources_String.paypalBtn;
+            btnPayPal.BackgroundImage = Resources_Image.paypalBtn;
             btnPayPal.BackgroundImageLayout = ImageLayout.Center;
             btnPayPal.Location = new Point(0x1a8, 0x17b);
             btnPayPal.Size = new Size(0x47, 0x4c);
