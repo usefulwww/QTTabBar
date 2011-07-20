@@ -160,7 +160,10 @@ namespace QTTabBarLib {
 
     public class RadioBoolMultiConverter : IMultiValueConverter {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture) {
-            return (parameter as string) == values.StringJoin(",");
+            // We can't have this match anything while the RadioButton is 
+            // changing, because the properties do not change atomically.  They
+            // change one at a time, which could cause crazy reentry problems.
+            return !RadioButtonEx.bIsChanging && (parameter as string) == values.StringJoin(",");
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) {
@@ -190,7 +193,9 @@ namespace QTTabBarLib {
     // Overloaded RadioButton class to work around .NET 3.5's horribly HORRIBLY
     // bugged RadioButton data binding.
     public class RadioButtonEx : RadioButton {
-        private bool bIsChanging;
+        
+        // This has to be static.
+        public static bool bIsChanging;
 
         public RadioButtonEx() {
             Checked += RadioButtonExtended_Checked;
@@ -206,8 +211,14 @@ namespace QTTabBarLib {
         }
 
         public bool? IsCheckedReal {
-            get { return (bool?)GetValue(IsCheckedRealProperty); }
-            set { SetValue(IsCheckedRealProperty, value); }
+            get {
+                return (bool?)GetValue(IsCheckedRealProperty);
+            }
+            set {
+                bIsChanging = true; 
+                SetValue(IsCheckedRealProperty, value); 
+                bIsChanging = false;
+            }
         }
 
         // Using a DependencyProperty as the backing store for IsCheckedReal.
@@ -219,10 +230,7 @@ namespace QTTabBarLib {
                 OnIsCheckedRealChanged));
 
         private static void OnIsCheckedRealChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            RadioButtonEx rbx = (RadioButtonEx)d;
-            rbx.bIsChanging = true;
-            rbx.IsChecked = (bool?)e.NewValue;
-            rbx.bIsChanging = false;
+            ((RadioButtonEx)d).IsChecked = (bool?)e.NewValue;
         }
     }
 }
