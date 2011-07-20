@@ -291,44 +291,101 @@
                     <qt:RadioButtonEx x:Name="radRestoreTabsOff"
                         Content="Start a new session each time"
                         GroupName="Session"
-                        Style="{StaticResource CheckStyle}"/>
+                        Style="{StaticResource CheckStyle}">
+                        <qt:RadioButtonEx.IsCheckedReal>
+                            <MultiBinding Converter="{StaticResource RadioBoolMultiConverter}"
+                                ConverterParameter="False,False">
+                                <Binding Path="RestoreSession"/>
+                                <Binding Path="RestoreOnlyLocked"/>
+                            </MultiBinding>
+                        </qt:RadioButtonEx.IsCheckedReal>
+                    </qt:RadioButtonEx>    
                     <qt:RadioButtonEx x:Name="radRestoreTabsOn"
                         Content="Restore all tabs from the previous session"
                         GroupName="Session"
-                        Style="{StaticResource CheckStyle}"/>
+                        Style="{StaticResource CheckStyle}">
+                        <qt:RadioButtonEx.IsCheckedReal>
+                            <MultiBinding Converter="{StaticResource RadioBoolMultiConverter}"
+                                ConverterParameter="True,False">
+                                <Binding Path="RestoreSession"/>
+                                <Binding Path="RestoreOnlyLocked"/>
+                            </MultiBinding>
+                        </qt:RadioButtonEx.IsCheckedReal>
+                    </qt:RadioButtonEx>
                     <qt:RadioButtonEx x:Name="radRestoreTabsLockedOnly"
                         Content="Restore only the locked tabs from the previous session"
                         GroupName="Session"
-                        Style="{StaticResource CheckStyle}"/>
+                        Style="{StaticResource CheckStyle}">
+                        <qt:RadioButtonEx.IsCheckedReal>
+                            <MultiBinding Converter="{StaticResource RadioBoolMultiConverter}"
+                                ConverterParameter="True,True">
+                                <Binding Path="RestoreSession"/>
+                                <Binding Path="RestoreOnlyLocked"/>
+                            </MultiBinding>
+                        </qt:RadioButtonEx.IsCheckedReal>
+                    </qt:RadioButtonEx>
                     <Label
                         Content="When the close button is clicked"
                         Style="{StaticResource SectionHeaderStyle}"/>
                     <qt:RadioButtonEx x:Name="radCloseBtnWindow"
                         Content="Close the window"
                         GroupName="Close"
-                        Style="{StaticResource CheckStyle}"/>
+                        IsEnabled="{Binding Path=IsChecked, ElementName=chkTrayClose, Converter={StaticResource BoolInverterConverter}}"
+                        Style="{StaticResource CheckStyle}">
+                        <qt:RadioButtonEx.IsCheckedReal>
+                            <MultiBinding Converter="{StaticResource RadioBoolMultiConverter}"
+                                ConverterParameter="False,False,False">
+                                <Binding Path="IsChecked" ElementName="chkTrayClose"/>
+                                <Binding Path="CloseBtnClosesSingleTab"/>
+                                <Binding Path="CloseBtnClosesUnlocked"/>
+                            </MultiBinding>
+                        </qt:RadioButtonEx.IsCheckedReal>
+                    </qt:RadioButtonEx>
                     <qt:RadioButtonEx x:Name="radCloseBtnTabs"
                         Content="Close the current tab"
                         GroupName="Close"
-                        Style="{StaticResource CheckStyle}"/>
+                        IsEnabled="{Binding Path=IsChecked, ElementName=chkTrayClose, Converter={StaticResource BoolInverterConverter}}"
+                        Style="{StaticResource CheckStyle}">
+                        <qt:RadioButtonEx.IsCheckedReal>
+                            <MultiBinding Converter="{StaticResource RadioBoolMultiConverter}"
+                                ConverterParameter="False,True,False">
+                                <Binding Path="IsChecked" ElementName="chkTrayClose"/>
+                                <Binding Path="CloseBtnClosesSingleTab"/>
+                                <Binding Path="CloseBtnClosesUnlocked"/>
+                            </MultiBinding>
+                        </qt:RadioButtonEx.IsCheckedReal>
+                    </qt:RadioButtonEx>
                     <qt:RadioButtonEx x:Name="radCloseBtnUnlocked"
                         Content="Close all unlocked tabs"
                         GroupName="Close"
-                        Style="{StaticResource CheckStyle}"/>
+                        IsEnabled="{Binding Path=IsChecked, ElementName=chkTrayClose, Converter={StaticResource BoolInverterConverter}}"
+                        Style="{StaticResource CheckStyle}">
+                        <qt:RadioButtonEx.IsCheckedReal>
+                            <MultiBinding Converter="{StaticResource RadioBoolMultiConverter}"
+                                ConverterParameter="False,False,True">
+                                <Binding Path="IsChecked" ElementName="chkTrayClose"/>
+                                <Binding Path="CloseBtnClosesSingleTab"/>
+                                <Binding Path="CloseBtnClosesUnlocked"/>
+                            </MultiBinding>
+                        </qt:RadioButtonEx.IsCheckedReal>
+                    </qt:RadioButtonEx>
                     <Label
                         Content="Send the window to the Task Tray on"
                         Style="{StaticResource SectionHeaderStyle}"/>
                     <CheckBox x:Name="chkTrayClose"
                         Content="Close"
+                        IsChecked="{Binding Path=TrayOnClose}"
                         Style="{StaticResource CheckStyle}"/>
                     <CheckBox x:Name="chkTrayMinimize"
                         Content="Minimize"
+                        IsChecked="{Binding Path=TrayOnMinimize}"
                         Style="{StaticResource CheckStyle}"/>
                     <Label
                         Content="Taskbar integration"
                         Style="{StaticResource SectionHeaderStyle}"/>
                     <CheckBox x:Name="chkTaskbarThumbnails"
                         Content="Show tab previews on the Taskbar"
+                        IsChecked="{Binding Path=TaskbarThumbnails}"
                         Style="{StaticResource CheckStyle}"/>
                 </StackPanel>
             </TabItem>

@@ -101,6 +101,7 @@ namespace QTTabBarLib {
             public bool CloseBtnClosesSingleTab  { get; set; }
             public bool TrayOnClose              { get; set; }
             public bool TrayOnMinimize           { get; set; }
+            public bool TaskbarThumbnails        { get; set; }
 
             public _Window() {
                 CaptureNewWindows = false;
@@ -110,6 +111,7 @@ namespace QTTabBarLib {
                 CloseBtnClosesUnlocked = false;
                 TrayOnClose = false;
                 TrayOnMinimize = false;
+                TaskbarThumbnails = false;
             }
         }
 
@@ -208,7 +210,6 @@ namespace QTTabBarLib {
 
         [Serializable]
         public class _Misc {
-            public bool TaskbarThumbnails        { get; set; }
             public bool KeepHistory              { get; set; }
             public int TabHistoryCount           { get; set; }
             public bool KeepRecentFiles          { get; set; }
@@ -218,7 +219,6 @@ namespace QTTabBarLib {
             public bool UseIniFile               { get; set; }
 
             public _Misc() {
-                TaskbarThumbnails = false;
                 KeepHistory = true;
                 TabHistoryCount = 15;
                 KeepRecentFiles = true;
