@@ -38,7 +38,7 @@ namespace QTTabBarLib {
 
         private static OptionsDialog instance;
         private static Thread instanceThread;
-        private Config workingConfig;
+        public Config workingConfig { get; set; }
 
         public static void Open() {
             // TODO: Primary process only
@@ -88,26 +88,6 @@ namespace QTTabBarLib {
         private OptionsDialog() {
             workingConfig = QTUtility2.DeepClone(ConfigManager.LoadedConfig);
             InitializeComponent();
-
-            tabWindow.Tag       = typeof(Config).GetField("window");
-            tabTabs.Tag         = typeof(Config).GetField("tabs");
-            tabTweaks.Tag       = typeof(Config).GetField("tweaks");
-            tabTooltips.Tag     = typeof(Config).GetField("tips");
-            tabGeneral.Tag      = typeof(Config).GetField("misc");
-            tabAppearence.Tag   = typeof(Config).GetField("skin");
-            tabMouse.Tag        = typeof(Config).GetField("mouse");
-            //tabKeys.Tag       = typeof(Config).GetField("keys");
-            //tabGroups.Tag     = typeof(Config).GetField("groups");
-            //tabApps.Tag       = typeof(Config).GetField("apps");
-            tabButtonBar.Tag    = typeof(Config).GetField("bbar");
-            //tabPlugins.Tag    = typeof(Config).GetField("plugins");
-            tabLanguage.Tag     = typeof(Config).GetField("lang");
-
-            foreach(TabItem tab in tabbedPanel.Items) {
-                if(tab.Tag != null) {
-                    tab.DataContext = ((FieldInfo)tab.Tag).GetValue(workingConfig);
-                }
-            }
         }
 
         public void Dispose() {
@@ -136,11 +116,12 @@ namespace QTTabBarLib {
         private void btnResetPage_Click(object sender, RoutedEventArgs e) {
             // todo: confirm
             TabItem tab = ((TabItem)tabbedPanel.SelectedItem);
-            if(tab.Tag != null) {
-                FieldInfo field = ((FieldInfo)tab.Tag);
-                object c = Activator.CreateInstance(field.FieldType);
-                field.SetValue(workingConfig, c);
-                tab.DataContext = c;
+            BindingExpression expr = tab.GetBindingExpression(DataContextProperty);
+            if(expr != null) {
+                PropertyInfo prop = typeof(Config).GetProperty(expr.ParentBinding.Path.Path);
+                object c = Activator.CreateInstance(prop.PropertyType);
+                prop.SetValue(workingConfig, c, null);
+                expr.UpdateTarget();
             }
             else {
                 // todo
@@ -150,14 +131,7 @@ namespace QTTabBarLib {
         private void BtnResetAll_Click(object sender, RoutedEventArgs e) {
             // todo: confirm
             workingConfig = new Config();
-            foreach(TabItem tab in tabbedPanel.Items) {
-                if(tab.Tag != null) {
-                    tab.DataContext = ((FieldInfo)tab.Tag).GetValue(workingConfig);
-                }
-                else {
-                    // todo
-                }
-            }
+            tabbedPanel.GetBindingExpression(DataContextProperty).UpdateTarget();
         }
 
         private void btnOK_Click(object sender, RoutedEventArgs e) {

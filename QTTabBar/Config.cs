@@ -59,6 +59,7 @@ namespace QTTabBarLib {
     [Serializable]
     public class Config {
 
+        // Shortcuts to the loaded config, for convenience.
         public static _Window Window    { get { return ConfigManager.LoadedConfig.window; } }
         public static _Tabs Tabs        { get { return ConfigManager.LoadedConfig.tabs; } }
         public static _Tweaks Tweaks    { get { return ConfigManager.LoadedConfig.tweaks; } }
@@ -69,15 +70,27 @@ namespace QTTabBarLib {
         public static _Mouse Mouse      { get { return ConfigManager.LoadedConfig.mouse; } }
         public static _Lang Lang        { get { return ConfigManager.LoadedConfig.lang; } }
 
-        public _Window window = new _Window();
-        public _Tabs tabs = new _Tabs();
-        public _Tweaks tweaks = new _Tweaks();
-        public _Tips tips = new _Tips();
-        public _Misc misc = new _Misc();
-        public _Skin skin = new _Skin();
-        public _BBar bbar = new _BBar();
-        public _Mouse mouse = new _Mouse();
-        public _Lang lang = new _Lang();
+        public _Window window   { get; set; }
+        public _Tabs tabs       { get; set; }
+        public _Tweaks tweaks   { get; set; }
+        public _Tips tips       { get; set; }
+        public _Misc misc       { get; set; }
+        public _Skin skin       { get; set; }
+        public _BBar bbar       { get; set; }
+        public _Mouse mouse     { get; set; }
+        public _Lang lang       { get; set; }
+
+        public Config() {
+            window = new _Window();
+            tabs = new _Tabs();
+            tweaks = new _Tweaks();
+            tips = new _Tips();
+            misc = new _Misc();
+            skin = new _Skin();
+            bbar = new _BBar();
+            mouse = new _Mouse();
+            lang = new _Lang();
+        }
 
         [Serializable]
         public class _Window {
