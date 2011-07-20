@@ -29,6 +29,7 @@
     <Window.Resources>
         <qt:BoolInverterConverter x:Key="BoolInverterConverter"/>
         <qt:RadioBoolMultiConverter x:Key="RadioBoolMultiConverter"/>
+        <qt:BitmapToImageSourceConverter x:Key="BitmapToImageSourceConverter"/>
         <Style x:Key="SectionHeaderStyle" TargetType="Label">
             <Setter Property="Background"       Value="#FFF0F2F5"/>
             <Setter Property="BorderBrush"      Value="#FFE2E4E7"/>
@@ -75,7 +76,7 @@
                 Height="25"
                 Margin="0,1"
                 Width="128">
-                <Image Source="C:\Users\Paul\Desktop\res\sel.png"/>
+                <Image Source="{Binding Source={x:Static qt:Resources_Image.imgOptions_Selected}, Converter={StaticResource BitmapToImageSourceConverter}}"/>
                 <TextBlock
                     Margin="10,1"
                     Text="{Binding Header}" 
@@ -88,7 +89,7 @@
                 Height="25"
                 Margin="0,1"
                 Width="128">
-                <Image Source="C:\Users\Paul\Desktop\res\hot.png"/>
+                <Image Source="{Binding Source={x:Static qt:Resources_Image.imgOptions_Hot}, Converter={StaticResource BitmapToImageSourceConverter}}"/>
                 <TextBlock
                     Margin="10,1"
                     Text="{Binding Header}" 
@@ -101,7 +102,7 @@
                 Height="25"
                 Margin="0,1"
                 Width="128">
-                <Image Source="C:\Users\Paul\Desktop\res\selhot.png"/>
+                <Image Source="{Binding Source={x:Static qt:Resources_Image.imgOptions_SelAndHot}, Converter={StaticResource BitmapToImageSourceConverter}}"/>
                 <TextBlock
                     Margin="10,1"
                     Text="{Binding Header}" 
@@ -114,7 +115,7 @@
                 Height="25"
                 Margin="0,1"
                 Width="128">
-                <Image Source="C:\Users\Paul\Desktop\res\focuslost.png"/>
+                <Image Source="{Binding Source={x:Static qt:Resources_Image.imgOptions_NoFocus}, Converter={StaticResource BitmapToImageSourceConverter}}"/>
                 <TextBlock
                     Margin="10,1"
                     Text="{Binding Header}" 

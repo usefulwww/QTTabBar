@@ -362,11 +362,11 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources_Image.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources_Image.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources_String.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources_String.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>

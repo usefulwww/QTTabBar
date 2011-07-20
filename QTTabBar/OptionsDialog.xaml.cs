@@ -16,6 +16,7 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -24,6 +25,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Interop;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using QTTabBarLib.Interop;
 
 namespace QTTabBarLib {
     /// <summary>
@@ -186,6 +191,25 @@ namespace QTTabBarLib {
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) {
             return (parameter as string).Split(',').Select(s => (object)bool.Parse(s)).ToArray();
+        }
+    }
+
+    [ValueConversion(typeof(Bitmap), typeof(ImageSource))]
+    public class BitmapToImageSourceConverter : IValueConverter {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+            if(!(value is Bitmap)) return null;
+            IntPtr hBitmap = ((Bitmap)value).GetHbitmap();
+            try {
+                return Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero,
+                        Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            }
+            finally {
+                PInvoke.DeleteObject(hBitmap);
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+            throw new NotSupportedException();
         }
     }
 

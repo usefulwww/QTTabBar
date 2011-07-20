@@ -22,7 +22,7 @@ namespace QTTabBarLib {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources_String {
+    public class Resources_String {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace QTTabBarLib {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("QTTabBarLib.Resources_String", typeof(Resources_String).Assembly);
@@ -51,7 +51,7 @@ namespace QTTabBarLib {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace QTTabBarLib {
         /// <summary>
         ///   Looks up a localized string similar to Separator;Go back;Go forward;Groups;Recently Closed;Applications;New window;Clone this;Lock;Copy Tool;TopMost;Close;Close all but current;Close window;Close left;Close right;Up one level;Reload;Search;Opacity;Search Box.
         /// </summary>
-        internal static string ButtonBar_BtnName {
+        public static string ButtonBar_BtnName {
             get {
                 return ResourceManager.GetString("ButtonBar_BtnName", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace QTTabBarLib {
         /// <summary>
         ///   Looks up a localized string similar to Path;Name;Current folder path;Current folder name;MD5; items;Paths of all open tabs.
         /// </summary>
-        internal static string ButtonBar_Misc {
+        public static string ButtonBar_Misc {
             get {
                 return ResourceManager.GetString("ButtonBar_Misc", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace QTTabBarLib {
         /// <summary>
         ///   Looks up a localized string similar to &amp;Add;&amp;Remove;&amp;Close;&amp;Reset;&amp;Up;&amp;Down;&amp;Browse image...;Small icon;Large icon;&amp;Customize...;&amp;Lock menus;Re&amp;set image;Show text labels;Selective text;No text labels;Lock the size of the search box.
         /// </summary>
-        internal static string ButtonBar_Option {
+        public static string ButtonBar_Option {
             get {
                 return ResourceManager.GetString("ButtonBar_Option", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace QTTabBarLib {
         /// <summary>
         ///   Looks up a localized string similar to OK;Cancel;&amp;Apply;&amp;Default.
         /// </summary>
-        internal static string DialogButtons {
+        public static string DialogButtons {
             get {
                 return ResourceManager.GetString("DialogButtons", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace QTTabBarLib {
         /// <summary>
         ///   Looks up a localized string similar to Copy to:;Move to:;Create shortcut in:.
         /// </summary>
-        internal static string DragDropToolTip {
+        public static string DragDropToolTip {
             get {
                 return ResourceManager.GetString("DragDropToolTip", resourceCulture);
             }
@@ -108,7 +108,7 @@ namespace QTTabBarLib {
         /// <summary>
         ///   Looks up a localized string similar to Desktop Search;Image file is invalid.\r\n\r\nPlease specify 432 x 40 px image file.;Search Results in;shortcut.
         /// </summary>
-        internal static string Misc_Strings {
+        public static string Misc_Strings {
             get {
                 return ResourceManager.GetString("Misc_Strings", resourceCulture);
             }
@@ -117,7 +117,7 @@ namespace QTTabBarLib {
         /// <summary>
         ///   Looks up a localized string similar to https://sourceforge.net/donate/index.php?group_id=312930.
         /// </summary>
-        internal static string PayPalURL {
+        public static string PayPalURL {
             get {
                 return ResourceManager.GetString("PayPalURL", resourceCulture);
             }
@@ -126,7 +126,7 @@ namespace QTTabBarLib {
         /// <summary>
         ///   Looks up a localized string similar to Go back ( Alt + Left );Go forward ( Alt + Right );Go back to start;Go forward to end;Select next tab;Select previous tab;Select first tab;Select last tab;Close current tab;Close all but current;Close left;Close right;Close window ( Alt + F4 );Undo close;Clone current tab;Open current folder in new window;Lock / unlock current;Lock / unlock all;Browse folder;Create new group;Open option dialog;Show toolbar menu;Show current tab menu;Show group menu ( button bar );Show recent folder menu ( button bar );Show u [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string ShortcutKeys_ActionNames {
+        public static string ShortcutKeys_ActionNames {
             get {
                 return ResourceManager.GetString("ShortcutKeys_ActionNames", resourceCulture);
             }
@@ -135,7 +135,7 @@ namespace QTTabBarLib {
         /// <summary>
         ///   Looks up a localized string similar to QTTabBar;Plugin;User commands.
         /// </summary>
-        internal static string ShortcutKeys_Groups {
+        public static string ShortcutKeys_Groups {
             get {
                 return ResourceManager.GetString("ShortcutKeys_Groups", resourceCulture);
             }
@@ -146,7 +146,7 @@ namespace QTTabBarLib {
         ///
         ///Do you want to reassign?;Confirmation of reassignment.
         /// </summary>
-        internal static string ShortcutKeys_MsgReassign {
+        public static string ShortcutKeys_MsgReassign {
             get {
                 return ResourceManager.GetString("ShortcutKeys_MsgReassign", resourceCulture);
             }
@@ -155,7 +155,7 @@ namespace QTTabBarLib {
         /// <summary>
         ///   Looks up a localized string similar to http://qttabbar.sourceforge.net.
         /// </summary>
-        internal static string SiteURL {
+        public static string SiteURL {
             get {
                 return ResourceManager.GetString("SiteURL", resourceCulture);
             }
@@ -164,7 +164,7 @@ namespace QTTabBarLib {
         /// <summary>
         ///   Looks up a localized string similar to Close;Close right;Close left;Close all but this;Add to Group;Create new Group;Lock;Clone this;New window;Copy path;Properties;Tab history;Groups;Undo closed;Last activated;Recently opened files;Browse folder;Close all but current;Close Window;Options;Unlock;Add to Application menu : ;items;Cancel;Branches;Remove this item from menu;O&amp;pen containing folder;Tab label;Tab order;Name;Path;Active;Lock the Toolbars;Merge tabs of other windows;Invert.
         /// </summary>
-        internal static string TabBar_Menu {
+        public static string TabBar_Menu {
             get {
                 return ResourceManager.GetString("TabBar_Menu", resourceCulture);
             }
@@ -175,7 +175,7 @@ namespace QTTabBarLib {
         ///
         /// &quot;{0}&quot;..
         /// </summary>
-        internal static string TabBar_Message {
+        public static string TabBar_Message {
             get {
                 return ResourceManager.GetString("TabBar_Message", resourceCulture);
             }
@@ -184,7 +184,7 @@ namespace QTTabBarLib {
         /// <summary>
         ///   Looks up a localized string similar to Create New Group;Group name:;Add all tabs.
         /// </summary>
-        internal static string TabBar_NewGroup {
+        public static string TabBar_NewGroup {
             get {
                 return ResourceManager.GetString("TabBar_NewGroup", resourceCulture);
             }
@@ -193,7 +193,7 @@ namespace QTTabBarLib {
         /// <summary>
         ///   Looks up a localized string similar to Activate new tab;Reuse existing tab;Close all tabs when group opened;Show tooltips;Capture mouse X1/X2 buttons;Show navigation buttons;Tab history;Recent files;Use file Drag &amp;&amp; Drop onto tabs;Language file:;New tab location:;After current tab closed, activate:;When tab double-clicked:;When background double-clicked:;Path/Group name:;Multiple rows of tab;Rename ambiguous tabs automatically;When mouse wheel clicked on folder:;Up one level when dbl clicked on folder margin;No window resizing;Save window transp [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string TabBar_Option {
+        public static string TabBar_Option {
             get {
                 return ResourceManager.GetString("TabBar_Option", resourceCulture);
             }
@@ -202,7 +202,7 @@ namespace QTTabBarLib {
         /// <summary>
         ///   Looks up a localized string similar to Clear;Up;Down;Add separator;Start Up;Plugin Option;Bg color;Txt color;Default;Set;Delete;Check now;Copy to clipboard.
         /// </summary>
-        internal static string TabBar_Option_Buttons {
+        public static string TabBar_Option_Buttons {
             get {
                 return ResourceManager.GetString("TabBar_Option_Buttons", resourceCulture);
             }
@@ -211,7 +211,7 @@ namespace QTTabBarLib {
         /// <summary>
         ///   Looks up a localized string similar to Left;Right;Most right;Most left;Last activated;Up One Level;Close;Lock;Show menu;New window;Clone;Copy path;Properties; - ;Browse folder;Close all but current;Lock all;Restore last closed;Options;Close window;Clone current;multiple;New tab;Auto;Fixed;Limit tab width;Stretch;Tile;Real size;Left;Center;Vista;XP;Stretch on each band.
         /// </summary>
-        internal static string TabBar_Option_DropDown {
+        public static string TabBar_Option_DropDown {
             get {
                 return ResourceManager.GetString("TabBar_Option_DropDown", resourceCulture);
             }
@@ -220,7 +220,7 @@ namespace QTTabBarLib {
         /// <summary>
         ///   Looks up a localized string similar to General;Tab;Window;Appearance;Groups;Applications;Plugins;Shortcut Keys;Misc.;Path.
         /// </summary>
-        internal static string TabBar_Option_Genre {
+        public static string TabBar_Option_Genre {
             get {
                 return ResourceManager.GetString("TabBar_Option_Genre", resourceCulture);
             }
@@ -233,7 +233,7 @@ namespace QTTabBarLib {
         ///
         ///Are you sure you want to do this?;Display file information below images;Use old ListView control (Win7);Display column headers in all views (Win7).
         /// </summary>
-        internal static string TabBar_Option2 {
+        public static string TabBar_Option2 {
             get {
                 return ResourceManager.GetString("TabBar_Option2", resourceCulture);
             }
@@ -242,7 +242,7 @@ namespace QTTabBarLib {
         /// <summary>
         ///   Looks up a localized string similar to Taskbar;Desktop;Lock items;Draw title background;Menu by one click;Enable application shortcut keys.
         /// </summary>
-        internal static string TaskBar_Menu {
+        public static string TaskBar_Menu {
             get {
                 return ResourceManager.GetString("TaskBar_Menu", resourceCulture);
             }
@@ -251,7 +251,7 @@ namespace QTTabBarLib {
         /// <summary>
         ///   Looks up a localized string similar to Groups;Undo closed;Applications;Recently opened files.
         /// </summary>
-        internal static string TaskBar_Titles {
+        public static string TaskBar_Titles {
             get {
                 return ResourceManager.GetString("TaskBar_Titles", resourceCulture);
             }
@@ -264,7 +264,7 @@ namespace QTTabBarLib {
         ///
         ///Press OK to go to the web site.;Your version of QTTabBar is up to date.;New development version found:.
         /// </summary>
-        internal static string UpdateCheck {
+        public static string UpdateCheck {
             get {
                 return ResourceManager.GetString("UpdateCheck", resourceCulture);
             }
