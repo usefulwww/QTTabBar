@@ -29,8 +29,11 @@
     Width="724">
     <Window.Resources>
         <qt:BoolInverterConverter x:Key="BoolInverterConverter"/>
-        <qt:RadioBoolMultiConverter x:Key="RadioBoolMultiConverter"/>
         <qt:BitmapToImageSourceConverter x:Key="BitmapToImageSourceConverter"/>
+        <qt:CheckClearingMultiConverter x:Key="CheckClearingMultiConverter"/>
+        <qt:BoolJoinMultiConverter x:Key="BoolJoinMultiConverter"/>
+        <qt:StringEqualityConverter x:Key="StringEqualityConverter"/>
+
         <Style x:Key="SectionHeaderStyle" TargetType="Label">
             <Setter Property="Background"       Value="#FFF0F2F5"/>
             <Setter Property="BorderBrush"      Value="#FFE2E4E7"/>
@@ -285,19 +288,31 @@
                             HorizontalAlignment="Center"
                             IsCheckedReal="{Binding Path=CaptureNewWindows, Converter={StaticResource BoolInverterConverter}}"/>
                     </Grid>
-                    <Label
+                    <Label x:Name="lblRestoreTabs"
                         Content="Session saving"
-                        Style="{StaticResource SectionHeaderStyle}"/>
+                        Style="{StaticResource SectionHeaderStyle}">
+                        <!-- We use the Tag of the group's section header
+                             label to keep track of the property values, and
+                             all the radio buttons are bound to it. -->
+                        <Label.Tag>
+                            <MultiBinding 
+                                Converter="{StaticResource BoolJoinMultiConverter}"
+                                Mode="TwoWay">
+                                <Binding Path="RestoreSession" Mode="TwoWay"/>
+                                <Binding Path="RestoreOnlyLocked" Mode="TwoWay"/>
+                            </MultiBinding>
+                        </Label.Tag>
+                    </Label>
                     <qt:RadioButtonEx x:Name="radRestoreTabsOff"
                         Content="Start a new session each time"
                         GroupName="Session"
                         Style="{StaticResource CheckStyle}">
                         <qt:RadioButtonEx.IsCheckedReal>
-                            <MultiBinding Converter="{StaticResource RadioBoolMultiConverter}"
-                                ConverterParameter="False,False">
-                                <Binding Path="RestoreSession"/>
-                                <Binding Path="RestoreOnlyLocked"/>
-                            </MultiBinding>
+                            <Binding
+                                Converter="{StaticResource StringEqualityConverter}"
+                                ConverterParameter="False,False"
+                                ElementName="lblRestoreTabs"
+                                Path="Tag"/>
                         </qt:RadioButtonEx.IsCheckedReal>
                     </qt:RadioButtonEx>    
                     <qt:RadioButtonEx x:Name="radRestoreTabsOn"
@@ -305,11 +320,11 @@
                         GroupName="Session"
                         Style="{StaticResource CheckStyle}">
                         <qt:RadioButtonEx.IsCheckedReal>
-                            <MultiBinding Converter="{StaticResource RadioBoolMultiConverter}"
-                                ConverterParameter="True,False">
-                                <Binding Path="RestoreSession"/>
-                                <Binding Path="RestoreOnlyLocked"/>
-                            </MultiBinding>
+                            <Binding
+                                Converter="{StaticResource StringEqualityConverter}"
+                                ConverterParameter="True,False"
+                                ElementName="lblRestoreTabs"
+                                Path="Tag"/>
                         </qt:RadioButtonEx.IsCheckedReal>
                     </qt:RadioButtonEx>
                     <qt:RadioButtonEx x:Name="radRestoreTabsLockedOnly"
@@ -317,28 +332,37 @@
                         GroupName="Session"
                         Style="{StaticResource CheckStyle}">
                         <qt:RadioButtonEx.IsCheckedReal>
-                            <MultiBinding Converter="{StaticResource RadioBoolMultiConverter}"
-                                ConverterParameter="True,True">
-                                <Binding Path="RestoreSession"/>
-                                <Binding Path="RestoreOnlyLocked"/>
-                            </MultiBinding>
+                            <Binding
+                                Converter="{StaticResource StringEqualityConverter}"
+                                ConverterParameter="True,True"
+                                ElementName="lblRestoreTabs"
+                                Path="Tag"/>
                         </qt:RadioButtonEx.IsCheckedReal>
                     </qt:RadioButtonEx>
-                    <Label
+                    <Label x:Name="lblCloseButton"
                         Content="When the close button is clicked"
-                        Style="{StaticResource SectionHeaderStyle}"/>
+                        Style="{StaticResource SectionHeaderStyle}">
+                        <Label.Tag>
+                            <MultiBinding 
+                                Converter="{StaticResource BoolJoinMultiConverter}"
+                                Mode="TwoWay">
+                                <Binding Path="IsChecked" ElementName="chkTrayClose"/>
+                                <Binding Path="CloseBtnClosesSingleTab" Mode="TwoWay"/>
+                                <Binding Path="CloseBtnClosesUnlocked" Mode="TwoWay"/>
+                            </MultiBinding>
+                        </Label.Tag>
+                    </Label>
                     <qt:RadioButtonEx x:Name="radCloseBtnWindow"
                         Content="Close the window"
                         GroupName="Close"
                         IsEnabled="{Binding Path=IsChecked, ElementName=chkTrayClose, Converter={StaticResource BoolInverterConverter}}"
                         Style="{StaticResource CheckStyle}">
                         <qt:RadioButtonEx.IsCheckedReal>
-                            <MultiBinding Converter="{StaticResource RadioBoolMultiConverter}"
-                                ConverterParameter="False,False,False">
-                                <Binding Path="IsChecked" ElementName="chkTrayClose"/>
-                                <Binding Path="CloseBtnClosesSingleTab"/>
-                                <Binding Path="CloseBtnClosesUnlocked"/>
-                            </MultiBinding>
+                            <Binding
+                                Converter="{StaticResource StringEqualityConverter}"
+                                ConverterParameter="False,False,False"
+                                ElementName="lblCloseButton"
+                                Path="Tag"/>
                         </qt:RadioButtonEx.IsCheckedReal>
                     </qt:RadioButtonEx>
                     <qt:RadioButtonEx x:Name="radCloseBtnTabs"
@@ -347,12 +371,11 @@
                         IsEnabled="{Binding Path=IsChecked, ElementName=chkTrayClose, Converter={StaticResource BoolInverterConverter}}"
                         Style="{StaticResource CheckStyle}">
                         <qt:RadioButtonEx.IsCheckedReal>
-                            <MultiBinding Converter="{StaticResource RadioBoolMultiConverter}"
-                                ConverterParameter="False,True,False">
-                                <Binding Path="IsChecked" ElementName="chkTrayClose"/>
-                                <Binding Path="CloseBtnClosesSingleTab"/>
-                                <Binding Path="CloseBtnClosesUnlocked"/>
-                            </MultiBinding>
+                            <Binding
+                                Converter="{StaticResource StringEqualityConverter}"
+                                ConverterParameter="False,True,False"
+                                ElementName="lblCloseButton"
+                                Path="Tag"/>
                         </qt:RadioButtonEx.IsCheckedReal>
                     </qt:RadioButtonEx>
                     <qt:RadioButtonEx x:Name="radCloseBtnUnlocked"
@@ -361,12 +384,11 @@
                         IsEnabled="{Binding Path=IsChecked, ElementName=chkTrayClose, Converter={StaticResource BoolInverterConverter}}"
                         Style="{StaticResource CheckStyle}">
                         <qt:RadioButtonEx.IsCheckedReal>
-                            <MultiBinding Converter="{StaticResource RadioBoolMultiConverter}"
-                                ConverterParameter="False,False,True">
-                                <Binding Path="IsChecked" ElementName="chkTrayClose"/>
-                                <Binding Path="CloseBtnClosesSingleTab"/>
-                                <Binding Path="CloseBtnClosesUnlocked"/>
-                            </MultiBinding>
+                            <Binding
+                                Converter="{StaticResource StringEqualityConverter}"
+                                ConverterParameter="False,False,True"
+                                ElementName="lblCloseButton"
+                                Path="Tag"/>
                         </qt:RadioButtonEx.IsCheckedReal>
                     </qt:RadioButtonEx>
                     <Label
@@ -423,99 +445,129 @@
                             Content="Open new tabs:"
                             Style="{StaticResource LabelStyle}"/>
                         <ComboBox x:Name="cmbNewTabPos"
+                            DisplayMemberPath="Value"
                             Grid.Column="1"
                             Height="23"
                             Margin="0,2,-47,2"
-                            Width="167">
-                            <ComboBoxItem Content="Left of the current tab"/>
-                            <ComboBoxItem Content="Right of the current tab"/>
-                            <ComboBoxItem Content="In the leftmost position"/>
-                            <ComboBoxItem Content="In the rightmost position"/>
-                        </ComboBox>
+                            SelectedValue="{Binding Path=NewTabPosition}"
+                            SelectedValuePath="Key"
+                            Width="167"/>
                         <Label
                             Content="When the current tab is closed, switch to the:"
                             Grid.Row="1"
                             Style="{StaticResource LabelStyle}"/>
-                        <ComboBox
+                        <ComboBox x:Name="cmbNextAfterClosed"
+                            DisplayMemberPath="Value"
                             Grid.Column="1"
                             Grid.Row="1"
                             Height="23"
                             Margin="0,2,-47,2"
-                            Width="167">
-                            <ComboBoxItem Content="Tab to the right"/>
-                            <ComboBoxItem Content="Tab to the left"/>
-                            <ComboBoxItem Content="Leftmost tab"/>
-                            <ComboBoxItem Content="Rightmost tab"/>
-                            <ComboBoxItem Content="Last activated tab"/>
-                        </ComboBox>
+                            SelectedValue="{Binding Path=NextAfterClosed}"
+                            SelectedValuePath="Key"
+                            Width="167"/>
                     </Grid>
-                    <CheckBox
+                    <CheckBox x:Name="chkActivateNewTab"
                         Content="Switch to new tabs immediately"
+                        IsChecked="{Binding Path=ActivateNewTab}"
                         Style="{StaticResource CheckStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkNeverOpenSame"
                         Content="Reuse existing tabs"
+                        IsChecked="{Binding Path=NeverOpenSame}"
                         Style="{StaticResource CheckStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkRenameAmbTabs"
                         Content="Rename ambiguous tabs"
+                        IsChecked="{Binding Path=RenameAmbTabs}"
                         Style="{StaticResource CheckStyle}"/>
                     <Label
                         Content="When drag-hovering over a tab,"
                         Style="{StaticResource LabelStyle}"/>
-                    <qt:RadioButtonEx
+                    <qt:RadioButtonEx x:Name="radDragOverTabOpensSTD_No"
                         Content="Switch to it"
+                        IsCheckedReal ="{Binding Path=DragOverTabOpensSDT, Converter={StaticResource BoolInverterConverter}}"
                         Style="{StaticResource IndentedCheckStyle}"/>
-                    <qt:RadioButtonEx
+                    <qt:RadioButtonEx x:Name="radDragOverTabOpensSDT_Yes"
                         Content="Show the Subfolder Tip menu"
+                        IsCheckedReal ="{Binding Path=DragOverTabOpensSDT}"
                         Style="{StaticResource IndentedCheckStyle}"/>
                     <Label
                         Content="Tab icons"
                         Style="{StaticResource SectionHeaderStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkShowFolderIcon"
                         Content="Show folder icons on tabs"
+                        IsChecked="{Binding Path=ShowFolderIcon}"
                         Style="{StaticResource CheckStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkShowSDTOnTab"
                         Content="Show the Subfolder Tip menu when the icon is clicked"
+                        IsChecked="{Binding Path=ShowSubDirTipOnTab}"
+                        IsEnabled="{Binding Path=IsChecked, ElementName=chkShowFolderIcon}"
                         Style="{StaticResource IndentedCheckStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkShowDriveLetters"
                         Content="Show the drive letter on the icon"
+                        IsChecked="{Binding Path=ShowDriveLetters}"
+                        IsEnabled="{Binding Path=IsChecked, ElementName=chkShowFolderIcon}"
                         Style="{StaticResource IndentedCheckStyle}"/>
                     <Label
                         Content="Close button"
                         Style="{StaticResource SectionHeaderStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkShowCloseButtons"
                         Content="Show close button on tabs"
+                        IsChecked="{Binding Path=ShowCloseButtons}"
                         Style="{StaticResource CheckStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkCloseBtnsWithAlt"
                         Content="Only with the Alt key down"
+                        IsChecked="{Binding Path=CloseBtnsWithAlt}"
+                        IsEnabled="{Binding Path=IsChecked, ElementName=chkShowCloseButtons}"
                         Style="{StaticResource IndentedCheckStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="CloseBtnsOnHover"
                         Content="Only on mouse hover"
+                        IsChecked="{Binding Path=CloseBtnsOnHover}"
+                        IsEnabled="{Binding Path=IsChecked, ElementName=chkShowCloseButtons}"
                         Style="{StaticResource IndentedCheckStyle}"/>
                     <Label
                         Content="Tab Bar"
                         Style="{StaticResource SectionHeaderStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkShowNavButtons"
                         Content="Show navigation buttons on the tab bar"
+                        IsChecked="{Binding Path=ShowNavButtons}"
                         Style="{StaticResource CheckStyle}"/>
                     <StackPanel
                         Margin="31,1,0,1"
                         Orientation="Horizontal">
-                        <qt:RadioButtonEx
-                            Content="On the right"
-                            HorizontalAlignment="Left"
-                            Margin="0,0,10,0"
-                            Style="{StaticResource CheckStyle}"/>
-                        <qt:RadioButtonEx
+                        <qt:RadioButtonEx x:Name="radNavButtonsOnRight_No"
                             Content="On the left"
                             HorizontalAlignment="Left"
+                            IsEnabled="{Binding Path=IsChecked, ElementName=chkShowNavButtons}"
                             Margin="0,0,10,0"
-                            Style="{StaticResource CheckStyle}"/>
+                            Style="{StaticResource CheckStyle}">
+                            <qt:RadioButtonEx.IsCheckedReal>
+                                <MultiBinding Converter="{StaticResource CheckClearingMultiConverter}">
+                                    <Binding Path="NavButtonsOnRight" Converter="{StaticResource BoolInverterConverter}"/>
+                                    <Binding Path="IsEnabled" RelativeSource="{RelativeSource Self}"/>
+                                </MultiBinding>
+                            </qt:RadioButtonEx.IsCheckedReal>
+                        </qt:RadioButtonEx>
+                        <qt:RadioButtonEx x:Name="radNavButtonsOnRight_Yes"
+                            Content="On the right"
+                            HorizontalAlignment="Left"
+                            IsEnabled="{Binding Path=IsChecked, ElementName=chkShowNavButtons}"
+                            Margin="0,0,10,0"
+                            Style="{StaticResource CheckStyle}">
+                            <qt:RadioButtonEx.IsCheckedReal>
+                                <MultiBinding Converter="{StaticResource CheckClearingMultiConverter}">
+                                    <Binding Path="NavButtonsOnRight"/>
+                                    <Binding Path="IsEnabled" RelativeSource="{RelativeSource Self}"/>
+                                </MultiBinding>
+                            </qt:RadioButtonEx.IsCheckedReal>
+                        </qt:RadioButtonEx>
                     </StackPanel>
-                    <CheckBox
+                    <CheckBox x:Name="chkMultipleTabRows"
                         Content="Allow multiple rows of tabs"
+                        IsChecked="{Binding Path=MultipleTabRows}"
                         Style="{StaticResource CheckStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkActiveTabOnBottomRow"
                         Content="Always put the row with the active tab on the bottom"
+                        IsChecked="{Binding Path=HorizontalScroll}"
+                        IsEnabled="{Binding Path=IsChecked, ElementName=chkMultipleTabRows}"
                         Style="{StaticResource IndentedCheckStyle}"/>
                 </StackPanel>
             </TabItem>
@@ -540,52 +592,68 @@
                     <Label
                         Content="Tweaks that can be used with either List View"
                         Style="{StaticResource SectionHeaderStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkAlwaysShowHeaders"
                         Content="Display column headers in all view modes (Windows Vista/7)"
+                        IsChecked="{Binding Path=AlwaysShowHeaders}"
                         Style="{StaticResource CheckStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkRedirectLibraryFolders"
                         Content="Use the standard filesystem view for Library folders (Windows 7)"
+                        IsChecked="{Binding Path=RedirectLibraryFolders}"
                         Style="{StaticResource CheckStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkKillExtWhileRenaming"
                         Content="Deselect file extension when renaming files (Windows XP)"
+                        IsChecked="{Binding Path=KillExtWhileRenaming}"
                         Style="{StaticResource CheckStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkF2Selection"
                         Content="Cycle selection with F2 while renaming"
+                        IsChecked="{Binding Path=F2Selection}"
                         Style="{StaticResource CheckStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkWrapArrowKeySelection"
                         Content="Wrap around when moving the selection with the arrow keys"
+                        IsChecked="{Binding Path=WrapArrowKeySelection}"
                         Style="{StaticResource CheckStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkBackspaceUpLevel"
                         Content="Backspace goes up one level"
+                        IsChecked="{Binding Path=BackspaceUpLevel}"
                         Style="{StaticResource CheckStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkHorizontalScroll"
                         Content="Scrolling with mouse wheel while holding shift scrolls horizontally"
+                        IsChecked="{Binding Path=HorizontalScroll}"
                         Style="{StaticResource CheckStyle}"/>
                     <Label
                         Content="Tweaks that can only be used with the older List View"
                         Style="{StaticResource SectionHeaderStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkForceSysListView"
                         Content="Enable the older List View control (Windows 7)"
+                        IsChecked="{Binding Path=ForceSysListView}"
                         Style="{StaticResource CheckStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkToggleFullRowSelect"
                         Content="Full row selection in Details view"
+                        IsChecked="{Binding ToggleFullRowSelect}"
+                        IsEnabled="{Binding Path=IsChecked, ElementName=chkForceSysListView}"
                         Style="{StaticResource CheckStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkDetailsGridLines"
                         Content="Show grid lines in Details view"
+                        IsChecked="{Binding Path=DetailsGridLines}"
+                        IsEnabled="{Binding Path=IsChecked, ElementName=chkForceSysListView}"
                         Style="{StaticResource CheckStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkAlternateRowColors"
                         Content="Alternate row colors in Details view"
+                        IsChecked="{Binding Path=AlternateRowColors}"
+                        IsEnabled="{Binding Path=IsChecked, ElementName=chkForceSysListView}"
                         Style="{StaticResource CheckStyle}"/>
                     <StackPanel
                         Orientation="Horizontal">
                         <Button
                             Content="Background Color"
                             Height="23"
+                            IsEnabled="{Binding Path=IsChecked, ElementName=chkForceSysListView}"
                             Margin="31,2,5,2"
                             Width="120"/>
                         <Button
                             Content="Text Color"
                             Height="23"
+                            IsEnabled="{Binding Path=IsChecked, ElementName=chkForceSysListView}"
                             Margin="5,2"
                             Width="120"/>
                     </StackPanel>

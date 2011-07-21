@@ -16,6 +16,8 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -39,6 +41,21 @@ namespace QTTabBarLib {
         private static OptionsDialog instance;
         private static Thread instanceThread;
         public Config workingConfig { get; set; }
+
+        // todo: localize
+        private static Dictionary<TabPos, string> NewTabPosItems = new Dictionary<TabPos, string> {
+            {TabPos.Left,       "Left of the current tab"   },
+            {TabPos.Right,      "Right of the current tab"  },
+            {TabPos.Leftmost,   "In the leftmost position"  },
+            {TabPos.Rightmost,  "In the rightmost position" },
+        };
+        private static Dictionary<TabPos, string> NextAfterCloseItems = new Dictionary<TabPos, string> {
+            {TabPos.Left,       "Tab to the left"   },
+            {TabPos.Right,      "Tab to the right"  },
+            {TabPos.Leftmost,   "Leftmost tab"      },
+            {TabPos.Rightmost,  "Rightmost tab"     },
+            {TabPos.LastActive, "Last activated tab"},
+        };
 
         public static void Open() {
             // TODO: Primary process only
@@ -88,6 +105,8 @@ namespace QTTabBarLib {
         private OptionsDialog() {
             workingConfig = QTUtility2.DeepClone(ConfigManager.LoadedConfig);
             InitializeComponent();
+            cmbNewTabPos.ItemsSource = NewTabPosItems;
+            cmbNextAfterClosed.ItemsSource = NextAfterCloseItems;
         }
 
         public void Dispose() {
@@ -158,16 +177,34 @@ namespace QTTabBarLib {
         }
     }
 
-    public class RadioBoolMultiConverter : IMultiValueConverter {
+    public class BoolJoinMultiConverter : IMultiValueConverter {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture) {
-            // We can't have this match anything while the RadioButton is 
-            // changing, because the properties do not change atomically.  They
-            // change one at a time, which could cause crazy reentry problems.
-            return !RadioButtonEx.bIsChanging && (parameter as string) == values.StringJoin(",");
+            return values.StringJoin(",");
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) {
-            return (parameter as string).Split(',').Select(s => (object)bool.Parse(s)).ToArray();
+            return ((string)value).Split(',').Select(s => (object)bool.Parse(s)).ToArray();
+        }
+    }
+
+    public class CheckClearingMultiConverter : IMultiValueConverter {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture) {
+            return (bool)values[0] && (bool)values[1];
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) {
+            return new object[] { value, Binding.DoNothing };
+        }
+    }
+
+    [ValueConversion(typeof(string), typeof(bool))]
+    public class StringEqualityConverter : IValueConverter {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+            return (string)parameter == (string)value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+            return (bool)value ? parameter : Binding.DoNothing;
         }
     }
 
@@ -193,9 +230,8 @@ namespace QTTabBarLib {
     // Overloaded RadioButton class to work around .NET 3.5's horribly HORRIBLY
     // bugged RadioButton data binding.
     public class RadioButtonEx : RadioButton {
-        
-        // This has to be static.
-        public static bool bIsChanging;
+
+        private bool bIsChanging;
 
         public RadioButtonEx() {
             Checked += RadioButtonExtended_Checked;
@@ -211,14 +247,8 @@ namespace QTTabBarLib {
         }
 
         public bool? IsCheckedReal {
-            get {
-                return (bool?)GetValue(IsCheckedRealProperty);
-            }
-            set {
-                bIsChanging = true; 
-                SetValue(IsCheckedRealProperty, value); 
-                bIsChanging = false;
-            }
+            get { return (bool?)GetValue(IsCheckedRealProperty); }
+            set { SetValue(IsCheckedRealProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for IsCheckedReal.
@@ -230,7 +260,10 @@ namespace QTTabBarLib {
                 OnIsCheckedRealChanged));
 
         private static void OnIsCheckedRealChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            ((RadioButtonEx)d).IsChecked = (bool?)e.NewValue;
+            RadioButtonEx rbx = ((RadioButtonEx)d);
+            rbx.bIsChanging = true; 
+            rbx.IsChecked = (bool?)e.NewValue;
+            rbx.bIsChanging = false;
         }
     }
 }
