@@ -187,13 +187,13 @@ namespace QTTabBarLib {
         }
     }
 
-    public class CheckClearingMultiConverter : IMultiValueConverter {
+    public class LogicalAndMultiConverter : IMultiValueConverter {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture) {
-            return (bool)values[0] && (bool)values[1];
+            return values.All(b => (bool)b);
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) {
-            return new object[] { value, Binding.DoNothing };
+            return new object[] { value };
         }
     }
 
