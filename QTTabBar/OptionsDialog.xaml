@@ -656,7 +656,6 @@
                                 </MultiBinding>
                             </Button.IsEnabled>
                         </Button>
-
                         <Button
                             Content="Text Color"
                             Height="23"
@@ -693,32 +692,36 @@
                     <Label
                         Content="Subfolder Tips"
                         Style="{StaticResource SectionHeaderStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkShowSubDirTips"
                         Content="Enable Subfolder Tips"
+                        IsChecked="{Binding Path=ShowSubDirTips}"
                         Style="{StaticResource CheckStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkSubDirTipsWithShift"
                         Content="Only with the Shift key is down"
+                        IsChecked="{Binding Path=SubDirTipsWithShift}"
                         Style="{StaticResource IndentedCheckStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkSubDirTipsFiles"
                         Content="Show files"
+                        IsChecked="{Binding Path=SubDirTipsFiles}"
                         Style="{StaticResource IndentedCheckStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkSubDirTipsPreview"
                         Content="Show preview tooltips when mousing over menu items"
-                        Style="{StaticResource IndentedCheckStyle}"/>
-                    <CheckBox
-                        Content="Show folder icons on tabs"
+                        IsChecked="{Binding Path=SubDirTipsPreview}"
                         Style="{StaticResource IndentedCheckStyle}"/>
                     <Label
                         Content="Preview tooltips"
                         Style="{StaticResource SectionHeaderStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkShowTooltipPreviews"
                         Content="Enable preview tooltips"
+                        IsChecked="{Binding Path=ShowTooltipPreviews}"
                         Style="{StaticResource CheckStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkShowPreviewsWithShift"
                         Content="Only with the Shift key is down"
+                        IsChecked="{Binding Path=ShowPreviewsWithShift}"
                         Style="{StaticResource IndentedCheckStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkShowPreviewInfo"
                         Content="Show file information below images"
+                        IsChecked="{Binding Path=ShowPreviewInfo}"
                         Style="{StaticResource IndentedCheckStyle}"/>
                     <StackPanel
                         Margin="31,1,0,1"
