@@ -288,6 +288,19 @@
                             HorizontalAlignment="Center"
                             IsCheckedReal="{Binding Path=CaptureNewWindows, Converter={StaticResource BoolInverterConverter}}"/>
                     </Grid>
+                    <Label
+                        Content="Default location for new windows and tabs"
+                        Style="{StaticResource SectionHeaderStyle}"/>
+                    <StackPanel 
+                        Margin="13,0"
+                        Orientation="Horizontal">
+                        <TextBox
+                            Width="400"/>
+                        <Button 
+                            Content="..."
+                            Margin="8,2"
+                            Width="26"/>
+                    </StackPanel>
                     <Label x:Name="lblRestoreTabs"
                         Content="Session saving"
                         Style="{StaticResource SectionHeaderStyle}">
@@ -401,13 +414,6 @@
                     <CheckBox x:Name="chkTrayMinimize"
                         Content="Minimize"
                         IsChecked="{Binding Path=TrayOnMinimize}"
-                        Style="{StaticResource CheckStyle}"/>
-                    <Label
-                        Content="Taskbar integration"
-                        Style="{StaticResource SectionHeaderStyle}"/>
-                    <CheckBox x:Name="chkTaskbarThumbnails"
-                        Content="Show tab previews on the Taskbar"
-                        IsChecked="{Binding Path=TaskbarThumbnails}"
                         Style="{StaticResource CheckStyle}"/>
                 </StackPanel>
             </TabItem>
@@ -869,10 +875,16 @@
                                 VerticalAlignment="Bottom"/>
                         </StackPanel>
                         <Label
+                            Content="Taskbar integration"
+                            Style="{StaticResource SectionHeaderStyle}"/>
+                        <CheckBox x:Name="chkTaskbarThumbnails"
+                            Content="Show tab previews on the Taskbar"
+                            IsChecked="{Binding Path=TaskbarThumbnails}"
+                            Style="{StaticResource CheckStyle}"/>
+                        <Label
                             Content="History"
                             Style="{StaticResource SectionHeaderStyle}"/>
-                        <Grid
->
+                        <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="Auto"/>
@@ -883,14 +895,16 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <CheckBox
+                            <CheckBox x:Name="chkKeepHistory"
                                 Content="Keep history of closed tabs"
                                 Grid.Column="0"
+                                IsChecked="{Binding Path=KeepHistory}"
                                 Height="16"
                                 Margin="13,1,10,1"/>
-                            <CheckBox
+                            <CheckBox x:Name="chkKeepRecentFiles"
                                 Content="Keep history of opened files"
                                 Grid.Row="1"
+                                IsChecked="{Binding Path=KeepRecentFiles}"
                                 Height="16"
                                 Margin="13,1,10,1"/>
                             <TextBox
@@ -936,8 +950,9 @@
                         </StackPanel>
                         <StackPanel
                             Orientation="Horizontal">
-                            <CheckBox
+                            <CheckBox x:Name="chkAutoUpdate"
                                 Content="Check for updates periodically"
+                                IsChecked="{Binding Path=AutoUpdate}"
                                 Style="{StaticResource CheckStyle}"/>
                             <Button
                                 Content="Check now"
@@ -948,11 +963,13 @@
                         <Label
                             Content="Settings Location"
                             Style="{StaticResource SectionHeaderStyle}"/>
-                        <qt:RadioButtonEx
+                        <qt:RadioButtonEx x:Name="radUseIniFileNo"
                             Content="Store settings in the Windows Registry"
+                            IsCheckedReal="{Binding Path=UseIniFile, Converter={StaticResource BoolInverterConverter}}"
                             Style="{StaticResource CheckStyle}"/>
-                        <qt:RadioButtonEx
+                        <qt:RadioButtonEx x:Name="radUseIniFileYes"
                             Content="Store settings in a .ini file"
+                            IsCheckedReal="{Binding Path=UseIniFile}"
                             Style="{StaticResource CheckStyle}"/>
                         <StackPanel
                             Orientation="Horizontal">
@@ -1013,6 +1030,8 @@
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
@@ -1020,17 +1039,20 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <CheckBox
+                            <CheckBox x:Name="chkUseTabSkin"
                                 Content="Use custom tab image:"
                                 Height="16"
+                                IsChecked="{Binding Path=UseTabSkin}"
                                 Margin="0,0,5,0"/>
                             <TextBox
                                 Grid.Column="1"
+                                Grid.ColumnSpan="3"
                                 Margin="5,1"/>
                             <Button
                                 Content="..."
-                                Grid.Column="2"
+                                Grid.Column="4"
                                 Margin="5,1"
                                 Width="26"/>
                             <Label
@@ -1045,19 +1067,42 @@
                                 HorizontalAlignment="Left"
                                 IsEditable="True"
                                 Margin="5,1"
-                                Width="150"/>
-                            <TextBox
-                                Grid.Column="1"
-                                Grid.Row="2"
-                                HorizontalAlignment="Left"
-                                Margin="5,1"
-                                Width="100"/>
+                                Width="120"/>
                             <Label
                                 Content="Overlap area:"
+                                Grid.Column="2"
+                                Grid.Row="1"
+                                Height="16"
+                                Margin="18,0,5,0"
+                                Padding="0"/>
+                            <TextBox
+                                Grid.Column="3"
+                                Grid.Row="1"
+                                HorizontalAlignment="Left"
+                                Margin="5,1"
+                                Width="80"/>
+                            <Label
+                                Content="Content margins:"
                                 Grid.Row="2"
                                 Height="16"
                                 Margin="18,0,5,0"
                                 Padding="0"/>
+                            <ComboBox
+                                Grid.Column="1"
+                                Grid.Row="2"
+                                HorizontalAlignment="Left"
+                                IsEditable="True"
+                                Margin="5,1"
+                                Width="120"/>
+                            <CheckBox x:Name="chkHitTestTransparent"
+                                Content="Hit test transparent areas"
+                                Grid.Column="2"
+                                Grid.ColumnSpan="2"
+                                Grid.Row="2"
+                                Height="16"
+                                IsChecked="{Binding Path=HitTestTransparent}"
+                                Margin="18,0,0,0"
+                                />
                         </Grid>
                         <Label
                             Content="Tab size"
@@ -1216,25 +1261,23 @@
                                 Margin="3"
                                 VerticalAlignment="Bottom"
                                 Width="237"/>
-                            <qt:RadioButtonEx
-                                Content="Right"
-                                Grid.Column="3"
-                                Grid.Row="3"
-                                Height="16"/>
-                            <qt:RadioButtonEx
-                                Content="Center"
-                                Grid.Column="2"
-                                Grid.Row="3"
-                                Height="16"/>
-                            <qt:RadioButtonEx
+                            <qt:RadioButtonEx x:Name="radTabTextCenteredNo"
                                 Content="Left"
                                 Grid.Column="1"
                                 Grid.Row="3"
-                                Height="16"/>
-                            <CheckBox
+                                Height="16"
+                                IsChecked="{Binding Path=TabTextCentered, Converter={StaticResource BoolInverterConverter}}"/>
+                            <qt:RadioButtonEx x:Name="radTabTextCenteredYes"
+                                Content="Center"
+                                Grid.Column="2"
+                                Grid.Row="3"
+                                Height="16"
+                                IsChecked="{Binding Path=TabTextCentered}"/>
+                            <CheckBox x:Name="chkTabTitleShadows"
                                 Content="Text Shadow:"
                                 Grid.Row="2"
                                 Height="16"
+                                IsChecked="{Binding Path=TabTitleShadows}"
                                 Margin="0,3,8,3"/>
                         </Grid>
                         <Label
@@ -1253,9 +1296,10 @@
                                 <ColumnDefinition Width="274*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <CheckBox
+                            <CheckBox x:Name="chkUseRebarBGColor"
                                 Content="Solid color"
                                 Height="16"
+                                IsChecked="{Binding Path=UseRebarBGColor}"
                                 Margin="0,0,10,0"/>
                             <CheckBox
                                 Content="Image"
@@ -1725,15 +1769,17 @@
                     <Label
                         Content="Button Bar Options"
                         Style="{StaticResource SectionHeaderStyle}"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkLargeButtons"
                         Content="Large icons"
                         Height="16"
                         HorizontalAlignment="Left"
+                        IsChecked="{Binding Path=LargeButtons}"
                         Margin="13,1,0,1"/>
-                    <CheckBox
+                    <CheckBox x:Name="chkLockSearchBarWidth"
                         Content="Lock the size of the search box"
                         Height="16"
                         HorizontalAlignment="Left"
+                        IsChecked="{Binding Path=LockSearchBarWidth}"
                         Margin="13,1,0,1"/>
                     <ComboBox
                         Height="23"
@@ -1800,17 +1846,19 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <qt:RadioButtonEx
+                        <qt:RadioButtonEx x:Name="radUseBuiltInYes"
                             Content="Use built-in language:"
                             Height="16"
                             HorizontalAlignment="Left"
+                            IsChecked="{Binding Path=UseBuiltIn}"
                             Margin="5,9"
                             VerticalAlignment="Top"/>
-                        <qt:RadioButtonEx
+                        <qt:RadioButtonEx x:Name="radUseBuiltInNo"
                             Content="Use language file:"
                             Grid.Row="1"
                             Height="16"
                             HorizontalAlignment="Left"
+                            IsChecked="{Binding Path=UseBuiltIn, Converter={StaticResource BoolInverterConverter}}"
                             Margin="5,9"
                             VerticalAlignment="Top"/>
                         <ComboBox

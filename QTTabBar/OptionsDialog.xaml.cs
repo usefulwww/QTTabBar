@@ -189,7 +189,7 @@ namespace QTTabBarLib {
 
     public class LogicalAndMultiConverter : IMultiValueConverter {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture) {
-            return values.All(b => (bool)b);
+            return values.All(b => b is bool && (bool)b);
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) {

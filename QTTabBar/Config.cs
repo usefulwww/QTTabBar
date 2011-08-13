@@ -101,7 +101,6 @@ namespace QTTabBarLib {
             public bool CloseBtnClosesSingleTab  { get; set; }
             public bool TrayOnClose              { get; set; }
             public bool TrayOnMinimize           { get; set; }
-            public bool TaskbarThumbnails        { get; set; }
 
             public _Window() {
                 CaptureNewWindows = false;
@@ -111,7 +110,6 @@ namespace QTTabBarLib {
                 CloseBtnClosesUnlocked = false;
                 TrayOnClose = false;
                 TrayOnMinimize = false;
-                TaskbarThumbnails = false;
             }
         }
 
@@ -210,6 +208,7 @@ namespace QTTabBarLib {
 
         [Serializable]
         public class _Misc {
+            public bool TaskbarThumbnails        { get; set; }
             public bool KeepHistory              { get; set; }
             public int TabHistoryCount           { get; set; }
             public bool KeepRecentFiles          { get; set; }
@@ -219,6 +218,7 @@ namespace QTTabBarLib {
             public bool UseIniFile               { get; set; }
 
             public _Misc() {
+                TaskbarThumbnails = false;
                 KeepHistory = true;
                 TabHistoryCount = 15;
                 KeepRecentFiles = true;
@@ -234,6 +234,9 @@ namespace QTTabBarLib {
             public bool UseTabSkin               { get; set; }
             public string TabImageFile           { get; set; }
             public Rectangle TabSizeMargin       { get; set; }
+            public Rectangle TabContentMargin    { get; set; }
+            public int OverlapPixels             { get; set; }
+            public bool HitTestTransparent       { get; set; }
             public int TabHeight                 { get; set; }
             public int TabMinWidth               { get; set; }
             public int TabMaxWidth               { get; set; }
@@ -260,6 +263,9 @@ namespace QTTabBarLib {
                 UseTabSkin = false;
                 TabImageFile = "";
                 TabSizeMargin = new Rectangle(0, 0, 0, 0);
+                TabContentMargin = new Rectangle(0, 0, 0, 0);
+                OverlapPixels = 0;
+                HitTestTransparent = false;
                 TabHeight = 24;
                 TabMinWidth = 70; // TODO
                 TabMaxWidth = 150; // TODO
