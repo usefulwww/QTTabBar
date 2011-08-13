@@ -28,11 +28,11 @@
     Title="QTTabBar Options"
     Width="724">
     <Window.Resources>
-        <qt:BoolInverterConverter x:Key="BoolInverterConverter"/>
-        <qt:BitmapToImageSourceConverter x:Key="BitmapToImageSourceConverter"/>
-        <qt:LogicalAndMultiConverter x:Key="LogicalAndMultiConverter"/>
-        <qt:BoolJoinMultiConverter x:Key="BoolJoinMultiConverter"/>
-        <qt:StringEqualityConverter x:Key="StringEqualityConverter"/>
+        <qt:BoolInverterConverter           x:Key="BoolInverterConverter"/>
+        <qt:BitmapToImageSourceConverter    x:Key="BitmapToImageSourceConverter"/>
+        <qt:LogicalAndMultiConverter        x:Key="LogicalAndMultiConverter"/>
+        <qt:BoolJoinMultiConverter          x:Key="BoolJoinMultiConverter"/>
+        <qt:StringEqualityConverter         x:Key="StringEqualityConverter"/>
 
         <Style x:Key="SectionHeaderStyle" TargetType="Label">
             <Setter Property="Background"       Value="#FFF0F2F5"/>
@@ -45,6 +45,25 @@
             <Setter Property="Margin"           Value="0,14,0,9"/>
             <Setter Property="Padding"          Value="6,2,0,2"/>
         </Style>
+        <!--  Hm...
+        <Style x:Key="CheckedSectionHeaderStyle" TargetType="Border">
+            <Setter Property="Background"       Value="#FFF0F2F5"/>
+            <Setter Property="BorderBrush"      Value="#FFE2E4E7"/>
+            <Setter Property="BorderThickness"  Value="0,0,0,1"/>
+            <Setter Property="Height"           Value="22"/>
+            <Setter Property="Margin"           Value="0,14,0,9"/>
+            <Setter Property="Padding"          Value="7,2,0,2"/>
+            <Style.Resources>
+                <Style TargetType="CheckBox">
+                    <Setter Property="FontSize"             Value="11"/>
+                    <Setter Property="FontWeight"           Value="Bold"/>
+                    <Setter Property="Foreground"           Value="#FF3B3B3B"/>
+                    <Setter Property="HorizontalAlignment"  Value="Left"/>
+                    <Setter Property="VerticalAlignment"    Value="Center"/>
+                </Style>
+            </Style.Resources>
+        </Style>
+        -->
         <Style x:Key="PageHeaderImageStyle" TargetType="Image">
             <Setter Property="Height"           Value="32"/>
             <Setter Property="Margin"           Value="8,0,0,0"/>
@@ -59,7 +78,7 @@
             <Setter Property="Margin"           Value="31,1,0,1"/>
         </Style>
         <Style x:Key="LabelStyle" TargetType="Label" BasedOn="{StaticResource CheckStyle}">
-            <Setter Property="Margin"           Value="31,1,10,1"/>
+            <Setter Property="Margin"           Value="13,1,10,1"/>
             <Setter Property="Padding"          Value="0"/>
         </Style>
         <DataTemplate x:Key="CategoryItemTemplate">
@@ -749,7 +768,7 @@
                             Width="60"/>
                     </StackPanel>
                     <StackPanel
-                        Margin="31,1,0,1"
+                        Margin="13,1,0,1"
                         Orientation="Horizontal">
                         <Label
                             Content="Font:"
@@ -762,7 +781,7 @@
                             Width="250"/>
                     </StackPanel>
                     <Grid
-                        Margin="31,1,0,1">
+                        Margin="13,1,0,1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
@@ -793,20 +812,35 @@
                             Margin="2"
                             VerticalAlignment="Top"
                             Width="60"/>
+                        <Button
+                            Content="Add"
+                            Grid.Column="2"
+                            Height="23"
+                            HorizontalAlignment="Left"
+                            Margin="2"
+                            VerticalAlignment="Top"
+                            Width="60"/>
+                        <Button
+                            Content="Remove"
+                            Grid.Column="3"
+                            Height="23"
+                            HorizontalAlignment="Left"
+                            Margin="2,2,0,2"
+                            Width="60"/>
+                        <Button
+                            Content="Reset"
+                            Grid.Column="4"
+                            Height="23"
+                            HorizontalAlignment="Left"
+                            Margin="2"
+                            VerticalAlignment="Top"
+                            Width="60"/>
                         <ComboBox
                             Grid.Column="1"
                             Grid.Row="1"
                             Height="23"
                             HorizontalAlignment="Left"
                             IsEditable="True"
-                            Margin="2"
-                            VerticalAlignment="Top"
-                            Width="60"/>
-                        <Button
-                            Content="Add"
-                            Grid.Column="2"
-                            Height="23"
-                            HorizontalAlignment="Left"
                             Margin="2"
                             VerticalAlignment="Top"
                             Width="60"/>
@@ -822,22 +856,7 @@
                         <Button
                             Content="Remove"
                             Grid.Column="3"
-                            Height="23"
-                            HorizontalAlignment="Left"
-                            Margin="2,2,0,2"
-                            Width="60"/>
-                        <Button
-                            Content="Remove"
-                            Grid.Column="3"
                             Grid.Row="1"
-                            Height="23"
-                            HorizontalAlignment="Left"
-                            Margin="2"
-                            VerticalAlignment="Top"
-                            Width="60"/>
-                        <Button
-                            Content="Reset"
-                            Grid.Column="4"
                             Height="23"
                             HorizontalAlignment="Left"
                             Margin="2"
