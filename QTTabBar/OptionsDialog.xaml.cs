@@ -115,6 +115,7 @@ namespace QTTabBarLib {
 
         private void UpdateOptions() {
             ConfigManager.LoadedConfig = QTUtility2.DeepClone(workingConfig);
+            ConfigManager.WriteConfig();
             QTTabBarClass tabBar = InstanceManager.CurrentTabBar;
             if(tabBar != null) {
                 tabBar.Invoke(new Action(tabBar.RefreshOptions));

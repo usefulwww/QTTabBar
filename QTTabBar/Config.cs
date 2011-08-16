@@ -22,6 +22,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using System.Linq;
 using System.Windows.Forms;
 using Microsoft.Win32;
 
@@ -384,9 +385,9 @@ namespace QTTabBarLib {
 
         public static void ReadConfig() {
             const string RegPath = @"Software\Quizo\QTTabBar\Config\"; // TODO
-            foreach(FieldInfo field in typeof(Config).GetFields()) {
-                Type cls = field.FieldType;
-                object val = field.GetValue(LoadedConfig);
+            foreach(PropertyInfo category in typeof(Config).GetProperties().Where(c => c.CanWrite)) {
+                Type cls = category.PropertyType;
+                object val = category.GetValue(LoadedConfig, null);
                 using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegPath + cls.Name.Substring(1))) {
                     foreach(PropertyInfo prop in cls.GetProperties()) {
                         object obj = key.GetValue(prop.Name);
@@ -419,9 +420,9 @@ namespace QTTabBarLib {
         }
         public static void WriteConfig() {
             const string RegPath = @"Software\Quizo\QTTabBar\Config\"; // TODO
-            foreach(FieldInfo field in typeof(Config).GetFields()) {
-                Type cls = field.FieldType;
-                object val = field.GetValue(LoadedConfig);
+            foreach(PropertyInfo category in typeof(Config).GetProperties().Where(c => c.CanWrite)) {
+                Type cls = category.PropertyType;
+                object val = category.GetValue(LoadedConfig, null);
                 using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegPath + cls.Name.Substring(1))) {
                     foreach(var prop in cls.GetProperties()) {
                         Type t = prop.PropertyType;
