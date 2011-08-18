@@ -1769,21 +1769,48 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <ListBox Grid.RowSpan="2"/>
-                        <Button
+                        <ListBox x:Name="lstButtonBarPool"
+                            Grid.RowSpan="2">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="{Binding Path=Image, Converter={StaticResource BitmapToImageSourceConverter}}"/>
+                                        <TextBlock
+                                            Margin="5,0"
+                                            Text="{Binding Path=Text}"
+                                            VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <Button x:Name="btnBBarAdd"
+                            Click="btnBBarAdd_Click" 
                             Content="Add >>"
                             Grid.Column="1"
                             Margin="8,4"
                             VerticalAlignment="Bottom"/>
                         <Button
+                            Click="btnBBarRemove_Click"
                             Content="&lt;&lt; Remove"
                             Grid.Column="1"
                             Grid.Row="1"
                             Margin="8,4"
                             VerticalAlignment="Top"/>
-                        <ListBox
+                        <ListBox x:Name="lstButtonBarCurrent"
                             Grid.Column="2"
-                            Grid.RowSpan="2"/>
+                            Grid.RowSpan="2">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="{Binding Path=Image, Converter={StaticResource BitmapToImageSourceConverter}}"/>
+                                        <TextBlock
+                                            Margin="5,0"
+                                            Text="{Binding Path=Text}"
+                                            VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
                     </Grid>
                     <Label
                         Content="Button Bar Options"

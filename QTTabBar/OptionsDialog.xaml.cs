@@ -18,6 +18,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -31,6 +32,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using QTTabBarLib.Interop;
+using Size = System.Drawing.Size;
 
 namespace QTTabBarLib {
     /// <summary>
@@ -41,6 +43,14 @@ namespace QTTabBarLib {
         private static OptionsDialog instance;
         private static Thread instanceThread;
         public Config workingConfig { get; set; }
+
+        // Button bar stuff
+        private ImageStrip imageStripLarge;
+        private ImageStrip imageStripSmall;
+        private string[] ButtonItemsDisplayName;
+        private ObservableCollection<ButtonEntry> ButtonPool;
+        private ObservableCollection<ButtonEntry> CurrentButtons;
+
 
         // todo: localize
         private static Dictionary<TabPos, string> NewTabPosItems = new Dictionary<TabPos, string> {
@@ -56,6 +66,8 @@ namespace QTTabBarLib {
             {TabPos.Rightmost,  "Rightmost tab"     },
             {TabPos.LastActive, "Last activated tab"},
         };
+
+        #region Static Methods
 
         public static void Open() {
             // TODO: Primary process only
@@ -102,11 +114,33 @@ namespace QTTabBarLib {
             }
         }
 
+        #endregion
+
         private OptionsDialog() {
             workingConfig = QTUtility2.DeepClone(ConfigManager.LoadedConfig);
             InitializeComponent();
             cmbNewTabPos.ItemsSource = NewTabPosItems;
             cmbNextAfterClosed.ItemsSource = NextAfterCloseItems;
+
+            // Initialize the button bar tab.
+            // todo: options, localize, etc...
+            ButtonItemsDisplayName = QTUtility.TextResourcesDic["ButtonBar_BtnName"];
+            imageStripLarge = new ImageStrip(new Size(24, 24));
+            using(Bitmap b = Resources_Image.ButtonStrip24) {
+                imageStripLarge.AddStrip(b);
+            }
+            imageStripSmall = new ImageStrip(new Size(16, 16));
+            using(Bitmap b = Resources_Image.ButtonStrip16) {
+                imageStripSmall.AddStrip(b);
+            }
+
+            ButtonPool = new ObservableCollection<ButtonEntry>();
+            CurrentButtons = new ObservableCollection<ButtonEntry>();
+            for(int j = 1; j < ButtonItemsDisplayName.Length; j++) {
+                ButtonPool.Add(new ButtonEntry(this, j));
+            }
+            lstButtonBarPool.ItemsSource = ButtonPool;
+            lstButtonBarCurrent.ItemsSource = CurrentButtons;
         }
 
         public void Dispose() {
@@ -165,6 +199,44 @@ namespace QTTabBarLib {
 
         private void btnApply_Click(object sender, RoutedEventArgs e) {
             UpdateOptions();
+        }
+
+        private class ButtonEntry {
+            private OptionsDialog parent;
+            public int Index { get; private set; }
+            public string Text { get { return parent.ButtonItemsDisplayName[Index]; } }
+            public Bitmap Image {
+                get {
+                    return parent.workingConfig.bbar.LargeButtons
+                            ? parent.imageStripLarge[Index - 1]
+                            : parent.imageStripSmall[Index - 1];
+                }
+            }
+            public ButtonEntry(OptionsDialog parent, int Index) {
+                this.parent = parent;
+                this.Index = Index;
+            }
+        }
+
+        private void btnBBarAdd_Click(object sender, RoutedEventArgs e) {
+            if(lstButtonBarPool.SelectedIndex == -1) return;
+            ButtonEntry entry = ButtonPool[lstButtonBarPool.SelectedIndex];
+            ButtonPool.RemoveAt(lstButtonBarPool.SelectedIndex);
+            if(lstButtonBarCurrent.SelectedIndex == -1) {
+                CurrentButtons.Add(entry);
+            }
+            else {
+                CurrentButtons.Insert(lstButtonBarCurrent.SelectedIndex + 1, entry);
+            }
+        }
+
+        private void btnBBarRemove_Click(object sender, RoutedEventArgs e) {
+            if(lstButtonBarCurrent.SelectedIndex == -1) return;
+            ButtonEntry entry = CurrentButtons[lstButtonBarCurrent.SelectedIndex];
+            CurrentButtons.RemoveAt(lstButtonBarCurrent.SelectedIndex);
+            int i = 0;
+            while(i < ButtonPool.Count && ButtonPool[i].Index < entry.Index) ++i;
+            ButtonPool.Insert(i, entry);
         }
     }
 
