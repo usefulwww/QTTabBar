@@ -292,16 +292,23 @@ namespace QTTabBarLib {
 
         [Serializable]
         public class _BBar {
+            public int[] ButtonIndexes           { get; set; }
             public bool LargeButtons             { get; set; }
             public bool LockSearchBarWidth       { get; set; }
-            public bool ButtonText               { get; set; }
-            public bool SelectiveText            { get; set; }
-
+            public bool LockDropDownButtons      { get; set; }
+            public bool ShowButtonLabels         { get; set; }
+            public string ImageStripPath         { get; set; }
+            
             public _BBar() {
+                // todo
+                ButtonIndexes = QTUtility.IsXP 
+                        ? new int[] {1, 2, 0, 3, 4, 5, 0, 6, 7, 0, 11, 13, 12, 14, 15, 0, 9, 20} 
+                        : new int[] {3, 4, 5, 0, 6, 7, 0, 11, 13, 12, 14, 15, 0, 9, 20};
+                LockDropDownButtons = false;
                 LargeButtons = true;
                 LockSearchBarWidth = false;
-                ButtonText = false;
-                SelectiveText = false;
+                ShowButtonLabels = false;
+                ImageStripPath = "";
             }
         }
 
@@ -397,7 +404,7 @@ namespace QTTabBarLib {
                             if(t == typeof(bool)) {
                                 prop.SetValue(val, (int)obj != 0, null);
                             }
-                            if(t == typeof(int) || t == typeof(string)) {
+                            else if(t == typeof(int) || t == typeof(string)) {
                                 prop.SetValue(val, obj, null);
                             }
                             else if(t.IsEnum) {

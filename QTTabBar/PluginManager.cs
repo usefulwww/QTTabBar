@@ -373,6 +373,8 @@ namespace QTTabBarLib {
         }
 
         public static bool RemoveFromButtonBarOrder(string pluginID) {
+            // TODO
+            /*
             int index = lstPluginButtonsOrder.IndexOf(pluginID);
             if(index != -1) {
                 lstPluginButtonsOrder.Remove(pluginID);
@@ -401,6 +403,7 @@ namespace QTTabBarLib {
                     return true;
                 }
             }
+             */
             return false;
         }
 

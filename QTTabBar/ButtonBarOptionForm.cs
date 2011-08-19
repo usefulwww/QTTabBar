@@ -67,15 +67,16 @@ namespace QTTabBarLib {
             comboBoxImageText.Items.AddRange(new string[] { strArray[12], strArray[13], strArray[14] });
             chbLockSearchBox.Text = strArray[15];
             comboBoxImageSize.SelectedIndex = this.fLargeIcon ? 1 : 0;
+            /*
             if((QTButtonBar.ConfigValues[0] & 0x20) == 0x20) {
                 comboBoxImageText.SelectedIndex = ((QTButtonBar.ConfigValues[0] & 0x10) == 0x10) ? 1 : 0;
             }
             else {
                 comboBoxImageText.SelectedIndex = 2;
-            }
+            }*/
             comboBoxImageSize.SelectedIndexChanged += comboBoxes_ImageSizeAndText_SelectedIndexChanged;
             comboBoxImageText.SelectedIndexChanged += comboBoxes_ImageSizeAndText_SelectedIndexChanged;
-            chbLockSearchBox.Checked = (QTButtonBar.ConfigValues[0] & 8) != 0;
+            chbLockSearchBox.Checked = Config.BBar.LockSearchBarWidth;
             InitializeImages(currentImagePath, true);
             List<PluginInformation> list = new List<PluginInformation>();
             foreach(int item in currentItemIndexes) {
@@ -273,6 +274,7 @@ namespace QTTabBarLib {
             listBoxCurrent.Items.Clear();
             listBoxPool.Items.Clear();
             dicActivePluginMulti.Clear();
+            /*
             foreach(int index in QTButtonBar.DefaultButtonIndices) {
                 listBoxCurrent.Items.Add(index);
             }
@@ -281,7 +283,7 @@ namespace QTTabBarLib {
                 if(Array.IndexOf(QTButtonBar.DefaultButtonIndices, j) == -1) {
                     listBoxPool.Items.Add(j);
                 }
-            }
+            }*/
             listBoxPool.Items.AddRange(PluginManager.PluginInformations.Where(info => 
                     info.Enabled && info.PluginType == PluginType.Interactive).ToArray());
             if(pluginManager != null) {

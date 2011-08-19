@@ -4288,7 +4288,7 @@ namespace QTTabBarLib {
             lstTempAssemblies_Refresh = null;
             using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
                 if(key != null) {
-                    QTUtility2.WriteRegBinary(QTButtonBar.ButtonIndexes, "Buttons_Order", key);
+                    //QTUtility2.WriteRegBinary(QTButtonBar.ButtonIndexes, "Buttons_Order", key);
                 }
             }
             List<string> list = new List<string>();

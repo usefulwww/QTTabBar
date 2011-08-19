@@ -178,6 +178,36 @@
                 </MultiTrigger>
             </Style.Triggers>
         </Style>
+        <DataTemplate x:Key="ButtonBarItemTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Image
+                    RenderOptions.BitmapScalingMode="NearestNeighbor">
+                    <Image.Style>
+                        <Style TargetType="Image">
+                            <Setter Property="Height" Value="16" />
+                            <Setter Property="Width" Value="16" />
+                            <Setter Property="Source" Value="{Binding Path=SmallImage, Converter={StaticResource BitmapToImageSourceConverter}}" />
+                            <Setter Property="Margin" Value="0,2" />
+                            <Style.Triggers>
+                                <DataTrigger 
+                                    Binding="{Binding ElementName=chkLargeButtons, Path=IsChecked}" 
+                                    Value="True">
+                                    <Setter Property="Height" Value="24" />
+                                    <Setter Property="Width" Value="24" />
+                                    <Setter Property="Source" Value="{Binding Path=LargeImage, Converter={StaticResource BitmapToImageSourceConverter}}" />
+                                    <Setter Property="Margin" Value="0" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                </Image>
+                <TextBlock
+                    Margin="5,0"
+                    Text="{Binding Path=Text}"
+                    VerticalAlignment="Center"/>
+            </StackPanel>
+        </DataTemplate>
+
     </Window.Resources>
     
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -196,7 +226,7 @@
                 Padding="0"
                 Width="75"/>
             <Button x:Name="btnResetAll"
-                Click="BtnResetAll_Click"
+                Click="btnResetAll_Click"
                 Content="Reset All"
                 Height="20"
                 Margin="7,0,25,6"
@@ -1768,28 +1798,18 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <ListBox x:Name="lstButtonBarPool"
-                            Grid.RowSpan="2">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Image Source="{Binding Path=Image, Converter={StaticResource BitmapToImageSourceConverter}}"/>
-                                        <TextBlock
-                                            Margin="5,0"
-                                            Text="{Binding Path=Text}"
-                                            VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                            Grid.RowSpan="2"
+                            ItemTemplate="{StaticResource ButtonBarItemTemplate}"/>
                         <Button x:Name="btnBBarAdd"
                             Click="btnBBarAdd_Click" 
                             Content="Add >>"
                             Grid.Column="1"
                             Margin="8,4"
                             VerticalAlignment="Bottom"/>
-                        <Button
+                        <Button x:Name="btnBBarRemove"
                             Click="btnBBarRemove_Click"
                             Content="&lt;&lt; Remove"
                             Grid.Column="1"
@@ -1798,19 +1818,23 @@
                             VerticalAlignment="Top"/>
                         <ListBox x:Name="lstButtonBarCurrent"
                             Grid.Column="2"
-                            Grid.RowSpan="2">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Image Source="{Binding Path=Image, Converter={StaticResource BitmapToImageSourceConverter}}"/>
-                                        <TextBlock
-                                            Margin="5,0"
-                                            Text="{Binding Path=Text}"
-                                            VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                            Grid.RowSpan="2"
+                            ItemTemplate="{StaticResource ButtonBarItemTemplate}"/>
+                        <Button x:Name="btnBBarUp"
+                            Click="btnBBarUp_Click" 
+                            Content="&#9650;"
+                            Grid.Column="3"
+                            Margin="8,4"
+                            VerticalAlignment="Bottom"
+                            Width="30"/>
+                        <Button x:Name="btnBBarDown"
+                            Click="btnBBarDown_Click"
+                            Content="&#9660;"
+                            Grid.Column="3"
+                            Grid.Row="1"
+                            Margin="8,4"
+                            VerticalAlignment="Top"
+                            Width="30"/>
                     </Grid>
                     <Label
                         Content="Button Bar Options"
@@ -1821,21 +1845,24 @@
                         HorizontalAlignment="Left"
                         IsChecked="{Binding Path=LargeButtons}"
                         Margin="13,1,0,1"/>
+                    <CheckBox x:Name="chkShowButtonLabels"
+                        Content="Show labels on buttons"
+                        Height="16"
+                        HorizontalAlignment="Left"
+                        IsChecked="{Binding Path=ShowButtonLabels}"
+                        Margin="13,1,0,1"/>
+                    <CheckBox x:Name="chkLockDropDownButtons"
+                        Content="Lock the order of dropdown button menus"
+                        Height="16"
+                        HorizontalAlignment="Left"
+                        IsChecked="{Binding Path=LockDropDownButtons}"
+                        Margin="13,1,0,1"/>
                     <CheckBox x:Name="chkLockSearchBarWidth"
                         Content="Lock the size of the search box"
                         Height="16"
                         HorizontalAlignment="Left"
                         IsChecked="{Binding Path=LockSearchBarWidth}"
                         Margin="13,1,0,1"/>
-                    <ComboBox
-                        Height="23"
-                        HorizontalAlignment="Left"
-                        Margin="13,1,0,1"
-                        Width="137">
-                        <ComboBoxItem Content="No text labels"/>
-                        <ComboBoxItem Content="Selective text labels"/>
-                        <ComboBoxItem Content="Show text labels"/>
-                    </ComboBox>
                 </StackPanel>
             </TabItem>
             <TabItem x:Name="tabPlugins"

@@ -51,7 +51,6 @@ namespace QTTabBarLib {
         private ObservableCollection<ButtonEntry> ButtonPool;
         private ObservableCollection<ButtonEntry> CurrentButtons;
 
-
         // todo: localize
         private static Dictionary<TabPos, string> NewTabPosItems = new Dictionary<TabPos, string> {
             {TabPos.Left,       "Left of the current tab"   },
@@ -67,7 +66,7 @@ namespace QTTabBarLib {
             {TabPos.LastActive, "Last activated tab"},
         };
 
-        #region Static Methods
+        #region ---------- Static Methods ----------
 
         public static void Open() {
             // TODO: Primary process only
@@ -133,11 +132,16 @@ namespace QTTabBarLib {
             using(Bitmap b = Resources_Image.ButtonStrip16) {
                 imageStripSmall.AddStrip(b);
             }
-
             ButtonPool = new ObservableCollection<ButtonEntry>();
             CurrentButtons = new ObservableCollection<ButtonEntry>();
-            for(int j = 1; j < ButtonItemsDisplayName.Length; j++) {
-                ButtonPool.Add(new ButtonEntry(this, j));
+            ButtonPool.Add(new ButtonEntry(this, QTButtonBar.BII_SEPARATOR));
+            for(int i = 1; i < QTButtonBar.INTERNAL_BUTTON_COUNT; i++) {
+                if(!workingConfig.bbar.ButtonIndexes.Contains(i)) {
+                    ButtonPool.Add(new ButtonEntry(this, i));
+                }
+            }
+            foreach(int i in workingConfig.bbar.ButtonIndexes) {
+                CurrentButtons.Add(new ButtonEntry(this, i));
             }
             lstButtonBarPool.ItemsSource = ButtonPool;
             lstButtonBarCurrent.ItemsSource = CurrentButtons;
@@ -148,12 +152,15 @@ namespace QTTabBarLib {
         }
 
         private void UpdateOptions() {
+            workingConfig.bbar.ButtonIndexes = CurrentButtons.Select(e => e.Index).ToArray();
+            bool fButtonBarNeedsRefresh = Config.BBar.LargeButtons != workingConfig.bbar.LargeButtons;
             ConfigManager.LoadedConfig = QTUtility2.DeepClone(workingConfig);
             ConfigManager.WriteConfig();
             QTTabBarClass tabBar = InstanceManager.CurrentTabBar;
             if(tabBar != null) {
                 tabBar.Invoke(new Action(tabBar.RefreshOptions));
             }
+            QTButtonBar.BroadcastConfigChanged(fButtonBarNeedsRefresh);
         }
 
         private void ListBoxItem_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e) {
@@ -182,7 +189,7 @@ namespace QTTabBarLib {
             }
         }
 
-        private void BtnResetAll_Click(object sender, RoutedEventArgs e) {
+        private void btnResetAll_Click(object sender, RoutedEventArgs e) {
             // todo: confirm
             workingConfig = new Config();
             tabbedPanel.GetBindingExpression(DataContextProperty).UpdateTarget();
@@ -201,45 +208,86 @@ namespace QTTabBarLib {
             UpdateOptions();
         }
 
+        private void btnBBarAdd_Click(object sender, RoutedEventArgs e) {
+            int sel = lstButtonBarPool.SelectedIndex;
+            if(sel == -1) return;
+            int idx = ButtonPool[sel].Index;
+            if(idx != QTButtonBar.BII_SEPARATOR) {
+                ButtonPool.RemoveAt(sel);
+                if(sel == ButtonPool.Count) --sel;
+                if(sel >= 0) {
+                    lstButtonBarPool.SelectedIndex = sel;
+                    lstButtonBarPool.ScrollIntoView(lstButtonBarPool.SelectedItem);
+                }
+            }
+            if(lstButtonBarCurrent.SelectedIndex == -1) {
+                CurrentButtons.Add(new ButtonEntry(this, idx));
+                lstButtonBarCurrent.SelectedIndex = CurrentButtons.Count - 1;
+            }
+            else {
+                CurrentButtons.Insert(lstButtonBarCurrent.SelectedIndex + 1, new ButtonEntry(this, idx));
+                lstButtonBarCurrent.SelectedIndex++;
+            }
+            lstButtonBarCurrent.ScrollIntoView(lstButtonBarCurrent.SelectedItem);
+        }
+
+        private void btnBBarRemove_Click(object sender, RoutedEventArgs e) {
+            int sel = lstButtonBarCurrent.SelectedIndex;
+            if(sel == -1) return;
+            int idx = CurrentButtons[sel].Index;
+            CurrentButtons.RemoveAt(sel);
+            if(sel == CurrentButtons.Count) --sel;
+            if(sel >= 0) {
+                lstButtonBarCurrent.SelectedIndex = sel;
+                lstButtonBarCurrent.ScrollIntoView(lstButtonBarCurrent.SelectedItem);
+            }
+            if(idx != QTButtonBar.BII_SEPARATOR) {
+                int i = 0;
+                while(i < ButtonPool.Count && ButtonPool[i].Index < idx) ++i;
+                ButtonPool.Insert(i, new ButtonEntry(this, idx));
+                lstButtonBarPool.SelectedIndex = i;
+            }
+            else {
+                lstButtonBarPool.SelectedIndex = 0;
+            }
+            lstButtonBarPool.ScrollIntoView(lstButtonBarPool.SelectedItem);
+        }
+
+        private void btnBBarUp_Click(object sender, RoutedEventArgs e) {
+            int sel = lstButtonBarCurrent.SelectedIndex;
+            if(sel <= 0) return;
+            CurrentButtons.Move(sel, sel - 1);
+            lstButtonBarCurrent.ScrollIntoView(lstButtonBarCurrent.SelectedItem);
+        }
+
+        private void btnBBarDown_Click(object sender, RoutedEventArgs e) {
+            int sel = lstButtonBarCurrent.SelectedIndex;
+            if(sel == -1 || sel == CurrentButtons.Count - 1) return;
+            CurrentButtons.Move(sel, sel + 1);
+            lstButtonBarCurrent.ScrollIntoView(lstButtonBarCurrent.SelectedItem);
+        }
+
         private class ButtonEntry {
             private OptionsDialog parent;
             public int Index { get; private set; }
             public string Text { get { return parent.ButtonItemsDisplayName[Index]; } }
-            public Bitmap Image {
-                get {
-                    return parent.workingConfig.bbar.LargeButtons
-                            ? parent.imageStripLarge[Index - 1]
-                            : parent.imageStripSmall[Index - 1];
-                }
+            public Bitmap LargeImage { get { return getImage(true); } }
+            public Bitmap SmallImage { get { return getImage(false); } }
+            private Bitmap getImage(bool large) {
+                return Index == 0 || Index >= QTButtonBar.BII_WINDOWOPACITY ? null : large
+                        ? parent.imageStripLarge[Index - 1]
+                        : parent.imageStripSmall[Index - 1];                
             }
             public ButtonEntry(OptionsDialog parent, int Index) {
                 this.parent = parent;
                 this.Index = Index;
             }
         }
-
-        private void btnBBarAdd_Click(object sender, RoutedEventArgs e) {
-            if(lstButtonBarPool.SelectedIndex == -1) return;
-            ButtonEntry entry = ButtonPool[lstButtonBarPool.SelectedIndex];
-            ButtonPool.RemoveAt(lstButtonBarPool.SelectedIndex);
-            if(lstButtonBarCurrent.SelectedIndex == -1) {
-                CurrentButtons.Add(entry);
-            }
-            else {
-                CurrentButtons.Insert(lstButtonBarCurrent.SelectedIndex + 1, entry);
-            }
-        }
-
-        private void btnBBarRemove_Click(object sender, RoutedEventArgs e) {
-            if(lstButtonBarCurrent.SelectedIndex == -1) return;
-            ButtonEntry entry = CurrentButtons[lstButtonBarCurrent.SelectedIndex];
-            CurrentButtons.RemoveAt(lstButtonBarCurrent.SelectedIndex);
-            int i = 0;
-            while(i < ButtonPool.Count && ButtonPool[i].Index < entry.Index) ++i;
-            ButtonPool.Insert(i, entry);
-        }
     }
 
+    #region ---------- Converters ----------
+    
+    // Inverts the value of a boolean
     public class BoolInverterConverter : IValueConverter {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
             return value is bool ? !(bool)value : value;
@@ -250,16 +298,7 @@ namespace QTTabBarLib {
         }
     }
 
-    public class BoolJoinMultiConverter : IMultiValueConverter {
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture) {
-            return values.StringJoin(",");
-        }
-
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) {
-            return ((string)value).Split(',').Select(s => (object)bool.Parse(s)).ToArray();
-        }
-    }
-
+    // Converts between booleans and one using logical and.
     public class LogicalAndMultiConverter : IMultiValueConverter {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture) {
             return values.All(b => b is bool && (bool)b);
@@ -270,6 +309,19 @@ namespace QTTabBarLib {
         }
     }
 
+    // Converts between many booleans and a string by StringJoining them.
+    public class BoolJoinMultiConverter : IMultiValueConverter {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture) {
+            return values.StringJoin(",");
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) {
+            return ((string)value).Split(',').Select(s => (object)bool.Parse(s)).ToArray();
+        }
+    }
+
+    // Converts between a boolean and a string by comparing the string to the 
+    // passed parameter.
     [ValueConversion(typeof(string), typeof(bool))]
     public class StringEqualityConverter : IValueConverter {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
@@ -281,10 +333,11 @@ namespace QTTabBarLib {
         }
     }
 
+    // Converts Bitmaps to ImageSources.
     [ValueConversion(typeof(Bitmap), typeof(ImageSource))]
     public class BitmapToImageSourceConverter : IValueConverter {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-            if(!(value is Bitmap)) return null;
+            if(value == null || !(value is Bitmap)) return null;
             IntPtr hBitmap = ((Bitmap)value).GetHbitmap();
             try {
                 return Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero,
@@ -299,6 +352,8 @@ namespace QTTabBarLib {
             throw new NotSupportedException();
         }
     }
+
+    #endregion
 
     // Overloaded RadioButton class to work around .NET 3.5's horribly HORRIBLY
     // bugged RadioButton data binding.
