@@ -69,6 +69,7 @@ namespace QTTabBarLib {
         public static _Skin Skin        { get { return ConfigManager.LoadedConfig.skin; } }
         public static _BBar BBar        { get { return ConfigManager.LoadedConfig.bbar; } }
         public static _Mouse Mouse      { get { return ConfigManager.LoadedConfig.mouse; } }
+        public static _Plugin Plugin    { get { return ConfigManager.LoadedConfig.plugin; } }
         public static _Lang Lang        { get { return ConfigManager.LoadedConfig.lang; } }
 
         public _Window window   { get; set; }
@@ -79,6 +80,7 @@ namespace QTTabBarLib {
         public _Skin skin       { get; set; }
         public _BBar bbar       { get; set; }
         public _Mouse mouse     { get; set; }
+        public _Plugin plugin   { get; set; }
         public _Lang lang       { get; set; }
 
         public Config() {
@@ -324,6 +326,12 @@ namespace QTTabBarLib {
         }
 
         [Serializable]
+        public class _Plugin {
+            public string[] Enabled              { get; set; }
+            public string[] Paths; // non-prop
+        }
+
+        [Serializable]
         public class _Lang {
             public bool UseBuiltIn               { get; set; }
             public string LangFile               { get; set; }
@@ -392,6 +400,8 @@ namespace QTTabBarLib {
 
         public static void ReadConfig() {
             const string RegPath = @"Software\Quizo\QTTabBar\Config\"; // TODO
+
+            // Properties from all categories
             foreach(PropertyInfo category in typeof(Config).GetProperties().Where(c => c.CanWrite)) {
                 Type cls = category.PropertyType;
                 object val = category.GetValue(LoadedConfig, null);
@@ -427,6 +437,25 @@ namespace QTTabBarLib {
         }
         public static void WriteConfig() {
             const string RegPath = @"Software\Quizo\QTTabBar\Config\"; // TODO
+
+            // Plugins
+            List<string> enabled = new List<string>();
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegPath + @"Plugin\Paths")) {
+                foreach(string str in key.GetValueNames()) {
+                    key.DeleteValue(str);
+                }
+                int idx = 0;
+                foreach(PluginAssembly asm in PluginManager.PluginAssemblies) {
+                    if(asm.PluginInfosExist)
+                        enabled.AddRange(from information in asm.PluginInformations
+                                         where information.Enabled
+                                         select information.PluginID);
+                    key.SetValue((idx++).ToString(), asm.Path);
+                }
+                Config.Plugin.Enabled = enabled.ToArray();
+            }
+
+            // Properties from all categories
             foreach(PropertyInfo category in typeof(Config).GetProperties().Where(c => c.CanWrite)) {
                 Type cls = category.PropertyType;
                 object val = category.GetValue(LoadedConfig, null);
@@ -451,6 +480,7 @@ namespace QTTabBarLib {
                     }
                 }
             }
+
 
             // TODO non-props
         }
