@@ -33,6 +33,7 @@
         <qt:LogicalAndMultiConverter        x:Key="LogicalAndMultiConverter"/>
         <qt:BoolJoinMultiConverter          x:Key="BoolJoinMultiConverter"/>
         <qt:StringEqualityConverter         x:Key="StringEqualityConverter"/>
+        <BooleanToVisibilityConverter       x:Key="BooleanToVisibilityConverter" />
 
         <Style x:Key="SectionHeaderStyle" TargetType="Label">
             <Setter Property="Background"       Value="#FFF0F2F5"/>
@@ -207,7 +208,75 @@
                     VerticalAlignment="Center"/>
             </StackPanel>
         </DataTemplate>
-
+        <DataTemplate x:Key="PluginItemTemplate">
+            <DockPanel>
+                <TextBlock 
+                    DockPanel.Dock="Top"
+                    Text="This plugin will be installed when you press OK or Apply."
+                    Visibility="{Binding Path=InstallOnClose, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                <TextBlock 
+                    DockPanel.Dock="Top"
+                    Text="This plugin will be uninstalled when you press OK or Apply."
+                    Visibility="{Binding Path=UninstallOnClose, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                <TextBlock 
+                    DockPanel.Dock="Top"
+                    Text="This plugin will be disabled when you press OK or Apply."
+                    Visibility="{Binding Path=DisableOnClose, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                <TextBlock 
+                    DockPanel.Dock="Top"
+                    Text="This plugin will be enabled when you press OK or Apply."
+                    Visibility="{Binding Path=EnableOnClose, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                <Separator DockPanel.Dock="Bottom" VerticalAlignment="Bottom" Margin="0"/>
+                <Grid
+                    VerticalAlignment="Top"
+                    Width="48"
+                    Height="48">
+                    <Image 
+                        Opacity="{Binding Path=Opacity}" 
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Stretch="None"
+                        RenderOptions.BitmapScalingMode="NearestNeighbor"
+                        Source="{Binding Path=Icon, Converter={StaticResource BitmapToImageSourceConverter}}"/>
+                </Grid>
+                <DockPanel DockPanel.Dock="Bottom" LastChildFill="False"
+                    Visibility="{Binding Path=IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Button x:Name="btnPluginOptions" 
+                        Click="btnPluginOptions_Click"
+                        Content="Options"
+                        DockPanel.Dock="Left"
+                        Width="70"
+                        Margin="0,10,6,6"
+                        Visibility="{Binding Path=HasOptions, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    <Button x:Name="btnPluginRemove"
+                        Click="btnPluginRemove_Click"
+                        Content="Uninstall"
+                        DockPanel.Dock="Right"
+                        Margin="0,10,6,6"
+                        Width="70"/>
+                    <Button x:Name="btnPluginDisable"
+                        Click="btnPluginDisable_Click"
+                        Content="Disable"
+                        DockPanel.Dock="Right"
+                        Width="70"
+                        Margin="0,10,6,6"/>
+                </DockPanel>
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Path=Title}" FontSize="15" FontWeight="ExtraBold" Margin="2" VerticalAlignment="Bottom"/>
+                        <TextBlock Text="{Binding Path=Author}" Margin="10,2" VerticalAlignment="Bottom"/>
+                    </StackPanel>
+                    <TextBlock 
+                        Text="{Binding Path=Desc}"
+                        Margin="2"
+                        HorizontalAlignment="Left"
+                        TextWrapping="Wrap"
+                        TextTrimming="CharacterEllipsis"
+                        MaxHeight="50"
+                        />
+                </StackPanel>
+            </DockPanel>
+        </DataTemplate>
     </Window.Resources>
     
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -1878,14 +1947,29 @@
                             Source="C:\Users\Paul\Desktop\icon.png"
                             Style="{StaticResource PageHeaderImageStyle}"/>
                         <Label
-                            Content="Change keyboard shortcuts"
+                            Content="Manage third-party plugins"
                             FontSize="13"
                             VerticalAlignment="Bottom"/>
                     </StackPanel>
-                    <Button
+                    <Button x:Name="btnBrowsePlugin"
+                        Click="btnBrowsePlugin_Click"
                         Content="Install a Plugin"
-                        DockPanel.Dock="Top"/>
-                    <WindowsFormsHost Margin="10"/>
+                        DockPanel.Dock="Top"
+                        HorizontalAlignment="Left"
+                        Width="120"/>
+                    <ListBox x:Name="lstPluginView"
+                        HorizontalContentAlignment="Stretch"
+                        ItemTemplate="{StaticResource PluginItemTemplate}"
+                        Margin="0,10"
+                        ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="{x:Type ListBoxItem}">
+                                <Setter 
+                                    Property="IsSelected"
+                                    Value="{Binding Path=IsSelected, Mode=TwoWay}" />
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                    </ListBox>
                 </DockPanel>
             </TabItem>
             <TabItem x:Name="tabLanguage"

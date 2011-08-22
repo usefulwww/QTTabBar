@@ -19,19 +19,28 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using QTPlugin;
 using QTTabBarLib.Interop;
+using Binding = System.Windows.Data.Binding;
+using Image = System.Drawing.Image;
+using ListViewItem = System.Windows.Forms.ListViewItem;
+using RadioButton = System.Windows.Controls.RadioButton;
 using Size = System.Drawing.Size;
 
 namespace QTTabBarLib {
@@ -50,6 +59,9 @@ namespace QTTabBarLib {
         private string[] ButtonItemsDisplayName;
         private ObservableCollection<ButtonEntry> ButtonPool;
         private ObservableCollection<ButtonEntry> CurrentButtons;
+
+        // Plugin stuff
+        private ObservableCollection<PluginEntry> CurrentPlugins;
 
         // todo: localize
         private static Dictionary<TabPos, string> NewTabPosItems = new Dictionary<TabPos, string> {
@@ -145,6 +157,10 @@ namespace QTTabBarLib {
             }
             lstButtonBarPool.ItemsSource = ButtonPool;
             lstButtonBarCurrent.ItemsSource = CurrentButtons;
+
+            // Initialize the plugin tab
+            CurrentPlugins = new ObservableCollection<PluginEntry>();
+            lstPluginView.ItemsSource = CurrentPlugins;
         }
 
         public void Dispose() {
@@ -152,6 +168,7 @@ namespace QTTabBarLib {
         }
 
         private void UpdateOptions() {
+            List<PluginAssembly> assemblies = CommitPlugins();
             workingConfig.bbar.ButtonIndexes = CurrentButtons.Select(e => e.Index).ToArray();
             bool fButtonBarNeedsRefresh = Config.BBar.LargeButtons != workingConfig.bbar.LargeButtons;
             ConfigManager.LoadedConfig = QTUtility2.DeepClone(workingConfig);
@@ -159,6 +176,7 @@ namespace QTTabBarLib {
             QTTabBarClass tabBar = InstanceManager.CurrentTabBar;
             if(tabBar != null) {
                 tabBar.Invoke(new Action(tabBar.RefreshOptions));
+                tabBar.Invoke(new Action(() => tabBar.odCallback_ManagePlugin(assemblies)));
             }
             QTButtonBar.BroadcastConfigChanged(fButtonBarNeedsRefresh);
         }
@@ -207,6 +225,8 @@ namespace QTTabBarLib {
         private void btnApply_Click(object sender, RoutedEventArgs e) {
             UpdateOptions();
         }
+
+        #region ---------- Button Bar ----------
 
         private void btnBBarAdd_Click(object sender, RoutedEventArgs e) {
             int sel = lstButtonBarPool.SelectedIndex;
@@ -267,6 +287,108 @@ namespace QTTabBarLib {
             lstButtonBarCurrent.ScrollIntoView(lstButtonBarCurrent.SelectedItem);
         }
 
+        #endregion
+
+        #region ---------- Plugins ----------
+
+        private void btnPluginOptions_Click(object sender, RoutedEventArgs e) {
+            // todo
+        }
+
+        private void btnPluginDisable_Click(object sender, RoutedEventArgs e) {
+            if(lstPluginView.SelectedIndex == -1) return;
+            PluginEntry entry = CurrentPlugins[lstPluginView.SelectedIndex];
+            if(entry.DisableOnClose) {
+                entry.DisableOnClose = false;
+            }
+            else if(entry.EnableOnClose) {
+                entry.EnableOnClose = false;
+            }
+            else if(entry.PluginInfo.Enabled) {
+                entry.DisableOnClose = true;
+            }
+            else {
+                entry.EnableOnClose = true;
+            }
+            lstPluginView.Items.Refresh();
+        }
+        
+        private void btnPluginRemove_Click(object sender, RoutedEventArgs e) {
+            if(lstPluginView.SelectedIndex == -1) return;
+            PluginEntry entry = CurrentPlugins[lstPluginView.SelectedIndex];
+            if(entry.InstallOnClose) {
+                CurrentPlugins.RemoveAt(lstPluginView.SelectedIndex);
+            }
+            else {
+                entry.UninstallOnClose = true;
+                lstPluginView.Items.Refresh();
+            }
+        }
+
+        private void btnBrowsePlugin_Click(object sender, RoutedEventArgs e) {
+            using(OpenFileDialog ofd = new OpenFileDialog()) {
+                ofd.Filter = "Plugin files (*.dll)|*.dll";
+                ofd.RestoreDirectory = true;
+                ofd.Multiselect = true;
+
+                if(System.Windows.Forms.DialogResult.OK != ofd.ShowDialog()) return;
+                bool fFirst = true;
+                foreach(string path in ofd.FileNames) {
+                    PluginAssembly pa = new PluginAssembly(path);
+                    if(!pa.PluginInfosExist) continue;
+                    CreatePluginEntry(pa, true);
+                    if(!fFirst) continue;
+                    fFirst = false;
+                    lstPluginView.SelectedItem = CurrentPlugins[CurrentPlugins.Count - 1];
+                    lstPluginView.ScrollIntoView(lstPluginView.SelectedItem);
+                }
+            }
+        }
+
+        private bool CreatePluginEntry(PluginAssembly pa, bool fAddedByUser) {
+            if(!pa.PluginInfosExist || CurrentPlugins.Any(pe => pe.PluginInfo.Path == pa.Path)) {
+                return false;
+            }
+            foreach(PluginInformation pi in pa.PluginInformations) {
+                CurrentPlugins.Add(new PluginEntry(this, pi, pa) {InstallOnClose = true});
+            }
+            return true;
+        }
+
+        private List<PluginAssembly> CommitPlugins() {
+            List<PluginAssembly> assemblies = new List<PluginAssembly>();
+
+            foreach(PluginEntry entry in CurrentPlugins) {
+                if(entry.UninstallOnClose) continue;
+                PluginAssembly pa = entry.PluginAssembly;
+                if(!assemblies.Contains(pa)) {
+                    pa.Enabled = false;
+                    assemblies.Add(pa);
+                }
+                PluginInformation pi = entry.PluginInfo;
+                if(entry.DisableOnClose) {
+                    pi.Enabled = false;
+                }
+                else if(entry.EnableOnClose || entry.InstallOnClose) {
+                    pi.Enabled = true;
+                }
+
+                if(pi.Enabled) {
+                    pa.Enabled = true;
+                }
+                else {
+                    //RemovePluginShortcutKeys(pi.PluginID);
+                    // todo
+                }                
+            }
+
+            return assemblies;
+        }
+
+        #endregion
+        
+        #region ---------- ListBox Item Classes ----------
+
         private class ButtonEntry {
             private OptionsDialog parent;
             public int Index { get; private set; }
@@ -276,17 +398,43 @@ namespace QTTabBarLib {
             private Bitmap getImage(bool large) {
                 return Index == 0 || Index >= QTButtonBar.BII_WINDOWOPACITY ? null : large
                         ? parent.imageStripLarge[Index - 1]
-                        : parent.imageStripSmall[Index - 1];                
+                        : parent.imageStripSmall[Index - 1];
             }
             public ButtonEntry(OptionsDialog parent, int Index) {
                 this.parent = parent;
                 this.Index = Index;
             }
         }
-    }
 
+        private class PluginEntry {
+            private OptionsDialog parent;
+            public PluginInformation PluginInfo;
+		    public PluginAssembly PluginAssembly;
+
+            public Image Icon { get { return PluginInfo.ImageLarge; } }
+            public string Title { get { return PluginInfo.Name + "  " + PluginInfo.Version; } }
+            public string Author { get { return "by " + PluginInfo.Author; } }
+            public string Desc { get { return PluginInfo.Description; } }
+            public bool HasOptions { get { return false; } } // todo
+            public bool IsSelected { get; set; }
+            public double Opacity { get { return PluginInfo.Enabled ? 1.0 : 0.5; } }
+            public bool DisableOnClose { get; set; }
+            public bool EnableOnClose { get; set; }
+            public bool InstallOnClose { get; set; }
+            public bool UninstallOnClose { get; set; }
+
+            public PluginEntry(OptionsDialog parent, PluginInformation pluginInfo, PluginAssembly pluginAssembly) {
+                this.parent = parent;
+                PluginInfo = pluginInfo;
+                PluginAssembly = pluginAssembly;
+            }
+        }
+
+        #endregion
+    }
+        
     #region ---------- Converters ----------
-    
+
     // Inverts the value of a boolean
     public class BoolInverterConverter : IValueConverter {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {

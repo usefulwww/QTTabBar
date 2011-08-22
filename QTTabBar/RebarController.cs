@@ -159,7 +159,7 @@ namespace QTTabBarLib {
             }
         }
 
-        public void RefreshBG(bool fRebarBGCanceled) {
+        public void RefreshBG() {
             if(Config.Skin.UseRebarBGColor) {
                 // Save the default color and set the new one
                 if(DefaultRebarCOLORREF == -1) {

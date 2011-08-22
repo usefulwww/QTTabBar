@@ -4281,11 +4281,12 @@ namespace QTTabBarLib {
         }
 
         // TODO
-        private void odCallback_ManagePlugin(object o) {
+        internal void odCallback_ManagePlugin(object o) {
             lstTempAssemblies_Refresh = (List<PluginAssembly>)o;
             SyncTabBarBroadcastPlugin(Handle);
             RefreshPlugins(true);
             lstTempAssemblies_Refresh = null;
+            /*
             using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
                 if(key != null) {
                     //QTUtility2.WriteRegBinary(QTButtonBar.ButtonIndexes, "Buttons_Order", key);
@@ -4311,7 +4312,7 @@ namespace QTTabBarLib {
                     key2.SetValue("LanguageFile", QTUtility.Path_PluginLangFile);
                 }
             }
-            PluginManager.SaveButtonOrder();
+            PluginManager.SaveButtonOrder();*/
         }
 
         private void OnAwake() {
@@ -4791,7 +4792,6 @@ namespace QTTabBarLib {
         internal void RefreshOptions() {
             // TODO
             bool fAutoSubText = false;
-            bool fPaintBG = false;
             string oldPath_LangFile = "";
 
             if(QTUtility.Path_LanguageFile != oldPath_LangFile) {
@@ -4805,9 +4805,8 @@ namespace QTTabBarLib {
                 QTUtility.ValidateTextResources();
                 RefreshTexts();
             }
-            bool fRebarBGCanceled = fPaintBG && !Config.Skin.UseRebarBGColor;
-            RefreshTabBar(fRebarBGCanceled);
-            SyncTabBarBroadcast(Handle, fRebarBGCanceled);
+            RefreshTabBar();
+            SyncTabBarBroadcast(Handle);
             QTUtility.ClosedTabHistoryList.MaxCapacity = QTUtility.MaxCount_History;
             QTUtility.ExecutedPathsList.MaxCapacity = QTUtility.MaxCount_Executed;
             SyncButtonBarBroadCast(0x100);
@@ -4850,7 +4849,7 @@ namespace QTTabBarLib {
             }
         }
 
-        private void RefreshTabBar(bool fRebarBGCanceled) {
+        private void RefreshTabBar() {
             SuspendLayout();
             tabControl1.SuspendLayout();
             tabControl1.RefreshOptions(false);
@@ -4882,7 +4881,7 @@ namespace QTTabBarLib {
                 iType = Config.Tabs.ActiveTabOnBottomRow ? 1 : 2;
             }
             SetBarRows(tabControl1.SetTabRowType(iType));
-            rebarController.RefreshBG(fRebarBGCanceled);
+            rebarController.RefreshBG();
             if(Config.Tweaks.AlternateRowColors) {
                 Color color = QTUtility2.MakeColor(QTUtility.ShellViewRowCOLORREF_Background);
                 if(QTUtility.sbAlternate == null) {
@@ -5549,11 +5548,11 @@ namespace QTTabBarLib {
             return flag;
         }
 
-        private static void SyncTabBarBroadcast(IntPtr hwndThis, bool fRebarBGCanceled) {
+        private static void SyncTabBarBroadcast(IntPtr hwndThis) {
             try {
                 foreach(IntPtr ptr in InstanceManager.TabBarHandles().Where(PInvoke.IsWindow)) {
                     if(ptr != hwndThis) {
-                        QTUtility2.SendCOPYDATASTRUCT(ptr, (IntPtr)0x11, "refresh", fRebarBGCanceled ? ((IntPtr)1) : IntPtr.Zero);
+                        QTUtility2.SendCOPYDATASTRUCT(ptr, (IntPtr)0x11, "refresh", IntPtr.Zero);
                     }
                 }
             }
@@ -6457,7 +6456,7 @@ namespace QTTabBarLib {
                                 goto Label_0B07;
 
                             case 0x11:
-                                RefreshTabBar(copydatastruct.dwData != IntPtr.Zero);
+                                RefreshTabBar();
                                 return;
 
                             case 0x12:
