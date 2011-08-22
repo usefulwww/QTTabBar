@@ -2416,6 +2416,10 @@ namespace QTTabBarLib {
             return string.Empty;
         }
 
+        internal PluginManager GetPluginManager() {
+            return pluginManager;
+        }
+
         private IntPtr GetSearchBand_Edit() {
             IntPtr hwndSearchBand = WindowUtils.FindChildWindow(ExplorerHandle, hwnd => PInvoke.GetClassName(hwnd) == "UniversalSearchBand");
             if(hwndSearchBand != IntPtr.Zero) {

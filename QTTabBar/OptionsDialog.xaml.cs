@@ -16,14 +16,10 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -35,11 +31,9 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using QTPlugin;
 using QTTabBarLib.Interop;
 using Binding = System.Windows.Data.Binding;
 using Image = System.Drawing.Image;
-using ListViewItem = System.Windows.Forms.ListViewItem;
 using RadioButton = System.Windows.Controls.RadioButton;
 using Size = System.Drawing.Size;
 
@@ -61,6 +55,7 @@ namespace QTTabBarLib {
         private ObservableCollection<ButtonEntry> CurrentButtons;
 
         // Plugin stuff
+        private PluginManager pluginManager;
         private ObservableCollection<PluginEntry> CurrentPlugins;
 
         // todo: localize
@@ -128,6 +123,11 @@ namespace QTTabBarLib {
         #endregion
 
         private OptionsDialog() {
+            QTTabBarClass tabBar = InstanceManager.CurrentTabBar;
+            if(tabBar != null) {
+                // we should probably assert this.
+                pluginManager = tabBar.GetPluginManager();    
+            }
             workingConfig = QTUtility2.DeepClone(ConfigManager.LoadedConfig);
             InitializeComponent();
             cmbNewTabPos.ItemsSource = NewTabPosItems;
@@ -160,6 +160,9 @@ namespace QTTabBarLib {
 
             // Initialize the plugin tab
             CurrentPlugins = new ObservableCollection<PluginEntry>();
+            foreach(PluginAssembly assembly in PluginManager.PluginAssemblies) {
+                CreatePluginEntry(assembly, false);
+            }
             lstPluginView.ItemsSource = CurrentPlugins;
         }
 
@@ -292,7 +295,18 @@ namespace QTTabBarLib {
         #region ---------- Plugins ----------
 
         private void btnPluginOptions_Click(object sender, RoutedEventArgs e) {
-            // todo
+            if(lstPluginView.SelectedIndex == -1) return;
+            PluginEntry entry = CurrentPlugins[lstPluginView.SelectedIndex];
+            Plugin p;
+            if(pluginManager.TryGetPlugin(entry.PluginInfo.PluginID, out p) && p.Instance != null) {
+                try {
+                    p.Instance.OnOption();
+                }
+                catch(Exception ex) {
+                    PluginManager.HandlePluginException(ex, new WindowInteropHelper(this).Handle, 
+                            entry.PluginInfo.Name, "Open plugin option.");
+                }
+            }
         }
 
         private void btnPluginDisable_Click(object sender, RoutedEventArgs e) {
@@ -317,6 +331,7 @@ namespace QTTabBarLib {
             if(lstPluginView.SelectedIndex == -1) return;
             PluginEntry entry = CurrentPlugins[lstPluginView.SelectedIndex];
             if(entry.InstallOnClose) {
+                entry.PluginAssembly.Dispose();
                 CurrentPlugins.RemoveAt(lstPluginView.SelectedIndex);
             }
             else {
@@ -350,7 +365,10 @@ namespace QTTabBarLib {
                 return false;
             }
             foreach(PluginInformation pi in pa.PluginInformations) {
-                CurrentPlugins.Add(new PluginEntry(this, pi, pa) {InstallOnClose = true});
+                PluginEntry entry = new PluginEntry(this, pi, pa) { InstallOnClose = fAddedByUser };
+                int i = 0;
+                while(i < CurrentPlugins.Count && string.Compare(CurrentPlugins[i].Title, entry.Title, true) <= 0) ++i;
+                CurrentPlugins.Insert(i, entry);
             }
             return true;
         }
@@ -358,8 +376,16 @@ namespace QTTabBarLib {
         private List<PluginAssembly> CommitPlugins() {
             List<PluginAssembly> assemblies = new List<PluginAssembly>();
 
+            // Don't dispose the assemblies here.  That will be done by the plugin manager
+            // when the plugins are unloaded.
+            for(int i = 0; i < CurrentPlugins.Count; ++i) {
+                if(CurrentPlugins[i].UninstallOnClose) {
+                    CurrentPlugins.RemoveAt(i);
+                    --i;
+                }
+            }
+
             foreach(PluginEntry entry in CurrentPlugins) {
-                if(entry.UninstallOnClose) continue;
                 PluginAssembly pa = entry.PluginAssembly;
                 if(!assemblies.Contains(pa)) {
                     pa.Enabled = false;
@@ -372,6 +398,7 @@ namespace QTTabBarLib {
                 else if(entry.EnableOnClose || entry.InstallOnClose) {
                     pi.Enabled = true;
                 }
+                entry.EnableOnClose = entry.DisableOnClose = entry.InstallOnClose = false;
 
                 if(pi.Enabled) {
                     pa.Enabled = true;
@@ -379,9 +406,9 @@ namespace QTTabBarLib {
                 else {
                     //RemovePluginShortcutKeys(pi.PluginID);
                     // todo
-                }                
+                }
             }
-
+            lstPluginView.Items.Refresh();
             return assemblies;
         }
 
@@ -415,13 +442,35 @@ namespace QTTabBarLib {
             public string Title { get { return PluginInfo.Name + "  " + PluginInfo.Version; } }
             public string Author { get { return "by " + PluginInfo.Author; } }
             public string Desc { get { return PluginInfo.Description; } }
-            public bool HasOptions { get { return false; } } // todo
             public bool IsSelected { get; set; }
             public double Opacity { get { return PluginInfo.Enabled ? 1.0 : 0.5; } }
             public bool DisableOnClose { get; set; }
             public bool EnableOnClose { get; set; }
             public bool InstallOnClose { get; set; }
             public bool UninstallOnClose { get; set; }
+
+            private bool cachedHasOptions;
+            private bool optionsQueried;
+
+            public bool HasOptions {
+                get {
+                    // TODO: reset when appropriate.
+                    if(optionsQueried) return cachedHasOptions;
+                    optionsQueried = true;
+                    Plugin p;
+                    if(parent.pluginManager.TryGetPlugin(PluginInfo.PluginID, out p)) {
+                        try {
+                            cachedHasOptions = p.Instance.HasOption;
+                            return cachedHasOptions;
+                        }
+                        catch(Exception ex) {
+                            PluginManager.HandlePluginException(ex, new WindowInteropHelper(parent).Handle, PluginInfo.Name,
+                                    "Checking if the plugin has options.");
+                        }
+                    }
+                    return false;
+                }
+            } 
 
             public PluginEntry(OptionsDialog parent, PluginInformation pluginInfo, PluginAssembly pluginAssembly) {
                 this.parent = parent;
