@@ -110,57 +110,77 @@ namespace QTTabBarLib {
             return 0;
         }
 
+        public static void SavePluginAssemblies() {
+            const string RegPath = @"Software\Quizo\QTTabBar\"; // TODO
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegPath + "Plugins")) {
+                foreach(string str in key.GetValueNames()) {
+                    key.DeleteValue(str);
+                }
+                int idx = 0;
+                foreach(PluginAssembly asm in PluginManager.PluginAssemblies) {
+                    key.SetValue((idx++).ToString(), asm.Path);
+                }
+            }
+        }
+
         public static void Initialize() {
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar\Plugins")) {
-                if(key != null) {
-                    string[] strArray = QTUtility2.ReadRegBinary<string>("Buttons_Order", key);
-                    string[] array = QTUtility2.ReadRegBinary<string>("Enabled", key);
-                    PluginKey[] keyArray = QTUtility2.ReadRegBinary<PluginKey>("ShortcutKeys", key);
-                    QTUtility.Path_PluginLangFile = (string)key.GetValue("LanguageFile", string.Empty);
-                    using(RegistryKey key2 = key.CreateSubKey("Paths")) {
-                        bool flag = (array != null) && (array.Length > 0);
-                        foreach(string str in key2.GetValueNames()) {
-                            string path = (string)key2.GetValue(str, string.Empty);
-                            if(path.Length > 0) {
-                                PluginAssembly pa = new PluginAssembly(path);
-                                if(pa.PluginInfosExist) {
-                                    if(flag) {
-                                        foreach(PluginInformation information in pa.PluginInformations
-                                                .Where(information => array.Contains(information.PluginID))) {
-                                            information.Enabled = true;
-                                            pa.Enabled = true;
-                                            if(information.PluginType == PluginType.Static) {
-                                                LoadStatics(information, pa, false);
-                                            }
-                                        }
-                                    }
-                                    dicPluginAssemblies[path] = pa;
+            const string RegPath = @"Software\Quizo\QTTabBar\"; // TODO
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegPath + @"Plugins")) {
+                foreach(string str in key.GetValueNames()) {
+                    key.DeleteValue(str);
+                }
+                int idx = 0;
+                foreach(PluginAssembly asm in PluginManager.PluginAssemblies) {
+                    key.SetValue((idx++).ToString(), asm.Path);
+                }
+            }
+
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegPath + @"Plugins")) {
+                if(key == null) return;
+                QTUtility.Path_PluginLangFile = (string)key.GetValue("LanguageFile", string.Empty);
+
+                string[] enabled = Config.Plugin.Enabled;
+                foreach(string str in key.GetValueNames()) {
+                    string path = (string)key.GetValue(str, string.Empty);
+                    if(path.Length > 0) {
+                        PluginAssembly pa = new PluginAssembly(path);
+                        if(pa.PluginInfosExist) {
+                            foreach(PluginInformation information in pa.PluginInformations
+                                    .Where(information => enabled.Contains(information.PluginID))) {
+                                information.Enabled = true;
+                                pa.Enabled = true;
+                                if(information.PluginType == PluginType.Static) {
+                                    LoadStatics(information, pa, false);
                                 }
-                            }
+                            }                                
+                            dicPluginAssemblies[path] = pa;
                         }
-                    }
-                    if((strArray != null) && (strArray.Length > 0)) {
-                        foreach(string str3 in strArray) {
-                            foreach(PluginAssembly assembly2 in dicPluginAssemblies.Values) {
-                                PluginInformation information2;
-                                if(assembly2.TryGetPluginInformation(str3, out information2)) {
-                                    if(information2.Enabled) {
-                                        lstPluginButtonsOrder.Add(str3);
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    if(keyArray != null) {
-                        List<int> list = new List<int>();
-                        foreach(PluginKey key3 in keyArray.Where(key3 => key3.Keys != null)) {
-                            QTUtility.dicPluginShortcutKeys[key3.PluginID] = key3.Keys;
-                            list.AddRange(key3.Keys);
-                        }
-                        QTUtility.PluginShortcutKeysCache = list.ToArray();
                     }
                 }
+            // todo
+            /*
+                if((strArray != null) && (strArray.Length > 0)) {
+                    foreach(string str3 in strArray) {
+                        foreach(PluginAssembly assembly2 in dicPluginAssemblies.Values) {
+                            PluginInformation information2;
+                            if(assembly2.TryGetPluginInformation(str3, out information2)) {
+                                if(information2.Enabled) {
+                                    lstPluginButtonsOrder.Add(str3);
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+                if(keyArray != null) {
+                    List<int> list = new List<int>();
+                    foreach(PluginKey key3 in keyArray.Where(key3 => key3.Keys != null)) {
+                        QTUtility.dicPluginShortcutKeys[key3.PluginID] = key3.Keys;
+                        list.AddRange(key3.Keys);
+                    }
+                    QTUtility.PluginShortcutKeysCache = list.ToArray();
+                }
+                */
             }
         }
 

@@ -175,6 +175,8 @@ namespace QTTabBarLib {
             workingConfig.bbar.ButtonIndexes = CurrentButtons.Select(e => e.Index).ToArray();
             bool fButtonBarNeedsRefresh = Config.BBar.LargeButtons != workingConfig.bbar.LargeButtons;
             ConfigManager.LoadedConfig = QTUtility2.DeepClone(workingConfig);
+
+            PluginManager.SavePluginAssemblies();
             ConfigManager.WriteConfig();
             QTTabBarClass tabBar = InstanceManager.CurrentTabBar;
             if(tabBar != null) {
@@ -385,6 +387,7 @@ namespace QTTabBarLib {
                 }
             }
 
+            List<string> enabled = new List<string>();
             foreach(PluginEntry entry in CurrentPlugins) {
                 PluginAssembly pa = entry.PluginAssembly;
                 if(!assemblies.Contains(pa)) {
@@ -394,6 +397,8 @@ namespace QTTabBarLib {
                 PluginInformation pi = entry.PluginInfo;
                 if(entry.DisableOnClose) {
                     pi.Enabled = false;
+                    //RemovePluginShortcutKeys(pi.PluginID);
+                    // todo
                 }
                 else if(entry.EnableOnClose || entry.InstallOnClose) {
                     pi.Enabled = true;
@@ -402,12 +407,10 @@ namespace QTTabBarLib {
 
                 if(pi.Enabled) {
                     pa.Enabled = true;
-                }
-                else {
-                    //RemovePluginShortcutKeys(pi.PluginID);
-                    // todo
+                    enabled.Add(pi.PluginID);
                 }
             }
+            workingConfig.plugin.Enabled = enabled.ToArray();
             lstPluginView.Items.Refresh();
             return assemblies;
         }
