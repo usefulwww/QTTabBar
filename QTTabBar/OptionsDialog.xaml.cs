@@ -176,7 +176,6 @@ namespace QTTabBarLib {
             bool fButtonBarNeedsRefresh = Config.BBar.LargeButtons != workingConfig.bbar.LargeButtons;
             ConfigManager.LoadedConfig = QTUtility2.DeepClone(workingConfig);
 
-            PluginManager.SavePluginAssemblies();
             ConfigManager.WriteConfig();
             QTTabBarClass tabBar = InstanceManager.CurrentTabBar;
             if(tabBar != null) {
@@ -184,6 +183,7 @@ namespace QTTabBarLib {
                 tabBar.Invoke(new Action(() => tabBar.odCallback_ManagePlugin(assemblies)));
             }
             QTButtonBar.BroadcastConfigChanged(fButtonBarNeedsRefresh);
+            PluginManager.SavePluginAssemblies();
         }
 
         private void ListBoxItem_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e) {
@@ -457,13 +457,13 @@ namespace QTTabBarLib {
 
             public bool HasOptions {
                 get {
-                    // TODO: reset when appropriate.
+                    if(!PluginInfo.Enabled) return false;
                     if(optionsQueried) return cachedHasOptions;
-                    optionsQueried = true;
                     Plugin p;
                     if(parent.pluginManager.TryGetPlugin(PluginInfo.PluginID, out p)) {
                         try {
                             cachedHasOptions = p.Instance.HasOption;
+                            optionsQueried = true;
                             return cachedHasOptions;
                         }
                         catch(Exception ex) {

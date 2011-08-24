@@ -110,32 +110,9 @@ namespace QTTabBarLib {
             return 0;
         }
 
-        public static void SavePluginAssemblies() {
-            const string RegPath = @"Software\Quizo\QTTabBar\"; // TODO
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegPath + "Plugins")) {
-                foreach(string str in key.GetValueNames()) {
-                    key.DeleteValue(str);
-                }
-                int idx = 0;
-                foreach(PluginAssembly asm in PluginManager.PluginAssemblies) {
-                    key.SetValue((idx++).ToString(), asm.Path);
-                }
-            }
-        }
-
         public static void Initialize() {
             const string RegPath = @"Software\Quizo\QTTabBar\"; // TODO
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegPath + @"Plugins")) {
-                foreach(string str in key.GetValueNames()) {
-                    key.DeleteValue(str);
-                }
-                int idx = 0;
-                foreach(PluginAssembly asm in PluginManager.PluginAssemblies) {
-                    key.SetValue((idx++).ToString(), asm.Path);
-                }
-            }
-
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegPath + @"Plugins")) {
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegPath + @"Plugins\Paths")) {
                 if(key == null) return;
                 QTUtility.Path_PluginLangFile = (string)key.GetValue("LanguageFile", string.Empty);
 
@@ -431,6 +408,19 @@ namespace QTTabBarLib {
             using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar\Plugins")) {
                 if(key != null) {
                     QTUtility2.WriteRegBinary(lstPluginButtonsOrder.ToArray(), "Buttons_Order", key);
+                }
+            }
+        }
+
+        public static void SavePluginAssemblies() {
+            const string RegPath = @"Software\Quizo\QTTabBar\"; // TODO
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegPath + @"Plugins\Paths")) {
+                foreach(string str in key.GetValueNames()) {
+                    key.DeleteValue(str);
+                }
+                int idx = 0;
+                foreach(PluginAssembly asm in PluginManager.PluginAssemblies) {
+                    key.SetValue((idx++).ToString(), asm.Path);
                 }
             }
         }
