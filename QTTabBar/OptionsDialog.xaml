@@ -698,7 +698,7 @@
             <TabItem x:Name="tabTweaks"
                 DataContext="{Binding Path=tweaks}"
                 Header="Tweaks"
-                Width="0">
+                Width="0" Loaded="tabTweaks_Loaded">
                 <StackPanel
                     Margin="14,5,10,0"
                     Orientation="Vertical">
