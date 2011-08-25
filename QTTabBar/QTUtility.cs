@@ -211,11 +211,9 @@ namespace QTTabBarLib {
 
         static QTUtility() {
             String processName = Process.GetCurrentProcess().ProcessName.ToLower();
-            
             // I'm tempted to just return for everything except "explorer"
             // Maybe I should...
             if(processName == "iexplore" || processName == "regasm" || processName == "gacutil") {
-                //MessageBox.Show("Blocked " + processName);
                 return;
             }
 

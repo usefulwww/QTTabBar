@@ -2990,7 +2990,7 @@ namespace QTTabBarLib {
                                 return true;
                             }
                             if(!fRepeat && QTUtility.dicGroupShortcutKeys.ContainsKey(imkey)) {
-                                OpenGroup(QTUtility.dicGroupShortcutKeys[imkey], false);
+                                OpenGroup(QTUtility.dicGroupShortcutKeys[imkey], false, true);
                                 return true;
                             }
                         }
@@ -4485,7 +4485,10 @@ namespace QTTabBarLib {
             }
         }
 
-        private void OpenGroup(string groupName, bool fForceNewWindow) {
+       
+
+        private void OpenGroup(string groupName, bool fForceNewWindow, bool fDisableOverrides = false) {
+            
             if(!fForceNewWindow) {
                 string str3;
                 NowTabsAddingRemoving = true;
@@ -4498,6 +4501,13 @@ namespace QTTabBarLib {
                 bool flag3 = QTUtility.CheckConfig(Settings.DontOpenSame) == (modifierKeys != Keys.Shift);
                 bool flag4 = QTUtility.CheckConfig(Settings.ActivateNewTab) == (modifierKeys != Keys.Control);
                 bool flag5 = false;
+
+                //# Disable group hotkeys clashing with modifierKeys
+                if( fDisableOverrides ){
+                    flag4 = QTUtility.CheckConfig(Settings.DontOpenSame);
+                    flag3 = QTUtility.CheckConfig(Settings.ActivateNewTab);
+                }
+
                 if(NowOpenedByGroupOpener) {
                     flag3 = true;
                     NowOpenedByGroupOpener = false;
@@ -4551,12 +4561,13 @@ namespace QTTabBarLib {
                                 }
                             }
                             NowTabsAddingRemoving = false;
+                            //# Flag this, flag that. Can we clean this up?
                             if(((str4 != null) && (flag4 || (tabControl1.SelectedIndex == -1))) && (tabPage != null)) {
                                 if(flag) {
                                     NowTabCreated = true;
                                 }
                                 flag5 = tabPage != CurrentTab;
-                                tabControl1.SelectTab(tabPage);
+                                tabControl1.SelectTab(tabPage); //# <--- Here....
                             }
                         }
                         finally {
