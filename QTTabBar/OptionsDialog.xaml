@@ -768,7 +768,8 @@
                         Style="{StaticResource CheckStyle}"/>
                     <StackPanel
                         Orientation="Horizontal">
-                        <Button
+                        <Button x:Name="btnBackgroundColor"
+                            Click="btnBackgroundColor_Click"
                             Content="Background Color"
                             Height="23"
                             Margin="31,2,5,2"
@@ -780,7 +781,8 @@
                                 </MultiBinding>
                             </Button.IsEnabled>
                         </Button>
-                        <Button
+                        <Button x:Name="btnTextColor"
+                            Click="btnTextColor_Click"
                             Content="Text Color"
                             Height="23"
                             Margin="5,2"

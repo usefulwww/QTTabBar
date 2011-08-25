@@ -37,6 +37,8 @@ using Binding = System.Windows.Data.Binding;
 using Image = System.Drawing.Image;
 using RadioButton = System.Windows.Controls.RadioButton;
 using Size = System.Drawing.Size;
+using Brush = System.Windows.Media.Brushes;
+using Color = System.Windows.Media.Color;
 
 namespace QTTabBarLib {
     /// <summary>
@@ -219,6 +221,29 @@ namespace QTTabBarLib {
         private void btnApply_Click(object sender, RoutedEventArgs e) {
             UpdateOptions();
         }
+
+        #region ---------- Tweaks ----------
+
+        private void btnBackgroundColor_Click(object sender, RoutedEventArgs e) {
+            ColorDialog cd = new ColorDialog();
+            if(System.Windows.Forms.DialogResult.OK == cd.ShowDialog()) {
+                Config.Tweaks.BackgroundColor = cd.Color;
+                btnBackgroundColor.Background = new SolidColorBrush(Color.FromArgb(
+                        cd.Color.A, cd.Color.R, cd.Color.G, cd.Color.B));
+            }
+
+        }
+
+        private void btnTextColor_Click(object sender, RoutedEventArgs e) {
+            ColorDialog cd = new ColorDialog();
+            if(System.Windows.Forms.DialogResult.OK == cd.ShowDialog()) {
+                Config.Tweaks.TextColor = cd.Color;
+                btnTextColor.Foreground = new SolidColorBrush(Color.FromArgb(
+                        cd.Color.A, cd.Color.R, cd.Color.G, cd.Color.B));
+            }
+        }
+
+        #endregion
 
         #region ---------- Button Bar ----------
         

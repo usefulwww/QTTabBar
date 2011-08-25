@@ -168,6 +168,9 @@ namespace QTTabBarLib {
             public bool ToggleFullRowSelect      { get; set; }
             public bool DetailsGridLines         { get; set; }
             public bool AlternateRowColors       { get; set; }
+            public Color BackgroundColor         { get; set; }
+            public Color TextColor               { get; set; }
+
 
             public _Tweaks() {
                 AlwaysShowHeaders = false;
@@ -181,6 +184,8 @@ namespace QTTabBarLib {
                 ToggleFullRowSelect = false;
                 DetailsGridLines = false;
                 AlternateRowColors = false;
+                TextColor = new Color();
+                BackgroundColor = new Color();
             }
         }
 
