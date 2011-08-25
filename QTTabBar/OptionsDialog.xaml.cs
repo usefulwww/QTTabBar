@@ -39,6 +39,7 @@ using RadioButton = System.Windows.Controls.RadioButton;
 using Size = System.Drawing.Size;
 using Brush = System.Windows.Media.Brushes;
 using Color = System.Windows.Media.Color;
+using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace QTTabBarLib {
     /// <summary>
@@ -427,14 +428,31 @@ namespace QTTabBarLib {
         private void btnPluginRemove_Click(object sender, RoutedEventArgs e) {
             if(lstPluginView.SelectedIndex == -1) return;
             PluginEntry entry = CurrentPlugins[lstPluginView.SelectedIndex];
-            if(entry.InstallOnClose) {
-                entry.PluginAssembly.Dispose();
-                CurrentPlugins.RemoveAt(lstPluginView.SelectedIndex);
+            PluginAssembly pluingAssembly = entry.PluginAssembly;
+            if(pluingAssembly.PluginInformations.Count > 1) {
+                string str = pluingAssembly.PluginInformations.Select(info => info.Name).StringJoin(", ");
+                // todo localize
+                const string removePlugin = "Uninstalling this plugin will also uninstall the following plugins:\n\n{0}\n\nProceed?";
+                if(MessageBox.Show(string.Format(removePlugin, str), string.Empty, MessageBoxButtons.OKCancel, MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.OK) {
+                    return;
+                }
             }
-            else {
-                entry.UninstallOnClose = true;
-                lstPluginView.Items.Refresh();
+            bool needsRefresh = false;
+            for(int i = 0; i < CurrentPlugins.Count; i++) {
+                PluginEntry otherEntry = CurrentPlugins[i];
+                if(otherEntry.PluginAssembly == entry.PluginAssembly) {
+                    if(otherEntry.InstallOnClose) {
+                        otherEntry.PluginAssembly.Dispose();
+                        CurrentPlugins.RemoveAt(i);
+                        --i;
+                    }
+                    else {
+                        otherEntry.UninstallOnClose = true;
+                        needsRefresh = true;
+                    }
+                }
             }
+            if(needsRefresh) lstPluginView.Items.Refresh();
         }
 
         private void btnBrowsePlugin_Click(object sender, RoutedEventArgs e) {
