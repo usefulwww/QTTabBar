@@ -613,7 +613,7 @@ namespace QTTabBarLib {
             public PluginInformation PluginInfo;
 		    public PluginAssembly PluginAssembly;
 
-            public Image Icon { get { return PluginInfo.ImageLarge; } }
+            public Image Icon { get { return PluginInfo.ImageLarge ?? Resources_Image.imgPlugin24; } }
             public string Title { get { return PluginInfo.Name + "  " + PluginInfo.Version; } }
             public string Author { get { return "by " + PluginInfo.Author; } }
             public string Desc { get { return PluginInfo.Description; } }

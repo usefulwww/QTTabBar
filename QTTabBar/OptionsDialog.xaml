@@ -360,7 +360,7 @@
                         Margin="0,0,0,4"
                         Orientation="Horizontal">
                         <Image
-                            Source="C:\Users\Paul\Desktop\icon.png"
+                            Source="{Binding Source={x:Static qt:Resources_Image.imgTabWindow}, Converter={StaticResource BitmapToImageSourceConverter}}"
                             Style="{StaticResource PageHeaderImageStyle}"/>
                         <Label
                             Content="Change how Explorer Windows behave."
@@ -383,7 +383,7 @@
                             Height="64"
                             Margin="64,0,64,2"
                             RenderOptions.BitmapScalingMode="NearestNeighbor"
-                            Source="C:\Users\Paul\Desktop\ring.png"
+                            Source="{Binding Source={x:Static qt:Resources_Image.imgCapture}, Converter={StaticResource BitmapToImageSourceConverter}}"
                             Stretch="None"
                             Width="64"/>
                         <Image
@@ -391,7 +391,7 @@
                             Height="64"
                             Margin="64,0,64,2"
                             RenderOptions.BitmapScalingMode="NearestNeighbor"
-                            Source="C:\Users\Paul\Desktop\ring.png"
+                            Source="{Binding Source={x:Static qt:Resources_Image.imgNoCapture}, Converter={StaticResource BitmapToImageSourceConverter}}"
                             Stretch="None"
                             Width="64"/>
                         <qt:RadioButtonEx x:Name="radSingleWindowOn"
@@ -546,7 +546,7 @@
                         Margin="0,0,0,4"
                         Orientation="Horizontal">
                         <Image
-                            Source="C:\Users\Paul\Desktop\icon.png"
+                            Source="{Binding Source={x:Static qt:Resources_Image.imgTabTabs}, Converter={StaticResource BitmapToImageSourceConverter}}"
                             Style="{StaticResource PageHeaderImageStyle}"/>
                         <Label
                             Content="Change options related to tabs."
@@ -706,7 +706,7 @@
                         Margin="0,0,0,4"
                         Orientation="Horizontal">
                         <Image
-                            Source="C:\Users\Paul\Desktop\icon.png"
+                            Source="{Binding Source={x:Static qt:Resources_Image.imgTabTweaks}, Converter={StaticResource BitmapToImageSourceConverter}}"
                             Style="{StaticResource PageHeaderImageStyle}"/>
                         <Label
                             Content="Enable or disable tweaks to Explorer's List View"
@@ -808,7 +808,7 @@
                         Margin="0,0,0,4"
                         Orientation="Horizontal">
                         <Image
-                            Source="C:\Users\Paul\Desktop\icon.png"
+                            Source="{Binding Source={x:Static qt:Resources_Image.imgTabTooltips}, Converter={StaticResource BitmapToImageSourceConverter}}"
                             Style="{StaticResource PageHeaderImageStyle}"/>
                         <Label
                             Content="Change the behavoir of Subfolder and Preview tooltips"
@@ -987,7 +987,7 @@
                             Margin="0,0,0,4"
                             Orientation="Horizontal">
                             <Image
-                                Source="C:\Users\Paul\Desktop\icon.png"
+                                Source="{Binding Source={x:Static qt:Resources_Image.imgTabMisc}, Converter={StaticResource BitmapToImageSourceConverter}}"
                                 Style="{StaticResource PageHeaderImageStyle}"/>
                             <Label
                                 Content="General options for QTTabBar's behavoir"
@@ -1120,7 +1120,7 @@
                             Margin="0,0,0,4"
                             Orientation="Horizontal">
                             <Image
-                                Source="C:\Users\Paul\Desktop\icon.png"
+                                Source="{Binding Source={x:Static qt:Resources_Image.imgTabSkin}, Converter={StaticResource BitmapToImageSourceConverter}}"
                                 Style="{StaticResource PageHeaderImageStyle}"/>
                             <Label
                                 Content="Change the appearance of tabs or the tab bar"
@@ -1495,7 +1495,7 @@
                         Margin="0,0,0,4"
                         Orientation="Horizontal">
                         <Image
-                            Source="C:\Users\Paul\Desktop\icon.png"
+                            Source="{Binding Source={x:Static qt:Resources_Image.imgTabMouse}, Converter={StaticResource BitmapToImageSourceConverter}}"
                             Style="{StaticResource PageHeaderImageStyle}"/>
                         <Label
                             Content="Assign commands to different mouse actions"
@@ -1576,7 +1576,7 @@
                         Margin="0,0,0,4"
                         Orientation="Horizontal">
                         <Image
-                            Source="C:\Users\Paul\Desktop\icon.png"
+                            Source="{Binding Source={x:Static qt:Resources_Image.imgTabKeys}, Converter={StaticResource BitmapToImageSourceConverter}}"
                             Style="{StaticResource PageHeaderImageStyle}"/>
                         <Label
                             Content="Change keyboard shortcuts"
@@ -1596,7 +1596,7 @@
                         Margin="0,0,0,4"
                         Orientation="Horizontal">
                         <Image
-                            Source="C:\Users\Paul\Desktop\icon.png"
+                            Source="{Binding Source={x:Static qt:Resources_Image.imgTabGroups}, Converter={StaticResource BitmapToImageSourceConverter}}"
                             Style="{StaticResource PageHeaderImageStyle}"/>
                         <Label
                             Content="Create and manage tab groups"
@@ -1676,7 +1676,7 @@
                         Margin="0,0,0,4"
                         Orientation="Horizontal">
                         <Image
-                            Source="C:\Users\Paul\Desktop\icon.png"
+                            Source="{Binding Source={x:Static qt:Resources_Image.imgTabApps}, Converter={StaticResource BitmapToImageSourceConverter}}"
                             Style="{StaticResource PageHeaderImageStyle}"/>
                         <Label
                             Content="Create shortcuts to commonly used files or applications"
@@ -1848,7 +1848,7 @@
                         Margin="0,0,0,4"
                         Orientation="Horizontal">
                         <Image
-                            Source="C:\Users\Paul\Desktop\icon.png"
+                            Source="{Binding Source={x:Static qt:Resources_Image.imgTabBBar}, Converter={StaticResource BitmapToImageSourceConverter}}"
                             Style="{StaticResource PageHeaderImageStyle}"/>
                         <Label
                             Content="Customize the Button Bar"
@@ -1946,7 +1946,7 @@
                         Margin="0,0,0,4"
                         Orientation="Horizontal">
                         <Image
-                            Source="C:\Users\Paul\Desktop\icon.png"
+                            Source="{Binding Source={x:Static qt:Resources_Image.imgTabPlugin}, Converter={StaticResource BitmapToImageSourceConverter}}"
                             Style="{StaticResource PageHeaderImageStyle}"/>
                         <Label
                             Content="Manage third-party plugins"
@@ -1985,7 +1985,7 @@
                         Margin="0,0,0,4"
                         Orientation="Horizontal">
                         <Image
-                            Source="C:\Users\Paul\Desktop\icon.png"
+                            Source="{Binding Source={x:Static qt:Resources_Image.imgTabLang}, Converter={StaticResource BitmapToImageSourceConverter}}"
                             Style="{StaticResource PageHeaderImageStyle}"/>
                         <Label
                             Content="Change the language"
@@ -2074,7 +2074,7 @@
                         Margin="0,0,0,4"
                         Orientation="Horizontal">
                         <Image
-                            Source="C:\Users\Paul\Desktop\icon.png"
+                            Source="{Binding Source={x:Static qt:Resources_Image.imgTabAbout}, Converter={StaticResource BitmapToImageSourceConverter}}"
                             Style="{StaticResource PageHeaderImageStyle}"/>
                         <Label
                             Content="View credits and version information"

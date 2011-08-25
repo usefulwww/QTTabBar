@@ -546,6 +546,63 @@
   <ItemGroup>
     <None Include="Resources\imgVistaMenu_MB_hot.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgCapture.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgNoCapture.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgPlugin16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgPlugin24.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgTabAbout.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgTabApps.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgTabBBar.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgTabDeskop.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgTabGroups.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgTabKeys.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgTabLang.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgTabMisc.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgTabMouse.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgTabPlugin.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgTabSkin.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgTabTabs.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgTabTooltips.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgTabTweaks.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\imgTabWindow.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

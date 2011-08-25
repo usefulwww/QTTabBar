@@ -256,7 +256,6 @@
   <data name="ButtonStrip16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\ButtonStrip16.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="icoEmpty" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\icoEmpty.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -274,5 +273,63 @@
   </data>
   <data name="imgVistaMenu_MB_hot" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\imgVistaMenu_MB_hot.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="imgCapture" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\imgCapture.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="imgNoCapture" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\imgNoCapture.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="imgPlugin16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\imgPlugin16.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="imgPlugin24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\imgPlugin24.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="imgTabAbout" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\imgTabAbout.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="imgTabApps" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\imgTabApps.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="imgTabBBar" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\imgTabBBar.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="imgTabDeskop" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\imgTabDeskop.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="imgTabGroups" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\imgTabGroups.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="imgTabKeys" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\imgTabKeys.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="imgTabLang" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\imgTabLang.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="imgTabMisc" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\imgTabMisc.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="imgTabMouse" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\imgTabMouse.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="imgTabPlugin" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\imgTabPlugin.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="imgTabSkin" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\imgTabSkin.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="imgTabTabs" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\imgTabTabs.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="imgTabTooltips" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\imgTabTooltips.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="imgTabTweaks" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\imgTabTweaks.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="imgTabWindow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\imgTabWindow.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>
