@@ -83,7 +83,7 @@ namespace QTTabBarLib {
                 if(item >= 0x10000) {
                     int count = list.Count;
                     if(PluginManager.ActivatedButtonsOrder.Count > count) {
-                        string key = PluginManager.ActivatedButtonsOrder[count];
+                        string key = ""; //PluginManager.ActivatedButtonsOrder[count];
                         foreach(PluginInformation information in PluginManager.PluginInformations
                                 .Where(information => information.PluginID == key)) {
                             list.Add(information);
@@ -353,7 +353,7 @@ namespace QTTabBarLib {
             pluginManager = null;
             base.Dispose(disposing);
         }
-
+        /*
         public int[] GetButtonIndices() {
             List<int> list = new List<int>();
             List<string> list2 = new List<string>();
@@ -372,7 +372,7 @@ namespace QTTabBarLib {
             }
             PluginManager.ActivatedButtonsOrder = list2;
             return list.ToArray();
-        }
+        }*/
 
         private void InitializeComponent() {
             buttonAdd = new Button();
