@@ -26,7 +26,6 @@ namespace QTTabBarLib {
         public bool Enabled;
         public Image ImageLarge;
         public Image ImageSmall;
-        public int Index;
         public string Name;
         public string Path;
         public string PluginID;
@@ -44,12 +43,6 @@ namespace QTTabBarLib {
             Path = path;
             PluginID = pluginID;
             TypeFullName = typeFullName;
-        }
-
-        public PluginInformation Clone(int index) {
-            PluginInformation information = (PluginInformation)MemberwiseClone();
-            information.Index = index;
-            return information;
         }
 
         public void Dispose() {

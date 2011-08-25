@@ -152,20 +152,9 @@ namespace QTTabBarLib {
         }
 
         private void UpdateOptions() {
-            List<PluginAssembly> assemblies = CommitPlugins();
-            var pluginButtons = new List<PluginManager.PluginButton>();
-            foreach(ButtonEntry entry in CurrentButtons) {
-                if(entry.Index >= QTButtonBar.BUTTONINDEX_PLUGIN) {
-                    pluginButtons.Add(new PluginManager.PluginButton {
-                        id = entry.pluginInfo.PluginID,
-                        index = entry.pluginInfo.Index
-                    });
-                }
-            }
-            PluginManager.ActivatedButtonsOrder = pluginButtons;
-            PluginManager.SaveButtonOrder();
-            workingConfig.bbar.ButtonIndexes = CurrentButtons.Select(
-                    e => Math.Min(e.Index, QTButtonBar.BUTTONINDEX_PLUGIN)).ToArray();
+            List<PluginAssembly> assemblies;
+            CommitPlugins(out assemblies);
+            CommitButtonBar();
             bool fButtonBarNeedsRefresh = Config.BBar.LargeButtons != workingConfig.bbar.LargeButtons;
             ConfigManager.LoadedConfig = QTUtility2.DeepClone(workingConfig);
             ConfigManager.WriteConfig();
@@ -221,6 +210,9 @@ namespace QTTabBarLib {
 
         private void btnApply_Click(object sender, RoutedEventArgs e) {
             UpdateOptions();
+
+            // Refill the button bar pool
+            InitializeButtonBar();
         }
 
         #region ---------- Tweaks ----------
@@ -272,7 +264,7 @@ namespace QTTabBarLib {
             foreach(PluginInformation pi in PluginManager.PluginInformations.OrderBy(pi => pi.Name)) {
                 if(pi.PluginType == PluginType.Interactive) {
                     dicPluginListPos[pi.PluginID] = pluginListPos;
-                    lstPluginButtons.Add(new ButtonEntry(this, pluginListPos++, pi));
+                    lstPluginButtons.Add(new ButtonEntry(this, pluginListPos++, pi, 0));
                 }
                 else if(pi.PluginType == PluginType.BackgroundMultiple) {
                     Plugin plugin;
@@ -284,7 +276,7 @@ namespace QTTabBarLib {
                                 bmci.Initialize(Enumerable.Range(0, bmci.Count).ToArray());
                                 dicPluginListPos[pi.PluginID] = pluginListPos;
                                 for(int i = 0; i < bmci.Count; i++) {
-                                    lstPluginButtons.Add(new ButtonEntry(this, pluginListPos++, pi.Clone(i)));
+                                    lstPluginButtons.Add(new ButtonEntry(this, pluginListPos++, pi, i));
                                 }
                             }
                         }
@@ -324,6 +316,28 @@ namespace QTTabBarLib {
             }
             lstButtonBarPool.ItemsSource = ButtonPool;
             lstButtonBarCurrent.ItemsSource = CurrentButtons;    
+        }
+
+        private void CommitButtonBar() {
+            var pluginButtons = new List<PluginManager.PluginButton>();
+            for(int i = 0; i < CurrentButtons.Count; i++) {
+                ButtonEntry entry = CurrentButtons[i];
+                if(entry.Index >= QTButtonBar.BUTTONINDEX_PLUGIN) {
+                    if(entry.PluginInfo.Enabled) {
+                        pluginButtons.Add(new PluginManager.PluginButton {
+                            id = entry.PluginInfo.PluginID,
+                            index = entry.PluginButtonIndex
+                        });
+                    }
+                    else {
+                        CurrentButtons.RemoveAt(i--);
+                    }
+                }
+            }
+            PluginManager.ActivatedButtonsOrder = pluginButtons;
+            PluginManager.SaveButtonOrder();
+            workingConfig.bbar.ButtonIndexes = CurrentButtons.Select(
+                    e => Math.Min(e.Index, QTButtonBar.BUTTONINDEX_PLUGIN)).ToArray();
         }
 
         private void btnBBarAdd_Click(object sender, RoutedEventArgs e) {
@@ -475,9 +489,9 @@ namespace QTTabBarLib {
             }
         }
 
-        private bool CreatePluginEntry(PluginAssembly pa, bool fAddedByUser) {
+        private void CreatePluginEntry(PluginAssembly pa, bool fAddedByUser) {
             if(!pa.PluginInfosExist || CurrentPlugins.Any(pe => pe.PluginInfo.Path == pa.Path)) {
-                return false;
+                return;
             }
             foreach(PluginInformation pi in pa.PluginInformations) {
                 PluginEntry entry = new PluginEntry(this, pi, pa) { InstallOnClose = fAddedByUser };
@@ -485,18 +499,18 @@ namespace QTTabBarLib {
                 while(i < CurrentPlugins.Count && string.Compare(CurrentPlugins[i].Title, entry.Title, true) <= 0) ++i;
                 CurrentPlugins.Insert(i, entry);
             }
-            return true;
         }
 
-        private List<PluginAssembly> CommitPlugins() {
-            List<PluginAssembly> assemblies = new List<PluginAssembly>();
+        // Call this BEFORE committing the button bar!
+        private void CommitPlugins(out List<PluginAssembly> assemblies) {
+            assemblies = new List<PluginAssembly>();
 
             // Don't dispose the assemblies here.  That will be done by the plugin manager
             // when the plugins are unloaded.
             for(int i = 0; i < CurrentPlugins.Count; ++i) {
                 if(CurrentPlugins[i].UninstallOnClose) {
-                    CurrentPlugins.RemoveAt(i);
-                    --i;
+                    CurrentPlugins[i].PluginInfo.Enabled = false;
+                    CurrentPlugins.RemoveAt(i--);
                 }
             }
 
@@ -510,8 +524,6 @@ namespace QTTabBarLib {
                 PluginInformation pi = entry.PluginInfo;
                 if(entry.DisableOnClose) {
                     pi.Enabled = false;
-                    //RemovePluginShortcutKeys(pi.PluginID);
-                    // todo
                 }
                 else if(entry.EnableOnClose || entry.InstallOnClose) {
                     pi.Enabled = true;
@@ -525,7 +537,6 @@ namespace QTTabBarLib {
             }
             workingConfig.plugin.Enabled = enabled.ToArray();
             lstPluginView.Items.Refresh();
-            return assemblies;
         }
 
         #endregion
@@ -535,21 +546,22 @@ namespace QTTabBarLib {
         private class ButtonEntry {
             private OptionsDialog parent;
 
-            public PluginInformation pluginInfo;
+            public PluginInformation PluginInfo { get; private set; }
             public int Index { get; private set; }
+            public int PluginButtonIndex { get; private set; }
             public string Text {
                 get {
                     if(Index >= QTButtonBar.BUTTONINDEX_PLUGIN) {
-                        if(pluginInfo.PluginType == PluginType.BackgroundMultiple && pluginInfo.Index != -1) {
+                        if(PluginInfo.PluginType == PluginType.BackgroundMultiple && PluginButtonIndex != -1) {
                             Plugin plugin;
-                            if(parent.pluginManager.TryGetPlugin(pluginInfo.PluginID, out plugin)) {
+                            if(parent.pluginManager.TryGetPlugin(PluginInfo.PluginID, out plugin)) {
                                 try {
-                                    return ((IBarMultipleCustomItems)plugin.Instance).GetName(pluginInfo.Index);
+                                    return ((IBarMultipleCustomItems)plugin.Instance).GetName(PluginButtonIndex);
                                 }
                                 catch { }
                             }
                         }
-                        return pluginInfo.Name;
+                        return PluginInfo.Name;
                     }
                     else if(Index < parent.ButtonItemsDisplayName.Length) {
                         return parent.ButtonItemsDisplayName[Index];
@@ -564,16 +576,16 @@ namespace QTTabBarLib {
             public Image SmallImage { get { return getImage(false); } }
             private Image getImage(bool large) {
                 if(Index >= QTButtonBar.BUTTONINDEX_PLUGIN) {
-                    if(pluginInfo.PluginType == PluginType.BackgroundMultiple && pluginInfo.Index != -1) {
+                    if(PluginInfo.PluginType == PluginType.BackgroundMultiple && PluginButtonIndex != -1) {
                         Plugin plugin;
-                        if(parent.pluginManager.TryGetPlugin(pluginInfo.PluginID, out plugin)) {
+                        if(parent.pluginManager.TryGetPlugin(PluginInfo.PluginID, out plugin)) {
                             try {
-                                return ((IBarMultipleCustomItems)plugin.Instance).GetImage(large, pluginInfo.Index);
+                                return ((IBarMultipleCustomItems)plugin.Instance).GetImage(large, PluginButtonIndex);
                             }
                             catch { }
                         }
                     }
-                    return large ? pluginInfo.ImageLarge : pluginInfo.ImageSmall; // todo: puzzle piece if null
+                    return large ? PluginInfo.ImageLarge : PluginInfo.ImageSmall; // todo: puzzle piece if null
                 }
                 else if(Index == 0 || Index >= QTButtonBar.BII_WINDOWOPACITY) {
                     return null;
@@ -588,10 +600,11 @@ namespace QTTabBarLib {
                 this.parent = parent;
                 this.Index = Index;
             }
-            public ButtonEntry(OptionsDialog parent, int Index, PluginInformation pluginInfo) {
+            public ButtonEntry(OptionsDialog parent, int Index, PluginInformation PluginInfo, int PluginButtonIndex) {
                 this.parent = parent;
-                this.pluginInfo = pluginInfo;
+                this.PluginInfo = PluginInfo;
                 this.Index = QTButtonBar.BUTTONINDEX_PLUGIN + Index;
+                this.PluginButtonIndex = PluginButtonIndex;
             }
         }
 

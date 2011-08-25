@@ -101,9 +101,6 @@
     <Compile Include="Automation\AutomationElementFactory.cs" />
     <Compile Include="Automation\AutomationManager.cs" />
     <Compile Include="BreadcrumbBar.cs" />
-    <Compile Include="ButtonBarOptionForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="AbstractListView.cs" />
     <Compile Include="HookLibManager.cs" />
     <Compile Include="Interop\ShellConstants.cs" />
