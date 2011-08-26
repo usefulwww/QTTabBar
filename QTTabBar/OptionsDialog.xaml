@@ -1583,7 +1583,35 @@
                             FontSize="13"
                             VerticalAlignment="Bottom"/>
                     </StackPanel>
-                    <ListView Margin="10"/>
+                    <ListView x:Name="lvwHotkeys"
+                        PreviewKeyDown="lvwHotkeys_PreviewKeyDown"
+                        TextInput="lvwHotkeys_TextInput"
+                        BorderThickness="1.000001"
+                        Margin="0,10">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Action" Width="350">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox
+                                                Content="{Binding Path=Action}"
+                                                IsChecked="{Binding Path=Enabled}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Keystroke">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock
+                                                Text="{Binding Path=HotkeyString}"
+                                                TextAlignment="Center"
+                                                Width="120"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
                 </DockPanel>
             </TabItem>
             <TabItem x:Name="tabGroups"

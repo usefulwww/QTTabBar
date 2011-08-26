@@ -40,6 +40,7 @@ using Size = System.Drawing.Size;
 using Brush = System.Windows.Media.Brushes;
 using Color = System.Windows.Media.Color;
 using MessageBox = System.Windows.Forms.MessageBox;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 
 namespace QTTabBarLib {
     /// <summary>
@@ -145,6 +146,14 @@ namespace QTTabBarLib {
                 CreatePluginEntry(assembly, false);
             }
             lstPluginView.ItemsSource = CurrentPlugins;
+
+
+            List<HotkeyEntry> list = new List<HotkeyEntry>();
+            string[] arrActions = QTUtility.TextResourcesDic["ShortcutKeys_ActionNames"];
+            for(int i = 0; i < QTUtility.ShortcutKeys.Length; i++) {
+                list.Add(new HotkeyEntry(i, arrActions[i]));
+            }
+            lvwHotkeys.ItemsSource = list;
         }
 
         public void Dispose() {
@@ -247,8 +256,112 @@ namespace QTTabBarLib {
 
         #endregion
 
+        #region ---------- Keyboard ----------
+
+        private static bool IsInvalidShortcutKey(Keys key, Keys modKeys) {
+
+            if(modKeys == Keys.None) return true;
+
+            // keys not allowed even with any modifier keys 
+            switch(key) {
+                case Keys.None:
+                case Keys.Enter:
+                case Keys.ControlKey:
+                case Keys.ShiftKey:
+                case Keys.Menu:				// Alt itself
+                case Keys.NumLock:
+                case Keys.ProcessKey:
+                case Keys.IMEConvert:
+                case Keys.IMENonconvert:
+                case Keys.KanaMode:
+                case Keys.KanjiMode:
+                    return true;
+            }
+
+            // keys not allowed as one key
+            switch(key | modKeys) {
+                case Keys.LWin:
+                case Keys.RWin:
+                case Keys.Delete:
+                case Keys.Apps:
+                case Keys.Tab:
+                case Keys.Left:
+                case Keys.Up:
+                case Keys.Right:
+                case Keys.Down:
+                    return true;
+            }
+
+            // invalid key combinations 
+            bool c = (modKeys & Keys.Control) == Keys.Control;
+            bool s = (modKeys & Keys.Shift) == Keys.Shift;
+            bool a = (modKeys & Keys.Alt) == Keys.Alt;
+
+            if(c && !s && !a) {
+                switch(key) {
+                    case Keys.C:	// Ctrl + C
+                    case Keys.A:	// Ctrl + A
+                    case Keys.Z:	// Ctrl + Z
+                    case Keys.V:	// Ctrl + V
+                    case Keys.X:	// Ctrl + X
+                        System.Media.SystemSounds.Hand.Play();
+                        return true;
+                }
+            }
+            else if(!c && !s && a) {
+                switch(key) {
+                    case Keys.Left:		// Alt + Left
+                    case Keys.Right:	// Alt + Right
+                    case Keys.F4:		// Alt + F4
+                        System.Media.SystemSounds.Hand.Play();
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void lvwHotkeys_PreviewKeyDown(object sender, KeyEventArgs e) {
+            if(lvwHotkeys.SelectedItems.Count != 1) return;
+            Key wpfKey = (e.Key == Key.System ? e.SystemKey : e.Key);
+            ModifierKeys wpfModKeys = Keyboard.Modifiers;
+
+            // Ignore modifier keys.
+            if(wpfKey == Key.LeftShift || wpfKey == Key.RightShift
+                    || wpfKey == Key.LeftCtrl || wpfKey == Key.RightCtrl
+                    || wpfKey == Key.LeftAlt || wpfKey == Key.RightAlt
+                    || wpfKey == Key.LWin || wpfKey == Key.RWin) {
+                return;
+            }
+
+            // Urgh, so many conversions between WPF and WinForms...
+            Keys key = (Keys)KeyInterop.VirtualKeyFromKey(wpfKey);
+            Keys modKeys = Keys.None;
+            if((wpfModKeys & ModifierKeys.Alt) != 0) modKeys |= Keys.Alt;
+            if((wpfModKeys & ModifierKeys.Control) != 0) modKeys |= Keys.Control;
+            if((wpfModKeys & ModifierKeys.Shift) != 0) modKeys |= Keys.Shift;
+            
+            HotkeyEntry entry = (HotkeyEntry)lvwHotkeys.SelectedItem;
+            if(key == Keys.Escape) {
+                entry.Key = Keys.None;
+                e.Handled = true;
+                lvwHotkeys.Items.Refresh();
+            }
+            else if(!IsInvalidShortcutKey(key, modKeys)) {
+                entry.Key = key | modKeys;
+                e.Handled = true;
+                lvwHotkeys.Items.Refresh();
+            }
+        }
+
+        private void lvwHotkeys_TextInput(object sender, TextCompositionEventArgs e) {
+            e.Handled = true;
+        }
+
+        #endregion
+
         #region ---------- Button Bar ----------
-        
+
         private void InitializeButtonBar() {
             // Initialize the button bar tab.
             // todo: options, localize, etc...
@@ -660,6 +773,18 @@ namespace QTTabBarLib {
                 this.parent = parent;
                 PluginInfo = pluginInfo;
                 PluginAssembly = pluginAssembly;
+            }
+        }
+
+        private class HotkeyEntry {
+            public bool Enabled { get; set; }
+            public string Action { get; set; }
+            public string HotkeyString { get { return QTUtility2.MakeKeyString(Key); } }
+            public Keys Key { get; set; }
+            public HotkeyEntry(int index, string action) {
+                Enabled = (QTUtility.ShortcutKeys[index] & QTUtility.FLAG_KEYENABLED) == QTUtility.FLAG_KEYENABLED;
+                Action = action;
+                Key = (Keys)(QTUtility.ShortcutKeys[index] & ~QTUtility.FLAG_KEYENABLED);
             }
         }
 
