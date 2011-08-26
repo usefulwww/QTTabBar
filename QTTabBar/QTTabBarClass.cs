@@ -4507,7 +4507,6 @@ namespace QTTabBarLib {
                     flag4 = QTUtility.CheckConfig(Settings.DontOpenSame);
                     flag3 = QTUtility.CheckConfig(Settings.ActivateNewTab);
                 }
-
                 if(NowOpenedByGroupOpener) {
                     flag3 = true;
                     NowOpenedByGroupOpener = false;
@@ -4561,13 +4560,12 @@ namespace QTTabBarLib {
                                 }
                             }
                             NowTabsAddingRemoving = false;
-                            //# Flag this, flag that. Can we clean this up?
                             if(((str4 != null) && (flag4 || (tabControl1.SelectedIndex == -1))) && (tabPage != null)) {
                                 if(flag) {
                                     NowTabCreated = true;
                                 }
                                 flag5 = tabPage != CurrentTab;
-                                tabControl1.SelectTab(tabPage); //# <--- Here....
+                                tabControl1.SelectTab(tabPage);
                             }
                         }
                         finally {
