@@ -1593,19 +1593,40 @@
                                 <GridViewColumn Header="Action" Width="350">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <CheckBox
+                                            <CheckBox x:Name="chkKeyEnable"
                                                 Content="{Binding Path=Action}"
                                                 IsChecked="{Binding Path=Enabled}"/>
+                                            <DataTemplate.Triggers>
+                                                <DataTrigger
+                                                    Binding="{Binding Path=Enabled}"
+                                                    Value="False">
+                                                    <Setter 
+                                                        TargetName="chkKeyEnable" 
+                                                        Property="Foreground" 
+                                                        Value="#FF888888"/>
+                                                </DataTrigger>
+                                            </DataTemplate.Triggers>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
                                 <GridViewColumn Header="Keystroke">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock
+                                            <TextBlock x:Name="txtKeyString"
+                                                Foreground="#FF000000"
                                                 Text="{Binding Path=HotkeyString}"
                                                 TextAlignment="Center"
                                                 Width="120"/>
+                                            <DataTemplate.Triggers>
+                                                <DataTrigger
+                                                    Binding="{Binding Path=Enabled}"
+                                                    Value="False">
+                                                    <Setter 
+                                                        TargetName="txtKeyString" 
+                                                        Property="Foreground" 
+                                                        Value="#FF888888"/>
+                                                </DataTrigger>
+                                            </DataTemplate.Triggers>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
