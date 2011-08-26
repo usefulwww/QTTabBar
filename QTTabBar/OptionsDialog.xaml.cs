@@ -35,7 +35,6 @@ using QTPlugin;
 using QTTabBarLib.Interop;
 using Binding = System.Windows.Data.Binding;
 using Image = System.Drawing.Image;
-using MessageBox = System.Windows.MessageBox;
 using RadioButton = System.Windows.Controls.RadioButton;
 using Size = System.Drawing.Size;
 using Brush = System.Windows.Media.Brushes;
@@ -234,7 +233,6 @@ namespace QTTabBarLib {
                 Config.Tweaks.TextColor = cd.Color;
                 btnTextColor.Foreground = new SolidColorBrush(Color.FromArgb(
                         cd.Color.A, cd.Color.R, cd.Color.G, cd.Color.B));
-                
             }
         }
 
@@ -666,7 +664,6 @@ namespace QTTabBarLib {
         }
 
         #endregion
-        
     }
         
     #region ---------- Converters ----------

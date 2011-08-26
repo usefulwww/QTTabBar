@@ -92,6 +92,7 @@ namespace QTTabBarLib {
             skin = new _Skin();
             bbar = new _BBar();
             mouse = new _Mouse();
+            plugin = new _Plugin();
             lang = new _Lang();
         }
 
@@ -167,8 +168,8 @@ namespace QTTabBarLib {
             public bool ToggleFullRowSelect      { get; set; }
             public bool DetailsGridLines         { get; set; }
             public bool AlternateRowColors       { get; set; }
-            public Color BackgroundColor      { get; set; }
-            public Color TextColor            { get; set; }
+            public Color BackgroundColor         { get; set; }
+            public Color TextColor               { get; set; }
 
 
             public _Tweaks() {
@@ -333,7 +334,10 @@ namespace QTTabBarLib {
         [Serializable]
         public class _Plugin {
             public string[] Enabled              { get; set; }
-            public string[] Paths; // non-prop
+
+            public _Plugin() {
+                Enabled = new string[0];
+            }
         }
 
         [Serializable]
@@ -386,18 +390,6 @@ namespace QTTabBarLib {
     public static class ConfigManager {
         public static Config LoadedConfig;
 
-        public enum ConfigCats {
-            Window,
-            Tabs,
-            Tweaks,
-            Tips,
-            Misc,
-            Skin,
-            BBar,
-            Mouse,
-            Lang
-        }
-
         static ConfigManager() {
             LoadedConfig = new Config();
             ReadConfig();
@@ -443,23 +435,6 @@ namespace QTTabBarLib {
         public static void WriteConfig() {
             const string RegPath = @"Software\Quizo\QTTabBar\Config\"; // TODO
 
-            // Plugins
-            List<string> enabled = new List<string>();
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegPath + @"Plugin\Paths")) {
-                foreach(string str in key.GetValueNames()) {
-                    key.DeleteValue(str);
-                }
-                int idx = 0;
-                foreach(PluginAssembly asm in PluginManager.PluginAssemblies) {
-                    if(asm.PluginInfosExist)
-                        enabled.AddRange(from information in asm.PluginInformations
-                                         where information.Enabled
-                                         select information.PluginID);
-                    key.SetValue((idx++).ToString(), asm.Path);
-                }
-                Config.Plugin.Enabled = enabled.ToArray();
-            }
-
             // Properties from all categories
             foreach(PropertyInfo category in typeof(Config).GetProperties().Where(c => c.CanWrite)) {
                 Type cls = category.PropertyType;
@@ -485,7 +460,6 @@ namespace QTTabBarLib {
                     }
                 }
             }
-
 
             // TODO non-props
         }
