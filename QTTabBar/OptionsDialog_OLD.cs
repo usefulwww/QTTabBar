@@ -1440,9 +1440,9 @@ namespace QTTabBarLib {
             string[] strArray2 = QTUtility.TextResourcesDic["ShortcutKeys_Groups"];
             ListViewGroup group = listViewKeyboard.Groups.Add("general", strArray2[0]);
             listViewKeyboard.BeginUpdate();
-            for(int i = 0; i < QTUtility.ShortcutKeys.Length; i++) {
-                bool flag = (QTUtility.ShortcutKeys[i] & 0x100000) == 0x100000;
-                Keys key = ((Keys)QTUtility.ShortcutKeys[i]) & ((Keys)(-1048577));
+            for(int i = 0; i < Config.Keys.Shortcuts.Length; i++) {
+                bool flag = (Config.Keys.Shortcuts[i] & 0x100000) == 0x100000;
+                Keys key = ((Keys)Config.Keys.Shortcuts[i]) & ((Keys)(-1048577));
                 ListViewItem item = new ListViewItem(new string[] { strArray[i], QTUtility2.MakeKeyString(key) });
                 item.Checked = flag;
                 item.Group = group;
@@ -3972,7 +3972,7 @@ namespace QTTabBarLib {
                     }
                 }
             }
-            QTUtility.ShortcutKeys = list.ToArray();
+            Config.Keys.Shortcuts = list.ToArray();
             List<PluginKey> list2 = dictionary.Keys
                     .Select(str2 => new PluginKey(str2, dictionary[str2].ToArray())).ToList();
             QTUtility.dicPluginShortcutKeys.Clear();
@@ -4725,7 +4725,7 @@ namespace QTTabBarLib {
                         }
                     }
                     key.SetValue("ToolbarBGImage", QTUtility.Path_RebarImage);
-                    QTUtility2.WriteRegBinary(QTUtility.ShortcutKeys, "ShortcutKeys", key);
+                    QTUtility2.WriteRegBinary(Config.Keys.Shortcuts, "ShortcutKeys", key);
                 }
             }
         }

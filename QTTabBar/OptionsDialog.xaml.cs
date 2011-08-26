@@ -39,7 +39,8 @@ using RadioButton = System.Windows.Controls.RadioButton;
 using Size = System.Drawing.Size;
 using Brush = System.Windows.Media.Brushes;
 using Color = System.Windows.Media.Color;
-using MessageBox = System.Windows.Forms.MessageBox;
+//using MessageBox = System.Windows.Forms.MessageBox;
+using MessageBox = System.Windows.MessageBox;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 
 namespace QTTabBarLib {
@@ -138,6 +139,7 @@ namespace QTTabBarLib {
             cmbNewTabPos.ItemsSource = NewTabPosItems;
             cmbNextAfterClosed.ItemsSource = NextAfterCloseItems;
 
+            InitializeKeys();
             InitializeButtonBar();
 
             // Initialize the plugin tab
@@ -146,14 +148,6 @@ namespace QTTabBarLib {
                 CreatePluginEntry(assembly, false);
             }
             lstPluginView.ItemsSource = CurrentPlugins;
-
-
-            List<HotkeyEntry> list = new List<HotkeyEntry>();
-            string[] arrActions = QTUtility.TextResourcesDic["ShortcutKeys_ActionNames"];
-            for(int i = 0; i < QTUtility.ShortcutKeys.Length; i++) {
-                list.Add(new HotkeyEntry(i, arrActions[i]));
-            }
-            lvwHotkeys.ItemsSource = list;
         }
 
         public void Dispose() {
@@ -258,6 +252,36 @@ namespace QTTabBarLib {
 
         #region ---------- Keyboard ----------
 
+        private void InitializeKeys() {
+            List<HotkeyEntry> list = new List<HotkeyEntry>();
+            string[] arrActions = QTUtility.TextResourcesDic["ShortcutKeys_ActionNames"];
+            for(int i = 0; i < Config.Keys.Shortcuts.Length; i++) {
+                list.Add(new HotkeyEntry(this, i, arrActions[i]));
+            }
+            lvwHotkeys.ItemsSource = list;
+        }
+
+        private bool CheckForKeyConflicts(Keys key) {
+            const string Conflict = "This key is already assigned to:\n{0}\n\nReassign?";
+            //const string GroupPrefix = "Open group \"{0}\"";
+            //const string AppPrefix = "Launch application \"{0}\"";
+            const string MsgTitle = "Keystroke conflict";
+            foreach(HotkeyEntry entry in lvwHotkeys.Items) {
+                if(entry.Key == key) {
+                    if(MessageBox.Show(string.Format(Conflict, entry.Action), MsgTitle, MessageBoxButton.OKCancel, MessageBoxImage.Warning) == MessageBoxResult.OK) {
+                        entry.Key = Keys.None;
+                        // todo: refresh?
+                    }
+                    else {
+                        return false;
+                    }
+                }
+            }
+
+            // todo gropus and apps
+            return true;
+        }
+
         private static bool IsInvalidShortcutKey(Keys key, Keys modKeys) {
 
             if(modKeys == Keys.None) return true;
@@ -347,7 +371,7 @@ namespace QTTabBarLib {
                 e.Handled = true;
                 lvwHotkeys.Items.Refresh();
             }
-            else if(!IsInvalidShortcutKey(key, modKeys)) {
+            else if(!IsInvalidShortcutKey(key, modKeys) && CheckForKeyConflicts(key | modKeys)) {
                 entry.Key = key | modKeys;
                 e.Handled = true;
                 lvwHotkeys.Items.Refresh();
@@ -569,7 +593,7 @@ namespace QTTabBarLib {
                 string str = pluingAssembly.PluginInformations.Select(info => info.Name).StringJoin(", ");
                 // todo localize
                 const string removePlugin = "Uninstalling this plugin will also uninstall the following plugins:\n\n{0}\n\nProceed?";
-                if(MessageBox.Show(string.Format(removePlugin, str), string.Empty, MessageBoxButtons.OKCancel, MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.OK) {
+                if(MessageBox.Show(string.Format(removePlugin, str), string.Empty, MessageBoxButton.OKCancel, MessageBoxImage.Question) != MessageBoxResult.OK) {
                     return;
                 }
             }
@@ -707,7 +731,9 @@ namespace QTTabBarLib {
                             catch { }
                         }
                     }
-                    return large ? PluginInfo.ImageLarge : PluginInfo.ImageSmall; // todo: puzzle piece if null
+                    return large
+                            ? PluginInfo.ImageLarge ?? Resources_Image.imgPlugin24
+                            : PluginInfo.ImageSmall ?? Resources_Image.imgPlugin16;
                 }
                 else if(Index == 0 || Index >= QTButtonBar.BII_WINDOWOPACITY) {
                     return null;
@@ -777,14 +803,28 @@ namespace QTTabBarLib {
         }
 
         private class HotkeyEntry {
-            public bool Enabled { get; set; }
+            private int[] raws;
+            public int RawKey {
+                get { return raws[Index]; }
+                set { raws[Index] = value; }
+            }
+            public bool Enabled { 
+                get { return (RawKey & QTUtility.FLAG_KEYENABLED) != 0; }
+                set { if(value) RawKey |= QTUtility.FLAG_KEYENABLED; else RawKey &= ~QTUtility.FLAG_KEYENABLED; } 
+            }
+            public Keys Key {
+                get { return (Keys)(RawKey & ~QTUtility.FLAG_KEYENABLED); }
+                set { RawKey = Enabled ? (int)value | QTUtility.FLAG_KEYENABLED : (int)value; }
+            }
+            public string HotkeyString {
+                get { return QTUtility2.MakeKeyString(Key); }
+            }
             public string Action { get; set; }
-            public string HotkeyString { get { return QTUtility2.MakeKeyString(Key); } }
-            public Keys Key { get; set; }
-            public HotkeyEntry(int index, string action) {
-                Enabled = (QTUtility.ShortcutKeys[index] & QTUtility.FLAG_KEYENABLED) == QTUtility.FLAG_KEYENABLED;
+            public int Index { get; set; }
+            public HotkeyEntry(OptionsDialog parent, int index, string action) {
+                raws = parent.workingConfig.keys.Shortcuts;
+                Index = index;
                 Action = action;
-                Key = (Keys)(QTUtility.ShortcutKeys[index] & ~QTUtility.FLAG_KEYENABLED);
             }
         }
 

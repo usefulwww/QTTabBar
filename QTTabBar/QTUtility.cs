@@ -62,11 +62,6 @@ namespace QTTabBarLib {
         internal static readonly bool IsRTL;
         internal static readonly bool IsXP;
         internal static Dictionary<string, byte[]> ITEMIDLIST_Dic_Session = new Dictionary<string, byte[]>();
-        internal static readonly int[] KEYS_DEFAULT = new int[] { 
-      0, 0, 0x160025, 0x160027, 0x120009, 0x130009, 0, 0, 0x120057, 0x130057, 0, 0, 0, 0x13005a, 0x12004e, 0x13004e, 
-      0x12004c, 0x13004c, 0x12004f, 0, 0x14004f, 0x1400bc, 0x1400be, 0x140047, 0x140048, 0x140055, 0x14004d, 0, 0, 0, 0, 0, 
-      0, 0, 0, 0, 0, 0, 0, 0, 0
-     };
         internal static List<string> LockedTabsToRestoreList = new List<string>();
         public static int MaxCount_Executed = 0x10;
         internal static int MaxCount_History = 0x10;
@@ -104,7 +99,6 @@ namespace QTTabBarLib {
         internal const string SEPARATOR_PATH_HASH_SESSION = "*?*?*";
         internal static int ShellViewRowCOLORREF_Background;
         internal static int ShellViewRowCOLORREF_Text;
-        internal static int[] ShortcutKeys;
         internal static List<string> StartUpGroupList = new List<string>();
         internal static string StartUpGroupNameNowOpening = string.Empty;
         internal static Font StartUpTabFont;
@@ -206,7 +200,6 @@ namespace QTTabBarLib {
                                 }
                             }
                         }
-                        RefreshShortcutKeys(key);
                         RefreshGroupShortcutKeyDic(key);
                         Path_TabImage = (string)key.GetValue("TabImage", string.Empty);
                         byte[] buffer2 = (byte[])key.GetValue("TabImageSizingMargin", new byte[4]);
@@ -694,10 +687,6 @@ namespace QTTabBarLib {
                     }
                 }
             }
-        }
-
-        public static void RefreshShortcutKeys(RegistryKey rkUser) {
-            ShortcutKeys = GetSettingValue(QTUtility2.ReadRegBinary<int>("ShortcutKeys", rkUser), KEYS_DEFAULT, true);
         }
 
         public static void RefreshUserAppDic(bool fCheckShortcuts) {

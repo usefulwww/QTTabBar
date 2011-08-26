@@ -281,7 +281,7 @@ namespace QTTabBarLib {
             toolStrip.HideToolTip();
             DropDownMenuBase base2 = (DropDownMenuBase)sender;
             for(int i = 0; i < 5; i++) {
-                int num2 = QTUtility.ShortcutKeys[0x1b + i];
+                int num2 = Config.Keys.Shortcuts[0x1b + i];
                 if(num2 > 0x100000) {
                     num2 -= 0x100000;
                     ((ToolStripMenuItem)base2.Items[i]).ShortcutKeyDisplayString = QTUtility2.MakeKeyString((Keys)num2).Replace(" ", string.Empty);

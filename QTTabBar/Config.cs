@@ -69,6 +69,7 @@ namespace QTTabBarLib {
         public static _Skin Skin        { get { return ConfigManager.LoadedConfig.skin; } }
         public static _BBar BBar        { get { return ConfigManager.LoadedConfig.bbar; } }
         public static _Mouse Mouse      { get { return ConfigManager.LoadedConfig.mouse; } }
+        public static _Keys Keys          { get { return ConfigManager.LoadedConfig.keys; } }
         public static _Plugin Plugin    { get { return ConfigManager.LoadedConfig.plugin; } }
         public static _Lang Lang        { get { return ConfigManager.LoadedConfig.lang; } }
 
@@ -80,6 +81,7 @@ namespace QTTabBarLib {
         public _Skin skin       { get; set; }
         public _BBar bbar       { get; set; }
         public _Mouse mouse     { get; set; }
+        public _Keys keys         { get; set; }
         public _Plugin plugin   { get; set; }
         public _Lang lang       { get; set; }
 
@@ -92,6 +94,7 @@ namespace QTTabBarLib {
             skin = new _Skin();
             bbar = new _BBar();
             mouse = new _Mouse();
+            keys = new _Keys();
             plugin = new _Plugin();
             lang = new _Lang();
         }
@@ -328,6 +331,20 @@ namespace QTTabBarLib {
             public _Mouse() {
                 MouseScrollsHotWnd = false;
                 // TODO actions
+            }
+        }
+
+        [Serializable]
+        public class _Keys {
+            public int[] Shortcuts               { get; set; }
+
+            public _Keys() {
+                // todo
+                Shortcuts = new int[] { 
+                  0, 0, 0x160025, 0x160027, 0x120009, 0x130009, 0, 0, 0x120057, 0x130057, 0, 0, 0, 0x13005a, 0x12004e, 0x13004e, 
+                  0x12004c, 0x13004c, 0x12004f, 0, 0x14004f, 0x1400bc, 0x1400be, 0x140047, 0x140048, 0x140055, 0x14004d, 0, 0, 0, 0, 0, 
+                  0, 0, 0, 0, 0, 0, 0, 0, 0
+                 };
             }
         }
 

@@ -716,11 +716,11 @@ namespace QTTabBarLib {
                     return true;
             }
             int num = ((int)keyData) | 0x100000;
-            if((num != QTUtility.ShortcutKeys[0x1b]) && (num != QTUtility.ShortcutKeys[0x1c])) {
+            if((num != Config.Keys.Shortcuts[0x1b]) && (num != Config.Keys.Shortcuts[0x1c])) {
                 return base.ProcessCmdKey(ref m, keyData);
             }
             if(!flag) {
-                CopyFileNames(num == QTUtility.ShortcutKeys[0x1b]);
+                CopyFileNames(num == Config.Keys.Shortcuts[0x1b]);
             }
             return true;
         }

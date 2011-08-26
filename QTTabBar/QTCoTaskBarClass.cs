@@ -771,29 +771,29 @@ namespace QTTabBarLib {
                 return false;
             }
             key |= 0x100000;
-            if(((key == QTUtility.ShortcutKeys[0x1b]) || (key == QTUtility.ShortcutKeys[0x1c])) || (((key == QTUtility.ShortcutKeys[0x1d]) || (key == QTUtility.ShortcutKeys[30])) || (key == QTUtility.ShortcutKeys[0x1f]))) {
+            if(((key == Config.Keys.Shortcuts[0x1b]) || (key == Config.Keys.Shortcuts[0x1c])) || (((key == Config.Keys.Shortcuts[0x1d]) || (key == Config.Keys.Shortcuts[30])) || (key == Config.Keys.Shortcuts[0x1f]))) {
                 if(!fRepeat) {
                     if(listView.SubDirTipMenuIsShowing()) {
                         return false;
                     }
                     int index = 0;
-                    if(key == QTUtility.ShortcutKeys[0x1c]) {
+                    if(key == Config.Keys.Shortcuts[0x1c]) {
                         index = 1;
                     }
-                    else if(key == QTUtility.ShortcutKeys[0x1d]) {
+                    else if(key == Config.Keys.Shortcuts[0x1d]) {
                         index = 2;
                     }
-                    else if(key == QTUtility.ShortcutKeys[30]) {
+                    else if(key == Config.Keys.Shortcuts[30]) {
                         index = 3;
                     }
-                    else if(key == QTUtility.ShortcutKeys[0x1f]) {
+                    else if(key == Config.Keys.Shortcuts[0x1f]) {
                         index = 4;
                     }
                     DoFileTools(index);
                 }
                 return true;
             }
-            if(key == QTUtility.ShortcutKeys[0x26]) {
+            if(key == Config.Keys.Shortcuts[0x26]) {
                 if(Config.Tips.ShowSubDirTips) {
                     if(!fRepeat) {
                         DoFileTools(5);
