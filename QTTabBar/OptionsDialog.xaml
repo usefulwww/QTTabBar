@@ -1575,25 +1575,63 @@
                             FontSize="13"
                             VerticalAlignment="Bottom"/>
                     </StackPanel>
+                    <TextBlock 
+                        Text="Select an action from the list and press the key gesture you would like to bind to it.&#x0a;Press Escape to clear the binding." 
+                        TextWrapping="Wrap"
+                        DockPanel.Dock="Top"
+                        Margin="5,10,5,5"/>
                     <ListView x:Name="lvwHotkeys"
                         PreviewKeyDown="lvwHotkeys_PreviewKeyDown"
                         TextInput="lvwHotkeys_TextInput"
                         BorderThickness="1.000001"
                         Margin="0,10">
+                        <ListView.GroupStyle>
+                            <GroupStyle>
+                                <GroupStyle.HeaderTemplate>
+                                    <DataTemplate>
+                                        <DockPanel LastChildFill="True">
+                                            <TextBlock 
+                                                DockPanel.Dock="Left"
+                                                Foreground="MediumBlue"
+                                                Margin="20, 1, 4, 4"
+                                                Text="{Binding Name}"/>
+                                            <Border
+                                                BorderBrush="LightGray"
+                                                BorderThickness="1"
+                                                Height="1"
+                                                Margin="0,0,10,0"
+                                                SnapsToDevicePixels="True"/>
+                                        </DockPanel>
+                                    </DataTemplate>
+                                </GroupStyle.HeaderTemplate>
+                            </GroupStyle>
+                        </ListView.GroupStyle>
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Action" Width="350">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <CheckBox x:Name="chkKeyEnable"
-                                                Content="{Binding Path=Action}"
-                                                IsChecked="{Binding Path=Enabled}"/>
+                                            <StackPanel Orientation="Horizontal">
+                                                <CheckBox x:Name="chkKeyEnable"
+                                                    FocusVisualStyle="{x:Null}"
+                                                    IsEnabled="{Binding Path=Assigned}"
+                                                    IsChecked="{Binding Path=Enabled}"
+                                                    VerticalAlignment="Center"/>
+                                                <TextBlock x:Name="txtKeyAction"
+                                                    Foreground="#FF000000"
+                                                    Text="{Binding Path=Action}"
+                                                    Margin="6,0"/>
+                                            </StackPanel>
                                             <DataTemplate.Triggers>
                                                 <DataTrigger
                                                     Binding="{Binding Path=Enabled}"
                                                     Value="False">
                                                     <Setter 
                                                         TargetName="chkKeyEnable" 
+                                                        Property="Foreground" 
+                                                        Value="#FF888888"/>
+                                                    <Setter 
+                                                        TargetName="txtKeyAction" 
                                                         Property="Foreground" 
                                                         Value="#FF888888"/>
                                                 </DataTrigger>

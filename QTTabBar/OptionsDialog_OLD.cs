@@ -3981,7 +3981,7 @@ namespace QTTabBarLib {
                 QTUtility.dicPluginShortcutKeys[key.PluginID] = key.Keys;
                 list3.AddRange(key.Keys);
             }
-            QTUtility.PluginShortcutKeysCache = list3.ToArray();
+            //QTUtility.PluginShortcutKeysCache = list3.ToArray();
             using(RegistryKey key2 = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar\Plugins")) {
                 QTUtility2.WriteRegBinary(list2.ToArray(), "ShortcutKeys", key2);
             }

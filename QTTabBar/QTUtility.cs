@@ -82,7 +82,6 @@ namespace QTTabBarLib {
         internal static string PATH_SEARCHFOLDER;
         internal static string Path_TabImage;
         internal static string PathToSelectInCommandLineArg;
-        internal static int[] PluginShortcutKeysCache = new int[1];
         internal static List<string> PreviewExtsList_Img = new List<string>();
         internal static List<string> PreviewExtsList_Txt = new List<string>();
         internal static string PreviewFontName;

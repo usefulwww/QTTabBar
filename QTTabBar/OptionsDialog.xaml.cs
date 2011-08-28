@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -168,6 +169,7 @@ namespace QTTabBarLib {
             }
             QTButtonBar.BroadcastConfigChanged(fButtonBarNeedsRefresh);
             PluginManager.SavePluginAssemblies();
+            PluginManager.SavePluginShortcutKeys();
         }
 
         private void ListBoxItem_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e) {
@@ -214,8 +216,9 @@ namespace QTTabBarLib {
         private void btnApply_Click(object sender, RoutedEventArgs e) {
             UpdateOptions();
 
-            // Refill the button bar pool
+            // Refill the button bar pool and key listview, to account for plugins
             InitializeButtonBar();
+            InitializeKeys();
         }
 
         #region ---------- Tweaks ----------
@@ -253,12 +256,28 @@ namespace QTTabBarLib {
         #region ---------- Keyboard ----------
 
         private void InitializeKeys() {
-            List<HotkeyEntry> list = new List<HotkeyEntry>();
             string[] arrActions = QTUtility.TextResourcesDic["ShortcutKeys_ActionNames"];
-            for(int i = 0; i < Config.Keys.Shortcuts.Length; i++) {
-                list.Add(new HotkeyEntry(this, i, arrActions[i]));
+            string[] arrGrps = QTUtility.TextResourcesDic["ShortcutKeys_Groups"];
+            int[] keys = workingConfig.keys.Shortcuts;
+            List<HotkeyEntry> list = arrActions.Select((act, i) => new HotkeyEntry(keys, i, act, arrGrps[0])).ToList();
+            foreach(string pluginID in QTUtility.dicPluginShortcutKeys.Keys) {
+				Plugin p;
+				keys = QTUtility.dicPluginShortcutKeys[pluginID];
+                if(!pluginManager.TryGetPlugin(pluginID, out p)) continue;
+                PluginInformation pi = p.PluginInformation;
+                if(pi.ShortcutKeyActions == null) continue;
+                string group = pi.Name + " (" + arrGrps[1] + ")";
+                if(keys == null && keys.Length == pi.ShortcutKeyActions.Length) {
+                    Array.Resize(ref keys, pi.ShortcutKeyActions.Length);
+                    // Hmm, I don't like this...
+                    QTUtility.dicPluginShortcutKeys[pluginID] = keys;
+                }
+                list.AddRange(pi.ShortcutKeyActions.Select((act, i) => new HotkeyEntry(keys, i, act, group)));
             }
-            lvwHotkeys.ItemsSource = list;
+            ICollectionView view = CollectionViewSource.GetDefaultView(list);
+            PropertyGroupDescription groupDescription = new PropertyGroupDescription("Group");
+            view.GroupDescriptions.Add(groupDescription);
+            lvwHotkeys.ItemsSource = view;
         }
 
         private bool CheckForKeyConflicts(Keys key) {
@@ -371,8 +390,10 @@ namespace QTTabBarLib {
                 e.Handled = true;
                 lvwHotkeys.Items.Refresh();
             }
-            else if(!IsInvalidShortcutKey(key, modKeys) && CheckForKeyConflicts(key | modKeys)) {
+            else if(entry.Key != (key | modKeys) && !IsInvalidShortcutKey(key, modKeys) && CheckForKeyConflicts(key | modKeys)) {
+                bool enable = !entry.Assigned;
                 entry.Key = key | modKeys;
+                if(enable) entry.Enabled = true;
                 e.Handled = true;
                 lvwHotkeys.Items.Refresh();
             }
@@ -808,23 +829,29 @@ namespace QTTabBarLib {
                 get { return raws[Index]; }
                 set { raws[Index] = value; }
             }
-            public bool Enabled { 
-                get { return (RawKey & QTUtility.FLAG_KEYENABLED) != 0; }
+            public bool Enabled {
+                get { return (RawKey & QTUtility.FLAG_KEYENABLED) != 0 && RawKey != QTUtility.FLAG_KEYENABLED; }
                 set { if(value) RawKey |= QTUtility.FLAG_KEYENABLED; else RawKey &= ~QTUtility.FLAG_KEYENABLED; } 
             }
             public Keys Key {
                 get { return (Keys)(RawKey & ~QTUtility.FLAG_KEYENABLED); }
-                set { RawKey = Enabled ? (int)value | QTUtility.FLAG_KEYENABLED : (int)value; }
+                set { RawKey = (int)value | (Enabled ? QTUtility.FLAG_KEYENABLED : 0); }
+            }
+            public bool Assigned {
+                get { return Key != Keys.None; }
             }
             public string HotkeyString {
                 get { return QTUtility2.MakeKeyString(Key); }
             }
+
+            public string Group { get; set; }
             public string Action { get; set; }
             public int Index { get; set; }
-            public HotkeyEntry(OptionsDialog parent, int index, string action) {
-                raws = parent.workingConfig.keys.Shortcuts;
+            public HotkeyEntry(int[] raws, int index, string action, string group) {
+                this.raws = raws;
                 Index = index;
                 Action = action;
+                Group = group;
             }
         }
 

@@ -114,22 +114,17 @@ namespace QTTabBarLib {
                         }
                     }
                 }
-            
-            /*
-             * todo
-                if(keyArray != null) {
-                    List<int> list = new List<int>();
-                    foreach(PluginKey key3 in keyArray.Where(key3 => key3.Keys != null)) {
-                        QTUtility.dicPluginShortcutKeys[key3.PluginID] = key3.Keys;
-                        list.AddRange(key3.Keys);
-                    }
-                    QTUtility.PluginShortcutKeysCache = list.ToArray();
-                }
-                */
             }
             using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar\Plugins")) {
                 if(key != null) {
                     lstPluginButtonsOrder.AddRange(QTUtility2.ReadRegBinary<PluginButton>("Buttons_Order", key));
+                    string[] keys = QTUtility2.ReadRegBinary<string>("ShortcutKeyIDs", key);
+                    int[][] values = QTUtility2.ReadRegBinary<int[]>("ShortcutKeyValues", key);
+                    if(keys != null && values != null) {
+                        for(int i = 0; i < Math.Min(keys.Length, values.Length); ++i) {
+                            QTUtility.dicPluginShortcutKeys[keys[i]] = values[i];
+                        }
+                    }
                 }
             }
         }
@@ -388,9 +383,10 @@ namespace QTTabBarLib {
 
         public static void SavePluginShortcutKeys() {
             using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar\Plugins")) {
-                QTUtility2.WriteRegBinary(QTUtility.dicPluginShortcutKeys.Keys
-                    .Select(str => new PluginKey(str, QTUtility.dicPluginShortcutKeys[str])).ToArray(),
-                    "ShortcutKeys", key);
+                string[] keys = QTUtility.dicPluginShortcutKeys.Keys.ToArray();
+                int[][] values = keys.Select(k => QTUtility.dicPluginShortcutKeys[k]).ToArray();
+                QTUtility2.WriteRegBinary(keys, "ShortcutKeyIDs", key);
+                QTUtility2.WriteRegBinary(values, "ShortcutKeyValues", key);
             }
         }
 
@@ -412,9 +408,6 @@ namespace QTTabBarLib {
             }
             if(fStatic) {
                 dicPluginAssemblies.Remove(pa.Path);
-                QTUtility.PluginShortcutKeysCache = (QTUtility.dicPluginShortcutKeys.Values
-                        .Where(numArray => numArray != null)
-                        .SelectMany(numArray => numArray)).ToArray();
                 SavePluginShortcutKeys();
                 pa.Uninstall();
                 pa.Dispose();

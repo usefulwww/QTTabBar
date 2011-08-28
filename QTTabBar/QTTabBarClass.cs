@@ -2941,27 +2941,23 @@ namespace QTTabBarLib {
                             tabControl1.FocusNextTab(false, true, false);
                             return true;
                         }
-                        if(Array.IndexOf(QTUtility.PluginShortcutKeysCache, imkey) != -1) {
-                            foreach(string str in QTUtility.dicPluginShortcutKeys.Keys) {
-                                int[] numArray = QTUtility.dicPluginShortcutKeys[str];
-                                if(numArray != null) {
-                                    for(int i = 0; i < numArray.Length; i++) {
-                                        if(imkey == numArray[i]) {
-                                            Plugin plugin;
-                                            if(pluginManager.TryGetPlugin(str, out plugin)) {
-                                                try {
-                                                    plugin.Instance.OnShortcutKeyPressed(i);
-                                                }
-                                                catch(Exception exception) {
-                                                    PluginManager.HandlePluginException(exception, ExplorerHandle, plugin.PluginInformation.Name, "On shortcut key pressed. Index is " + i);
-                                                }
-                                                return true;
-                                            }
-                                            return false;
-                                        }
-                                    }
+                        int idx = -1;
+                        KeyValuePair<string, int[]> pair = QTUtility.dicPluginShortcutKeys
+                                    .FirstOrDefault(p => (idx = Array.IndexOf(p.Value, imkey)) != -1);
+                        if(idx != -1) {
+                            Plugin plugin;
+                            if(pluginManager.TryGetPlugin(pair.Key, out plugin)) {
+                                try {
+                                    plugin.Instance.OnShortcutKeyPressed(idx);
                                 }
+                                catch(Exception exception) {
+                                    PluginManager.HandlePluginException(exception, 
+                                            ExplorerHandle, plugin.PluginInformation.Name, 
+                                            "On shortcut key pressed. Index is " + idx);
+                                }
+                                return true;
                             }
+                            return false;
                         }
                         else {
                             if(!fRepeat && QTUtility.dicUserAppShortcutKeys.ContainsKey(imkey)) {
