@@ -21,8 +21,21 @@ namespace QTTabBarLib {
         private int _value = 0;
         private bool _doRecurse = false;
 
-        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register( "Value", typeof (int), typeof(Spinner), new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault) );
+        public static readonly DependencyProperty ValueProperty = 
+            DependencyProperty.Register( "Value", typeof (int), typeof(Spinner), new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault) );
+        public static readonly DependencyProperty MaxProperty =
+            DependencyProperty.Register("Max", typeof(int), typeof(Spinner), new FrameworkPropertyMetadata(10000, FrameworkPropertyMetadataOptions.AffectsRender));
+        public static readonly DependencyProperty MinProperty =
+            DependencyProperty.Register("Min", typeof(int), typeof(Spinner), new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.AffectsRender));
 
+        public int Max {
+            get { return (int)GetValue(MaxProperty); }
+            set { SetValue(MaxProperty, value); }
+        }
+        public int Min {
+            get { return (int)GetValue(MinProperty); }
+            set { SetValue(MinProperty, value); }
+        }
         public int Value {
             get { return (int)GetValue(ValueProperty); }
             set {
@@ -74,17 +87,6 @@ namespace QTTabBarLib {
                 _doRecurse = true;
             }
             txtValue.Text = Value.ToString();
-        }
-    }
-
-    [ValueConversion(typeof(int), typeof(double))]
-    public class DoubleToIntegerConverter : IValueConverter {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-            return (double)(int)value;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-            return (int)(double)value;
         }
     }
 }
