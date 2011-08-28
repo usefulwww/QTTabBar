@@ -856,17 +856,15 @@
                             Content="Maximum Width x Height:"
                             Height="16"
                             Padding="0"/>
-                        <TextBox
-                            Margin="8,1"
-                            Width="60"/>
+                        <qt:Spinner
+                            Margin="8,1"/>
                         <Label
                             Content="x"
                             Height="16"
                             Margin="0"
                             Padding="0"/>
-                        <TextBox
-                            Margin="8,1"
-                            Width="60"/>
+                        <qt:Spinner
+                            Margin="8,1"/>
                     </StackPanel>
                     <StackPanel
                         Margin="13,1,0,1"
@@ -1027,18 +1025,13 @@
                                 IsChecked="{Binding Path=KeepRecentFiles}"
                                 Height="16"
                                 Margin="13,1,10,1"/>
-                            <TextBox
+
+                            <qt:Spinner 
                                 Grid.Column="1"
-                                Height="23"
-                                Margin="5,2"
-                                VerticalAlignment="Top"
-                                Width="60"/>
-                            <TextBox
+                                Value="10" />
+                            <qt:Spinner 
                                 Grid.Column="1"
-                                Grid.Row="1"
-                                Height="23"
-                                Margin="5,2"
-                                Width="60"/>
+                                Grid.Row="1"/>                            
                             <Button
                                 Content="Clear now"
                                 Grid.Column="2"
@@ -1063,10 +1056,9 @@
                                 Height="16"
                                 Margin="13,1,10,1"
                                 Padding="0"/>
-                            <TextBox
+                            <qt:Spinner
                                 Height="23"
-                                Margin="5,2"
-                                Width="60"/>
+                                Margin="5,2"/>
                         </StackPanel>
                         <StackPanel
                             Orientation="Horizontal">
@@ -1247,19 +1239,19 @@
                                 Grid.Column="1"
                                 Margin="5,0,0,0"
                                 Orientation="Horizontal">
-                                <TextBox Width="50"/>
+                                <qt:Spinner />
                                 <Label
                                     Content="Min Width:"
                                     Height="16"
                                     Margin="18,0,5,0"
                                     Padding="0"/>
-                                <TextBox Width="50"/>
+                                <qt:Spinner />
                                 <Label
                                     Content="Max Width:"
                                     Height="16"
                                     Margin="18,0,5,0"
                                     Padding="0"/>
-                                <TextBox Width="50"/>
+                                <qt:Spinner />
                             </StackPanel>
                             <Label
                                 Content="Sizing mode:"

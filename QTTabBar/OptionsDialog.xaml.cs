@@ -247,7 +247,7 @@ namespace QTTabBarLib {
             btnBackgroundColor.Background = new SolidColorBrush(Color.FromArgb(
                         bg.A, bg.R, bg.G, bg.B));
         }
-
+        
         #endregion
 
         #region ---------- Keyboard ----------
