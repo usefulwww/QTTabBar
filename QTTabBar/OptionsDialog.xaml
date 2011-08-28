@@ -1026,9 +1026,9 @@
                                 Height="16"
                                 Margin="13,1,10,1"/>
 
-                            <qt:Spinner 
+                            <qt:Spinner
                                 Grid.Column="1"
-                                Value="10" />
+                                Value="{Binding Path=FileHistoryCount}" />
                             <qt:Spinner 
                                 Grid.Column="1"
                                 Grid.Row="1"/>                            
