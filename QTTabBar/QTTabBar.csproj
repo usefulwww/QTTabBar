@@ -102,7 +102,11 @@
     <Compile Include="Automation\AutomationManager.cs" />
     <Compile Include="BreadcrumbBar.cs" />
     <Compile Include="AbstractListView.cs" />
+    <Compile Include="FolderBrowserDialogEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="HookLibManager.cs" />
+    <Compile Include="Interop\BROWSEINFO.cs" />
     <Compile Include="Interop\ShellConstants.cs" />
     <Compile Include="Interop\TBBUTTON.cs" />
     <Compile Include="Interop\TBBUTTONINFO.cs" />

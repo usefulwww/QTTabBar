@@ -412,12 +412,13 @@
                     <StackPanel 
                         Margin="13,0"
                         Orientation="Horizontal">
+                        <Image Height="16" Name="imgDefaultLocation" Stretch="Fill" Width="16" Margin="4,2" />
                         <TextBox
-                            Width="400"/>
+                            Width="400" Name="txtDefaultLocation" />
                         <Button 
                             Content="..."
                             Margin="8,2"
-                            Width="26"/>
+                            Width="26" Name="btnBrowseDefaultLocation" Click="btnBrowseDefaultLocation_Click" />
                     </StackPanel>
                     <Label x:Name="lblRestoreTabs"
                         Content="Session saving"

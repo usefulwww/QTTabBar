@@ -295,6 +295,8 @@ namespace QTTabBarLib.Interop {
         [DllImport("shell32.dll")]
         public static extern int SHBindToParent(IntPtr pidl, [MarshalAs(UnmanagedType.LPStruct)] Guid riid, out IShellFolder ppv, out IntPtr ppidlLast);
         [DllImport("shell32.dll")]
+        public static extern IntPtr SHBrowseForFolder(ref BROWSEINFO lpbi);
+        [DllImport("shell32.dll")]
         public static extern int SHCreateShellItem(IntPtr pidlParent, IShellFolder psfParent, IntPtr pidl, out IShellItem ppsi);
         [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
         public static extern bool ShellExecuteEx(ref SHELLEXECUTEINFO lpExecInfo);

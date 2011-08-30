@@ -221,6 +221,25 @@ namespace QTTabBarLib {
             InitializeKeys();
         }
 
+        #region ---------- Window ----------
+
+        private void btnBrowseDefaultLocation_Click(object sender, RoutedEventArgs e)
+        {
+            FolderBrowserDialogEx fbd = new FolderBrowserDialogEx();
+            if (System.Windows.Forms.DialogResult.OK != fbd.ShowDialog()) {
+                return;
+            }
+
+            string path = fbd.SelectedPath;
+            txtDefaultLocation.Text = path;
+
+            Icon icon = QTUtility.GetIcon(path, false);
+            imgDefaultLocation.Source = 
+                (ImageSource)new BitmapToImageSourceConverter().Convert(icon.ToBitmap(), null, null, null);
+        }
+
+        #endregion
+
         #region ---------- Tweaks ----------
 
         private void btnBackgroundColor_Click(object sender, RoutedEventArgs e) {
