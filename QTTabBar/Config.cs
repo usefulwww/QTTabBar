@@ -312,9 +312,11 @@ namespace QTTabBarLib {
             
             public _BBar() {
                 // todo
-                ButtonIndexes = QTUtility.IsXP 
-                        ? new int[] {1, 2, 0, 3, 4, 5, 0, 6, 7, 0, 11, 13, 12, 14, 15, 0, 9, 20} 
-                        : new int[] {3, 4, 5, 0, 6, 7, 0, 11, 13, 12, 14, 15, 0, 9, 20};
+                // we can't check QTUtility.IsXP here, due to a circular reference between
+                // QTUtility's static constructor and ConfigManager's.
+                ButtonIndexes = //QTUtility.IsXP 
+                        //? new int[] {1, 2, 0, 3, 4, 5, 0, 6, 7, 0, 11, 13, 12, 14, 15, 0, 9, 20} 
+                        /*:*/ new int[] {3, 4, 5, 0, 6, 7, 0, 11, 13, 12, 14, 15, 0, 9, 20};
                 LockDropDownButtons = false;
                 LargeButtons = true;
                 LockSearchBarWidth = false;
