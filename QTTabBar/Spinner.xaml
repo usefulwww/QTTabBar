@@ -8,22 +8,25 @@
              xmlns:qt="clr-namespace:QTTabBarLib"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <qt:IntToTextConverter x:Key="IntToTextConverter"/>
+    </UserControl.Resources>
     <Grid Height="{Binding Path=Height, ElementName=SpinnerControl}" Width="{Binding Path=Width, ElementName=SpinnerControl}">
         <TextBox x:Name="txtValue"
-                 KeyUp="txtValue_KeyDown"                 
+                 KeyDown="txtValue_KeyDown"                 
                  Padding="0,0,16,0"
-                 TextChanged="txtValue_TextChanged"/>        
+                 PreviewTextInput="txtValue_PreviewTextInput"
+                 Text="{Binding Path=Value, ElementName=SpinnerControl, Converter={StaticResource IntToTextConverter}, Mode=TwoWay}"
+                 TextChanged="txtValue_TextChanged"/>
         <ScrollBar x:Name="scrollBar" 
                    HorizontalAlignment="Right"
                    Margin="1"
                    Maximum="{Binding Path=Max, ElementName=SpinnerControl}"
                    Minimum="{Binding Path=Min, ElementName=SpinnerControl}"
                    SmallChange="1"
-                   Value="{Binding Path=Value, ElementName=SpinnerControl}"
-                   ValueChanged="scrollBar_ValueChanged">
+                   Value="{Binding Path=Value, ElementName=SpinnerControl}">
             <ScrollBar.LayoutTransform>
-                <RotateTransform 
-                    Angle="180" />
+                <RotateTransform Angle="180" />
             </ScrollBar.LayoutTransform>
         </ScrollBar>        
     </Grid>

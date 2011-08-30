@@ -1,32 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace QTTabBarLib {
     /// <summary>
     /// Interaction logic for Spinner.xaml
     /// </summary>
     public partial class Spinner : UserControl {
-        private int _value = 0;
-        private bool _doRecurse = false;
 
         public static readonly DependencyProperty ValueProperty = 
-            DependencyProperty.Register( "Value", typeof (int), typeof(Spinner), new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault) );
+                DependencyProperty.Register("Value", typeof(int), typeof(Spinner),
+                new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public static readonly DependencyProperty MaxProperty =
-            DependencyProperty.Register("Max", typeof(int), typeof(Spinner), new FrameworkPropertyMetadata(10000, FrameworkPropertyMetadataOptions.AffectsRender));
+                DependencyProperty.Register("Max", typeof(int), typeof(Spinner), 
+                new FrameworkPropertyMetadata(10000, FrameworkPropertyMetadataOptions.AffectsRender));
         public static readonly DependencyProperty MinProperty =
-            DependencyProperty.Register("Min", typeof(int), typeof(Spinner), new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.AffectsRender));
+                DependencyProperty.Register("Min", typeof(int), typeof(Spinner), 
+                new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.AffectsRender));
 
         public int Max {
             get { return (int)GetValue(MaxProperty); }
@@ -38,36 +32,36 @@ namespace QTTabBarLib {
         }
         public int Value {
             get { return (int)GetValue(ValueProperty); }
-            set {
-                SetValue( ValueProperty, value );
-            }
+            set { SetValue(ValueProperty, value); }
         }
 
         public Spinner() {
             InitializeComponent();
         }
 
-        //# Make sure only numbers are entered.
+        //# Make sure the text stays numeric and in range.
         private void txtValue_TextChanged(object sender, RoutedEventArgs e) {
-            if(!_doRecurse) {
-                _doRecurse = true;
-                return;
-            }
-
-            if(!int.TryParse(txtValue.Text, out _value)) {
+            int i;
+            if(!int.TryParse(txtValue.Text, out i)) {
                 txtValue.Text = Value.ToString();
-                return;
             }
-
-            _doRecurse = false;
-            
-            if(int.Parse( txtValue.Text ) > scrollBar.Maximum) {
-                txtValue.Text = scrollBar.Maximum.ToString();
-            }else if(int.Parse(txtValue.Text) < scrollBar.Minimum) {
-                txtValue.Text = scrollBar.Minimum.ToString();
+            else if(i > Max) {
+                i = Max;    
+                txtValue.Text = Max.ToString();
             }
+            else if(i < Min) {
+                i = Min;
+                txtValue.Text = Min.ToString();
+            }
+            // It seems the binding only refreshes when focus is lost,
+            // so we need to set Value here as well.
+            Value = i;
+        }
 
-            Value = int.Parse(txtValue.Text);
+        //# Allow only digits to be entered.  We still need TextChanged to 
+        //# make sure letters don't get in via pasting, drag & drop, etc.
+        private void txtValue_PreviewTextInput(object sender, TextCompositionEventArgs e) {
+            e.Handled = !e.Text.ToCharArray().All(char.IsDigit);
         }
 
         //# Increment, or decrement on up, or down arrow key usage.
@@ -75,18 +69,21 @@ namespace QTTabBarLib {
            if(e.Key == Key.Up) {
                Value++;
            }
-
-           if(e.Key == Key.Down) {
+           else if(e.Key == Key.Down) {
                Value--;
            }
         }
+    }
 
-        //# Ensure the txtValue field always reflects the value of the ScrollBar
-        private void scrollBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
-            if(!_doRecurse) {
-                _doRecurse = true;
-            }
-            txtValue.Text = Value.ToString();
+    [ValueConversion(typeof(int), typeof(string))]
+    public class IntToTextConverter : IValueConverter {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+            return value.ToString();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+            int i;
+            return int.TryParse(value.ToString(), out i) ? i : Binding.DoNothing;
         }
     }
 }
