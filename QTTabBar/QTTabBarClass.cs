@@ -295,6 +295,7 @@ namespace QTTabBarLib {
             contextMenuDropped.Show(MousePosition);
         }
 
+        // TODO: Kill all of these.
         private void AsyncComplete(IAsyncResult ar) {
             AsyncResult result = (AsyncResult)ar;
             ((MethodInvoker)result.AsyncDelegate).EndInvoke(ar);

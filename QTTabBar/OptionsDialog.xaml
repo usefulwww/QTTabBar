@@ -412,13 +412,22 @@
                     <StackPanel 
                         Margin="13,0"
                         Orientation="Horizontal">
-                        <Image Height="16" Name="imgDefaultLocation" Stretch="Fill" Width="16" Margin="4,2" />
-                        <TextBox
-                            Width="400" Name="txtDefaultLocation" />
-                        <Button 
+                        <Grid>
+                            <TextBox x:Name="txtDefaultLocation"
+                                Padding="22,2,0,0"
+                                Width="400"/>
+                            <Image x:Name="imgDefaultLocation"
+                                Height="16"
+                                HorizontalAlignment="Left"
+                                Margin="6,1"
+                                Stretch="Fill"
+                                Width="16"/>
+                        </Grid>
+                        <Button x:Name="btnBrowseDefaultLocation"
+                            Click="btnBrowseDefaultLocation_Click"
                             Content="..."
                             Margin="8,2"
-                            Width="26" Name="btnBrowseDefaultLocation" Click="btnBrowseDefaultLocation_Click" />
+                            Width="26"/>
                     </StackPanel>
                     <Label x:Name="lblRestoreTabs"
                         Content="Session saving"

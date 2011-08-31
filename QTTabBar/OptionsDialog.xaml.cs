@@ -223,10 +223,9 @@ namespace QTTabBarLib {
 
         #region ---------- Window ----------
 
-        private void btnBrowseDefaultLocation_Click(object sender, RoutedEventArgs e)
-        {
+        private void btnBrowseDefaultLocation_Click(object sender, RoutedEventArgs e) {
             FolderBrowserDialogEx fbd = new FolderBrowserDialogEx();
-            if (System.Windows.Forms.DialogResult.OK != fbd.ShowDialog()) {
+            if(System.Windows.Forms.DialogResult.OK != fbd.ShowDialog()) {
                 return;
             }
 
@@ -234,7 +233,7 @@ namespace QTTabBarLib {
             txtDefaultLocation.Text = path;
 
             Icon icon = QTUtility.GetIcon(path, false);
-            imgDefaultLocation.Source = 
+            imgDefaultLocation.Source =
                 (ImageSource)new BitmapToImageSourceConverter().Convert(icon.ToBitmap(), null, null, null);
         }
 
