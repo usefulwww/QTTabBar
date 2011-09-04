@@ -153,7 +153,7 @@ Do you want to reassign?;Confirmation of reassignment</value>
     <value>http://qttabbar.sourceforge.net</value>
   </data>
   <data name="TabBar_Menu" xml:space="preserve">
-    <value>Close;Close right;Close left;Close all but this;Add to Group;Create new Group;Lock;Clone this;New window;Copy path;Properties;Tab history;Groups;Undo closed;Last activated;Recently opened files;Browse folder;Close all but current;Close Window;Options;Unlock;Add to Application menu : ;items;Cancel;Branches;Remove this item from menu;O&amp;pen containing folder;Tab label;Tab order;Name;Path;Active;Lock the Toolbarsz;Merge tabs of other windows;Invert</value>
+    <value>Close;Close right;Close left;Close all but this;Add to Group;Create new Group;Lock;Clone this;New window;Copy path;Properties;Tab history;Groups;Undo closed;Last activated;Recently opened files;Browse folder;Close all but current;Close Window;Options;Unlock;Add to Application menu : ;items;Cancel;Branches;Remove this item from menu;O&amp;pen containing folder;Tab label;Tab order;Name;Path;Active;Lock the Toolbars;Merge tabs of other windows;Invert</value>
   </data>
   <data name="TabBar_Message" xml:space="preserve">
     <value>QTTabBar failed to open

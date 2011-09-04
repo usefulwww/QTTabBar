@@ -2006,7 +2006,7 @@
                         Content="Buttons"
                         Style="{StaticResource SectionHeaderStyle}"/>
                     <Grid
-                        Height="254"
+                        Height="199"
                         Margin="8">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
@@ -2020,22 +2020,24 @@
                         </Grid.ColumnDefinitions>
                         <ListBox x:Name="lstButtonBarPool"
                             Grid.RowSpan="2"
-                            ItemTemplate="{StaticResource ButtonBarItemTemplate}" />
+                            ItemTemplate="{StaticResource ButtonBarItemTemplate}"/>
                         <Button x:Name="btnBBarAdd"
                             Click="btnBBarAdd_Click" 
                             Content="Add >>"
                             Grid.Column="1"
-                            Margin="8,0,8,103"
+                            Margin="8,4"
                             VerticalAlignment="Bottom"/>
                         <Button x:Name="btnBBarRemove"
                             Click="btnBBarRemove_Click"
                             Content="&lt;&lt; Remove"
-                            Grid.Column="1" Margin="8,34,8,0"
+                            Grid.Column="1"
+                            Grid.Row="1"
+                            Margin="8,4"
                             VerticalAlignment="Top"/>
                         <ListBox x:Name="lstButtonBarCurrent"
                             Grid.Column="2"
                             Grid.RowSpan="2"
-                            ItemTemplate="{StaticResource ButtonBarItemTemplate}" />
+                            ItemTemplate="{StaticResource ButtonBarItemTemplate}"/>
                         <Button x:Name="btnBBarUp"
                             Click="btnBBarUp_Click" 
                             Content="&#9650;"
