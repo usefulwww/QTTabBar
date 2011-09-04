@@ -1188,8 +1188,28 @@ namespace QTTabBarLib {
             }
         }
         #endregion
-    }
 
+        private void btnCustomButtonImages_Click(object sender, RoutedEventArgs e) {
+            OpenFileDialog d = new OpenFileDialog();
+            d.Title = "Select custom button bar strip...";
+
+            if(d.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
+                txtCustomButtonImages.Text = d.FileName;
+                //# We shouldn't have to manually assign this to the config
+                //# But, without this we must interact with the TextBox in some way before the OK button saves it.
+                workingConfig.bbar.ImageStripPath = d.FileName;
+            }
+
+        }
+
+        private void btnCustomButtonImagesDefault_Click(object sender, RoutedEventArgs e) {
+            txtCustomButtonImages.Text = "";
+            //# We shouldn't have to manually assign this to the config
+            //# But, without this we must interact with the TextBox in some way before the OK button saves it.
+            workingConfig.bbar.ImageStripPath = "";
+        }
+    }
+    
     #region ---------- Converters ----------
 
     // Inverts the value of a boolean

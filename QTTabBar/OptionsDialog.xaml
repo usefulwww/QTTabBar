@@ -2006,7 +2006,7 @@
                         Content="Buttons"
                         Style="{StaticResource SectionHeaderStyle}"/>
                     <Grid
-                        Height="297"
+                        Height="254"
                         Margin="8">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
@@ -2020,24 +2020,22 @@
                         </Grid.ColumnDefinitions>
                         <ListBox x:Name="lstButtonBarPool"
                             Grid.RowSpan="2"
-                            ItemTemplate="{StaticResource ButtonBarItemTemplate}"/>
+                            ItemTemplate="{StaticResource ButtonBarItemTemplate}" />
                         <Button x:Name="btnBBarAdd"
                             Click="btnBBarAdd_Click" 
                             Content="Add >>"
                             Grid.Column="1"
-                            Margin="8,4"
+                            Margin="8,0,8,103"
                             VerticalAlignment="Bottom"/>
                         <Button x:Name="btnBBarRemove"
                             Click="btnBBarRemove_Click"
                             Content="&lt;&lt; Remove"
-                            Grid.Column="1"
-                            Grid.Row="1"
-                            Margin="8,4"
+                            Grid.Column="1" Margin="8,34,8,0"
                             VerticalAlignment="Top"/>
                         <ListBox x:Name="lstButtonBarCurrent"
                             Grid.Column="2"
                             Grid.RowSpan="2"
-                            ItemTemplate="{StaticResource ButtonBarItemTemplate}"/>
+                            ItemTemplate="{StaticResource ButtonBarItemTemplate}" />
                         <Button x:Name="btnBBarUp"
                             Click="btnBBarUp_Click" 
                             Content="&#9650;"
@@ -2081,7 +2079,24 @@
                         HorizontalAlignment="Left"
                         IsChecked="{Binding Path=LockSearchBarWidth}"
                         Margin="13,1,0,1"/>
-                </StackPanel>
+                    <Label
+                            Content="Custom Button Images"
+                            Style="{StaticResource SectionHeaderStyle}" />
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox x:Name="txtCustomButtonImages" 
+                                 Text="{Binding Path=ImageStripPath, Mode=TwoWay}" 
+                                 Width="392" HorizontalAlignment="Left" />
+                        <Button x:Name="btnCustomButtonImages"
+                                Click="btnCustomButtonImages_Click"
+                                Content="..." 
+                                HorizontalAlignment="Left" 
+                                Width="64" />
+                        <Button x:Name="btnCustomButtonImagesDefault" 
+                                Click="btnCustomButtonImagesDefault_Click"
+                                Content="Default"                                  
+                                Width="64" />
+                    </StackPanel>
+                </StackPanel>                
             </TabItem>
             <TabItem x:Name="tabPlugins"
                 Header="Plugins"
