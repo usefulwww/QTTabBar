@@ -129,7 +129,7 @@
                 <Image Source="{Binding Source={x:Static qt:Resources_Image.imgOptions_SelAndHot}, Converter={StaticResource BitmapToImageSourceConverter}}"/>
                 <TextBlock
                     Margin="10,1"
-                    Text="{Binding Header}" 
+                    Text="{Binding Path=Header}" 
                     VerticalAlignment="Center"/>
             </Grid>
         </DataTemplate>
@@ -142,7 +142,7 @@
                 <Image Source="{Binding Source={x:Static qt:Resources_Image.imgOptions_NoFocus}, Converter={StaticResource BitmapToImageSourceConverter}}"/>
                 <TextBlock
                     Margin="10,1"
-                    Text="{Binding Header}" 
+                    Text="{Binding Path=Header}" 
                     VerticalAlignment="Center"/>
             </Grid>
         </DataTemplate>
@@ -275,6 +275,21 @@
                         MaxHeight="50"
                         />
                 </StackPanel>
+            </DockPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="WinFormsGroupStyle">
+            <DockPanel LastChildFill="True">
+                <TextBlock 
+                    DockPanel.Dock="Left"
+                    Foreground="MediumBlue"
+                    Margin="20, 1, 4, 4"
+                    Text="{Binding Path=Name}"/>
+                <Border
+                    BorderBrush="LightGray"
+                    BorderThickness="1"
+                    Height="1"
+                    Margin="0,0,10,0"
+                    SnapsToDevicePixels="True"/>
             </DockPanel>
         </DataTemplate>
     </Window.Resources>
@@ -1531,54 +1546,96 @@
                             Height="16"
                             Margin="0,0,15,0"
                             Padding="0"/>
-                        <ComboBox
+                        <ComboBox x:Name="cmbMouseTarget"
+                            DisplayMemberPath="Value"
                             Height="23"
+                            SelectedValuePath="Key"
+                            SelectionChanged="cmbMouseTarget_SelectionChanged"
                             Width="120"/>
                     </StackPanel>
                     <StackPanel
-                        Margin="13,1,0,1"
+                        Margin="0,10,0,1"
                         Orientation="Horizontal">
-                        <StackPanel
-                            Margin="0"
-                            Orientation="Vertical">
-                            <CheckBox Content="Ctrl"/>
-                            <CheckBox Content="Shift"/>
-                            <CheckBox Content="Alt"/>
-                        </StackPanel>
-                        <Label
-                            Content="+"
-                            Margin="8,0"
-                            Padding="0"
-                            VerticalAlignment="Center"/>
-                        <ComboBox
+                        <ComboBox x:Name="cmbMouseModifiers"
+                            DisplayMemberPath="Value"
                             Height="23"
-                            ItemsSource="{Binding}"
+                            SelectedValuePath="Key"
+                            VerticalAlignment="Center"
+                            Width="70"
+                            Margin="0,0,10,0">
+                        </ComboBox>
+                        <ComboBox x:Name="cmbMouseButtons"
+                            DisplayMemberPath="Value"
+                            Height="23"
+                            SelectedValuePath="Key"
                             VerticalAlignment="Center"
                             Width="100">
-                            <ComboBoxItem Content="Left Click"/>
-                            <ComboBoxItem Content="Middle Click"/>
-                            <ComboBoxItem Content="Right Click"/>
-                            <ComboBoxItem Content="Double Click"/>
                         </ComboBox>
                         <Label
                             Content="="
                             Margin="8,0"
                             Padding="0"
                             VerticalAlignment="Center"/>
-                        <ComboBox
+                        <ComboBox x:Name="cmbMouseAction"
+                            DisplayMemberPath="Value"
                             Height="23"
+                            SelectedValuePath="Key"
                             VerticalAlignment="Center"
-                            Width="150"/>
-                        <Button
+                            Width="180"/>
+                        <Button x:Name="btnMouseActionAdd"
+                            Click="btnMouseActionAdd_Click"
                             Content="Add"
                             Height="23"
                             Margin="20,0,0,0"
-                            Width="50"/>
+                            Width="50">
+                            <Button.Resources>
+                                <Style TargetType="{x:Type Button}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ElementName=cmbMouseAction, Path=SelectedIndex}" Value="-1">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding ElementName=cmbMouseButtons, Path=SelectedIndex}" Value="-1">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding ElementName=cmbMouseTarget, Path=SelectedIndex}" Value="-1">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
                     </StackPanel>
-                    <ListView
+                    <ListView x:Name="lvwMouseBindings"
                         Height="330"
-                        IsSynchronizedWithCurrentItem="{x:Null}"
-                        Margin="10"/>
+                        BorderThickness="1.000001"
+                        Margin="0,10">
+                        <ListView.GroupStyle>
+                            <GroupStyle HeaderTemplate="{StaticResource WinFormsGroupStyle}"/>
+                        </ListView.GroupStyle>
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Mouse Chord" Width="170">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock
+                                                    Foreground="#FF000000"
+                                                    Text="{Binding Path=GestureText}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Action" Width="310">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock
+                                                Foreground="#FF000000"
+                                                Text="{Binding Path=ActionText}"
+                                                TextAlignment="Center"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
                     <Label
                         Content="Other mouse options"
                         Style="{StaticResource SectionHeaderStyle}"/>
@@ -1615,25 +1672,7 @@
                         BorderThickness="1.000001"
                         Margin="0,10">
                         <ListView.GroupStyle>
-                            <GroupStyle>
-                                <GroupStyle.HeaderTemplate>
-                                    <DataTemplate>
-                                        <DockPanel LastChildFill="True">
-                                            <TextBlock 
-                                                DockPanel.Dock="Left"
-                                                Foreground="MediumBlue"
-                                                Margin="20, 1, 4, 4"
-                                                Text="{Binding Name}"/>
-                                            <Border
-                                                BorderBrush="LightGray"
-                                                BorderThickness="1"
-                                                Height="1"
-                                                Margin="0,0,10,0"
-                                                SnapsToDevicePixels="True"/>
-                                        </DockPanel>
-                                    </DataTemplate>
-                                </GroupStyle.HeaderTemplate>
-                            </GroupStyle>
+                            <GroupStyle HeaderTemplate="{StaticResource WinFormsGroupStyle}"/>
                         </ListView.GroupStyle>
                         <ListView.View>
                             <GridView>

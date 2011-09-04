@@ -42,19 +42,115 @@ namespace QTTabBarLib {
         Tile,
     }
 
-    public enum MouseTargets {
-        // TODO
+    public enum MouseTarget {
+        Anywhere,
+        Tab,
+        TabBarBackground,
+        FolderLink,
+        ExplorerItem,
+        ExplorerBackground
     }
 
-    public enum MouseAction {
-        // TODO
+    [Flags]
+    public enum MouseChord {
+        None    =   0,
+        Shift   =   1,
+        Ctrl    =   2,
+        Alt     =   4,
+        Left    =   8,
+        Right   =  16,
+        Middle  =  32,
+        Double  =  64,
+        X1      = 128,
+        X2      = 256,
     }
 
-    public struct MouseChord {
-        public Keys modifiers;
-        public MouseButtons button;
-        public bool dbl;
-        public MouseTargets target;
+    // WARNING
+    // reordering these will break existing settings.
+    public enum BindAction {
+        GoBack,
+        GoForward,
+        GoFirst,
+        GoLast,
+        NextTab,
+        PreviousTab,
+        FirstTab,
+        LastTab,
+        CloseCurrent,
+        CloseAllButCurrent,
+        CloseLeft,
+        CloseRight,
+        CloseWindow,
+        RestoreLastClosed,
+        CloneCurrent,
+        TearOffCurrent,
+        LockCurrent,
+        LockAll,
+        BrowseFolder,
+        CreateNewGroup,
+        ShowOptions,
+        ShowToolbarMenu,
+        ShowTabMenuCurrent,
+        ShowGroupMenu,
+        ShowRecentFolderMenu,
+        ShowUserAppsMenu,
+        ToggleMenuBar,
+        CopySelectedPaths,
+        CopySelectedNames,
+        ChecksumSelected,
+        ToggleTopMost,
+        TransparencyPlus,
+        TransparencyMinus,
+        FocusFileList,
+        FocusSearchBarReal,
+        FocusSearchBarBBar,
+        ShowSDTSelected,
+        SendToTray,
+        FocusTabBar,
+        
+        // New
+        NewTab,
+        NewWindow,
+        NewFolder,
+        NewFile,
+        SwitchToLastActivated,
+        MergeWindows,
+        ShowRecentFilesMenu,
+        SortTabsByName,
+        SortTabsByPath,
+        SortTabsByActive,
+
+        // Mouse-only from here on down
+        UpOneLevel,
+        Refresh,
+        Paste,
+        Maximize,
+        Minimize,
+
+        // Item Actions
+        ItemOpenInNewTab,
+        ItemOpenInNewTabNoSel,
+        ItemOpenInNewWindow,
+        ItemCut,
+        ItemCopy,        
+        ItemDelete,
+        ItemProperties,
+        CopyItemPath,
+        CopyItemName,
+        ChecksumItem,
+
+        // Tab Actions
+        CloseTab,
+        CloseLeftTab,
+        CloseRightTab,
+        UpOneLevelTab, //hmm
+        LockTab,
+        ShowTabMenu,
+        TearOffTab,
+        CloneTab,
+        CopyTabPath,
+        TabProperties,
+        ShowTabSubfolderMenu,
     }
 
     [Serializable]
@@ -328,11 +424,39 @@ namespace QTTabBarLib {
         [Serializable]
         public class _Mouse {
             public bool MouseScrollsHotWnd       { get; set; }
-            public Dictionary<MouseChord, MouseAction> MouseActions;
+            public Dictionary<MouseChord, BindAction> GlobalMouseActions { get; set; }
+            public Dictionary<MouseChord, BindAction> TabActions { get; set; }
+            public Dictionary<MouseChord, BindAction> BarActions { get; set; }
+            public Dictionary<MouseChord, BindAction> LinkActions { get; set; }
+            public Dictionary<MouseChord, BindAction> ItemActions { get; set; }
+            public Dictionary<MouseChord, BindAction> MarginActions { get; set; }
 
             public _Mouse() {
                 MouseScrollsHotWnd = false;
-                // TODO actions
+                GlobalMouseActions = new Dictionary<MouseChord, BindAction> {
+                    {MouseChord.X1, BindAction.GoBack},
+                    {MouseChord.X2, BindAction.GoForward}
+                };
+                TabActions = new Dictionary<MouseChord, BindAction> { 
+                    {MouseChord.Middle, BindAction.CloseTab},
+                    {MouseChord.Ctrl | MouseChord.Left, BindAction.LockTab},
+                    {MouseChord.Double, BindAction.UpOneLevelTab},
+                };
+                BarActions = new Dictionary<MouseChord, BindAction> {
+                    {MouseChord.Double, BindAction.NewTab},
+                    {MouseChord.Middle, BindAction.RestoreLastClosed}
+                };
+                LinkActions = new Dictionary<MouseChord, BindAction> {
+                    {MouseChord.Middle, BindAction.ItemOpenInNewTab},
+                    {MouseChord.Ctrl | MouseChord.Middle, BindAction.ItemOpenInNewWindow}
+                };
+                ItemActions = new Dictionary<MouseChord, BindAction> {
+                    {MouseChord.Middle, BindAction.ItemOpenInNewTab},
+                    {MouseChord.Ctrl | MouseChord.Middle, BindAction.ItemOpenInNewWindow}                        
+                };
+                MarginActions = new Dictionary<MouseChord, BindAction> {
+                    {MouseChord.Double, BindAction.UpOneLevel}
+                };
             }
         }
 
