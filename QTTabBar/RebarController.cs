@@ -34,6 +34,8 @@ namespace QTTabBarLib {
         private TextureBrush textureBrushRebar; 
         private Bitmap bmpRebar;
         private NativeWindowController rebarController;
+        private NativeWindowController menuController;
+        private bool MenuHasFocus;
 
         public IntPtr Handle { get; private set; }
 
@@ -73,7 +75,20 @@ namespace QTTabBarLib {
             ExplorerHandle = PInvoke.GetAncestor(hwndReBar, 2);
             Handle = hwndReBar;
             rebarController = new NativeWindowController(hwndReBar);
-            rebarController.MessageCaptured += MessageCaptured;
+            rebarController.MessageCaptured += RebarMessageCaptured;
+            
+            REBARBANDINFO structure = new REBARBANDINFO();
+            structure.cbSize = Marshal.SizeOf(structure);
+            structure.fMask = RBBIM.CHILD | RBBIM.ID;
+            int num = (int)PInvoke.SendMessage(Handle, RB.GETBANDCOUNT, IntPtr.Zero, IntPtr.Zero);
+            for(int i = 0; i < num; i++) {
+                PInvoke.SendMessage(Handle, RB.GETBANDINFO, (IntPtr)i, ref structure);
+                if(PInvoke.GetClassName(structure.hwndChild) == "ToolbarWindow32" && structure.wID == 1) {
+                    menuController = new NativeWindowController(structure.hwndChild);
+                    menuController.MessageCaptured += MenuMessageCaptured;
+                    break;
+                }
+            }
 
             if(QTUtility.CheckConfig(Settings.ToolbarBGColor)) {
                 if(QTUtility.DefaultRebarCOLORREF == -1) {
@@ -110,14 +125,15 @@ namespace QTTabBarLib {
         }
 
         public void EnsureMenuBarIsCorrect() {
+            bool show = MenuHasFocus || MenuBarShown;
             REBARBANDINFO structure = new REBARBANDINFO();
             structure.cbSize = Marshal.SizeOf(structure);
             structure.fMask = RBBIM.CHILD | RBBIM.ID;
             int num = (int)PInvoke.SendMessage(Handle, RB.GETBANDCOUNT, IntPtr.Zero, IntPtr.Zero);
             for(int i = 0; i < num; i++) {
                 PInvoke.SendMessage(Handle, RB.GETBANDINFO, (IntPtr)i, ref structure);
-                if(PInvoke.GetClassName(structure.hwndChild) == "ToolbarWindow32" && structure.wID == 1) {
-                    PInvoke.SendMessage(Handle, RB.SHOWBAND, (IntPtr)i, MenuBarShown ? ((IntPtr)1) : IntPtr.Zero);
+                if(structure.hwndChild == menuController.Handle) {
+                    PInvoke.SendMessage(Handle, RB.SHOWBAND, (IntPtr)i, show ? ((IntPtr)1) : IntPtr.Zero);
                     return;
                 }
             }
@@ -181,13 +197,22 @@ namespace QTTabBarLib {
             }
         }
 
-        private bool MessageCaptured(ref Message m) {
+        private bool MenuMessageCaptured(ref Message m) {
+            const int TB_SETANCHORHIGHLIGHT = 1097;
+            if(m.Msg == TB_SETANCHORHIGHLIGHT) {
+                MenuHasFocus = (m.WParam != IntPtr.Zero);
+                EnsureMenuBarIsCorrect();
+            }
+            return false;
+        }
+
+        private bool RebarMessageCaptured(ref Message m) {
             // Make sure the menu bar obeys the Explorer setting.
             // Was this really so hard, Microsoft?
             if(m.Msg == RB.SETBANDINFO) {
                 REBARBANDINFO pInfo = (REBARBANDINFO)Marshal.PtrToStructure(m.LParam, typeof(REBARBANDINFO));
                 if((PInvoke.GetClassName(pInfo.hwndChild) == "ToolbarWindow32") && (pInfo.wID == 1)) {
-                    if(MenuBarShown) {
+                    if(MenuHasFocus || MenuBarShown) {
                         pInfo.fStyle &= ~RBBS.HIDDEN;
                     }
                     else {
