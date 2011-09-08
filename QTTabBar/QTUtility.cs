@@ -63,6 +63,7 @@ namespace QTTabBarLib {
         internal static readonly bool IsXP;
         internal static Dictionary<string, byte[]> ITEMIDLIST_Dic_Session = new Dictionary<string, byte[]>();
         internal static List<string> LockedTabsToRestoreList = new List<string>();
+        internal const BindAction LAST_KEYBOARD_ACTION = BindAction.FocusTabBar;
         public static int MaxCount_Executed = 0x10;
         internal static int MaxCount_History = 0x10;
         internal static int MaxTabWidth;

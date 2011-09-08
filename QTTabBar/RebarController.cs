@@ -45,7 +45,7 @@ namespace QTTabBarLib {
                 }
             }
             set {
-                using(RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", false)) {
+                using(RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", true)) {
                     if(key != null) key.SetValue("AlwaysShowMenus", value ? 1 : 0);
                 }
                 EnsureMenuBarIsCorrect();

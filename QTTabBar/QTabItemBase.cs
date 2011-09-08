@@ -21,25 +21,19 @@ using System.Windows.Forms.VisualStyles;
 namespace QTTabBarLib {
     internal class QTabItemBase {
         private string commentText = string.Empty;
-        private Edges edge;
         private static Font font;
         private static Font fontSubText;
-        private bool fUnderLine;
         private string imageKey = string.Empty;
-        private int iRow;
         protected QTabControl Owner;
         private static RectangleF rctMeasure = new RectangleF(0f, 0f, 512f, 50f);
         internal const string SEPARATOR_COMMENT = ": ";
         internal const string SEPARATOR_SUBTEXT = "@ ";
         private static StringFormat sfMeasure;
-        private SizeF sizeSubTitle;
-        private SizeF sizeTitle;
-        private Rectangle tabBounds;
         protected bool tabLocked;
         private string titleText;
-        private string tooltipText = string.Empty;
 
         public QTabItemBase(string title, QTabControl parent) {
+            ToolTipText = string.Empty;
             titleText = title;
             Owner = parent;
             if(font == null) {
@@ -57,7 +51,7 @@ namespace QTTabBarLib {
                 RefreshRectangle();
             }
             else {
-                tabBounds = new Rectangle(tabBounds.X, tabBounds.Y, 100, 0x18);
+                TabBounds = new Rectangle(TabBounds.X, TabBounds.Y, 100, 0x18);
             }
         }
 
@@ -89,16 +83,16 @@ namespace QTTabBarLib {
                 if((Owner.EnableCloseButton && !Owner.TabCloseButtonOnHover) && !Owner.TabCloseButtonOnAlt) {
                     num += 17f;
                 }
-                sizeTitle = GetTextSize(titleText, graphics, true);
-                sizeSubTitle = SizeF.Empty;
+                TitleTextSize = GetTextSize(titleText, graphics, true);
+                SubTitleTextSize = SizeF.Empty;
                 if(commentText.Length > 0) {
-                    sizeSubTitle = GetTextSize("@ " + commentText, graphics, false);
-                    num += sizeSubTitle.Width + 3f;
+                    SubTitleTextSize = GetTextSize("@ " + commentText, graphics, false);
+                    num += SubTitleTextSize.Width + 3f;
                 }
                 else {
                     num++;
                 }
-                int width = (int)(sizeTitle.Width + num);
+                int width = (int)(TitleTextSize.Width + num);
                 if(Owner.OncePainted && (width > Owner.Width)) {
                     if(Owner.Width > 40) {
                         width = Owner.Width - 40;
@@ -107,7 +101,7 @@ namespace QTTabBarLib {
                         width = 0x20;
                     }
                 }
-                tabBounds = new Rectangle(tabBounds.X, tabBounds.Y, width, (int)sizeTitle.Height);
+                TabBounds = new Rectangle(TabBounds.X, TabBounds.Y, width, (int)TitleTextSize.Height);
             }
         }
 
@@ -125,14 +119,7 @@ namespace QTTabBarLib {
             }
         }
 
-        public Edges Edge {
-            get {
-                return edge;
-            }
-            set {
-                edge = value;
-            }
-        }
+        public Edges Edge { get; set; }
 
         public string ImageKey {
             get {
@@ -148,29 +135,15 @@ namespace QTTabBarLib {
             }
         }
 
-        public int Row {
-            get {
-                return iRow;
-            }
-            set {
-                iRow = value;
-            }
+        public int Index {
+            get { return Owner.TabPages.IndexOf(this);  }
         }
 
-        public SizeF SubTitleTextSize {
-            get {
-                return sizeSubTitle;
-            }
-        }
+        public int Row { get; set; }
 
-        public Rectangle TabBounds {
-            get {
-                return tabBounds;
-            }
-            set {
-                tabBounds = value;
-            }
-        }
+        public SizeF SubTitleTextSize { get; private set; }
+
+        public Rectangle TabBounds { get; set; }
 
         public static Font TabFont {
             set {
@@ -212,28 +185,10 @@ namespace QTTabBarLib {
             }
         }
 
-        public SizeF TitleTextSize {
-            get {
-                return sizeTitle;
-            }
-        }
+        public SizeF TitleTextSize { get; private set; }
 
-        public string ToolTipText {
-            get {
-                return tooltipText;
-            }
-            set {
-                tooltipText = value;
-            }
-        }
+        public string ToolTipText { get; set; }
 
-        public bool UnderLine {
-            get {
-                return fUnderLine;
-            }
-            set {
-                fUnderLine = value;
-            }
-        }
+        public bool UnderLine { get; set; }
     }
 }

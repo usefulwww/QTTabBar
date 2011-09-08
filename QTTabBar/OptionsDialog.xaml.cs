@@ -572,7 +572,12 @@ namespace QTTabBarLib {
             string[] arrActions = QTUtility.TextResourcesDic["ShortcutKeys_ActionNames"];
             string[] arrGrps = QTUtility.TextResourcesDic["ShortcutKeys_Groups"];
             int[] keys = workingConfig.keys.Shortcuts;
-            List<HotkeyEntry> list = arrActions.Select((act, i) => new HotkeyEntry(keys, i, act, arrGrps[0])).ToList();
+            List<HotkeyEntry> list = new List<HotkeyEntry>();
+            // todo: validate arrActions length
+            for(int i = 0; i <= (int)QTUtility.LAST_KEYBOARD_ACTION; ++i) {
+                list.Add(new HotkeyEntry(keys, i, arrActions[i], arrGrps[0]));
+            }
+            
             foreach(string pluginID in QTUtility.dicPluginShortcutKeys.Keys) {
                 Plugin p;
                 keys = QTUtility.dicPluginShortcutKeys[pluginID];

@@ -97,6 +97,8 @@ namespace QTTabBarLib {
         ToggleMenuBar,
         CopySelectedPaths,
         CopySelectedNames,
+        CopyCurrentFolderPath,
+        CopyCurrentFolderName,
         ChecksumSelected,
         ToggleTopMost,
         TransparencyPlus,
@@ -107,7 +109,7 @@ namespace QTTabBarLib {
         ShowSDTSelected,
         SendToTray,
         FocusTabBar,
-        
+
         // New
         NewTab,
         NewWindow,
@@ -119,7 +121,7 @@ namespace QTTabBarLib {
         SortTabsByName,
         SortTabsByPath,
         SortTabsByActive,
-
+        
         // Mouse-only from here on down
         UpOneLevel,
         Refresh,
@@ -165,7 +167,7 @@ namespace QTTabBarLib {
         public static _Skin Skin        { get { return ConfigManager.LoadedConfig.skin; } }
         public static _BBar BBar        { get { return ConfigManager.LoadedConfig.bbar; } }
         public static _Mouse Mouse      { get { return ConfigManager.LoadedConfig.mouse; } }
-        public static _Keys Keys          { get { return ConfigManager.LoadedConfig.keys; } }
+        public static _Keys Keys        { get { return ConfigManager.LoadedConfig.keys; } }
         public static _Plugin Plugin    { get { return ConfigManager.LoadedConfig.plugin; } }
         public static _Lang Lang        { get { return ConfigManager.LoadedConfig.lang; } }
 
@@ -177,7 +179,7 @@ namespace QTTabBarLib {
         public _Skin skin       { get; set; }
         public _BBar bbar       { get; set; }
         public _Mouse mouse     { get; set; }
-        public _Keys keys         { get; set; }
+        public _Keys keys       { get; set; }
         public _Plugin plugin   { get; set; }
         public _Lang lang       { get; set; }
 
