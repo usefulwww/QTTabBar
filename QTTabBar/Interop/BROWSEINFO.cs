@@ -1,9 +1,7 @@
 using System;
 
-namespace QTTabBarLib.Interop
-{
-    public struct BROWSEINFO
-    {
+namespace QTTabBarLib.Interop {
+    public struct BROWSEINFO {
         // PENDING: or, creates the BIF class for the constants below
         #region ---------- Constants ----------
         public const uint BIF_RETURNONLYFSDIRS = 0x0001;  // For finding a folder to start document searching

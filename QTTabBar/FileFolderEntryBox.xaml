@@ -1,0 +1,25 @@
+﻿<UserControl x:Class="QTTabBarLib.FileFolderEntryBox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="119" d:DesignWidth="408">
+    <DockPanel LastChildFill="True" Margin="10" Width="247">
+        <Button x:Name="btnBrowse"
+            Content="..."
+            Margin="8,2"
+            Width="26"
+            DockPanel.Dock="Right" />
+        <Grid>
+            <TextBox x:Name="txtLocation"
+                Padding="22,2,0,0" />
+            <Image x:Name="imgIcon"
+                Height="16"
+                HorizontalAlignment="Left"
+                Margin="6,1"
+                Stretch="Fill"
+                Width="16" />
+        </Grid>
+    </DockPanel>
+</UserControl>

@@ -102,6 +102,9 @@
     <Compile Include="Automation\AutomationManager.cs" />
     <Compile Include="BreadcrumbBar.cs" />
     <Compile Include="AbstractListView.cs" />
+    <Compile Include="FileFolderEntryBox.xaml.cs">
+      <DependentUpon>FileFolderEntryBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="FolderBrowserDialogEx.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -392,6 +395,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="FileFolderEntryBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="OptionsDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

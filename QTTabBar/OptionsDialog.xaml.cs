@@ -442,11 +442,16 @@ namespace QTTabBarLib {
             }
 
             string path = fbd.SelectedPath;
-            txtDefaultLocation.Text = path;
+            txtDefaultLocation.Tag = fbd.SelectedIDL;
+            using(IDLWrapper wrapper = new IDLWrapper(fbd.SelectedIDL)) {
+                txtDefaultLocation.Text =
+                    wrapper.IsFileSystemFolder ? path : wrapper.DisplayName;
 
-            Icon icon = QTUtility.GetIcon(path, false);
-            imgDefaultLocation.Source =
-                (ImageSource)new BitmapToImageSourceConverter().Convert(icon.ToBitmap(), null, null, null);
+                Icon icon = QTUtility.GetIcon(wrapper.PIDL);
+                imgDefaultLocation.Source =
+                    (ImageSource)new BitmapToImageSourceConverter().Convert(icon.ToBitmap(), null, null, null);
+            }
+
         }
 
         #endregion
