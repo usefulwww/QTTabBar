@@ -10,6 +10,8 @@ namespace QTTabBarLib {
 
         public string Description { get; set; }
         public Environment.SpecialFolder RootFolder { get; set; }
+        // TODO: FolderBrowserDialog accepts SelectedPath as an initial path,
+        // so we should follow it with BFFM_SETSELECTION later. Also SelectedIDL needs to sync to SelectedPath then.
         public string SelectedPath { get; private set; }
         public byte[] SelectedIDL { get; private set; }
         public bool ShowNewFolderButton { get; set; }
@@ -24,7 +26,6 @@ namespace QTTabBarLib {
                 BROWSEINFO bi = new BROWSEINFO();
                 bi.hwndOwner = hwndOwner;
                 bi.pidlRoot = wrapper.PIDL;
-                bi.pszDisplayName = SelectedPath;
                 bi.lpszTitle = Description;
                 bi.ulFlags = BROWSEINFO.BIF_NEWDIALOGSTYLE | BROWSEINFO.BIF_SHAREABLE | BROWSEINFO.BIF_EDITBOX;
                 if(!ShowNewFolderButton) {

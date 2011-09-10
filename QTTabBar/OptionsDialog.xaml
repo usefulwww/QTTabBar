@@ -427,22 +427,7 @@
                     <StackPanel 
                         Margin="13,0"
                         Orientation="Horizontal">
-                        <Grid>
-                            <TextBox x:Name="txtDefaultLocation"
-                                Padding="22,2,0,0"
-                                Width="400"/>
-                            <Image x:Name="imgDefaultLocation"
-                                Height="16"
-                                HorizontalAlignment="Left"
-                                Margin="6,1"
-                                Stretch="Fill"
-                                Width="16"/>
-                        </Grid>
-                        <Button x:Name="btnBrowseDefaultLocation"
-                            Click="btnBrowseDefaultLocation_Click"
-                            Content="..."
-                            Margin="8,2"
-                            Width="26"/>
+                        <qt:FileFolderEntryBox x:Name="entDefaultLocation" Width="400"></qt:FileFolderEntryBox>
                     </StackPanel>
                     <Label x:Name="lblRestoreTabs"
                         Content="Session saving"
