@@ -23,7 +23,6 @@ using System.Reflection;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Linq;
-using System.Windows.Forms;
 using Microsoft.Win32;
 
 namespace QTTabBarLib {
@@ -153,6 +152,7 @@ namespace QTTabBarLib {
         CopyTabPath,
         TabProperties,
         ShowTabSubfolderMenu,
+        CloseAllButThis,
     }
 
     [Serializable]
@@ -206,6 +206,7 @@ namespace QTTabBarLib {
             public bool CloseBtnClosesSingleTab  { get; set; }
             public bool TrayOnClose              { get; set; }
             public bool TrayOnMinimize           { get; set; }
+            public byte[] DefaultLocation        { get; set; }
 
             public _Window() {
                 CaptureNewWindows = false;
@@ -215,6 +216,12 @@ namespace QTTabBarLib {
                 CloseBtnClosesUnlocked = false;
                 TrayOnClose = false;
                 TrayOnMinimize = false;
+                
+                // TODO: should be Libraries on win7
+                // It's just Computer for now.
+                using(IDLWrapper w = new IDLWrapper("::{20D04FE0-3AEA-1069-A2D8-08002B30309D}")) {
+                    DefaultLocation = w.IDL;
+                }
             }
         }
 
