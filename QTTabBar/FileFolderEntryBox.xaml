@@ -17,7 +17,7 @@
         <Grid>
             <TextBox x:Name="txtLocation" x:FieldModifier="private"
                 Padding="22,2,0,0"
-                VerticalContentAlignment="Center" />
+                VerticalContentAlignment="Center" GotKeyboardFocus="txtLocation_GotKeyboardFocus" LostKeyboardFocus="txtLocation_LostKeyboardFocus" />
             <Image x:Name="imgIcon" x:FieldModifier="private"
                 Height="16"
                 HorizontalAlignment="Left"
