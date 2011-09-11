@@ -13,10 +13,34 @@ namespace QTTabBarLib {
         private byte[] location = null;
         private bool file = true;
         private bool watermark = true;
+        private string watermarkText = null;
+        private bool showIcon = true;
 
-        // TODO: Expose location
-        public string SelectedPath { get; private set; }
-        public byte[] SelectedIDL { get; private set; }
+        public string SelectedPath {
+            get {
+                using(IDLWrapper wrapper = new IDLWrapper(location)) {
+                    return wrapper.Path;
+                }
+            }
+            set {
+                if(string.IsNullOrEmpty(value)) {
+                    ClearLocation();
+                }
+                else {
+                    using(IDLWrapper wrapper = new IDLWrapper(value)) {
+                        SetLocation(wrapper);
+                    }
+                }
+            }
+        }
+        public byte[] SelectedIDL {
+            get {
+                return location;
+            }
+            set {
+                location = value;
+            }
+        }
 
         // PENDING: the "!File" expression does not explicitly mean using the folder chooser,
         // so I think the class should have both of them
@@ -41,8 +65,31 @@ namespace QTTabBarLib {
             }
         }
 
-        // TODO:
-        public bool ShowIcon { set; get; }
+        public bool ShowIcon {
+            get {
+                return showIcon;
+            }
+            set {
+                if(showIcon == value) {
+                    return;
+                }
+                showIcon = value;
+                ShowIconInternal(showIcon);
+            }
+        }
+
+        // Watermark must be disabled eventually if WatermarkText is an empty text.
+        public string WatermarkText {
+            get {
+                return watermarkText;
+            }
+            set {
+                watermarkText = value;
+                if(watermark) {
+                    ClearLocation();
+                }
+            }
+        }
 
         public FileFolderEntryBox() {
             InitializeComponent();
@@ -50,8 +97,22 @@ namespace QTTabBarLib {
             ClearLocation();
         }
 
-        private void EnableWatermark(bool b) {
-            // TODO: hide the icon area if b == true
+        private void ShowIconInternal(bool b) {
+            bool visible = (imgIcon.Visibility != Visibility.Collapsed);
+            if(visible == b) {
+                return;
+            }
+            Thickness padding = txtLocation.Padding;
+            double n = imgIcon.Width + imgIcon.Margin.Left - padding.Top;
+            padding.Left += b ? n : -n;
+            txtLocation.Padding = padding;
+            imgIcon.Visibility = b ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void ShowWatermark(bool b) {
+            if(ShowIcon) {
+                ShowIconInternal(!b);
+            }
 
             //txtLocation.FontStyle = b ? FontStyles.Italic : FontStyles.Normal;
             txtLocation.Foreground = b ? Brushes.DarkGray : Brushes.Black;
@@ -59,19 +120,25 @@ namespace QTTabBarLib {
         }
 
         private void ClearLocation() {
-            EnableWatermark(true);
+            ShowWatermark(true);
 
             // TODO: localize this
-            txtLocation.Text = string.Format("Choose your {0}...", File ? "file" : "folder");
+            txtLocation.Text = (WatermarkText != null)
+                ? WatermarkText : string.Format("Choose your {0}...", File ? "file" : "folder");
             imgIcon.Source = null;
             location = null;
         }
 
         private void SetLocation(IDLWrapper wrapper) {
-            EnableWatermark(false);
+            ShowWatermark(false);
 
-            txtLocation.Text =
-                wrapper.IsFileSystemFolder ? wrapper.Path : wrapper.DisplayName;
+            if(File) {
+                txtLocation.Text = wrapper.Path;
+            }
+            else {
+                txtLocation.Text =
+                    wrapper.IsFileSystemFolder ? wrapper.Path : wrapper.DisplayName;
+            }
 
             Icon icon = QTUtility.GetIcon(wrapper.PIDL);
             imgIcon.Source =
@@ -110,15 +177,12 @@ namespace QTTabBarLib {
         }
 
         private void btnBrowse_Click(object sender, System.Windows.RoutedEventArgs e) {
-            // TODO: delete this
-            Folder = true;
-
             Browse();
         }
 
         private void txtLocation_GotKeyboardFocus(object sender, System.Windows.Input.KeyboardFocusChangedEventArgs e) {
             if(watermark) {
-                EnableWatermark(false);
+                ShowWatermark(false);
                 txtLocation.Text = string.Empty;
             }
         }

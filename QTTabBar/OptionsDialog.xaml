@@ -427,7 +427,7 @@
                     <StackPanel 
                         Margin="13,0"
                         Orientation="Horizontal">
-                        <qt:FileFolderEntryBox x:Name="entDefaultLocation" Width="400"></qt:FileFolderEntryBox>
+                        <qt:FileFolderEntryBox x:Name="entDefaultLocation" Folder="True" Width="400"/>
                     </StackPanel>
                     <Label x:Name="lblRestoreTabs"
                         Content="Session saving"
