@@ -32,7 +32,7 @@ namespace QTTabBarLib {
         private const int TBIF_COMMAND = 0x20;
 
         protected static readonly UInt32 WM_BREADCRUMBDPA = PInvoke.RegisterWindowMessage("QTTabBar_BreadcrumbDPA");
-        public event QTTabBarClass.FolderMiddleClickedHandler MiddleClicked;
+        public event QTTabBarClass.FolderClickedHandler ItemClicked;
         private NativeWindowController BreadcrumbController;
         private NativeWindowController ParentController;
         private IntPtr hdpa = IntPtr.Zero;
@@ -71,44 +71,47 @@ namespace QTTabBarLib {
             return ret == -1 ? IntPtr.Zero : info.lParam;           
         }
 
+        // Catch left-clicks
         private bool ParentController_MessageCaptured(ref Message msg) {
             if(msg.Msg == WM_BREADCRUMBDPA) {
                 hdpa = msg.LParam;
                 return true;
             }
             else if(msg.Msg == WM.COMMAND) {
-                if(!Config.NoCaptureMidClick && (Control.ModifierKeys & Keys.Shift) != 0 && hdpa != IntPtr.Zero && MiddleClicked != null) {
+                if(hdpa != IntPtr.Zero && ItemClicked != null && Control.ModifierKeys != Keys.None) {
                     int itemId = PInvoke.LoWord(msg.WParam.ToInt32());
                     int idx = CommandToIndex(itemId);
                     if(idx >= 0 && idx < ButtonCount()) {
-                        DoItemMiddleClick(itemId, Control.ModifierKeys & (~Keys.Shift));
+                        if(DoItemClick(itemId, Control.ModifierKeys, false)) {
+                            return true;
+                        }
                     }
-                    return true;
                 }
             }
             return false;
         }
 
+        // Catch middle clicks
         private bool BreadcrumbController_MessageCaptured(ref Message msg) {
             if(msg.Msg == WM.MBUTTONUP) {
-                if(!Config.NoCaptureMidClick && hdpa != IntPtr.Zero && MiddleClicked != null) {
+                if(hdpa != IntPtr.Zero && ItemClicked != null) {
                     int idx = HitTest(QTUtility2.PointFromLPARAM(msg.LParam));
                     if(idx >= 0 && idx <= ButtonCount()) {
-                        DoItemMiddleClick(IndexToCommand(idx), Control.ModifierKeys);
+                        DoItemClick(IndexToCommand(idx), Control.ModifierKeys, true);
                     }
                 }
             }
             return false;
         }
 
-        private void DoItemMiddleClick(int itemId, Keys modKeys) {
+        private bool DoItemClick(int itemId, Keys modKeys, bool middle) {
             IntPtr lParam = GetButtonLParam(itemId);
             IntPtr ptr = PInvoke.DPA_GetPtr(hdpa, (int)lParam); // This pointer is NOT AddRef'd.  Do not Release it!!
-            if(ptr == IntPtr.Zero) return;
+            if(ptr == IntPtr.Zero) return false;
             IntPtr pidl;
             PInvoke.SHGetIDListFromObject(ptr, out pidl);
             using(IDLWrapper wrapper = new IDLWrapper(pidl)) {
-                MiddleClicked(wrapper, modKeys);
+                return ItemClicked(wrapper, modKeys, middle);
             }
         }
     }

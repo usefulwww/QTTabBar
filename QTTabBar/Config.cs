@@ -444,7 +444,9 @@ namespace QTTabBarLib {
                 MouseScrollsHotWnd = false;
                 GlobalMouseActions = new Dictionary<MouseChord, BindAction> {
                     {MouseChord.X1, BindAction.GoBack},
-                    {MouseChord.X2, BindAction.GoForward}
+                    {MouseChord.X2, BindAction.GoForward},
+                    {MouseChord.X1 | MouseChord.Ctrl, BindAction.GoFirst},
+                    {MouseChord.X2 | MouseChord.Ctrl, BindAction.GoLast}
                 };
                 TabActions = new Dictionary<MouseChord, BindAction> { 
                     {MouseChord.Middle, BindAction.CloseTab},

@@ -24,7 +24,7 @@ using QTTabBarLib.Interop;
 namespace QTTabBarLib {
     class TreeViewWrapper : IDisposable {
         public delegate void TreeViewMiddleClickedHandler(IShellItem item);
-        public event QTTabBarClass.FolderMiddleClickedHandler TreeViewMiddleClicked;
+        public event QTTabBarClass.FolderClickedHandler TreeViewClicked;
 
         private bool fDisposed;
         private INameSpaceTreeControl treeControl;
@@ -40,7 +40,7 @@ namespace QTTabBarLib {
             parentController.MessageCaptured += ParentControl_MessageCaptured;
         }
 
-        private void HandleClick(Point pt, Keys modifierKeys) {
+        private bool HandleClick(Point pt, Keys modifierKeys, bool middle) {
             IShellItem item = null;
             try {
                 TVHITTESTINFO structure = new TVHITTESTINFO { pt = pt };
@@ -52,7 +52,7 @@ namespace QTTabBarLib {
                             IntPtr pidl;
                             if(PInvoke.SHGetIDListFromObject(item, out pidl) == 0) {
                                 using(IDLWrapper wrapper = new IDLWrapper(pidl)) {
-                                    TreeViewMiddleClicked(wrapper, modifierKeys);
+                                    return TreeViewClicked(wrapper, modifierKeys, middle);
                                 }
                             }
                         }
@@ -64,6 +64,7 @@ namespace QTTabBarLib {
                     Marshal.ReleaseComObject(item);
                 }
             }
+            return false;
         }
 
         private bool TreeControl_MessageCaptured(ref Message msg) {
@@ -73,9 +74,8 @@ namespace QTTabBarLib {
                     break;
 
                 case WM.MBUTTONUP:
-                    // TODO
-                    if(/*!Config.NoMidClickTree &&*/ treeControl != null && TreeViewMiddleClicked != null) {
-                        HandleClick(QTUtility2.PointFromLPARAM(msg.LParam), Control.ModifierKeys);
+                    if(treeControl != null && TreeViewClicked != null) {
+                        HandleClick(QTUtility2.PointFromLPARAM(msg.LParam), Control.ModifierKeys, true);
                     }
                     break;
 
@@ -94,13 +94,14 @@ namespace QTTabBarLib {
                 NMHDR nmhdr = (NMHDR)Marshal.PtrToStructure(msg.LParam, typeof(NMHDR));
                 switch(nmhdr.code) {
                     case -2: /* NM_CLICK */
-                        if((Control.ModifierKeys & Keys.Shift) != 0) {
+                        if(Control.ModifierKeys != Keys.None) {
                             Point pt = Control.MousePosition;
                             PInvoke.ScreenToClient(nmhdr.hwndFrom, ref pt);
-                            HandleClick(pt, Control.ModifierKeys & ~Keys.Shift);
-                            fPreventSelChange = true;
-                            PInvoke.PostMessage(nmhdr.hwndFrom, WM.USER, IntPtr.Zero, IntPtr.Zero);
-                            return true;
+                            if(HandleClick(pt, Control.ModifierKeys, false)) {
+                                fPreventSelChange = true;
+                                PInvoke.PostMessage(nmhdr.hwndFrom, WM.USER, IntPtr.Zero, IntPtr.Zero);
+                                return true;                                
+                            }
                         }
                         break;
 

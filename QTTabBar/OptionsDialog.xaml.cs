@@ -172,6 +172,7 @@ namespace QTTabBarLib {
             {BindAction.CopyTabPath,            "Copy path"},
             {BindAction.TabProperties,          "Properties"},
             {BindAction.ShowTabSubfolderMenu,   "Show Subdirectory Tip menu"},
+            {BindAction.CloseAllButThis,        "Close all but this"}
         };
         private static readonly Dictionary<MouseChord, string> MouseButtonItems
                 = new Dictionary<MouseChord, string> {
@@ -202,6 +203,7 @@ namespace QTTabBarLib {
             }.ToDictionary(k => k, k => MouseActionItems[k])},
             {MouseTarget.Tab, new BindAction[] {
                 BindAction.CloseTab,
+                BindAction.CloseAllButThis,
                 BindAction.UpOneLevelTab,
                 BindAction.LockTab,
                 BindAction.ShowTabMenu,

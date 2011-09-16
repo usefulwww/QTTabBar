@@ -569,6 +569,13 @@ namespace QTTabBarLib {
             }
         }
 
+        public static MouseChord MakeMouseChord(MouseChord button, Keys modifiers) {
+            if((modifiers & Keys.Shift) != 0) button |= MouseChord.Shift;
+            if((modifiers & Keys.Control) != 0) button |= MouseChord.Ctrl;
+            if((modifiers & Keys.Alt) != 0) button |= MouseChord.Alt;
+            return button;
+        }
+
         public static Dictionary<string, string[]> ReadLanguageFile(string path) {
             Dictionary<string, string[]> dictionary = new Dictionary<string, string[]>();
             const string newValue = "\r\n";

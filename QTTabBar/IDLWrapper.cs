@@ -158,6 +158,33 @@ namespace QTTabBarLib {
             this.pIDL = pIDL;
         }
 
+        public static bool operator ==(IDLWrapper idl1, IDLWrapper idl2) {
+            if(Equals(idl1, idl2)) return true;
+            if(Equals(idl1, null) || Equals(idl2, null)) return false;
+            IShellFolder shellFolder = null;
+            try {
+                if(PInvoke.SHGetDesktopFolder(out shellFolder) == 0) {
+                    return idl1.IsRelativelyEqual(idl2, shellFolder);
+                }
+            }
+            finally {
+                if(shellFolder != null) {
+                    Marshal.ReleaseComObject(shellFolder);
+                }   
+            }
+            return false;
+        }
+
+        public static bool operator !=(IDLWrapper idl1, IDLWrapper idl2) {
+            return !(idl1 == idl2);
+        }
+
+        public bool IsRelativelyEqual(IDLWrapper idl2, IShellFolder relativeTo) {
+            const int SHCIDS_CANONICALONLY = 0x10000000;
+            return !Equals(idl2, null) && (Equals(this, idl2) ||
+                    0 == (0xFFFF & relativeTo.CompareIDs((IntPtr)SHCIDS_CANONICALONLY, PIDL, idl2.PIDL)));
+        }
+
         private void InitFromPath(string path, bool fMsgModal = false) {
             this.path = path;
             if(path.Contains("???") && dicCacheIDLs.TryGetValue(path, out idl)) {
@@ -263,6 +290,10 @@ namespace QTTabBarLib {
             }
         }
 
+        public IDLWrapper ResolveTargetIfLink() {
+            return IsLink ? new IDLWrapper(ShellMethods.GetLinkTargetIDL(Path)) : null;
+        }
+        
         public static void SaveCache(RegistryKey rkUser) {
             try {
                 if(fCacheDirty && (rkUser != null)) {

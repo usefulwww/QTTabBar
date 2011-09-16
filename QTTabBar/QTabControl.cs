@@ -934,9 +934,12 @@ namespace QTTabBarLib {
                     }
                     return;
                 }
-                if(((e.Button == MouseButtons.Left) && ((ModifierKeys & Keys.Control) != Keys.Control)) && SelectTab(tabMouseOn)) {
-                    fSuppressDoubleClick = true;
-                    timerSuppressDoubleClick.Enabled = true;
+                if(e.Button == MouseButtons.Left) {
+                    MouseChord chord = QTUtility.MakeMouseChord(MouseChord.Left, ModifierKeys);
+                    if(!Config.Mouse.TabActions.ContainsKey(chord) && SelectTab(tabMouseOn)) {
+                        fSuppressDoubleClick = true;
+                        timerSuppressDoubleClick.Enabled = true;
+                    }
                 }
             }
             draggingTab = tabMouseOn;
