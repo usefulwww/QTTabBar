@@ -1819,154 +1819,73 @@
                         Margin="0,10,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="20"/>
+                            <ColumnDefinition Width="16" />
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <Button
+                        <Button x:Name="btnAppsMoveNodeUp"
+                            Click="btnAppsMoveNodeUp_Click"    
                             Content="^"
                             Height="23"
                             HorizontalAlignment="Right"
                             Margin="4"
                             VerticalAlignment="Top"
                             Width="28"/>
-                        <Button
+                        <Button x:Name="btnAppsMoveNodeDown"
+                            Click="btnAppsMoveNodeDown_Click" 
                             Content="v"
                             Grid.Column="1"
                             Height="23"
                             HorizontalAlignment="Right"
-                            Margin="4"
+                            Margin="0,4,4,0"
                             VerticalAlignment="Top"
-                            Width="28"/>
-                        <Button
+                            Width="28" Grid.ColumnSpan="2" />
+                        <Button x:Name="btnAppsAddSeparator"
+                            Click="btnAppsAddSeparator_Click"
                             Content="---"
-                            Grid.Column="2"
-                            Height="23"
-                            HorizontalAlignment="Right"
-                            Margin="4"
-                            VerticalAlignment="Top"
-                            Width="28"/>
-                        <Button
-                            Content="F"
                             Grid.Column="3"
                             Height="23"
                             HorizontalAlignment="Right"
                             Margin="4"
                             VerticalAlignment="Top"
                             Width="28"/>
-                        <Button
-                            Content="+"
+                        <Button x:Name="btnAppsAddFolder"
+                            Click="btnAppsAddFolder_Click"
+                            Content="F"
                             Grid.Column="4"
                             Height="23"
                             HorizontalAlignment="Right"
                             Margin="4"
                             VerticalAlignment="Top"
                             Width="28"/>
-                        <Button
-                            Content="-"
+                        <Button x:Name="btnAppsAddNode"
+                            Click="btnAppsAddNode_Click"
+                            Content="+"
                             Grid.Column="5"
                             Height="23"
                             HorizontalAlignment="Right"
                             Margin="4"
                             VerticalAlignment="Top"
                             Width="28"/>
+                        <Button x:Name="btnAppsRemoveNode"
+                            Click="btnAppsRemoveNode_Click"
+                            Content="-"
+                            Grid.Column="6"
+                            Height="23"
+                            HorizontalAlignment="Right"
+                            Margin="4"
+                            VerticalAlignment="Top"
+                            Width="28"/>
                     </Grid>
-                    <TreeView Height="338"/>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <Label
-                            Content="Path:"
-                            HorizontalAlignment="Left"
-                            Margin="3"
-                            Padding="0"
-                            VerticalAlignment="Center"/>
-                        <Label
-                            Content="Arguments:"
-                            Grid.Row="1"
-                            HorizontalAlignment="Left"
-                            Margin="3"
-                            Padding="0"
-                            VerticalAlignment="Center"/>
-                        <Label
-                            Content="Working Directory:"
-                            Grid.Row="2"
-                            HorizontalAlignment="Left"
-                            Margin="3"
-                            Padding="0"
-                            VerticalAlignment="Center"/>
-                        <Label
-                            Content="Shortcut Key"
-                            Grid.Row="3"
-                            HorizontalAlignment="Left"
-                            Margin="3"
-                            Padding="0"
-                            VerticalAlignment="Center"/>
-                        <Button
-                            Content="..."
-                            Grid.Column="2"
-                            Height="23"
-                            HorizontalAlignment="Right"
-                            Margin="3"
-                            VerticalAlignment="Top"
-                            Width="28"/>
-                        <Button
-                            Content="%"
-                            Grid.Column="2"
-                            Grid.Row="1"
-                            Height="23"
-                            HorizontalAlignment="Right"
-                            Margin="3"
-                            VerticalAlignment="Top"
-                            Width="28"/>
-                        <Button
-                            Content="%"
-                            Grid.Column="2"
-                            Grid.Row="2"
-                            Height="23"
-                            HorizontalAlignment="Right"
-                            Margin="3"
-                            VerticalAlignment="Top"
-                            Width="28"/>
-                        <TextBox
-                            Grid.Column="1"
-                            Height="23"
-                            HorizontalAlignment="Stretch"
-                            Margin="3"
-                            VerticalAlignment="Top"/>
-                        <TextBox
-                            Grid.Column="1"
-                            Grid.Row="1"
-                            Height="23"
-                            HorizontalAlignment="Stretch"
-                            Margin="3"
-                            VerticalAlignment="Top"/>
-                        <TextBox
-                            Grid.Column="1"
-                            Grid.Row="2"
-                            Height="23"
-                            HorizontalAlignment="Stretch"
-                            Margin="3"
-                            VerticalAlignment="Top"/>
-                        <TextBox
-                            Grid.Column="1"
-                            Grid.Row="3"
-                            Height="23"
-                            HorizontalAlignment="Stretch"
-                            Margin="3"
-                            VerticalAlignment="Top"/>
-                    </Grid>
+                    <TreeView x:Name="treeApps"
+                            Height="489">                        
+                        <TreeViewItem x:Name="treeAppsRoot" 
+                                Header="Applications"
+                                IsExpanded="True" />
+                    </TreeView>
                 </StackPanel>
             </TabItem>
             <TabItem x:Name="tabButtonBar"

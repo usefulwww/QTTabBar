@@ -164,6 +164,7 @@ namespace QTTabBarLib {
         private readonly uint WM_LISTREFRESHED = PInvoke.RegisterWindowMessage("QTTabBar_ListRefreshed");
         private readonly uint WM_SHOWHIDEBARS = PInvoke.RegisterWindowMessage("QTTabBar_ShowHideBars");
         private readonly uint WM_NEWWINDOW = PInvoke.RegisterWindowMessage("QTTabBar_NewWindow");
+
         
         // TODO: group delegates
         public delegate bool FolderClickedHandler(IDLWrapper item, Keys modkeys, bool middle);

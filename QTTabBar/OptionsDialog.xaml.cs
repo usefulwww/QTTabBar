@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -43,6 +44,8 @@ using Color = System.Windows.Media.Color;
 //using MessageBox = System.Windows.Forms.MessageBox;
 using MessageBox = System.Windows.MessageBox;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using Orientation = System.Windows.Controls.Orientation;
+using TextBox = System.Windows.Controls.TextBox;
 
 namespace QTTabBarLib {
     /// <summary>
@@ -549,6 +552,115 @@ namespace QTTabBarLib {
             }
             else {
                 MouseBindings.Add(new MouseEntry(target, chord, action));    
+            }
+        }
+
+        #endregion
+
+        #region ---------- Applications ----------
+
+        private void btnAppsAddFolder_Click(object sender, RoutedEventArgs e) {
+            appsDrawNode( "New Folder", "dir" );
+        }
+
+        private void btnAppsAddNode_Click(object sender, RoutedEventArgs e) {
+            appsDrawNode("New App", "app");
+        }
+
+        private void btnAppsAddSeparator_Click(object sender, RoutedEventArgs e) {
+            appsDrawNode("-------- SEPARATOR --------", "sep");
+        }
+
+        private void btnAppsRemoveNode_Click(object sender, RoutedEventArgs e) {
+            TreeViewItem item = treeApps.Tag as TreeViewItem;
+
+            try {
+                //MessageBox.Show(item.Parent.GetType() + item.Uid);
+                ((TreeViewItem)item.Parent).Items.Remove( item );
+            }catch(Exception ex) {
+                //MessageBox.Show("Exception: "+ex.ToString());
+            }
+        }
+
+        private void btnAppsMoveNodeDown_Click(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void btnAppsMoveNodeUp_Click(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void appsDrawNode(string name, String type, String icon = "none") {
+            TreeViewItem selected = null;
+            string[] args = new string[5];
+
+            try {
+                selected = (TreeViewItem)treeApps.SelectedItem;
+                args = selected.Tag as string[];
+            }
+            catch(Exception ex) {
+                return;
+            }
+
+            if((selected == null) || (selected == treeAppsRoot)) {
+                treeAppsRoot.Items.Add(appsGenerateNode(name, type, icon));
+            }
+            else if(args[0] == "dir") {
+                selected.Items.Add(appsGenerateNode(name, type, icon));
+            }
+        }
+
+        private TreeViewItem appsGenerateNode(string name = "New Application", String type = "app", String icon = "none") {
+            //# Core item
+            TreeViewItem item = new TreeViewItem();
+            //# Stored value for the tag.
+            string[] args = new string[5];
+
+            args[0] = type;
+
+            item.Header = name;
+            item.Tag = args;
+
+            //# Add the appnode to child.
+            if(type == "app") {
+                ApplicationsNode node = new ApplicationsNode();
+                item.Items.Add( node );
+                //# Tag arguments -- could be used for binding.
+                args[1] = "No Path Selected";
+                args[2] = "None";
+                args[3] = "Working Dir";
+                args[4] = "Shortcut";
+            }
+
+            //# Must add this here before the expand, and select code.
+            item.Selected += new RoutedEventHandler(appsOnNodeSelected);
+
+            //# Automatically expand / select new folders and app nodes.
+            //# We leave separators alone
+            if(type != "sep") {
+                item.IsSelected = true;
+                item.IsExpanded = true;
+            }
+
+            return item;
+        }
+
+        private void appsOnNodeSelected(object sender, RoutedEventArgs e) {
+            try {
+                TreeViewItem item = e.OriginalSource as TreeViewItem;
+                string[] args = item.Tag as string[];
+
+                //# Handle any args we want to use for binding here?
+
+                //# We need to tag the main TreeView so we can easily access information about the selected TreeViewItem with it.
+                //# We are unable to accurately handle the treeAps.SelectedItem property, unless we have this 'backup'
+                treeApps.Tag = item;
+            }catch(Exception ex) {
+                //# This is only caught when the user clicks on a lable from an appnode. We try to handle
+                //# the ugly blue background as best we can.
+                ( (TreeViewItem) e.OriginalSource ).Focusable = false;
+                ( (TreeViewItem) e.OriginalSource ).IsSelected = true;
+                return;
             }
         }
 
@@ -1201,6 +1313,9 @@ namespace QTTabBarLib {
             //# But, without this we must interact with the TextBox in some way before the OK button saves it.
             workingConfig.bbar.ImageStripPath = "";
         }
+
+        
+        
     }
     
     #region ---------- Converters ----------

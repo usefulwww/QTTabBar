@@ -96,6 +96,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppLauncher.cs" />
+    <Compile Include="ApplicationsNode.xaml.cs">
+      <DependentUpon>ApplicationsNode.xaml</DependentUpon>
+    </Compile>
     <Compile Include="AutoLoader.cs" />
     <Compile Include="Automation\AutomationElement.cs" />
     <Compile Include="Automation\AutomationElementFactory.cs" />
@@ -396,6 +399,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="FileFolderEntryBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ApplicationsNode.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
