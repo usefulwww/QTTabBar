@@ -72,10 +72,6 @@ namespace QTTabBarLib {
             cd.Header = "%cd% - Current folder if no selection, otherwise selected folder.";
             cd.Click += delegate( object o, RoutedEventArgs a ) { txtArguments.AppendText( "%cd%" ); };
 
-            MenuItem rip = new MenuItem();
-            cd.Header = "%r.i.p.% - Rest in peace, Mami -- you will be missed.";
-            cd.Click += delegate(object o, RoutedEventArgs a) { txtArguments.AppendText("%r.i.p.%"); };
-
             cm.Items.Add( header );
             cm.Items.Add( sep );
             cm.Items.Add( f );
@@ -83,7 +79,6 @@ namespace QTTabBarLib {
             cm.Items.Add( s );
             cm.Items.Add( c );
             cm.Items.Add( cd );
-            cm.Items.Add( rip );
 
             cm.PlacementTarget = btnArguments;
             cm.IsOpen = true;
