@@ -1881,10 +1881,11 @@
                             Width="28"/>
                     </Grid>
                     <TreeView x:Name="treeApps"
-                            Height="489">                        
+                              Height="489">                        
                         <TreeViewItem x:Name="treeAppsRoot" 
-                                Header="Applications"
-                                IsExpanded="True" />
+                                      Header="Applications"
+                                      IsExpanded="True" 
+                                      IsSelected="True"/>
                     </TreeView>
                 </StackPanel>
             </TabItem>

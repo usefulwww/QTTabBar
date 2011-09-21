@@ -9,7 +9,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="255" />
-            <ColumnDefinition Width="20" />
+            <ColumnDefinition Width="40" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -31,10 +31,12 @@
             Text=""/>
         <Button x:Name="btnPath"
                 Click="btnPath_Click"
+                HorizontalAlignment="Left"
                 Content="..."
                 Grid.Column="2"
                 Grid.Row="0"
-                Margin="0,0,0,3"/>
+                Margin="0,0,0,3"
+                Width="20"/>
 
         <Label            
             Grid.Column="0" 
@@ -48,10 +50,12 @@
             Text=""/>
         <Button x:Name="btnArguments"
                 Click="btnArguments_Click"
-                Content="%"
+                Content="%"                
                 Grid.Column="2"
                 Grid.Row="1"
-                Margin="0,0,0,3"/>
+                HorizontalAlignment="Left"
+                Margin="0,0,0,3"
+                Width="20"/>
 
         <Label  
             Grid.Column="0" 
@@ -63,13 +67,23 @@
             Grid.Row="2"
             Margin="0,0,0,3"
             Text=""/>
-        <Button x:Name="btnWorkingDir"
-                Click="btnWorkingDir_Click"
-                Content="%"
+        <StackPanel Orientation="Horizontal" Grid.Column="2" Grid.Row="2" Width="40">
+            <Button x:Name="btnPath2"
+                Click="btnPath2_Click"
+                Content="..."
                 Grid.Column="2"
-                Grid.Row="2"
-                Margin="0,0,0,3"/>
-        
+                Grid.Row="0"
+                Margin="0,0,0,3"
+                    Width="20"/>
+            <Button x:Name="btnWorkingDir"
+                    Click="btnWorkingDir_Click"
+                    Content="%"
+                    Grid.Column="2"
+                    Grid.Row="2"
+                    Margin="0,0,0,3"
+                    Width="20"/>
+        </StackPanel>
+
         <StackPanel 
             Orientation="Horizontal" 
             Grid.Column="0" 
@@ -82,12 +96,14 @@
             <CheckBox x:Name="chkShortcutKey"
                       Grid.Column="0" 
                       Grid.Row="3"
-                      VerticalAlignment="Center"/>
+                      VerticalAlignment="Center"
+                      Checked="chkShortcutKey_Checked" Unchecked="chkShortcutKey_Checked"/>
         </StackPanel>
         
         <TextBox x:Name="txtShortcutKey" 
                  Grid.Column="1" 
                  Grid.Row="3"
+                 IsEnabled="False"
                  Text=""/>
 
     </Grid>

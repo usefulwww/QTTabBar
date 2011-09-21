@@ -592,6 +592,8 @@ namespace QTTabBarLib {
 
         private void appsDrawNode(string name, String type, String icon = "none") {
             TreeViewItem selected = null;
+            TreeViewItem item = appsGenerateNode(name, type, icon);
+
             string[] args = new string[5];
 
             try {
@@ -602,29 +604,30 @@ namespace QTTabBarLib {
                 return;
             }
 
+            
             if((selected == null) || (selected == treeAppsRoot)) {
-                treeAppsRoot.Items.Add(appsGenerateNode(name, type, icon));
+                treeAppsRoot.Items.Add(item);
             }
             else if(args[0] == "dir") {
-                selected.Items.Add(appsGenerateNode(name, type, icon));
+                selected.Items.Add(item);
             }
         }
 
         private TreeViewItem appsGenerateNode(string name = "New Application", String type = "app", String icon = "none") {
             //# Core item
             TreeViewItem item = new TreeViewItem();
+
             //# Stored value for the tag.
             string[] args = new string[5];
-
             args[0] = type;
-
-            item.Header = name;
+            
             item.Tag = args;
 
             //# Add the appnode to child.
             if(type == "app") {
                 ApplicationsNode node = new ApplicationsNode();
                 item.Items.Add( node );
+
                 //# Tag arguments -- could be used for binding.
                 args[1] = "No Path Selected";
                 args[2] = "None";
@@ -640,6 +643,10 @@ namespace QTTabBarLib {
             if(type != "sep") {
                 item.IsSelected = true;
                 item.IsExpanded = true;
+                item.Header = new EditableHeader(name, item);
+            }else {
+                //# No soup for sep
+                item.Header = name;
             }
 
             return item;
@@ -656,7 +663,7 @@ namespace QTTabBarLib {
                 //# We are unable to accurately handle the treeAps.SelectedItem property, unless we have this 'backup'
                 treeApps.Tag = item;
             }catch(Exception ex) {
-                //# This is only caught when the user clicks on a lable from an appnode. We try to handle
+                //# This is only caught when the user clicks on a label from an appnode. We try to handle
                 //# the ugly blue background as best we can.
                 ( (TreeViewItem) e.OriginalSource ).Focusable = false;
                 ( (TreeViewItem) e.OriginalSource ).IsSelected = true;

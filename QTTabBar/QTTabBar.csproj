@@ -105,6 +105,9 @@
     <Compile Include="Automation\AutomationManager.cs" />
     <Compile Include="BreadcrumbBar.cs" />
     <Compile Include="AbstractListView.cs" />
+    <Compile Include="EditableHeader.xaml.cs">
+      <DependentUpon>EditableHeader.xaml</DependentUpon>
+    </Compile>
     <Compile Include="FileFolderEntryBox.xaml.cs">
       <DependentUpon>FileFolderEntryBox.xaml</DependentUpon>
     </Compile>
@@ -398,6 +401,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="EditableHeader.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="FileFolderEntryBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
