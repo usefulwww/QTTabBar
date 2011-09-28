@@ -5642,7 +5642,8 @@ namespace QTTabBarLib {
             else if((NowTabDragging && (DraggingTab != null)) && ((ModifierKeys & Keys.Shift) != Keys.Shift)) {
                 if(Explorer.Busy || (MouseButtons != MouseButtons.Left)) {
                     NowTabDragging = false;
-                    DraggingTab = null;
+                    // Leave DraggingTab set so MouseUp doesn't get confused.
+                    // It will be unset in MouseUp.
                 }
                 else {
                     int num;
@@ -5744,9 +5745,9 @@ namespace QTTabBarLib {
                 }
             }
             else if(tabMouseOn == null) {
-                DraggingTab = null;
                 NowTabDragging = false;
-                OnMouseUp(e);
+                if(DraggingTab == null) OnMouseUp(e); // This will prevent the bar's MouseUp from 
+                DraggingTab = null;                   // firing if the MouseDown was on a tab.
             }
             Cursor = Cursors.Default;
         }
