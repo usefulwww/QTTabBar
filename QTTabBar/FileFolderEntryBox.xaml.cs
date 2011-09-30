@@ -12,7 +12,7 @@ namespace QTTabBarLib {
     public partial class FileFolderEntryBox : UserControl {
         private byte[] location = null;
         private bool file = true;
-        private bool watermark = true;
+        private bool watermarkVisible = true;
         private string watermarkText = null;
         private bool showIcon = true;
 
@@ -27,6 +27,7 @@ namespace QTTabBarLib {
                     ClearLocation();
                 }
                 else {
+                    // Note that this cannot select a path that does not exist.
                     using(IDLWrapper wrapper = new IDLWrapper(value)) {
                         SetLocation(wrapper);
                     }
@@ -85,11 +86,15 @@ namespace QTTabBarLib {
             }
             set {
                 watermarkText = value;
-                if(watermark) {
+                if(watermarkVisible) {
                     ClearLocation();
                 }
             }
         }
+
+        public static readonly DependencyProperty SelectedPathProperty =
+                DependencyProperty.Register("SelectedPath", typeof(string), typeof(FileFolderEntryBox),
+                new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
         public FileFolderEntryBox() {
             InitializeComponent();
@@ -114,30 +119,46 @@ namespace QTTabBarLib {
                 ShowIconInternal(!b);
             }
 
+            // Allows the first call
+            if(!watermarkVisible && !b) {
+                return;
+            }
+
             //txtLocation.FontStyle = b ? FontStyles.Italic : FontStyles.Normal;
             txtLocation.Foreground = b ? Brushes.DarkGray : Brushes.Black;
-            watermark = b;
+            watermarkVisible = b;
+
+            string text;
+            if(b) {
+                // TODO: Localize this
+                text = (WatermarkText != null)
+                    ? WatermarkText : string.Format("Choose your {0}", File ? "file" : "folder");
+            }
+            else {
+                text = string.Empty;
+            }
+            txtLocation.Text = text;
         }
 
         private void ClearLocation() {
-            ShowWatermark(true);
-
-            // TODO: localize this
-            txtLocation.Text = (WatermarkText != null)
-                ? WatermarkText : string.Format("Choose your {0}...", File ? "file" : "folder");
+            if(!txtLocation.IsFocused) {
+                ShowWatermark(true);
+            }
             imgIcon.Source = null;
             location = null;
         }
 
-        private void SetLocation(IDLWrapper wrapper) {
+        private void SetLocation(IDLWrapper wrapper, bool updateText) {
             ShowWatermark(false);
 
-            if(File) {
-                txtLocation.Text = wrapper.Path;
-            }
-            else {
-                txtLocation.Text =
-                    wrapper.IsFileSystemFolder ? wrapper.Path : wrapper.DisplayName;
+            if(updateText) {
+                if(File) {
+                    txtLocation.Text = wrapper.Path;
+                }
+                else {
+                    bool b = File ? wrapper.IsFileSystemFile : wrapper.IsFileSystemFolder;
+                    txtLocation.Text = b ? wrapper.Path : wrapper.DisplayName;
+                }
             }
 
             Icon icon = QTUtility.GetIcon(wrapper.PIDL);
@@ -145,6 +166,10 @@ namespace QTTabBarLib {
                 (ImageSource)new BitmapToImageSourceConverter().Convert(icon.ToBitmap(), null, null, null);
 
             location = wrapper.IDL;
+        }
+
+        private void SetLocation(IDLWrapper wrapper) {
+            SetLocation(wrapper, true);
         }
 
         private bool BrowseForFile() {
@@ -181,15 +206,30 @@ namespace QTTabBarLib {
         }
 
         private void txtLocation_GotKeyboardFocus(object sender, System.Windows.Input.KeyboardFocusChangedEventArgs e) {
-            if(watermark) {
+            if(watermarkVisible) {
                 ShowWatermark(false);
-                txtLocation.Text = string.Empty;
             }
         }
 
         private void txtLocation_LostKeyboardFocus(object sender, System.Windows.Input.KeyboardFocusChangedEventArgs e) {
             if(string.IsNullOrEmpty(txtLocation.Text)) {
+                ShowWatermark(true);
+            }
+        }
+
+        private void txtLocation_TextChanged(object sender, TextChangedEventArgs e) {
+            if(watermarkVisible) {
+                return;
+            }
+
+            string path = txtLocation.Text;
+            if((File && !System.IO.File.Exists(path)) || (Folder && !System.IO.Directory.Exists(path))) {
                 ClearLocation();
+                return;
+            }
+
+            using(IDLWrapper wrapper = new IDLWrapper(path)) {
+                SetLocation(wrapper, false);
             }
         }
     }
