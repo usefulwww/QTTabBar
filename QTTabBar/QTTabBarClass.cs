@@ -174,11 +174,11 @@ namespace QTTabBarLib {
                 string installDateString;
                 DateTime installDate;
                 string minDate = DateTime.MinValue.ToString();
-                using(RegistryKey key = Registry.LocalMachine.OpenSubKey(@"Software\Quizo\QTTabBar")) {
+                using(RegistryKey key = Registry.LocalMachine.OpenSubKey(RegConst.Root)) {
                     installDateString = key == null ? minDate : (string)key.GetValue("InstallDate", minDate);
                     installDate = DateTime.Parse(installDateString);
                 }
-                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                     DateTime lastActivation = DateTime.Parse((string)key.GetValue("ActivationDate", minDate));
                     fIsFirstLoad = installDate.CompareTo(lastActivation) > 0;
                     if(fIsFirstLoad) key.SetValue("ActivationDate", installDateString);
@@ -882,7 +882,7 @@ namespace QTTabBarLib {
                             }
                         }
                     }
-                    using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+                    using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                         if(Config.Misc.KeepHistory) {
                             foreach(QTabItem item in tabControl1.TabPages) {
                                 AddToHistory(item);
@@ -1074,7 +1074,7 @@ namespace QTTabBarLib {
         private void contextMenuDropped_ItemClicked(object sender, ToolStripItemClickedEventArgs e) {
             if(e.ClickedItem.Tag != null) {
                 List<string> tag = (List<string>)contextMenuDropped.Tag;
-                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar\UserApps")) {
+                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root + @"UserApps")) {
                     if(key != null) {
                         List<string> list2 = key.GetValueNames().Select(str => str.ToLower()).ToList();
                         foreach(string str2 in tag) {
@@ -2174,7 +2174,7 @@ namespace QTTabBarLib {
                             string nameToSelectFromCommandLineArg = GetNameToSelectFromCommandLineArg();
                             if(!WindowUtils.IsExplorerProcessSeparated()) {
                                 bool flag = false;
-                                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+                                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                                     IntPtr hWnd = QTUtility2.ReadRegHandle("Handle", key);
                                     if(PInvoke.IsWindow(hWnd)) {
                                         string strMsg = path + ((nameToSelectFromCommandLineArg.Length > 0) ? (";" + nameToSelectFromCommandLineArg) : string.Empty);
@@ -4280,13 +4280,13 @@ namespace QTTabBarLib {
             RefreshPlugins(true);
             lstTempAssemblies_Refresh = null;
             /*
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                 if(key != null) {
                     //QTUtility2.WriteRegBinary(QTButtonBar.ButtonIndexes, "Buttons_Order", key);
                 }
             }
             List<string> list = new List<string>();
-            using(RegistryKey key2 = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar\Plugins")) {
+            using(RegistryKey key2 = Registry.CurrentUser.CreateSubKey(RegConst.Root + @"Plugins")) {
                 if(key2 != null) {
                     using(RegistryKey key3 = key2.CreateSubKey("Paths")) {
                         foreach(string str in key3.GetValueNames()) {
@@ -4999,7 +4999,7 @@ namespace QTTabBarLib {
                     }
                 }
                 else if(iIndex == 0) {
-                    using(RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Quizo\QTTabBar", false)) {
+                    using(RegistryKey key = Registry.CurrentUser.OpenSubKey(RegConst.Root, false)) {
                         if(key != null) {
                             string[] strArray = ((string)key.GetValue("TabsOnLastClosedWindow", string.Empty)).Split(QTUtility.SEPARATOR_CHAR);
                             if((strArray.Length > 0) && (strArray[0].Length > 0)) {
@@ -5057,7 +5057,7 @@ namespace QTTabBarLib {
 
         protected override bool ShouldHaveBreak() {
             bool breakBar = true;
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                 if(key != null) {
                     breakBar = ((int)key.GetValue("BreakTabBar", 1) == 1);
                 }
@@ -5071,7 +5071,7 @@ namespace QTTabBarLib {
                 InitializeInstallation();
             }
             if(!fShow) {
-                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                     key.SetValue("BreakTabBar", BandHasBreak() ? 1 : 0);
                 }
             }
@@ -5524,7 +5524,7 @@ namespace QTTabBarLib {
         }
 
         internal static void SyncTaskBarMenu() {
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                 IntPtr hWnd = QTUtility2.ReadRegHandle("TaskBarHandle", key);
                 if((hWnd != IntPtr.Zero) && PInvoke.IsWindow(hWnd)) {
                     QTUtility2.SendCOPYDATASTRUCT(hWnd, (IntPtr)3, string.Empty, IntPtr.Zero);
@@ -6400,7 +6400,7 @@ namespace QTTabBarLib {
                                 return;
 
                             case 0x20:
-                                using(RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Quizo\QTTabBar", false)) {
+                                using(RegistryKey key = Registry.CurrentUser.OpenSubKey(RegConst.Root, false)) {
                                     if(key != null) {
                                         string[] collection = ((string)key.GetValue("TabsOnLastClosedWindow", string.Empty)).Split(QTUtility.SEPARATOR_CHAR);
                                         if((collection.Length > 0) && (collection[0].Length > 0)) {

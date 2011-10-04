@@ -68,11 +68,11 @@ namespace QTTabBarLib {
             string installDateString;
             DateTime installDate;
             string minDate = DateTime.MinValue.ToString();
-            using(RegistryKey key = Registry.LocalMachine.OpenSubKey(@"Software\Quizo\QTTabBar")) {
+            using(RegistryKey key = Registry.LocalMachine.OpenSubKey(RegConst.Root)) {
                 installDateString = key == null ? minDate : (string)key.GetValue("InstallDate", minDate);
                 installDate = DateTime.Parse(installDateString);
             }
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                 DateTime lastActivation = DateTime.Parse((string)key.GetValue("ActivationDate", minDate));
                 if(installDate.CompareTo(lastActivation) <= 0) return;
 

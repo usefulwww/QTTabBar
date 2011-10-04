@@ -123,7 +123,7 @@ UINT WIXAPI CloseAndReopen(MSIHANDLE hInstaller) {
     }
     HKEY key;
     REGSAM access = KEY_SET_VALUE | KEY_CREATE_SUB_KEY | KEY_WOW64_64KEY;
-    if(RegOpenKeyEx(HKEY_CURRENT_USER, _T("Software\\Quizo\\QTTabBar\\"), 0, access, &key) == ERROR_SUCCESS) {
+    if(RegOpenKeyEx(HKEY_CURRENT_USER, _T("Software\\QTTabBar\\"), 0, access, &key) == ERROR_SUCCESS) {
         RegSetValueEx(key, _T("TabsOnLastClosedWindow"), 0, REG_SZ, (LPBYTE)build, length + 1);
     }
     RegCloseKey(key);

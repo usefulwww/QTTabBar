@@ -550,7 +550,7 @@ namespace QTTabBarLib {
         }
 
         public static void ReadConfig() {
-            const string RegPath = @"Software\Quizo\QTTabBar\Config\"; // TODO
+            const string RegPath = RegConst.Root + RegConst.Config;
 
             // Properties from all categories
             foreach(PropertyInfo category in typeof(Config).GetProperties().Where(c => c.CanWrite)) {
@@ -587,7 +587,7 @@ namespace QTTabBarLib {
             // TODO non-props   
         }
         public static void WriteConfig() {
-            const string RegPath = @"Software\Quizo\QTTabBar\Config\"; // TODO
+            const string RegPath = RegConst.Root + RegConst.Config;
 
             // Properties from all categories
             foreach(PropertyInfo category in typeof(Config).GetProperties().Where(c => c.CanWrite)) {

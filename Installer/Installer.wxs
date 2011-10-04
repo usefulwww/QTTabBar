@@ -118,7 +118,7 @@
                             <?if $(var.arch) = x64?>
                                 <Condition>VersionNT64</Condition>
                             <?endif?>
-                            <RegistryKey Root="HKLM" Key="Software\Quizo\QTTabBar" Action="createAndRemoveOnUninstall">
+                            <RegistryKey Root="HKLM" Key="Software\QTTabBar" Action="createAndRemoveOnUninstall">
                                 <RegistryValue Name="InstallDate" Value="[Date] [Time]" Type="string" Action="write" KeyPath ="yes" />
                             </RegistryKey>
                         </Component>

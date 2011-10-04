@@ -90,7 +90,7 @@ namespace QTTabBarLib {
                     list.Add(CreateMenuItem_AppLauncher(str, appVals, ep));
                 }
                 else {
-                    using(RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Quizo\QTTabBar\UserApps\" + str, false)) {
+                    using(RegistryKey key = Registry.CurrentUser.OpenSubKey(RegConst.Root + @"UserApps\" + str, false)) {
                         if(key != null) {
                             ToolStripItem item = CreateMenuItem_AppLauncher_Virtual(str, fReorderEnabled, key, ep);
                             if(item != null) {
@@ -234,7 +234,7 @@ namespace QTTabBarLib {
                     reorderable.ItemClicked += virtualDirectory_DropDownItemClicked;
                     reorderable.ReorderFinished += virtualDirectory_ReorderFinished;
                     string name = rkSub.Name;
-                    reorderable.Name = name.Substring(name.IndexOf(@"Software\Quizo\QTTabBar\UserApps\"));
+                    reorderable.Name = name.Substring(name.IndexOf(RegConst.Root + @"UserApps\"));
                     item2.DropDown = reorderable;
                     return item2;
                 }

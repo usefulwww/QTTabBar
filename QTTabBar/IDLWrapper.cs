@@ -271,7 +271,7 @@ namespace QTTabBarLib {
         }
 
         private static void ReadCache() {
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                 if(key != null) {
                     iPingTimeOutMS = (int)key.GetValue("NetworkTimeout", 0);
                     using(RegistryKey key2 = key.CreateSubKey("Cache")) {

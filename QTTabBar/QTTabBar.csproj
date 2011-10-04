@@ -105,6 +105,7 @@
     <Compile Include="Automation\AutomationManager.cs" />
     <Compile Include="BreadcrumbBar.cs" />
     <Compile Include="AbstractListView.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="EditableHeader.xaml.cs">
       <DependentUpon>EditableHeader.xaml</DependentUpon>
     </Compile>

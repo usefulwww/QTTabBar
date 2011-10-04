@@ -117,7 +117,7 @@ namespace QTTabBarLib {
         }
 
         private static bool DayHasCome() {
-            using(RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Quizo\QTTabBar")) {
+            using(RegistryKey key = Registry.CurrentUser.OpenSubKey(RegConst.Root)) {
                 if(key != null) {
                     long ticks = QTUtility2.GetRegistryValueSafe(key, "LastChecked", -1L);
                     if((DateTime.MinValue.Ticks < ticks) && (ticks < DateTime.MaxValue.Ticks)) {
@@ -131,7 +131,7 @@ namespace QTTabBarLib {
         }
 
         private static void SaveLastCheck() {
-            using(RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Quizo\QTTabBar", true)) {
+            using(RegistryKey key = Registry.CurrentUser.OpenSubKey(RegConst.Root, true)) {
                 if(key != null) {
                     key.SetValue("LastChecked", DateTime.Now.Ticks, RegistryValueKind.QWord);
                 }

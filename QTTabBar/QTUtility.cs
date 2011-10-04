@@ -90,7 +90,7 @@ namespace QTTabBarLib {
         internal static int PreviewMaxHeight = 0x100;
         internal static int PreviewMaxWidth = 0x200;
         internal static Color RebarBGColor;
-        internal const string REGUSER = @"Software\Quizo\QTTabBar";
+        internal const string REGUSER = RegConst.Root;
         internal static string[] ResMain;
         internal static string[] ResMisc;
         internal static bool RestoreFolderTree_Hide;
@@ -139,7 +139,7 @@ namespace QTTabBarLib {
                     //ConfigValues[13] = 0x30;
                 //}
                 //SetConfigAt(Settings.AutoUpdate, true); // TODO
-                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                     if(key != null) {
                         float num;
                         byte[] inputValues = (byte[])key.GetValue("Config");
@@ -606,8 +606,8 @@ namespace QTTabBarLib {
         }
 
         public static void RefreshGroupMenuesOnReorderFinished(ToolStripItemCollection itemsList) {
-            Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar").DeleteSubKey("Groups", false);
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar\Groups")) {
+            Registry.CurrentUser.CreateSubKey(RegConst.Root).DeleteSubKey("Groups", false);
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root + @"Groups")) {
                 int num = 1;
                 foreach(ToolStripItem item in itemsList) {
                     if(item.Text.Length == 0) {
@@ -622,7 +622,7 @@ namespace QTTabBarLib {
 
         public static void RefreshGroupsDic() {
             GroupPathsDic.Clear();
-            using(RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Quizo\QTTabBar\Groups", false)) {
+            using(RegistryKey key = Registry.CurrentUser.OpenSubKey(RegConst.Root + @"Groups", false)) {
                 if(key != null) {
                     foreach(string str in key.GetValueNames()) {
                         string str2 = (string)key.GetValue(str);
@@ -650,7 +650,7 @@ namespace QTTabBarLib {
         }
 
         public static void RefreshLockedTabsList() {
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                 if(key != null) {
                     string[] collection = QTUtility2.ReadRegBinary<string>("TabsLocked", key);
                     if((collection != null) && (collection.Length != 0)) {
@@ -665,7 +665,7 @@ namespace QTTabBarLib {
 
         public static void RefreshPreviewExtensions() {
             const string defaultValue = ".txt;.ini;.inf;.cs;.log;.js;.vbs";
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                 string str2 = (string)key.GetValue("TextExtensions", defaultValue);
                 if(str2.Length > 0) {
                     foreach(string str3 in str2.Split(SEPARATOR_CHAR)) {
@@ -698,7 +698,7 @@ namespace QTTabBarLib {
 
         public static void RefreshUserAppDic(bool fCheckShortcuts) {
             UserAppsDic.Clear();
-            using(RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Quizo\QTTabBar\UserApps", false)) {
+            using(RegistryKey key = Registry.CurrentUser.OpenSubKey(RegConst.Root + @"UserApps", false)) {
                 if(key != null) {
                     foreach(string str in key.GetValueNames()) {
                         if(str.Length > 0) {
@@ -727,7 +727,7 @@ namespace QTTabBarLib {
         }
 
         public static void RefreshUserappMenuesOnReorderFinished(ToolStripItemCollection itemsList) {
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar\UserApps")) {
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root + @"UserApps")) {
                 foreach(string str in key.GetValueNames()) {
                     key.DeleteValue(str, false);
                 }
@@ -775,7 +775,7 @@ namespace QTTabBarLib {
 
         public static void RegisterPrimaryInstance(IntPtr hwndExplr, QTTabBarClass tabBar) {
             InstanceManager.PushInstance(hwndExplr, tabBar);
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                 QTUtility2.WriteRegHandle("Handle", key, tabBar.Handle);
             }
         }
@@ -855,7 +855,7 @@ namespace QTTabBarLib {
         }
 
         public static void SaveClosing(List<string> closingPaths) {
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                 if(key != null) {
                     key.SetValue("TabsOnLastClosedWindow", closingPaths.StringJoin(";"));
                 }
@@ -863,7 +863,7 @@ namespace QTTabBarLib {
         }
 
         public static void SaveGroupsReg() {
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar\Groups")) {
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root + @"Groups")) {
                 if(key != null) {
                     foreach(string str in key.GetValueNames()) {
                         key.DeleteValue(str, false);

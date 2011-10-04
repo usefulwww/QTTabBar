@@ -425,7 +425,7 @@ namespace QTTabBarLib {
                             else {
                                 QTUtility.StartUpGroupList.Add(text);
                             }
-                            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+                            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                                 if(key != null) {
                                     key.SetValue("StartUpGroups", QTUtility.StartUpGroupList.StringJoin(";"));
                                 }
@@ -471,8 +471,8 @@ namespace QTTabBarLib {
             QMenuItem clickedItem = e.ClickedItem as QMenuItem;
             if(clickedItem != null) {
                 if(clickedItem.Genre == MenuGenre.Group) {
-                    Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar").DeleteSubKey("Groups", false);
-                    using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar\Groups")) {
+                    Registry.CurrentUser.CreateSubKey(RegConst.Root).DeleteSubKey("Groups", false);
+                    using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root + @"Groups")) {
                         int num = 1;
                         foreach(ToolStripItem item2 in contextMenu.Items) {
                             QMenuItem item3 = item2 as QMenuItem;
@@ -487,7 +487,7 @@ namespace QTTabBarLib {
                     }
                 }
                 if(clickedItem.Genre == MenuGenre.Application) {
-                    using(RegistryKey key2 = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar\UserApps")) {
+                    using(RegistryKey key2 = Registry.CurrentUser.CreateSubKey(RegConst.Root + @"UserApps")) {
                         foreach(string str in key2.GetValueNames()) {
                             key2.DeleteValue(str);
                         }
@@ -683,7 +683,7 @@ namespace QTTabBarLib {
                 QTUtility.ClosedTabHistoryList.Remove(clickedItem.Path);
                 UndoClosedItemsList.Remove(clickedItem);
                 try {
-                    using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+                    using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                         QTUtility.SaveRecentlyClosed(key);
                     }
                     goto Label_019F;
@@ -696,7 +696,7 @@ namespace QTTabBarLib {
                 QTUtility.ExecutedPathsList.Remove(clickedItem.Path);
                 RecentFileItemsList.Remove(clickedItem);
                 try {
-                    using(RegistryKey key2 = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+                    using(RegistryKey key2 = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                         QTUtility.SaveRecentFiles(key2);
                     }
                 }
@@ -715,7 +715,7 @@ namespace QTTabBarLib {
         private bool GetTargetWindow(IDLWrapper idlw, bool fNeedWait, out IntPtr hwndTabBar, out bool fOpened) {
             hwndTabBar = IntPtr.Zero;
             fOpened = false;
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                 if(key != null) {
                     hwndTabBar = QTUtility2.ReadRegHandle("Handle", key);
                 }
@@ -1245,7 +1245,7 @@ namespace QTTabBarLib {
         protected override void OnHandleCreated(EventArgs e) {
             base.OnHandleCreated(e);
             if(IsHandleCreated) {
-                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                     QTUtility2.WriteRegHandle("TaskBarHandle", key, Handle);
                 }
             }
@@ -1506,7 +1506,7 @@ namespace QTTabBarLib {
         }
 
         private void ReadSetting() {
-            using(RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Quizo\QTTabBar")) {
+            using(RegistryKey key = Registry.CurrentUser.OpenSubKey(RegConst.Root)) {
                 if(key != null) {
                     byte[] defaultValue = new byte[4];
                     defaultValue[0] = 1;
@@ -1574,7 +1574,7 @@ namespace QTTabBarLib {
             ConfigValues[2] = (byte)(ConfigValues[2] | (tsmiAppKeys.Checked ? (0) : (8)));
             ConfigValues[2] = (byte)(ConfigValues[2] | (ExpandState[3] ? (2) : (0)));
             ConfigValues[3] = (byte)(ConfigValues[3] | ((byte)(Order_Root[2] << 5)));
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                 if(key != null) {
                     key.SetValue("Config_Desktop", ConfigValues);
                     key.SetValue("TaskBarWidth", Width);

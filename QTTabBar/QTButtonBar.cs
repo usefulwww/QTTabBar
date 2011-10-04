@@ -795,7 +795,7 @@ namespace QTTabBarLib {
             bmp.Dispose();
             bitmap2.Dispose();
             if(fWriteReg) {
-                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                     key.SetValue("Buttons_ImagePath", string.Empty);
                 }
             }
@@ -1133,14 +1133,14 @@ namespace QTTabBarLib {
 
         private static int SearchBoxWidth {
             get {
-                using(RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Quizo\QTTabBar")) {
+                using(RegistryKey key = Registry.CurrentUser.OpenSubKey(RegConst.Root)) {
                     return key == null 
                             ? 100
                             : Math.Max(Math.Min((int)key.GetValue("SearchBoxWidth", 100), 1024), 32);
                 }
             }
             set {
-                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                     key.SetValue("SearchBoxWidth", value);
                 }
             }
@@ -1281,7 +1281,7 @@ namespace QTTabBarLib {
 
         protected override bool ShouldHaveBreak() {
             bool breakBar = true;
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                 if(key != null) {
                     breakBar = ((int)key.GetValue("BreakButtonBar", 1) == 1);
                 }
@@ -1292,7 +1292,7 @@ namespace QTTabBarLib {
         public override void ShowDW(bool fShow) {
             base.ShowDW(fShow);
             if(!fShow) {
-                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                     key.SetValue("BreakButtonBar", BandHasBreak() ? 1 : 0);
                 }
             }

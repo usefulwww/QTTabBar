@@ -91,8 +91,7 @@ namespace QTTabBarLib {
         }
 
         public static void Initialize() {
-            const string RegPath = @"Software\Quizo\QTTabBar\"; // TODO
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegPath + @"Plugins\Paths")) {
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root + @"Plugins\Paths")) {
                 if(key == null) return;
                 QTUtility.Path_PluginLangFile = (string)key.GetValue("LanguageFile", string.Empty);
 
@@ -115,11 +114,12 @@ namespace QTTabBarLib {
                     }
                 }
             }
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar\Plugins")) {
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root + @"Plugins")) {
                 if(key != null) {
-                    lstPluginButtonsOrder.AddRange(QTUtility2.ReadRegBinary<PluginButton>("Buttons_Order", key));
+                    PluginButton[] buttons = QTUtility2.ReadRegBinary<PluginButton>("Buttons_Order", key);
                     string[] keys = QTUtility2.ReadRegBinary<string>("ShortcutKeyIDs", key);
                     int[][] values = QTUtility2.ReadRegBinary<int[]>("ShortcutKeyValues", key);
+                    if(buttons != null) lstPluginButtonsOrder.AddRange(buttons);
                     if(keys != null && values != null) {
                         for(int i = 0; i < Math.Min(keys.Length, values.Length); ++i) {
                             QTUtility.dicPluginShortcutKeys[keys[i]] = values[i];
@@ -361,7 +361,7 @@ namespace QTTabBarLib {
         }
 
         public static void SaveButtonOrder() {
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar\Plugins")) {
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root + @"Plugins")) {
                 if(key != null) {
                     QTUtility2.WriteRegBinary(lstPluginButtonsOrder.ToArray(), "Buttons_Order", key);
                 }
@@ -369,7 +369,7 @@ namespace QTTabBarLib {
         }
 
         public static void SavePluginAssemblies() {
-            const string RegPath = @"Software\Quizo\QTTabBar\"; // TODO
+            const string RegPath = RegConst.Root + @""; // TODO
             using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegPath + @"Plugins\Paths")) {
                 foreach(string str in key.GetValueNames()) {
                     key.DeleteValue(str);
@@ -382,7 +382,7 @@ namespace QTTabBarLib {
         }
 
         public static void SavePluginShortcutKeys() {
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar\Plugins")) {
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root + @"Plugins")) {
                 string[] keys = QTUtility.dicPluginShortcutKeys.Keys.ToArray();
                 int[][] values = keys.Select(k => QTUtility.dicPluginShortcutKeys[k]).ToArray();
                 QTUtility2.WriteRegBinary(keys, "ShortcutKeyIDs", key);

@@ -455,7 +455,7 @@ namespace QTTabBarLib {
             cmbSpclFol_NoCapture.SelectedIndex = 0;
             cmbSpclFol_Grp.Items.AddRange(arrSpecialFolderDipNms);
             cmbSpclFol_Grp.SelectedIndex = 0;
-            using(RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Quizo\QTTabBar")) {
+            using(RegistryKey key = Registry.CurrentUser.OpenSubKey(RegConst.Root)) {
                 if(key != null) {
                     int[] numArray = QTUtility2.ReadRegBinary<int>("OptionWindowBounds", key);
                     if((numArray != null) && (numArray.Length == 4)) {
@@ -742,7 +742,7 @@ namespace QTTabBarLib {
         private void btnClearRecentFile_Click(object sender, EventArgs e) {
             QTUtility.ExecutedPathsList.Clear();
             try {
-                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                     key.DeleteSubKeyTree("RecentFiles");
                 }
             }
@@ -815,13 +815,13 @@ namespace QTTabBarLib {
                 if(DialogResult.OK == dialog.ShowDialog()) {
                     string fileName = dialog.FileName;
                     try {
-                        using(RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Quizo\QTTabBar", true)) {
+                        using(RegistryKey key = Registry.CurrentUser.OpenSubKey(RegConst.Root, true)) {
                             if(key != null) {
                                 key.DeleteSubKey("Cache", false);
                             }
                         }
                         ProcessStartInfo startInfo = new ProcessStartInfo(ShellMethods.GetFolderPath(0x24) + @"\regedit.exe");
-                        startInfo.Arguments = "/e \"" + fileName + "\" HKEY_CURRENT_USER\\Software\\Quizo\\QTTabBar";
+                        startInfo.Arguments = "/e \"" + fileName + "\" HKEY_CURRENT_USER\\" + RegConst.Root;
                         startInfo.ErrorDialog = true;
                         startInfo.ErrorDialogParentHandle = Handle;
                         Process.Start(startInfo);
@@ -1146,7 +1146,7 @@ namespace QTTabBarLib {
         private void buttonHistoryClear_Click(object sender, EventArgs e) {
             QTUtility.ClosedTabHistoryList.Clear();
             try {
-                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+                using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                     key.DeleteSubKeyTree("RecentlyClosed");
                 }
             }
@@ -3146,7 +3146,7 @@ namespace QTTabBarLib {
                     }
                     continue;
                 }
-                using(RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Quizo\QTTabBar\UserApps\" + str)) {
+                using(RegistryKey key = Registry.CurrentUser.OpenSubKey(RegConst.Root + @"UserApps\" + str)) {
                     TreeNode node;
                     if((key != null) && CreateUserAppNode_Sub(str, key, out node)) {
                         tnRoot_UserApps.Nodes.Add(node);
@@ -3321,7 +3321,7 @@ namespace QTTabBarLib {
         }
 
         private void OptionsDialog_FormClosing(object sender, FormClosingEventArgs e) {
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                 if(key != null) {
                     Rectangle bounds = Bounds;
                     if(WindowState == FormWindowState.Minimized) {
@@ -3934,7 +3934,7 @@ namespace QTTabBarLib {
                 QTUtility.PreviewFontSize = 0f;
             }
             IDLWrapper.iPingTimeOutMS = ((int)nudNetworkTimeOut.Value) * 0x3e8;
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                 SaveGroupTreeView(key);
                 SaveUserAppsTreeView(key);
                 SavePlugins(fApply);
@@ -3982,7 +3982,7 @@ namespace QTTabBarLib {
                 list3.AddRange(key.Keys);
             }
             //QTUtility.PluginShortcutKeysCache = list3.ToArray();
-            using(RegistryKey key2 = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar\Plugins")) {
+            using(RegistryKey key2 = Registry.CurrentUser.CreateSubKey(RegConst.Root + @"Plugins")) {
                 QTUtility2.WriteRegBinary(list2.ToArray(), "ShortcutKeys", key2);
             }
         }
@@ -4652,7 +4652,7 @@ namespace QTTabBarLib {
 
         public static void WriteRegistry(Font tabFont, string[] strsTextExts, string[] strsImgExts) {
             InitializeStaticFields();
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                 if(key != null) {
                     key.SetValue("Config", QTUtility.ConfigValues);
                     key.SetValue("TabWidth", QTUtility.TabWidth);

@@ -395,7 +395,7 @@ HRESULT WINAPI DetourSetNavigationState(IShellNavigationBand* _this, unsigned lo
 bool DetourShowWindow(PCIDLIST_ABSOLUTE pidl) {
     HWND hwnd = 0;
     HKEY hKey;
-    if(RegOpenKeyExA(HKEY_CURRENT_USER, "Software\\Quizo\\QTTabBar", 0L, KEY_READ, &hKey) == ERROR_SUCCESS) {
+    if(RegOpenKeyExA(HKEY_CURRENT_USER, "Software\\QTTabBar", 0L, KEY_READ, &hKey) == ERROR_SUCCESS) {
         BYTE bBuf[8] = {0};
         DWORD dwSize = 8;
         if(RegQueryValueExA(hKey, "Handle", NULL, NULL, bBuf, &dwSize) == ERROR_SUCCESS) {

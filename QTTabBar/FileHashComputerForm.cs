@@ -59,7 +59,7 @@ namespace QTTabBarLib {
 
         public FileHashComputerForm() {
             InitializeComponent();
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                 if(key != null) {
                     int num = (int)key.GetValue("MD5FormLocation", 0x640064);
                     int num2 = (int)key.GetValue("MD5FormSize", 0xc801c2);
@@ -508,7 +508,7 @@ namespace QTTabBarLib {
         }
 
         public void SaveMD5FormStat() {
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Quizo\QTTabBar")) {
+            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                 key.SetValue("MD5FormLocation", QTUtility2.Make_INT(Left, Top));
                 key.SetValue("MD5FormSize", Width | (Height << 0x10));
                 key.SetValue("HashType", cmbHashType.SelectedIndex);
