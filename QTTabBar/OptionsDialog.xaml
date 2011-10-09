@@ -292,6 +292,23 @@
                     SnapsToDevicePixels="True"/>
             </DockPanel>
         </DataTemplate>
+        <DataTemplate x:Key="FileTypeItemTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Image
+                    Source="{Binding Path=Icon, Converter={StaticResource BitmapToImageSourceConverter}}"
+                    Width="16"
+                    Height="16"
+                    Stretch="Fill"/>
+                <TextBlock
+                    Text="{Binding Path=Extension}"
+                    VerticalAlignment="Center"
+                    Margin="4"/>
+                <TextBlock
+                    Text="{Binding Path=FriendlyName}"
+                    VerticalAlignment="Center"
+                    Foreground="DarkGray" FontSize="10" />
+            </StackPanel>
+        </DataTemplate>
     </Window.Resources>
     
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -918,19 +935,21 @@
                             Padding="0"
                             Grid.Column="2" FontWeight="Bold"/>
                         <ListBox
-                            x:Name="lstImageFiletypes"
-                            Width="150"
+                            x:Name="lstImageFileTypes"
+                            ItemTemplate="{StaticResource FileTypeItemTemplate}"
+                            Width="175"
                             Height="200"
                             Grid.Row="1"
                             Grid.RowSpan="3"
-                            Grid.Column="0"></ListBox>
+                            Grid.Column="0" SelectionMode="Extended"></ListBox>
                         <ListBox 
-                            x:Name="lstTextFiletypes"
-                            Width="150"
+                            x:Name="lstTextFileTypes"
+                            ItemTemplate="{StaticResource FileTypeItemTemplate}"
+                            Width="175"
                             Height="200"
                             Grid.Row="1"
                             Grid.RowSpan="3"
-                            Grid.Column="2"></ListBox>
+                            Grid.Column="2" SelectionMode="Extended"></ListBox>
                         <Button
                             Content="Add"
                             Grid.Column="1"
@@ -938,7 +957,7 @@
                             Height="23"
                             HorizontalAlignment="Left"
                             Margin="2"
-                            VerticalAlignment="Bottom"
+                            VerticalAlignment="Top"
                             Width="60"/>
                         <Button
                             Content="Remove"
@@ -950,7 +969,7 @@
                             VerticalAlignment="Top"
                             Width="60"/>
                         <Button
-                            x:Name="btnResetImageFiletypes"
+                            x:Name="btnResetImageFileTypes"
                             Content="Reset"
                             Grid.Column="1"
                             Grid.Row="3"
@@ -958,7 +977,7 @@
                             HorizontalAlignment="Left"
                             Margin="2"
                             VerticalAlignment="Bottom"
-                            Width="60" Click="btnResetImageFiletypes_Click" />
+                            Width="60" Click="btnResetImageFileTypes_Click" />
                         <Button
                             Content="Add"
                             Grid.Column="3"
@@ -966,7 +985,7 @@
                             Height="23"
                             HorizontalAlignment="Left"
                             Margin="2"
-                            VerticalAlignment="Bottom"
+                            VerticalAlignment="Top"
                             Width="60"/>
                         <Button
                             Content="Remove"
@@ -978,7 +997,7 @@
                             VerticalAlignment="Top"
                             Width="60"/>
                         <Button
-                            x:Name="btnResetTextFiletypes"
+                            x:Name="btnResetTextFileTypes"
                             Content="Reset"
                             Grid.Column="3"
                             Grid.Row="3"
@@ -986,7 +1005,7 @@
                             HorizontalAlignment="Left"
                             Margin="2"
                             VerticalAlignment="Bottom"
-                            Width="60" Click="btnResetTextFiletypes_Click" />
+                            Width="60" Click="btnResetTextFileTypes_Click" />
                     </Grid>
                 </StackPanel>
             </TabItem>

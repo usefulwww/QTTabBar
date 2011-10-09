@@ -476,12 +476,16 @@ namespace QTTabBarLib {
 
         #region ---------- Tooltips ----------
 
-        private void btnResetImageFiletypes_Click(object sender, RoutedEventArgs e) {
-            lstImageFiletypes.ItemsSource = ThumbnailTooltipForm.MakeDefaultImgExts();
+        private void btnResetImageFileTypes_Click(object sender, RoutedEventArgs e) {
+            lstImageFileTypes.ItemsSource = Array.ConvertAll(
+                ThumbnailTooltipForm.MakeDefaultImgExts().ToArray(),
+                (ext) => new FileTypeEntry(ext));
         }
 
-        private void btnResetTextFiletypes_Click(object sender, RoutedEventArgs e) {
-            lstTextFiletypes.ItemsSource = new string[] { ".txt", ".ini", ".inf", ".cs", ".log", ".js", ".vbs" };
+        private void btnResetTextFileTypes_Click(object sender, RoutedEventArgs e) {
+            lstTextFileTypes.ItemsSource = Array.ConvertAll(
+                new string[] { ".txt", ".ini", ".inf", ".cs", ".log", ".js", ".vbs" },
+                (ext) => new FileTypeEntry(ext));
         }
 
         #endregion
@@ -1311,6 +1315,43 @@ namespace QTTabBarLib {
                 Chord = chord;
             }
         }
+
+        public class FileTypeEntry {
+            public string DotExtension { get; private set; }
+            public string Extension {
+                get {
+                    return DotExtension.Substring(1);
+                }
+            }
+            public string FriendlyName {
+                get {
+                    // PENDING: Instead of GetFileType or something.
+
+                    SHFILEINFO psfi = new SHFILEINFO();
+                    int sz = System.Runtime.InteropServices.Marshal.SizeOf(psfi);
+                    // SHGFI_TYPENAME | SHGFI_USEFILEATTRIBUTES
+                    if(IntPtr.Zero == PInvoke.SHGetFileInfo("*" + DotExtension, 0x80, ref psfi, sz, 0x400 | 0x10)) {
+                        return null;
+                    }
+                    else if(string.IsNullOrEmpty(psfi.szTypeName)) {
+                        return null;
+                    }
+                    return psfi.szTypeName;
+                }
+            }
+            public Image Icon {
+                get {
+                    return QTUtility.GetIcon(DotExtension, true).ToBitmap();
+                }
+            }
+            public FileTypeEntry(string extension) {
+                if(!extension.StartsWith(".")) {
+                    extension = "." + extension;
+                }
+                DotExtension = extension;
+            }
+        }
+
         #endregion
 
         private void btnCustomButtonImages_Click(object sender, RoutedEventArgs e) {
