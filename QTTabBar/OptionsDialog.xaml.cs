@@ -71,6 +71,10 @@ namespace QTTabBarLib {
         // Mouse stuff
         private ObservableCollection<MouseEntry> MouseBindings;
 
+        // Tooltips stuff
+        private ObservableCollection<FileTypeEntry> TextFileTypes;
+        private ObservableCollection<FileTypeEntry> MediaFileTypes;
+
         // todo: localize all of these
         #region ToLocalize
 
@@ -355,6 +359,7 @@ namespace QTTabBarLib {
             cmbNewTabPos.ItemsSource = NewTabPosItems;
             cmbNextAfterClosed.ItemsSource = NextAfterCloseItems;
 
+            InitializeTips();
             InitializeMouse();
             InitializeKeys();
             InitializeButtonBar();
@@ -476,16 +481,71 @@ namespace QTTabBarLib {
 
         #region ---------- Tooltips ----------
 
-        private void btnResetImageFileTypes_Click(object sender, RoutedEventArgs e) {
-            lstImageFileTypes.ItemsSource = Array.ConvertAll(
-                ThumbnailTooltipForm.MakeDefaultImgExts().ToArray(),
-                (ext) => new FileTypeEntry(ext));
+        private void InitializeTips() {
+            TextFileTypes = new ObservableCollection<FileTypeEntry>();
+            MediaFileTypes = new ObservableCollection<FileTypeEntry>();
+
+            lstTextFileTypes.ItemsSource = TextFileTypes;
+            lstMediaFileTypes.ItemsSource = MediaFileTypes;
+        }
+
+        // PENDING: Where is the method like this..?
+        private void AddRange<TInput, TOutput>(ICollection<TOutput> dest, IEnumerable<TInput> src) where TInput : class where TOutput : class {
+            foreach(TInput val in src) {
+                dest.Add(val as TOutput);
+            }
+        }
+
+        private void AddNewFileType(System.Windows.Controls.ListBox control) {
+            ICollection<FileTypeEntry> source = (ICollection<FileTypeEntry>)control.ItemsSource;
+            FileTypeEntry item = new FileTypeEntry();
+            source.Add(item);
+            control.SelectedItem = item;
+            control.ScrollIntoView(item);
+            control.Focus();
+        }
+
+        private void FillFileTypes(ICollection<FileTypeEntry> fileTypes, string[] newValues) {
+            fileTypes.Clear();
+            AddRange(
+                fileTypes,
+                Array.ConvertAll(
+                    newValues,
+                    (ext) => new FileTypeEntry(ext)));
+        }
+
+        private void btnAddTextFileTypes_Click(object sender, RoutedEventArgs e) {
+            AddNewFileType(lstTextFileTypes);
+        }
+
+        private void btnRemoveTextFileTypes_Click(object sender, RoutedEventArgs e) {
+            foreach(FileTypeEntry item in new System.Collections.ArrayList(lstTextFileTypes.SelectedItems)) {
+                TextFileTypes.Remove(item);
+            }
         }
 
         private void btnResetTextFileTypes_Click(object sender, RoutedEventArgs e) {
-            lstTextFileTypes.ItemsSource = Array.ConvertAll(
-                new string[] { ".txt", ".ini", ".inf", ".cs", ".log", ".js", ".vbs" },
-                (ext) => new FileTypeEntry(ext));
+            FillFileTypes(TextFileTypes,
+                new string[] { ".txt", ".ini", ".inf", ".cs", ".log", ".js", ".vbs" });
+
+            lstTextFileTypes.ScrollIntoView(TextFileTypes.First());
+        }
+
+        private void btnAddMediaFileTypes_Click(object sender, RoutedEventArgs e) {
+            AddNewFileType(lstMediaFileTypes);
+        }
+
+        private void btnRemoveMediaFileTypes_Click(object sender, RoutedEventArgs e) {
+            foreach(FileTypeEntry item in new System.Collections.ArrayList(lstMediaFileTypes.SelectedItems)) {
+                MediaFileTypes.Remove(item);
+            }
+        }
+
+        private void btnResetMediaFileTypes_Click(object sender, RoutedEventArgs e) {
+            FillFileTypes(MediaFileTypes,
+                ThumbnailTooltipForm.MakeDefaultImgExts().ToArray());
+
+            lstMediaFileTypes.ScrollIntoView(MediaFileTypes.First());
         }
 
         #endregion
@@ -1349,6 +1409,8 @@ namespace QTTabBarLib {
                     extension = "." + extension;
                 }
                 DotExtension = extension;
+            }
+            public FileTypeEntry() {
             }
         }
 

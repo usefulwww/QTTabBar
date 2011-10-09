@@ -927,21 +927,16 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <Label
-                            Content="Image filetypes"
+                            Content="Text filetypes"
                             Height="16"
-                            Padding="0" FontWeight="Bold"/>
-                        <Label
-                            Content="Text filetypes" Height="16"
                             Padding="0"
-                            Grid.Column="2" FontWeight="Bold"/>
-                        <ListBox
-                            x:Name="lstImageFileTypes"
-                            ItemTemplate="{StaticResource FileTypeItemTemplate}"
-                            Width="175"
-                            Height="200"
-                            Grid.Row="1"
-                            Grid.RowSpan="3"
-                            Grid.Column="0" SelectionMode="Extended"></ListBox>
+                            FontWeight="Bold"/>
+                        <Label
+                            Content="Image and Video filetypes"
+                            Height="16"
+                            Padding="0"
+                            FontWeight="Bold"
+                            Grid.Column="2"/>
                         <ListBox 
                             x:Name="lstTextFileTypes"
                             ItemTemplate="{StaticResource FileTypeItemTemplate}"
@@ -949,8 +944,17 @@
                             Height="200"
                             Grid.Row="1"
                             Grid.RowSpan="3"
+                            Grid.Column="0" SelectionMode="Extended"></ListBox>
+                        <ListBox
+                            x:Name="lstMediaFileTypes"
+                            ItemTemplate="{StaticResource FileTypeItemTemplate}"
+                            Width="175"
+                            Height="200"
+                            Grid.Row="1"
+                            Grid.RowSpan="3"
                             Grid.Column="2" SelectionMode="Extended"></ListBox>
                         <Button
+                            x:Name="btnAddTextFileTypes"
                             Content="Add"
                             Grid.Column="1"
                             Grid.Row="1"
@@ -958,8 +962,10 @@
                             HorizontalAlignment="Left"
                             Margin="2"
                             VerticalAlignment="Top"
-                            Width="60"/>
+                            Width="60"
+                            Click="btnAddTextFileTypes_Click"/>
                         <Button
+                            x:Name="btnRemoveTextFileTypes"
                             Content="Remove"
                             Grid.Column="1"
                             Grid.Row="2"
@@ -967,45 +973,51 @@
                             HorizontalAlignment="Left"
                             Margin="2"
                             VerticalAlignment="Top"
-                            Width="60"/>
-                        <Button
-                            x:Name="btnResetImageFileTypes"
-                            Content="Reset"
-                            Grid.Column="1"
-                            Grid.Row="3"
-                            Height="23"
-                            HorizontalAlignment="Left"
-                            Margin="2"
-                            VerticalAlignment="Bottom"
-                            Width="60" Click="btnResetImageFileTypes_Click" />
-                        <Button
-                            Content="Add"
-                            Grid.Column="3"
-                            Grid.Row="1"
-                            Height="23"
-                            HorizontalAlignment="Left"
-                            Margin="2"
-                            VerticalAlignment="Top"
-                            Width="60"/>
-                        <Button
-                            Content="Remove"
-                            Grid.Column="3"
-                            Grid.Row="2"
-                            Height="23"
-                            HorizontalAlignment="Left"
-                            Margin="2"
-                            VerticalAlignment="Top"
-                            Width="60"/>
+                            Width="60"
+                            Click="btnRemoveTextFileTypes_Click"/>
                         <Button
                             x:Name="btnResetTextFileTypes"
                             Content="Reset"
+                            Grid.Column="1"
+                            Grid.Row="3"
+                            Height="23"
+                            HorizontalAlignment="Left"
+                            Margin="2"
+                            VerticalAlignment="Bottom"
+                            Width="60"
+                            Click="btnResetTextFileTypes_Click"/>
+                        <Button
+                            x:Name="btnAddMediaFileTypes"
+                            Content="Add"
+                            Grid.Column="3"
+                            Grid.Row="1"
+                            Height="23"
+                            HorizontalAlignment="Left"
+                            Margin="2"
+                            VerticalAlignment="Top"
+                            Width="60"
+                            Click="btnAddMediaFileTypes_Click"/>
+                        <Button
+                            x:Name="btnRemoveMediaFileTypes"
+                            Content="Remove"
+                            Grid.Column="3"
+                            Grid.Row="2"
+                            Height="23"
+                            HorizontalAlignment="Left"
+                            Margin="2"
+                            VerticalAlignment="Top"
+                            Width="60"
+                            Click="btnRemoveMediaFileTypes_Click"/>
+                        <Button
+                            x:Name="btnResetMediaFileTypes"
+                            Content="Reset"
                             Grid.Column="3"
                             Grid.Row="3"
                             Height="23"
                             HorizontalAlignment="Left"
                             Margin="2"
                             VerticalAlignment="Bottom"
-                            Width="60" Click="btnResetTextFileTypes_Click" />
+                            Width="60" Click="btnResetMediaFileTypes_Click" />
                     </Grid>
                 </StackPanel>
             </TabItem>
