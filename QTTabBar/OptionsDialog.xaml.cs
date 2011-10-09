@@ -474,8 +474,20 @@ namespace QTTabBarLib {
 
         #endregion
 
+        #region ---------- Tooltips ----------
+
+        private void btnResetImageFiletypes_Click(object sender, RoutedEventArgs e) {
+            lstImageFiletypes.ItemsSource = ThumbnailTooltipForm.MakeDefaultImgExts();
+        }
+
+        private void btnResetTextFiletypes_Click(object sender, RoutedEventArgs e) {
+            lstTextFiletypes.ItemsSource = new string[] { ".txt", ".ini", ".inf", ".cs", ".log", ".js", ".vbs" };
+        }
+
+        #endregion
+
         #region ---------- Mouse ----------
-        
+
         private void InitializeMouse() {
             MouseBindings = new ObservableCollection<MouseEntry>();
             foreach(var p in workingConfig.mouse.GlobalMouseActions) {

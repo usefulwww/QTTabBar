@@ -896,73 +896,72 @@
                             Margin="8,1"
                             Width="250"/>
                     </StackPanel>
-                    <Grid
-                        Margin="13,1,0,1">
+                    <Grid Margin="13,15,0,1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="80"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <Label
-                            Content="Image filetypes:"
+                            Content="Image filetypes"
                             Height="16"
-                            Margin="2"
-                            Padding="0"/>
+                            Padding="0" FontWeight="Bold"/>
                         <Label
-                            Content="Text filetypes:"
+                            Content="Text filetypes" Height="16"
+                            Padding="0"
+                            Grid.Column="2" FontWeight="Bold"/>
+                        <ListBox
+                            x:Name="lstImageFiletypes"
+                            Width="150"
+                            Height="200"
                             Grid.Row="1"
-                            Height="16"
-                            Margin="2"
-                            Padding="0"/>
-                        <ComboBox
-                            Grid.Column="1"
-                            Height="23"
-                            HorizontalAlignment="Left"
-                            IsEditable="True"
-                            Margin="2"
-                            VerticalAlignment="Top"
-                            Width="60"/>
+                            Grid.RowSpan="3"
+                            Grid.Column="0"></ListBox>
+                        <ListBox 
+                            x:Name="lstTextFiletypes"
+                            Width="150"
+                            Height="200"
+                            Grid.Row="1"
+                            Grid.RowSpan="3"
+                            Grid.Column="2"></ListBox>
                         <Button
                             Content="Add"
-                            Grid.Column="2"
+                            Grid.Column="1"
+                            Grid.Row="1"
                             Height="23"
                             HorizontalAlignment="Left"
                             Margin="2"
-                            VerticalAlignment="Top"
+                            VerticalAlignment="Bottom"
                             Width="60"/>
                         <Button
                             Content="Remove"
-                            Grid.Column="3"
+                            Grid.Column="1"
+                            Grid.Row="2"
                             Height="23"
                             HorizontalAlignment="Left"
-                            Margin="2,2,0,2"
+                            Margin="2"
+                            VerticalAlignment="Top"
                             Width="60"/>
                         <Button
+                            x:Name="btnResetImageFiletypes"
                             Content="Reset"
-                            Grid.Column="4"
-                            Height="23"
-                            HorizontalAlignment="Left"
-                            Margin="2"
-                            VerticalAlignment="Top"
-                            Width="60"/>
-                        <ComboBox
                             Grid.Column="1"
-                            Grid.Row="1"
+                            Grid.Row="3"
                             Height="23"
                             HorizontalAlignment="Left"
-                            IsEditable="True"
                             Margin="2"
-                            VerticalAlignment="Top"
-                            Width="60"/>
+                            VerticalAlignment="Bottom"
+                            Width="60" Click="btnResetImageFiletypes_Click" />
                         <Button
                             Content="Add"
-                            Grid.Column="2"
+                            Grid.Column="3"
                             Grid.Row="1"
                             Height="23"
                             HorizontalAlignment="Left"
@@ -972,21 +971,22 @@
                         <Button
                             Content="Remove"
                             Grid.Column="3"
-                            Grid.Row="1"
+                            Grid.Row="2"
                             Height="23"
                             HorizontalAlignment="Left"
                             Margin="2"
                             VerticalAlignment="Top"
                             Width="60"/>
                         <Button
+                            x:Name="btnResetTextFiletypes"
                             Content="Reset"
-                            Grid.Column="4"
-                            Grid.Row="1"
+                            Grid.Column="3"
+                            Grid.Row="3"
                             Height="23"
                             HorizontalAlignment="Left"
                             Margin="2"
-                            VerticalAlignment="Top"
-                            Width="60"/>
+                            VerticalAlignment="Bottom"
+                            Width="60" Click="btnResetTextFiletypes_Click" />
                     </Grid>
                 </StackPanel>
             </TabItem>
