@@ -15,22 +15,15 @@ namespace QTTabBarLib {
         private bool watermarkVisible = true;
         private string watermarkText = null;
         private bool showIcon = true;
+        private bool updating = false;
 
         public string SelectedPath {
             get {
-                using(IDLWrapper wrapper = new IDLWrapper(location)) {
-                    return wrapper.Path;
-                }
+                return (string)GetValue(SelectedPathProperty);
             }
             set {
-                if(string.IsNullOrEmpty(value)) {
-                    ClearLocation();
-                }
-                else {
-                    // Note that this cannot select a path that does not exist.
-                    using(IDLWrapper wrapper = new IDLWrapper(value)) {
-                        SetLocation(wrapper);
-                    }
+                using(IDLWrapper wrapper = new IDLWrapper(value)) {
+                    SetLocation(wrapper);
                 }
             }
         }
@@ -94,12 +87,33 @@ namespace QTTabBarLib {
 
         public static readonly DependencyProperty SelectedPathProperty =
                 DependencyProperty.Register("SelectedPath", typeof(string), typeof(FileFolderEntryBox),
-                new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+                new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+                OnSelectedPathChanged));
 
         public FileFolderEntryBox() {
             InitializeComponent();
 
             ClearLocation();
+        }
+
+        private static void OnSelectedPathChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            FileFolderEntryBox this_ = (FileFolderEntryBox)d;
+            if(this_.updating) {
+                return;
+            }
+            using(IDLWrapper wrapper = new IDLWrapper((string)e.NewValue)) {
+                this_.SetLocation(wrapper);
+            }
+        }
+
+        // In any case, we must use this method instead of txtLocation.Text
+        private void SetSelectedPath(string path, string displayName) {
+            updating = true;
+
+            SetValue(SelectedPathProperty, path);
+            txtLocation.Text = displayName;
+
+            updating = false;
         }
 
         private void ShowIconInternal(bool b) {
@@ -137,7 +151,7 @@ namespace QTTabBarLib {
             else {
                 text = string.Empty;
             }
-            txtLocation.Text = text;
+            SetSelectedPath(string.Empty, text);
         }
 
         private void ClearLocation() {
@@ -148,28 +162,32 @@ namespace QTTabBarLib {
             location = null;
         }
 
-        private void SetLocation(IDLWrapper wrapper, bool updateText) {
+        private void SetLocation(IDLWrapper wrapper) {
+            if(string.IsNullOrEmpty(wrapper.Path)) {
+                ClearLocation();
+                return;
+            }
+
             ShowWatermark(false);
 
-            if(updateText) {
-                if(File) {
-                    txtLocation.Text = wrapper.Path;
-                }
-                else {
-                    bool b = File ? wrapper.IsFileSystemFile : wrapper.IsFileSystemFolder;
-                    txtLocation.Text = b ? wrapper.Path : wrapper.DisplayName;
-                }
+            string text;
+            if(wrapper.IDL == null) {
+                text = wrapper.Path;
             }
+            else if(File) {
+                text = wrapper.Path;
+            }
+            else {
+                bool b = File ? wrapper.IsFileSystemFile : wrapper.IsFileSystemFolder;
+                text = b ? wrapper.Path : wrapper.DisplayName;
+            }
+            SetSelectedPath(wrapper.Path, text);
 
             Icon icon = QTUtility.GetIcon(wrapper.PIDL);
             imgIcon.Source =
                 (ImageSource)new BitmapToImageSourceConverter().Convert(icon.ToBitmap(), null, null, null);
 
             location = wrapper.IDL;
-        }
-
-        private void SetLocation(IDLWrapper wrapper) {
-            SetLocation(wrapper, true);
         }
 
         private bool BrowseForFile() {
@@ -218,18 +236,19 @@ namespace QTTabBarLib {
         }
 
         private void txtLocation_TextChanged(object sender, TextChangedEventArgs e) {
-            if(watermarkVisible) {
+            if(updating) {
                 return;
             }
 
             string path = txtLocation.Text;
             if((File && !System.IO.File.Exists(path)) || (Folder && !System.IO.Directory.Exists(path))) {
                 ClearLocation();
+                SetSelectedPath(path, path);
                 return;
             }
 
             using(IDLWrapper wrapper = new IDLWrapper(path)) {
-                SetLocation(wrapper, false);
+                SetLocation(wrapper);
             }
         }
     }
