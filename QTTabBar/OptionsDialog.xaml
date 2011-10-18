@@ -309,6 +309,13 @@
                     Foreground="DarkGray" FontSize="10" />
             </StackPanel>
         </DataTemplate>
+        <HierarchicalDataTemplate x:Key="GroupItemTemplate" ItemsSource="{Binding Path=Folders}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Path=Name}"/>
+                <TextBlock Text="{Binding Path=Path}"/>
+                <Separator/>
+            </StackPanel>
+        </HierarchicalDataTemplate>
     </Window.Resources>
     
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -1774,48 +1781,65 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <Button
+                        <Button x:Name="btnGroupsMoveNodeUp"
                             Content="^"
                             Height="23"
                             HorizontalAlignment="Right"
                             Margin="4"
                             VerticalAlignment="Top"
-                            Width="28"/>
-                        <Button
+                            Width="28"
+                            Click="btnGroupsMoveNodeUp_Click" />
+                        <Button x:Name="btnGroupsMoveNodeDown"
                             Content="v"
                             Grid.Column="1"
                             Height="23"
                             HorizontalAlignment="Right"
                             Margin="4"
                             VerticalAlignment="Top"
-                            Width="28"/>
-                        <Button
+                            Width="28"
+                            Click="btnGroupsMoveNodeDown_Click" />
+                        <Button x:Name="btnGroupsAddSeparator"
                             Content="---"
                             Grid.Column="2"
                             Height="23"
                             HorizontalAlignment="Right"
                             Margin="4"
                             VerticalAlignment="Top"
-                            Width="28"/>
-                        <Button
-                            Content="+"
+                            Width="28"
+                            Click="btnGroupsAddSeparator_Click" />
+                        <Button x:Name="btnGroupsAddGroup" Content="G"
                             Grid.Column="3"
                             Height="23"
                             HorizontalAlignment="Right"
                             Margin="4"
                             VerticalAlignment="Top"
-                            Width="28"/>
-                        <Button
-                            Content="-"
+                            Width="28"
+                            Click="btnGroupsAddGroup_Click" />
+                        <Button x:Name="btnGroupsAddFolder"
+                            Content="+"
                             Grid.Column="4"
                             Height="23"
                             HorizontalAlignment="Right"
                             Margin="4"
                             VerticalAlignment="Top"
-                            Width="28"/>
+                            Width="28"
+                            Click="btnGroupsAddFolder_Click" />
+                        <Button x:Name="btnGroupsRemoveNode"
+                            Content="-"
+                            Grid.Column="5"
+                            Height="23"
+                            HorizontalAlignment="Right"
+                            Margin="4"
+                            VerticalAlignment="Top"
+                            Width="28"
+                            Click="btnGroupsRemoveNode_Click" />
                     </Grid>
-                    <TreeView Height="338"/>
+                    <TreeView
+                        x:Name="tvwGroups"
+                        ItemTemplate="{StaticResource GroupItemTemplate}"
+                        Height="338"/>
                     <DockPanel
                         Margin="0,10,0,0">
                         <Label
