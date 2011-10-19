@@ -993,18 +993,18 @@ namespace QTTabBarLib {
             }
         }
 
-        TreeViewItem FindContainerTreeViewItem(ItemsControl parent, object childItem) {
+        private object FindItemContainer(ItemsControl parent, object childItem) {
             if(parent.ItemContainerGenerator.Status != GeneratorStatus.ContainersGenerated) {
                 return null;
             }
             object container = parent.ItemContainerGenerator.ContainerFromItem(childItem);
             if(container != null) {
-                return container as TreeViewItem;
+                return container;
             }
             foreach(object item in parent.Items) {
                 ItemsControl child = parent.ItemContainerGenerator.ContainerFromItem(item) as ItemsControl;
                 if(child != null && child.Items.Count > 0) {
-                    TreeViewItem result = FindContainerTreeViewItem(child, childItem);
+                    object result = FindItemContainer(child, childItem);
                     if(result != null) {
                         return result;
                     }
@@ -1041,15 +1041,15 @@ namespace QTTabBarLib {
                 }
             }
 
-            TreeViewItem item = FindContainerTreeViewItem(control, val);
-            bool expanded = item.IsExpanded;
+            TreeViewItem container = (TreeViewItem)FindItemContainer(control, val);
+            bool expanded = container.IsExpanded;
 
             col.Remove(val);
             col.Insert(index + (up ? -1 : 1), val);
 
-            item = FindContainerTreeViewItem(control, val);
-            item.IsExpanded = expanded;
-            item.IsSelected = true;
+            container = (TreeViewItem)FindItemContainer(control, val);
+            container.IsExpanded = expanded;
+            container.IsSelected = true;
         }
 
         private void UpDownOnTreeView(TreeView tvw, bool up) {
@@ -1059,13 +1059,13 @@ namespace QTTabBarLib {
             }
 
             // TODO: Needs to generalize this for the other TreeView more.
-            if(val is GroupEntry) {
-                UpDownOnTreeView(tvw, val, up);
+            if(val is FolderEntry) {
+                object parent = GetParentGroup((FolderEntry)val);
+                TreeViewItem container = (TreeViewItem)FindItemContainer(tvw, parent);
+                UpDownOnTreeView(container, val, up);
             }
             else {
-                object parent = GetParentGroup((FolderEntry)val);
-                TreeViewItem item = FindContainerTreeViewItem(tvw, parent);
-                UpDownOnTreeView(item, val, up);
+                UpDownOnTreeView(tvw, val, up);
             }
         }
 
@@ -1074,11 +1074,11 @@ namespace QTTabBarLib {
             if(val == null) {
                 return tvw.Items.Count;
             }
-            TreeViewItem item = FindContainerTreeViewItem(tvw, val);
-            if(item == null) {
+            TreeViewItem container = (TreeViewItem)FindItemContainer(tvw, val);
+            if(container == null) {
                 return tvw.Items.Count;
             }
-            int index = tvw.ItemContainerGenerator.IndexFromContainer(item);
+            int index = tvw.ItemContainerGenerator.IndexFromContainer(container);
             if(index == -1) {
                 return tvw.Items.Count;
             }
@@ -1091,7 +1091,7 @@ namespace QTTabBarLib {
                 GetPreferredInsertionIndex(tvw),
                 item);
 
-            TreeViewItem container = FindContainerTreeViewItem(tvw, item);
+            TreeViewItem container = (TreeViewItem)FindItemContainer(tvw, item);
             container.IsSelected = true;
         }
 
@@ -1126,8 +1126,8 @@ namespace QTTabBarLib {
             int index;
             if(val is FolderEntry) {
                 group = GetParentGroup((FolderEntry)val);
-                TreeViewItem child = FindContainerTreeViewItem(tvwGroups, val);
-                TreeViewItem parent = FindContainerTreeViewItem(tvwGroups, group);
+                TreeViewItem child = (TreeViewItem)FindItemContainer(tvwGroups, val);
+                TreeViewItem parent = (TreeViewItem)FindItemContainer(tvwGroups, group);
                 index = parent.ItemContainerGenerator.IndexFromContainer(child) + 1;
             }
             else {
@@ -1145,17 +1145,13 @@ namespace QTTabBarLib {
             //TreeViewItem item = FindContainerTreeViewItem(tvwGroups, folder);
             //item.IsSelected = true;
 
-            TreeViewItem parent2 = FindContainerTreeViewItem(tvwGroups, val);
+            TreeViewItem parent2 = (TreeViewItem)FindItemContainer(tvwGroups, val);
             parent2.IsExpanded = true;
         }
 
         private void btnGroupsRemoveNode_Click(object sender, RoutedEventArgs e) {
             object val = tvwGroups.SelectedItem;
             if(val == null) {
-                return;
-            }
-            TreeViewItem item = FindContainerTreeViewItem(tvwGroups, val);
-            if(item == null){
                 return;
             }
             if(val is FolderEntry) {
