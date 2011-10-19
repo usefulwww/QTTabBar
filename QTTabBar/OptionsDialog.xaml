@@ -33,8 +33,8 @@
         <qt:LogicalAndMultiConverter        x:Key="LogicalAndMultiConverter"/>
         <qt:BoolJoinMultiConverter          x:Key="BoolJoinMultiConverter"/>
         <qt:StringEqualityConverter         x:Key="StringEqualityConverter"/>
-        <BooleanToVisibilityConverter       x:Key="BooleanToVisibilityConverter" />
-        <qt:LevelToIndentConverter          x:Key="LevelIndentConverter" />
+        <BooleanToVisibilityConverter       x:Key="BooleanToVisibilityConverter"/>
+        <qt:LevelToIndentConverter          x:Key="LevelIndentConverter"/>
 
         <Style x:Key="SectionHeaderStyle" TargetType="Label">
             <Setter Property="Background"       Value="#FFF0F2F5"/>
@@ -315,7 +315,7 @@
         
         <!-- TreeListView stuff -->
         <Style x:Key="ExpandCollapseToggleStyle"
-           TargetType="{x:Type ToggleButton}">
+            TargetType="{x:Type ToggleButton}">
             <Setter Property="Focusable"
               Value="False"/>
             <Setter Property="Width"
@@ -326,38 +326,38 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ToggleButton}">
                         <Border Width="19"
-                    Height="13"
-                    Background="Transparent">
+                            Height="13"
+                            Background="Transparent">
                             <Border Width="9"
-                      Height="9"
-                      BorderThickness="1"
-                      BorderBrush="#FF7898B5"
-                      CornerRadius="1"
-                      SnapsToDevicePixels="true">
+                                Height="9"
+                                BorderThickness="1"
+                                BorderBrush="#FF7898B5"
+                                CornerRadius="1"
+                                SnapsToDevicePixels="true">
                                 <Border.Background>
                                     <LinearGradientBrush StartPoint="0,0"
-                                       EndPoint="1,1">
+                                        EndPoint="1,1">
                                         <LinearGradientBrush.GradientStops>
                                             <GradientStop Color="White"
-                                    Offset=".2"/>
+                                                Offset=".2"/>
                                             <GradientStop Color="#FFC0B7A6"
-                                    Offset="1"/>
+                                                Offset="1"/>
                                         </LinearGradientBrush.GradientStops>
                                     </LinearGradientBrush>
                                 </Border.Background>
                                 <Path x:Name="ExpandPath"
-                      Margin="1,1,1,1"
-                      Fill="Black"
-                      Data="M 0 2 L 0 3 L 2 3 L 2 5 L 3 5 L 3 3 
-                            L 5 3 L 5 2 L 3 2 L 3 0 L 2 0 L 2 2 Z"/>
+                                    Margin="1,1,1,1"
+                                    Fill="Black"
+                                    Data="M 0 2 L 0 3 L 2 3 L 2 5 L 3 5 L 3 3 
+                                        L 5 3 L 5 2 L 3 2 L 3 0 L 2 0 L 2 2 Z"/>
                             </Border>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked"
-                       Value="True">
+                                Value="True">
                                 <Setter Property="Data"
-                        TargetName="ExpandPath"
-                        Value="M 0 2 L 0 3 L 5 3 L 5 2 Z"/>
+                                    TargetName="ExpandPath"
+                                    Value="M 0 2 L 0 3 L 5 3 L 5 2 Z"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -379,27 +379,73 @@
                                                  AncestorType=
                                                   {x:Type qt:TreeListViewItem}}}"
                       ClickMode="Press"/>
-                <TextBlock Text="{Binding Name}"/>
-                <TextBlock Text="{Binding Path}"/>
+                <Border Margin="0,2">
+                    <StackPanel Orientation="Horizontal">
+                        <Image
+                            Source="{Binding Path=Icon, Converter={StaticResource BitmapToImageSourceConverter}}"
+                            Width="16"
+                            Height="16"
+                            Stretch="Fill"
+                            Margin="0,0,2,0"/>
+                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding Path}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
             </DockPanel>
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding Path=HasItems,
                                RelativeSource={RelativeSource 
                                AncestorType={x:Type qt:TreeListViewItem}}}" 
-                     Value="False">
+                    Value="False">
                     <Setter TargetName="Expander"
-                  Property="Visibility"
-                  Value="Hidden"/>
+                        Property="Visibility"
+                        Value="Hidden"/>
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
         <GridViewColumnCollection x:Key="gvcc">
-            <GridViewColumn Header="Name"  
-                      CellTemplate="{StaticResource CellTemplate_Name}" />
-            <GridViewColumn Header="Startup" 
-                      DisplayMemberBinding="{Binding Path}" Width="60" />
-            <GridViewColumn Header="Shortcut key" 
-                      DisplayMemberBinding="{Binding Path}" />
+            <GridViewColumn Header="Folder"
+                CellTemplate="{StaticResource CellTemplate_Name}"
+                Width="300"/>
+            <GridViewColumn Header="Startup" Width="60">
+                <GridViewColumn.CellTemplate>
+                    <DataTemplate>
+                        <CheckBox x:Name="chkStartup"
+                            IsChecked="{Binding Path=Startup}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"/>
+                        <DataTemplate.Triggers>
+                            <DataTrigger
+                                Binding="{Binding Path=Startup, Converter={StaticResource BoolInverterConverter}}" 
+                                Value="{x:Null}">
+                                <Setter
+                                    TargetName="chkStartup"
+                                    Property="Visibility"
+                                    Value="Collapsed"/>
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </GridViewColumn.CellTemplate>
+            </GridViewColumn>
+            <GridViewColumn Header="Shortcut key">
+                <GridViewColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBlock x:Name="txtShortcutKey"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center">Ctrl + A</TextBlock>
+                        <DataTemplate.Triggers>
+                            <DataTrigger
+                                Binding="{Binding Path=Startup, Converter={StaticResource BoolInverterConverter}}"
+                                Value="{x:Null}">
+                                <Setter
+                                    TargetName="txtShortcutKey"
+                                    Property="Visibility"
+                                    Value="Collapsed"/>
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </GridViewColumn.CellTemplate>
+            </GridViewColumn>
         </GridViewColumnCollection>
         <Style TargetType="{x:Type qt:TreeListViewItem}">
             <Setter Property="Template">
@@ -407,10 +453,10 @@
                     <ControlTemplate TargetType="{x:Type qt:TreeListViewItem}">
                         <StackPanel>
                             <Border Name="Bd"
-                      Background="{TemplateBinding Background}"
-                      BorderBrush="{TemplateBinding BorderBrush}"
-                      BorderThickness="{TemplateBinding BorderThickness}"
-                      Padding="{TemplateBinding Padding}">
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}">
                                 <GridViewRowPresenter x:Name="PART_Header" 
                                       Content="{TemplateBinding Header}" 
                                       Columns="{StaticResource gvcc}" />
@@ -419,21 +465,21 @@
                         </StackPanel>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsExpanded"
-                       Value="false">
+                                Value="false">
                                 <Setter TargetName="ItemsHost"
-                        Property="Visibility"
-                        Value="Collapsed"/>
+                                    Property="Visibility"
+                                    Value="Collapsed"/>
                             </Trigger>
                             <MultiTrigger>
                                 <MultiTrigger.Conditions>
                                     <Condition Property="HasHeader"
-                             Value="false"/>
+                                        Value="false"/>
                                     <Condition Property="Width"
-                             Value="Auto"/>
+                                        Value="Auto"/>
                                 </MultiTrigger.Conditions>
                                 <Setter TargetName="PART_Header"
-                        Property="MinWidth"
-                        Value="75"/>
+                                    Property="MinWidth"
+                                    Value="75"/>
                             </MultiTrigger>
                             <MultiTrigger>
                                 <MultiTrigger.Conditions>
@@ -443,39 +489,39 @@
                              Value="Auto"/>
                                 </MultiTrigger.Conditions>
                                 <Setter TargetName="PART_Header"
-                        Property="MinHeight"
-                        Value="19"/>
+                                    Property="MinHeight"
+                                    Value="19"/>
                             </MultiTrigger>
                             <Trigger Property="IsSelected"
-                       Value="true">
+                                Value="true">
                                 <Setter TargetName="Bd"
-                        Property="Background"
-                        Value="{DynamicResource 
-                          {x:Static SystemColors.HighlightBrushKey}}"/>
+                                    Property="Background"
+                                    Value="{DynamicResource 
+                                        {x:Static SystemColors.HighlightBrushKey}}"/>
                                 <Setter Property="Foreground"
-                        Value="{DynamicResource 
-                          {x:Static SystemColors.HighlightTextBrushKey}}"/>
+                                    Value="{DynamicResource 
+                                        {x:Static SystemColors.HighlightTextBrushKey}}"/>
                             </Trigger>
                             <MultiTrigger>
                                 <MultiTrigger.Conditions>
                                     <Condition Property="IsSelected"
-                             Value="true"/>
+                                        Value="true"/>
                                     <Condition Property="IsSelectionActive"
-                             Value="false"/>
+                                        Value="false"/>
                                 </MultiTrigger.Conditions>
                                 <Setter TargetName="Bd"
-                        Property="Background"
-                        Value="{DynamicResource 
+                                    Property="Background"
+                                    Value="{DynamicResource 
                           {x:Static SystemColors.ControlBrushKey}}"/>
                                 <Setter Property="Foreground"
                         Value="{DynamicResource 
                           {x:Static SystemColors.ControlTextBrushKey}}"/>
                             </MultiTrigger>
                             <Trigger Property="IsEnabled"
-                       Value="false">
+                                Value="false">
                                 <Setter Property="Foreground"
-                        Value="{DynamicResource 
-                          {x:Static SystemColors.GrayTextBrushKey}}"/>
+                                    Value="{DynamicResource 
+                                        {x:Static SystemColors.GrayTextBrushKey}}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -487,7 +533,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type qt:TreeListView}">
                         <Border BorderBrush="{TemplateBinding BorderBrush}"
-                    BorderThickness="{TemplateBinding BorderThickness}">
+                            BorderThickness="{TemplateBinding BorderThickness}">
                             <DockPanel>
                                 <GridViewHeaderRowPresenter Columns="{StaticResource gvcc}"
                                             DockPanel.Dock="Top"/>

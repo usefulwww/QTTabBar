@@ -814,7 +814,7 @@ namespace QTTabBarLib.Interop {
         /// The WM_SYSCHAR message is posted to the window with the keyboard
         /// focus when a WM_SYSKEYDOWN message is translated by the
         /// TranslateMessage function. It specifies the character code of a
-        /// system character key — that is; a character key that is pressed
+        /// system character key - that is; a character key that is pressed
         /// while the ALT key is down.
         /// </summary>
         public const Int32 SYSCHAR = 0x0106;
@@ -823,7 +823,7 @@ namespace QTTabBarLib.Interop {
         /// The WM_SYSDEADCHAR message is sent to the window with the keyboard
         /// focus when a WM_SYSKEYDOWN message is translated by the
         /// TranslateMessage function. WM_SYSDEADCHAR specifies the character
-        /// code of a system dead key — that is; a dead key that is pressed
+        /// code of a system dead key - that is; a dead key that is pressed
         /// while holding down the ALT key.
         /// </summary>
         public const Int32 SYSDEADCHAR = 0x0107;

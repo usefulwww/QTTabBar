@@ -80,7 +80,7 @@ namespace QTTabBarLib {
         private ObservableCollection<FileTypeEntry> MediaFileTypes;
 
         // Groups stuff
-        private ObservableCollection<GroupEntry> CurrentGroups;
+        private ObservableCollection<object> CurrentGroups;
 
         // todo: localize all of these
         #region ToLocalize
@@ -918,17 +918,20 @@ namespace QTTabBarLib {
         #region ---------- Groups ----------
 
         private void InitializeGroups() {
-            CurrentGroups = new ObservableCollection<GroupEntry>();
+            CurrentGroups = new ObservableCollection<object>();
 
-            // TODO: Needs to take a look at InitializeTreeView_Group more.
             foreach(KeyValuePair<string, string> pair in QTUtility.GroupPathsDic) {
                 if(string.IsNullOrEmpty(pair.Value)) {
-                    CurrentGroups.Add(GroupEntry.Separator);
+                    CurrentGroups.Add(new SeparatorEntry());
                     continue;
                 }
-                GroupEntry group = new GroupEntry(false, pair.Key);
+                GroupEntry group = new GroupEntry(pair.Key);
+                group.Startup = QTUtility.StartUpGroupList.Contains(group.Name);
+                if(QTUtility.dicGroupNamesAndKeys.ContainsKey(group.Name)) {
+                    group.ShortcutKey = QTUtility.dicGroupNamesAndKeys[group.Name];
+                }
                 foreach(string path in pair.Value.Split(QTUtility.SEPARATOR_CHAR)) {
-                    GroupEntry folder = new GroupEntry(true, path);
+                    FolderEntry folder = new FolderEntry(path);
                     group.Folders.Add(folder);
                 }
                 CurrentGroups.Add(group);
@@ -944,11 +947,13 @@ namespace QTTabBarLib {
             QTUtility.dicGroupNamesAndKeys.Clear();
             List<PluginKey> list = new List<PluginKey>();
             int num = 1;
-            foreach(GroupEntry group in CurrentGroups) {
-                if(group == GroupEntry.Separator) {
+            foreach(object entry in CurrentGroups) {
+                if(entry is SeparatorEntry) {
                     QTUtility.GroupPathsDic["Separator" + num++] = string.Empty;
+                    continue;
                 }
-                else if(group.Folders.Count > 0) {
+                GroupEntry group = (GroupEntry)entry;
+                if(group.Folders.Count > 0) {
                     string text = group.Name;
                     if(text.Length > 0) {
                         string str2 = group.Folders
@@ -1008,8 +1013,15 @@ namespace QTTabBarLib {
             return null;
         }
 
-        private GroupEntry GetParentGroup(GroupEntry folder) {
-            return CurrentGroups.FirstOrDefault(group => group.Folders.Contains(folder));
+        private GroupEntry GetParentGroup(FolderEntry folder) {
+            return (GroupEntry)CurrentGroups.FirstOrDefault((entry) =>
+            {
+                GroupEntry group = entry as GroupEntry;
+                if(group == null) {
+                    return false;
+                }
+                return group.Folders.Contains(folder);
+            });
         }
 
         private void UpDownOnTreeView(ItemsControl control, object val, bool up) {
@@ -1047,11 +1059,11 @@ namespace QTTabBarLib {
             }
 
             // TODO: Needs to generalize this for the other TreeView more.
-            object parent = GetParentGroup((GroupEntry)val);
-            if(parent == null) {
+            if(val is GroupEntry) {
                 UpDownOnTreeView(tvw, val, up);
             }
             else {
+                object parent = GetParentGroup((FolderEntry)val);
                 TreeViewItem item = FindContainerTreeViewItem(tvw, parent);
                 UpDownOnTreeView(item, val, up);
             }
@@ -1092,41 +1104,43 @@ namespace QTTabBarLib {
         }
 
         private void btnGroupsAddSeparator_Click(object sender, RoutedEventArgs e) {
-            AddNew(tvwGroups, GroupEntry.Separator);
+            AddNew<object>(tvwGroups, new SeparatorEntry());
         }
 
         private void btnGroupsAddGroup_Click(object sender, RoutedEventArgs e) {
-            AddNew(tvwGroups, new GroupEntry(false, "New Group"));
+            AddNew<object>(tvwGroups, new GroupEntry("New Group"));
         }
 
         private void btnGroupsAddFolder_Click(object sender, RoutedEventArgs e) {
             // TODO: Generates new group if the view is empty.
 
-            GroupEntry val = (GroupEntry)tvwGroups.SelectedItem;
+            object val = (GroupEntry)tvwGroups.SelectedItem;
             if(val == null) {
                 return;
             }
-            if(val.IsSeparator) {
+            if(val is SeparatorEntry) {
                 return;
             }
 
+            GroupEntry group;
             int index;
-            if(val.IsFolder) {
+            if(val is FolderEntry) {
+                group = GetParentGroup((FolderEntry)val);
                 TreeViewItem child = FindContainerTreeViewItem(tvwGroups, val);
-                val = GetParentGroup(val);
-                TreeViewItem parent = FindContainerTreeViewItem(tvwGroups, val);
+                TreeViewItem parent = FindContainerTreeViewItem(tvwGroups, group);
                 index = parent.ItemContainerGenerator.IndexFromContainer(child) + 1;
             }
             else {
-                index = val.Folders.Count;
+                group = (GroupEntry)val;
+                index = group.Folders.Count;
             }
 
             FolderBrowserDialogEx dlg = new FolderBrowserDialogEx();
             if(dlg.ShowDialog() != System.Windows.Forms.DialogResult.OK) {
                 return;
             }
-            GroupEntry folder = new GroupEntry(true, dlg.SelectedPath);
-            val.Folders.Insert(index, folder);
+            FolderEntry folder = new FolderEntry(dlg.SelectedPath);
+            group.Folders.Insert(index, folder);
             // TODO: Doesn't work. item would be null.
             //TreeViewItem item = FindContainerTreeViewItem(tvwGroups, folder);
             //item.IsSelected = true;
@@ -1136,7 +1150,7 @@ namespace QTTabBarLib {
         }
 
         private void btnGroupsRemoveNode_Click(object sender, RoutedEventArgs e) {
-            GroupEntry val = (GroupEntry)tvwGroups.SelectedItem;
+            object val = tvwGroups.SelectedItem;
             if(val == null) {
                 return;
             }
@@ -1144,9 +1158,9 @@ namespace QTTabBarLib {
             if(item == null){
                 return;
             }
-            if(val.IsFolder) {
-                GroupEntry group = GetParentGroup(val);
-                group.Folders.Remove(val);
+            if(val is FolderEntry) {
+                GroupEntry group = GetParentGroup((FolderEntry)val);
+                group.Folders.Remove((FolderEntry)val);
             }
             else {
                 CurrentGroups.Remove(val);
@@ -1663,48 +1677,48 @@ namespace QTTabBarLib {
             }
         }
 
-        public class GroupEntry {
-            private static GroupEntry separator = new GroupEntry(false, string.Empty);
-            public static GroupEntry Separator { get { return separator; } }
+        public class SeparatorEntry {
+            public SeparatorEntry() {
+            }
+        }
 
-            public string Name { get; private set; }
+        public class FolderEntry {
             public string Path { get; private set; }
             public string DisplayText {
                 get {
-                    if(!IsFolder) {
-                        return null;
-                    }
                     return QTUtility2.MakePathDisplayText(Path, true);
                 }
             }
-            public Image Icon { get; private set; }
-            public ObservableCollection<GroupEntry> Folders { get; private set; }
-            // TODO: I would prefer something like GroupEntry.Kind instead of this.
-            public bool IsFolder { get; private set; }
-            public bool IsSeparator { get { return this == separator; } }
-            public bool Startup {
+            public Image Icon {
                 get {
-                    if(IsFolder) {
-                        return false;
-                    }
-                    return QTUtility.StartUpGroupList.Contains(Path);
+                    return QTUtility.GetIcon(Path, false).ToBitmap();
                 }
             }
+
+            public FolderEntry(string path) {
+                Path = path;
+            }
+            public FolderEntry() {
+            }
+        }
+
+        public class GroupEntry {
+            public string Name { get; private set; }
+            public Image Icon {
+                get {
+                    return Resources_Image.icoEmpty.ToBitmap();
+                }
+            }
+            public ObservableCollection<FolderEntry> Folders { get; private set; }
+            public bool Startup { get; set; }
             public int ShortcutKey { get; set; }
 
-            public GroupEntry(bool isFolder, string nameOrPath) {
-                IsFolder = isFolder;
-
-                if(IsFolder) {
-                    Path = nameOrPath;
-                }
-                else {
-                    Name = nameOrPath;
-                    Folders = new ObservableCollection<GroupEntry>();
-                    if(QTUtility.dicGroupNamesAndKeys.ContainsKey(Name)) {
-                        ShortcutKey = QTUtility.dicGroupNamesAndKeys[Name];
-                    }
-                }
+            public GroupEntry(string name) {
+                Name = name;
+                Folders = new ObservableCollection<FolderEntry>();
+            }
+            public GroupEntry() {
+                Folders = new ObservableCollection<FolderEntry>();
             }
         }
 
