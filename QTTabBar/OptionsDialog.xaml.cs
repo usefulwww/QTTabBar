@@ -48,6 +48,7 @@ using Orientation = System.Windows.Controls.Orientation;
 using TextBox = System.Windows.Controls.TextBox;
 using Microsoft.Win32;
 using OpenFileDialog = System.Windows.Forms.OpenFileDialog;
+using TreeView = System.Windows.Controls.TreeView;
 using System.Windows.Controls.Primitives;
 
 namespace QTTabBarLib {
@@ -1007,57 +1008,131 @@ namespace QTTabBarLib {
             return null;
         }
 
-        private void btnGroupsMoveNodeUp_Click(object sender, RoutedEventArgs e) {
-            GroupEntry val = (GroupEntry)tvwGroups.SelectedItem;
-            if(val == null) {
-                return;
-            }
-            if(val == CurrentGroups.First()) {
-                return;
-            }
-            int index = CurrentGroups.IndexOf(val);
+        private GroupEntry GetParentGroup(GroupEntry folder) {
+            return CurrentGroups.FirstOrDefault(group => group.Folders.Contains(folder));
+        }
+
+        private void UpDownOnTreeView(ItemsControl control, object val, bool up) {
+            System.Collections.IList col = (System.Collections.IList)control.ItemsSource;
+            int index = col.IndexOf(val);
             if(index == -1) {
                 return;
             }
-            CurrentGroups.Remove(val);
-            CurrentGroups.Insert(index - 1, val);
+            if(up) {
+                if(index == 0) {
+                    return;
+                }
+            }
+            else {
+                if(index == col.Count - 1) {
+                    return;
+                }
+            }
 
-            TreeViewItem item = FindContainerTreeViewItem(tvwGroups, val);
+            TreeViewItem item = FindContainerTreeViewItem(control, val);
+            bool expanded = item.IsExpanded;
+
+            col.Remove(val);
+            col.Insert(index + (up ? -1 : 1), val);
+
+            item = FindContainerTreeViewItem(control, val);
+            item.IsExpanded = expanded;
             item.IsSelected = true;
         }
 
-        private void btnGroupsMoveNodeDown_Click(object sender, RoutedEventArgs e) {
-            GroupEntry val = (GroupEntry)tvwGroups.SelectedItem;
+        private void UpDownOnTreeView(TreeView tvw, bool up) {
+            object val = tvw.SelectedItem;
             if(val == null) {
                 return;
             }
-            if(val == CurrentGroups.Last()) {
-                return;
+
+            // TODO: Needs to generalize this for the other TreeView more.
+            object parent = GetParentGroup((GroupEntry)val);
+            if(parent == null) {
+                UpDownOnTreeView(tvw, val, up);
             }
-            int index = CurrentGroups.IndexOf(val);
+            else {
+                TreeViewItem item = FindContainerTreeViewItem(tvw, parent);
+                UpDownOnTreeView(item, val, up);
+            }
+        }
+
+        private int GetPreferredInsertionIndex(TreeView tvw) {
+            object val = tvw.SelectedItem;
+            if(val == null) {
+                return tvw.Items.Count;
+            }
+            TreeViewItem item = FindContainerTreeViewItem(tvw, val);
+            if(item == null) {
+                return tvw.Items.Count;
+            }
+            int index = tvw.ItemContainerGenerator.IndexFromContainer(item);
             if(index == -1) {
-                return;
+                return tvw.Items.Count;
             }
-            CurrentGroups.Remove(val);
-            CurrentGroups.Insert(index + 1, val);
+            return index + 1;
+        }
+
+        private void AddNew<T>(TreeView tvw, T item) {
+            IList<T> col = (IList<T>)tvw.ItemsSource;
+            col.Insert(
+                GetPreferredInsertionIndex(tvw),
+                item);
+
+            TreeViewItem container = FindContainerTreeViewItem(tvw, item);
+            container.IsSelected = true;
+        }
+
+        private void btnGroupsMoveNodeUp_Click(object sender, RoutedEventArgs e) {
+            UpDownOnTreeView(tvwGroups, true);
+        }
+
+        private void btnGroupsMoveNodeDown_Click(object sender, RoutedEventArgs e) {
+            UpDownOnTreeView(tvwGroups, false);
         }
 
         private void btnGroupsAddSeparator_Click(object sender, RoutedEventArgs e) {
-            CurrentGroups.Add(GroupEntry.Separator);
+            AddNew(tvwGroups, GroupEntry.Separator);
         }
 
         private void btnGroupsAddGroup_Click(object sender, RoutedEventArgs e) {
-            CurrentGroups.Add(new GroupEntry(false, "New Group"));
+            AddNew(tvwGroups, new GroupEntry(false, "New Group"));
         }
 
         private void btnGroupsAddFolder_Click(object sender, RoutedEventArgs e) {
             // TODO: Generates new group if the view is empty.
 
+            GroupEntry val = (GroupEntry)tvwGroups.SelectedItem;
+            if(val == null) {
+                return;
+            }
+            if(val.IsSeparator) {
+                return;
+            }
+
+            int index;
+            if(val.IsFolder) {
+                TreeViewItem child = FindContainerTreeViewItem(tvwGroups, val);
+                val = GetParentGroup(val);
+                TreeViewItem parent = FindContainerTreeViewItem(tvwGroups, val);
+                index = parent.ItemContainerGenerator.IndexFromContainer(child) + 1;
+            }
+            else {
+                index = val.Folders.Count;
+            }
+
             FolderBrowserDialogEx dlg = new FolderBrowserDialogEx();
             if(dlg.ShowDialog() != System.Windows.Forms.DialogResult.OK) {
                 return;
             }
-            CurrentGroups.Add(new GroupEntry(true, dlg.SelectedPath));
+            GroupEntry folder = new GroupEntry(true, dlg.SelectedPath);
+            val.Folders.Insert(index, folder);
+            // TODO: Doesn't work. item would be null.
+            //TreeViewItem item = FindContainerTreeViewItem(tvwGroups, folder);
+            //item.IsSelected = true;
+
+            TreeViewItem parent2 = FindContainerTreeViewItem(tvwGroups, val);
+            parent2.IsExpanded = true;
         }
 
         private void btnGroupsRemoveNode_Click(object sender, RoutedEventArgs e) {
@@ -1070,14 +1145,11 @@ namespace QTTabBarLib {
                 return;
             }
             if(val.IsFolder) {
-                // Doesn't work
-                //TreeViewItem parent = (TreeViewItem)item.Parent;
-                //GroupEntry group = (GroupEntry)tvwGroups.ItemContainerGenerator.ItemFromContainer(parent);
-                //group.Folders.Remove(val);
+                GroupEntry group = GetParentGroup(val);
+                group.Folders.Remove(val);
             }
             else {
-                int index = tvwGroups.ItemContainerGenerator.IndexFromContainer(item);
-                CurrentGroups.RemoveAt(index);
+                CurrentGroups.Remove(val);
             }
         }
 
@@ -1606,7 +1678,7 @@ namespace QTTabBarLib {
                 }
             }
             public Image Icon { get; private set; }
-            public List<GroupEntry> Folders { get; private set; }
+            public ObservableCollection<GroupEntry> Folders { get; private set; }
             // TODO: I would prefer something like GroupEntry.Kind instead of this.
             public bool IsFolder { get; private set; }
             public bool IsSeparator { get { return this == separator; } }
@@ -1628,7 +1700,7 @@ namespace QTTabBarLib {
                 }
                 else {
                     Name = nameOrPath;
-                    Folders = new List<GroupEntry>();
+                    Folders = new ObservableCollection<GroupEntry>();
                     if(QTUtility.dicGroupNamesAndKeys.ContainsKey(Name)) {
                         ShortcutKey = QTUtility.dicGroupNamesAndKeys[Name];
                     }
