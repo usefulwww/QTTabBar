@@ -364,7 +364,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <DataTemplate x:Key="CellTemplate_Name">
+        <DataTemplate x:Key="CellTemplate_Folder">
             <DockPanel>
                 <ToggleButton x:Name="Expander" 
                       Style="{StaticResource ExpandCollapseToggleStyle}" 
@@ -388,7 +388,7 @@
                             Stretch="Fill"
                             Margin="0,0,2,0"/>
                         <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
-                        <TextBlock Text="{Binding Path}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding DisplayText}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Border>
             </DockPanel>
@@ -405,7 +405,7 @@
         </DataTemplate>
         <GridViewColumnCollection x:Key="gvcc">
             <GridViewColumn Header="Folder"
-                CellTemplate="{StaticResource CellTemplate_Name}"
+                CellTemplate="{StaticResource CellTemplate_Folder}"
                 Width="300"/>
             <GridViewColumn Header="Startup" Width="60">
                 <GridViewColumn.CellTemplate>

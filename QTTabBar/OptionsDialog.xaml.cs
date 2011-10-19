@@ -1074,19 +1074,16 @@ namespace QTTabBarLib {
             if(val == null) {
                 return tvw.Items.Count;
             }
-            TreeViewItem container = (TreeViewItem)FindItemContainer(tvw, val);
-            if(container == null) {
-                return tvw.Items.Count;
+            if(val is FolderEntry) {
+                // Goes up one level when a child is selected.
+                val = GetParentGroup((FolderEntry)val);
             }
-            int index = tvw.ItemContainerGenerator.IndexFromContainer(container);
-            if(index == -1) {
-                return tvw.Items.Count;
-            }
+            int index = CurrentGroups.IndexOf(val);
             return index + 1;
         }
 
-        private void AddNew<T>(TreeView tvw, T item) {
-            IList<T> col = (IList<T>)tvw.ItemsSource;
+        private void AddNew(TreeView tvw, object item) {
+            System.Collections.IList col = (System.Collections.IList)tvw.ItemsSource;
             col.Insert(
                 GetPreferredInsertionIndex(tvw),
                 item);
@@ -1104,17 +1101,17 @@ namespace QTTabBarLib {
         }
 
         private void btnGroupsAddSeparator_Click(object sender, RoutedEventArgs e) {
-            AddNew<object>(tvwGroups, new SeparatorEntry());
+            AddNew(tvwGroups, new SeparatorEntry());
         }
 
         private void btnGroupsAddGroup_Click(object sender, RoutedEventArgs e) {
-            AddNew<object>(tvwGroups, new GroupEntry("New Group"));
+            AddNew(tvwGroups, new GroupEntry("New Group"));
         }
 
         private void btnGroupsAddFolder_Click(object sender, RoutedEventArgs e) {
             // TODO: Generates new group if the view is empty.
 
-            object val = (GroupEntry)tvwGroups.SelectedItem;
+            object val = tvwGroups.SelectedItem;
             if(val == null) {
                 return;
             }
@@ -1125,10 +1122,9 @@ namespace QTTabBarLib {
             GroupEntry group;
             int index;
             if(val is FolderEntry) {
-                group = GetParentGroup((FolderEntry)val);
-                TreeViewItem child = (TreeViewItem)FindItemContainer(tvwGroups, val);
-                TreeViewItem parent = (TreeViewItem)FindItemContainer(tvwGroups, group);
-                index = parent.ItemContainerGenerator.IndexFromContainer(child) + 1;
+                FolderEntry entry = (FolderEntry)val;
+                group = GetParentGroup(entry);
+                index = group.Folders.IndexOf(entry) + 1;
             }
             else {
                 group = (GroupEntry)val;
@@ -1154,12 +1150,22 @@ namespace QTTabBarLib {
             if(val == null) {
                 return;
             }
+
+            System.Collections.IList col;
             if(val is FolderEntry) {
                 GroupEntry group = GetParentGroup((FolderEntry)val);
-                group.Folders.Remove((FolderEntry)val);
+                col = group.Folders;
             }
             else {
-                CurrentGroups.Remove(val);
+                col = CurrentGroups;
+            }
+            int index = col.IndexOf(val);
+            col.RemoveAt(index);
+
+            if(index < col.Count) {
+                object next = col[index];
+                TreeViewItem container = (TreeViewItem)FindItemContainer(tvwGroups, next);
+                container.IsSelected = true;
             }
         }
 
