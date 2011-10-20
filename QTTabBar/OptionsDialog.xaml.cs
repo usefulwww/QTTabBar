@@ -1476,6 +1476,18 @@ namespace QTTabBarLib {
 
         #region ---------- Binding Classes ----------
 
+        private abstract class NotifyPropertyChanged : INotifyPropertyChanged {
+            public event PropertyChangedEventHandler PropertyChanged;
+
+            protected virtual void OnPropertyChanged(string name) {
+                if(PropertyChanged == null) {
+                    return;
+                }
+
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
+            }
+        }
+
         private class ButtonEntry {
             private OptionsDialog parent;
 
@@ -1641,7 +1653,7 @@ namespace QTTabBarLib {
             }
         }
 
-        public class FileTypeEntry {
+        private class FileTypeEntry {
             public string DotExtension { get; private set; }
             public string Extension {
                 get {
@@ -1679,13 +1691,23 @@ namespace QTTabBarLib {
             }
         }
 
-        public class SeparatorEntry {
+        private class SeparatorEntry {
             public SeparatorEntry() {
             }
         }
 
-        public class FolderEntry {
-            public string Path { get; set; }
+        private class FolderEntry : NotifyPropertyChanged {
+            private string path;
+
+            public string Path {
+                get {
+                    return path;
+                }
+                set {
+                    path = value;
+                    OnPropertyChanged("Icon");
+                }
+            }
             public string DisplayText {
                 get {
                     return QTUtility2.MakePathDisplayText(Path, true);
@@ -1709,20 +1731,46 @@ namespace QTTabBarLib {
             }
         }
 
-        public class GroupEntry {
+        private class GroupEntry : NotifyPropertyChanged {
             public string Name { get; set; }
             public Image Icon {
                 get {
-                    return Resources_Image.icoEmpty.ToBitmap();
+                    if(Folders.Count == 0) {
+                        return Resources_Image.icoEmpty.ToBitmap();
+                    }
+                    else {
+                        return Folders.First().Icon;
+                    }
                 }
             }
             public ObservableCollection<FolderEntry> Folders { get; private set; }
             public bool Startup { get; set; }
             public int ShortcutKey { get; set; }
 
+            private void Folders_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
+                if(e.OldItems != null) {
+                    foreach(FolderEntry child in e.OldItems) {
+                        child.PropertyChanged -= new PropertyChangedEventHandler(FolderEntry_PropertyChanged);
+                    }
+                }
+                if(e.NewItems != null) {
+                    foreach(FolderEntry child in e.NewItems) {
+                        child.PropertyChanged += new PropertyChangedEventHandler(FolderEntry_PropertyChanged);
+                    }
+                }
+                OnPropertyChanged("Icon");
+            }
+
+            private void FolderEntry_PropertyChanged(object sender, PropertyChangedEventArgs e) {
+                if(Folders.Count > 0 && sender == Folders.First()) {
+                    OnPropertyChanged("Icon");
+                }
+            }
+
             public GroupEntry(string name) {
                 Name = name;
                 Folders = new ObservableCollection<FolderEntry>();
+                Folders.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(Folders_CollectionChanged);
             }
             public GroupEntry() : this(null) {
             }

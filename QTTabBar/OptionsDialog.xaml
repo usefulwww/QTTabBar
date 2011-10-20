@@ -387,6 +387,7 @@
                     <TextBlock
                         x:Name="txtDisplayText"
                         Text="{Binding Path=DisplayText}"
+                        VerticalAlignment="Center"
                         Visibility="Collapsed"/>
                 </StackPanel>
             </Border>
@@ -417,17 +418,13 @@
                     Binding="{Binding Path=IsVirtualFolder}" 
                     Value="True">
                     <Setter
-                        TargetName="txtPath"
-                        Property="Visibility"
-                        Value="Collapsed"/>
-                    <Setter
                         TargetName="txtDisplayText"
                         Property="Visibility"
                         Value="Visible"/>
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
-        <DataTemplate x:Key="CellTemplate_Folder">
+        <DataTemplate x:Key="PrimaryCellTemplate">
             <DockPanel>
                 <ToggleButton x:Name="Expander" 
                       Style="{StaticResource ExpandCollapseToggleStyle}" 
@@ -459,7 +456,7 @@
         </DataTemplate>
         <GridViewColumnCollection x:Key="gvcc">
             <GridViewColumn Header="Folder"
-                CellTemplate="{StaticResource CellTemplate_Folder}"
+                CellTemplate="{StaticResource PrimaryCellTemplate}"
                 Width="300"/>
             <GridViewColumn Header="Startup" Width="60">
                 <GridViewColumn.CellTemplate>
@@ -467,7 +464,8 @@
                         <CheckBox x:Name="chkStartup"
                             IsChecked="{Binding Path=Startup}"
                             HorizontalAlignment="Center"
-                            VerticalAlignment="Center"/>
+                            VerticalAlignment="Center"
+                            Visibility="Collapsed"/>
                         <DataTemplate.Triggers>
                             <DataTrigger
                                 Binding="{Binding Converter={StaticResource ObjectToClassNameConverter}}" 
@@ -475,7 +473,7 @@
                                 <Setter
                                     TargetName="chkStartup"
                                     Property="Visibility"
-                                    Value="Collapsed"/>
+                                    Value="Visible"/>
                             </DataTrigger>
                         </DataTemplate.Triggers>
                     </DataTemplate>
@@ -486,7 +484,8 @@
                     <DataTemplate>
                         <TextBlock x:Name="txtShortcutKey"
                             HorizontalAlignment="Center"
-                            VerticalAlignment="Center">Ctrl + A</TextBlock>
+                            VerticalAlignment="Center"
+                            Visibility="Collapsed">Ctrl + A</TextBlock>
                         <DataTemplate.Triggers>
                             <DataTrigger
                                 Binding="{Binding Converter={StaticResource ObjectToClassNameConverter}}"
@@ -494,7 +493,7 @@
                                 <Setter
                                     TargetName="txtShortcutKey"
                                     Property="Visibility"
-                                    Value="Collapsed"/>
+                                    Value="Visible"/>
                             </DataTrigger>
                         </DataTemplate.Triggers>
                     </DataTemplate>
