@@ -1685,7 +1685,7 @@ namespace QTTabBarLib {
         }
 
         public class FolderEntry {
-            public string Path { get; private set; }
+            public string Path { get; set; }
             public string DisplayText {
                 get {
                     return QTUtility2.MakePathDisplayText(Path, true);
@@ -1694,6 +1694,11 @@ namespace QTTabBarLib {
             public Image Icon {
                 get {
                     return QTUtility.GetIcon(Path, false).ToBitmap();
+                }
+            }
+            public bool IsVirtualFolder {
+                get {
+                    return Path.StartsWith("::");
                 }
             }
 
@@ -1705,7 +1710,7 @@ namespace QTTabBarLib {
         }
 
         public class GroupEntry {
-            public string Name { get; private set; }
+            public string Name { get; set; }
             public Image Icon {
                 get {
                     return Resources_Image.icoEmpty.ToBitmap();
@@ -1719,8 +1724,7 @@ namespace QTTabBarLib {
                 Name = name;
                 Folders = new ObservableCollection<FolderEntry>();
             }
-            public GroupEntry() {
-                Folders = new ObservableCollection<FolderEntry>();
+            public GroupEntry() : this(null) {
             }
         }
 
@@ -1834,6 +1838,22 @@ namespace QTTabBarLib {
         }
 
         private const double c_IndentSize = 19.0;
+    }
+
+    // You can create ObjectToTypeConverter instead of this,
+    // but VS2010 WPF Designer would refuse an expression like {x:Type SomeClass+NestedClass}
+    [ValueConversion(typeof(object), typeof(string))]
+    public class ObjectToClassNameConverter : IValueConverter {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+            if(value == null) {
+                return null;
+            }
+            return value.GetType().Name;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+            throw new NotSupportedException();
+        }
     }
 
     #endregion

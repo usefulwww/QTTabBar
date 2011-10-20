@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="QTTabBarLib.EditableHeader"
+﻿<UserControl x:Class="QTTabBarLib.EditableHeader" x:Name="EditableHeaderControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -7,14 +7,23 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        
-        <TextBlock x:Name="txtHeader"
-               Text="New Header"
+
+        <Border BorderThickness="3">
+            <TextBlock x:Name="txtHeader"
+               Text="{Binding Path=Text, ElementName=EditableHeaderControl}"
+               VerticalAlignment="Center"
+               Padding="{Binding Path=Padding, ElementName=txtHeaderEdit}"
+               MinWidth="{Binding Path=MinWidth, ElementName=txtHeaderEdit}"
+               MouseDown="txtHeader_MouseDown"
                MouseUp="txtHeader_MouseUp"/>
+        </Border>
         <TextBox x:Name="txtHeaderEdit"
-                 Text="New Header"
+                 Text="{Binding Path=Text, ElementName=EditableHeaderControl}"
+                 Padding="0"
+                 VerticalContentAlignment="Center"
+                 MinWidth="10"
                  LostFocus="txtHeaderEdit_LostFocus"
                  KeyDown="txtHeaderEdit_KeyDown"
                  Visibility="Hidden" />

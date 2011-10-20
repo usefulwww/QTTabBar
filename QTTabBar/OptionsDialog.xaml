@@ -35,6 +35,7 @@
         <qt:StringEqualityConverter         x:Key="StringEqualityConverter"/>
         <BooleanToVisibilityConverter       x:Key="BooleanToVisibilityConverter"/>
         <qt:LevelToIndentConverter          x:Key="LevelIndentConverter"/>
+        <qt:ObjectToClassNameConverter      x:Key="ObjectToClassNameConverter"/>
 
         <Style x:Key="SectionHeaderStyle" TargetType="Label">
             <Setter Property="Background"       Value="#FFF0F2F5"/>
@@ -364,6 +365,68 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <DataTemplate x:Key="GroupFolderCellTemplate">
+            <Border Margin="0,2">
+                <StackPanel Orientation="Horizontal">
+                    <Image
+                        Source="{Binding Path=Icon, Converter={StaticResource BitmapToImageSourceConverter}}"
+                        Width="16"
+                        Height="16"
+                        Stretch="Fill"
+                        Margin="0,0,2,0"/>
+                    <qt:EditableHeader
+                        x:Name="txtName"
+                        Text="{Binding Path=Name}"
+                        Visibility="Collapsed"
+                        Container="{Binding RelativeSource={RelativeSource AncestorType={x:Type TreeViewItem}}}"/>
+                    <qt:EditableHeader
+                        x:Name="txtPath"
+                        Text="{Binding Path=Path}"
+                        Visibility="Collapsed"
+                        Container="{Binding RelativeSource={RelativeSource AncestorType={x:Type TreeViewItem}}}"/>
+                    <TextBlock
+                        x:Name="txtDisplayText"
+                        Text="{Binding Path=DisplayText}"
+                        Visibility="Collapsed"/>
+                </StackPanel>
+            </Border>
+            <DataTemplate.Triggers>
+                <DataTrigger
+                    Binding="{Binding Converter={StaticResource ObjectToClassNameConverter}}" 
+                    Value="GroupEntry">
+                    <Setter
+                        TargetName="txtName"
+                        Property="Visibility"
+                        Value="Visible"/>
+                </DataTrigger>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition
+                            Binding="{Binding Converter={StaticResource ObjectToClassNameConverter}}"
+                            Value="FolderEntry"/>
+                        <Condition
+                            Binding="{Binding Path=IsVirtualFolder}"
+                            Value="False"/>
+                    </MultiDataTrigger.Conditions>
+                    <Setter
+                        TargetName="txtPath"
+                        Property="Visibility"
+                        Value="Visible"/>
+                </MultiDataTrigger>
+                <DataTrigger
+                    Binding="{Binding Path=IsVirtualFolder}" 
+                    Value="True">
+                    <Setter
+                        TargetName="txtPath"
+                        Property="Visibility"
+                        Value="Collapsed"/>
+                    <Setter
+                        TargetName="txtDisplayText"
+                        Property="Visibility"
+                        Value="Visible"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
         <DataTemplate x:Key="CellTemplate_Folder">
             <DockPanel>
                 <ToggleButton x:Name="Expander" 
@@ -379,18 +442,9 @@
                                                  AncestorType=
                                                   {x:Type qt:TreeListViewItem}}}"
                       ClickMode="Press"/>
-                <Border Margin="0,2">
-                    <StackPanel Orientation="Horizontal">
-                        <Image
-                            Source="{Binding Path=Icon, Converter={StaticResource BitmapToImageSourceConverter}}"
-                            Width="16"
-                            Height="16"
-                            Stretch="Fill"
-                            Margin="0,0,2,0"/>
-                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
-                        <TextBlock Text="{Binding DisplayText}" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Border>
+                <ContentPresenter
+                    Content="{Binding}"
+                    ContentTemplate="{StaticResource GroupFolderCellTemplate}"/>
             </DockPanel>
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding Path=HasItems,
@@ -416,8 +470,8 @@
                             VerticalAlignment="Center"/>
                         <DataTemplate.Triggers>
                             <DataTrigger
-                                Binding="{Binding Path=Startup, Converter={StaticResource BoolInverterConverter}}" 
-                                Value="{x:Null}">
+                                Binding="{Binding Converter={StaticResource ObjectToClassNameConverter}}" 
+                                Value="GroupEntry">
                                 <Setter
                                     TargetName="chkStartup"
                                     Property="Visibility"
@@ -435,8 +489,8 @@
                             VerticalAlignment="Center">Ctrl + A</TextBlock>
                         <DataTemplate.Triggers>
                             <DataTrigger
-                                Binding="{Binding Path=Startup, Converter={StaticResource BoolInverterConverter}}"
-                                Value="{x:Null}">
+                                Binding="{Binding Converter={StaticResource ObjectToClassNameConverter}}"
+                                Value="GroupEntry">
                                 <Setter
                                     TargetName="txtShortcutKey"
                                     Property="Visibility"
