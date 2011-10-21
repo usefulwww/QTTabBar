@@ -366,8 +366,11 @@
             </Setter>
         </Style>
         <DataTemplate x:Key="GroupFolderCellTemplate">
-            <Border Margin="0,2">
-                <StackPanel Orientation="Horizontal">
+            <Grid>
+                <StackPanel
+                    x:Name="panelBody"
+                    Orientation="Horizontal"
+                    Margin="0,2">
                     <Image
                         Source="{Binding Path=Icon, Converter={StaticResource BitmapToImageSourceConverter}}"
                         Width="16"
@@ -390,8 +393,25 @@
                         VerticalAlignment="Center"
                         Visibility="Collapsed"/>
                 </StackPanel>
-            </Border>
+                <Separator
+                    x:Name="separator"
+                    Height="5"
+                    Width="{TemplateBinding ActualWidth}"
+                    Visibility="Collapsed"/>
+            </Grid>
             <DataTemplate.Triggers>
+                <DataTrigger
+                    Binding="{Binding Converter={StaticResource ObjectToClassNameConverter}}" 
+                    Value="SeparatorEntry">
+                    <Setter
+                        TargetName="panelBody"
+                        Property="Visibility"
+                        Value="Collapsed"/>
+                    <Setter
+                        TargetName="separator"
+                        Property="Visibility"
+                        Value="Visible"/>
+                </DataTrigger>
                 <DataTrigger
                     Binding="{Binding Converter={StaticResource ObjectToClassNameConverter}}" 
                     Value="GroupEntry">
