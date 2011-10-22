@@ -21,7 +21,7 @@
         </Border>
         <TextBox x:Name="txtHeaderEdit"
                  Text="{Binding Path=Text, ElementName=EditableHeaderControl}"
-                 Padding="0"
+                 Padding="{Binding Path=Padding, ElementName=EditableHeaderControl}"
                  VerticalContentAlignment="Center"
                  MinWidth="10"
                  LostFocus="txtHeaderEdit_LostFocus"

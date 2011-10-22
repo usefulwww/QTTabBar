@@ -301,14 +301,16 @@
                     Width="16"
                     Height="16"
                     Stretch="Fill"/>
-                <TextBlock
+                <qt:EditableHeader
                     Text="{Binding Path=Extension}"
-                    VerticalAlignment="Center"
-                    Margin="4"/>
+                    Padding="2,0"
+                    Margin="0,2"
+                    Container="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"/>
                 <TextBlock
                     Text="{Binding Path=FriendlyName}"
                     VerticalAlignment="Center"
-                    Foreground="DarkGray" FontSize="10" />
+                    Foreground="Gray"
+                    FontSize="10" />
             </StackPanel>
         </DataTemplate>
         <HierarchicalDataTemplate x:Key="GroupItemTemplate" ItemsSource="{Binding Path=Folders}">

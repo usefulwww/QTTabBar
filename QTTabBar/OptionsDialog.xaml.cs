@@ -512,6 +512,9 @@ namespace QTTabBarLib {
             control.SelectedItem = item;
             control.ScrollIntoView(item);
             control.Focus();
+
+            EnsureGenerated(control,
+                () => EditLabel((ListBoxItem)FindItemContainer(control, item)));
         }
 
         private void FillFileTypes(ICollection<FileTypeEntry> fileTypes, string[] newValues) {
@@ -993,18 +996,34 @@ namespace QTTabBarLib {
             }
         }
 
-        private object FindItemContainer(ItemsControl parent, object childItem) {
+        public static DependencyObject FindVisualChildByName(DependencyObject parent, string name) {
+            for(int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++) {
+                DependencyObject child = VisualTreeHelper.GetChild(parent, i);
+                string controlName = child.GetValue(System.Windows.Controls.Control.NameProperty) as string;
+                if(controlName == name) {
+                    return child;
+                }
+                else {
+                    DependencyObject result = FindVisualChildByName(child, name);
+                    if(result != null)
+                        return result;
+                }
+            }
+            return null;
+        }
+
+        private UIElement FindItemContainer(ItemsControl parent, object childItem) {
             if(parent.ItemContainerGenerator.Status != GeneratorStatus.ContainersGenerated) {
                 return null;
             }
-            object container = parent.ItemContainerGenerator.ContainerFromItem(childItem);
+            UIElement container = (UIElement)parent.ItemContainerGenerator.ContainerFromItem(childItem);
             if(container != null) {
                 return container;
             }
             foreach(object item in parent.Items) {
                 ItemsControl child = parent.ItemContainerGenerator.ContainerFromItem(item) as ItemsControl;
                 if(child != null && child.Items.Count > 0) {
-                    object result = FindItemContainer(child, childItem);
+                    UIElement result = FindItemContainer(child, childItem);
                     if(result != null) {
                         return result;
                     }
@@ -1069,6 +1088,42 @@ namespace QTTabBarLib {
             }
         }
 
+        private void EditLabel(FrameworkElement container) {
+            Action pred = delegate
+            {
+                // We'd rather call by "txtName".
+                EditableHeader edit = FindVisualChildByName(container, "EditableHeaderControl") as EditableHeader;
+                if(edit == null || edit.Visibility != Visibility.Visible) {
+                    return;
+                }
+                edit.StartEdit();
+            };
+            if(container.IsLoaded) {
+                pred();
+            }
+            else {
+                container.Loaded += delegate { pred(); };
+            }
+        }
+
+        private void EnsureGenerated(ItemsControl control, Action pred) {
+            ItemContainerGenerator gen = control.ItemContainerGenerator;
+            if(gen.Status == GeneratorStatus.ContainersGenerated) {
+                pred();
+                return;
+            }
+            EventHandler handler = delegate { };
+            handler = delegate
+            {
+                if(gen.Status != GeneratorStatus.ContainersGenerated) {
+                    return;
+                }
+                pred();
+                gen.StatusChanged -= handler;
+            };
+            gen.StatusChanged += handler;
+        }
+
         private int GetPreferredInsertionIndex(TreeView tvw) {
             object val = tvw.SelectedItem;
             if(val == null) {
@@ -1088,8 +1143,12 @@ namespace QTTabBarLib {
                 GetPreferredInsertionIndex(tvw),
                 item);
 
-            TreeViewItem container = (TreeViewItem)FindItemContainer(tvw, item);
-            container.IsSelected = true;
+            EnsureGenerated(tvw, delegate
+            {
+                TreeViewItem container = (TreeViewItem)FindItemContainer(tvw, item);
+                container.IsSelected = true;
+                EditLabel(container);
+            });
         }
 
         private void btnGroupsMoveNodeUp_Click(object sender, RoutedEventArgs e) {
@@ -1137,12 +1196,15 @@ namespace QTTabBarLib {
             }
             FolderEntry folder = new FolderEntry(dlg.SelectedPath);
             group.Folders.Insert(index, folder);
-            // TODO: Doesn't work. item would be null.
-            //TreeViewItem item = FindContainerTreeViewItem(tvwGroups, folder);
-            //item.IsSelected = true;
 
-            TreeViewItem parent2 = (TreeViewItem)FindItemContainer(tvwGroups, val);
-            parent2.IsExpanded = true;
+            TreeViewItem parent = (TreeViewItem)FindItemContainer(tvwGroups, group);
+            parent.IsExpanded = true;
+
+            EnsureGenerated(parent, delegate
+            {
+                TreeViewItem container = (TreeViewItem)FindItemContainer(tvwGroups, folder);
+                container.IsSelected = true;
+            });
         }
 
         private void btnGroupsRemoveNode_Click(object sender, RoutedEventArgs e) {
@@ -1653,16 +1715,33 @@ namespace QTTabBarLib {
             }
         }
 
-        private class FileTypeEntry {
-            public string DotExtension { get; private set; }
+        private class FileTypeEntry : NotifyPropertyChanged {
+            private string extension;
+
             public string Extension {
                 get {
-                    return DotExtension.Substring(1);
+                    return extension;
+                }
+                set {
+                    extension = value;
+                    OnPropertyChanged("FriendlyName");
+                    OnPropertyChanged("Icon");
+                }
+            }
+            public string DotExtension {
+                get {
+                    return "." + Extension;
+                }
+                set {
+                    if(!value.StartsWith(".")) {
+                        throw new ArgumentException();
+                    }
+                    Extension = value.Substring(1);
                 }
             }
             public string FriendlyName {
                 get {
-                    // PENDING: Instead of GetFileType or something.
+                    // PENDING: Instead of something like GetFileType.
 
                     SHFILEINFO psfi = new SHFILEINFO();
                     int sz = System.Runtime.InteropServices.Marshal.SizeOf(psfi);
@@ -1688,6 +1767,7 @@ namespace QTTabBarLib {
                 DotExtension = extension;
             }
             public FileTypeEntry() {
+                DotExtension = ".";
             }
         }
 
@@ -1797,9 +1877,6 @@ namespace QTTabBarLib {
             //# But, without this we must interact with the TextBox in some way before the OK button saves it.
             workingConfig.bbar.ImageStripPath = "";
         }
-
-        
-        
     }
     
     #region ---------- Converters ----------
