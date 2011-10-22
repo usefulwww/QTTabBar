@@ -387,10 +387,10 @@
                         Text="{Binding Path=Path}"
                         Visibility="Collapsed"
                         Container="{Binding RelativeSource={RelativeSource AncestorType={x:Type TreeViewItem}}}"/>
-                    <TextBlock
+                    <qt:EditableHeader
                         x:Name="txtDisplayText"
-                        Text="{Binding Path=DisplayText}"
-                        VerticalAlignment="Center"
+                        Text="{Binding Path=DisplayText, Mode=OneWay}"
+                        ReadOnly="True"
                         Visibility="Collapsed"/>
                 </StackPanel>
                 <Separator
