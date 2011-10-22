@@ -1003,11 +1003,20 @@ namespace QTTabBarLib {
                 if(controlName == name) {
                     return child;
                 }
-                else {
-                    DependencyObject result = FindVisualChildByName(child, name);
-                    if(result != null)
-                        return result;
+                // The following makes it possible to find x:Name attributes.
+                if(child is ContentPresenter) {
+                    ContentPresenter content = (ContentPresenter)child;
+                    DataTemplate template = content.ContentTemplate;
+                    if(template != null) {
+                        object obj = template.FindName(name, content);
+                        if(obj != null) {
+                            return obj as DependencyObject;
+                        }
+                    }
                 }
+                DependencyObject result = FindVisualChildByName(child, name);
+                if(result != null)
+                    return result;
             }
             return null;
         }
@@ -1088,11 +1097,10 @@ namespace QTTabBarLib {
             }
         }
 
-        private void EditLabel(FrameworkElement container) {
+        private void EditLabel(FrameworkElement container, string name = "EditableHeaderControl") {
             Action pred = delegate
             {
-                // We'd rather call by "txtName".
-                EditableHeader edit = FindVisualChildByName(container, "EditableHeaderControl") as EditableHeader;
+                EditableHeader edit = FindVisualChildByName(container, name) as EditableHeader;
                 if(edit == null || edit.Visibility != Visibility.Visible) {
                     return;
                 }
@@ -1112,7 +1120,7 @@ namespace QTTabBarLib {
                 pred();
                 return;
             }
-            EventHandler handler = delegate { };
+            EventHandler handler = null;
             handler = delegate
             {
                 if(gen.Status != GeneratorStatus.ContainersGenerated) {
@@ -1137,7 +1145,7 @@ namespace QTTabBarLib {
             return index + 1;
         }
 
-        private void AddNew(TreeView tvw, object item) {
+        private void AddNew(TreeView tvw, object item, string editName = null) {
             System.Collections.IList col = (System.Collections.IList)tvw.ItemsSource;
             col.Insert(
                 GetPreferredInsertionIndex(tvw),
@@ -1147,7 +1155,10 @@ namespace QTTabBarLib {
             {
                 TreeViewItem container = (TreeViewItem)FindItemContainer(tvw, item);
                 container.IsSelected = true;
-                EditLabel(container);
+
+                if(editName != null) {
+                    EditLabel(container, editName);
+                }
             });
         }
 
@@ -1164,7 +1175,7 @@ namespace QTTabBarLib {
         }
 
         private void btnGroupsAddGroup_Click(object sender, RoutedEventArgs e) {
-            AddNew(tvwGroups, new GroupEntry("New Group"));
+            AddNew(tvwGroups, new GroupEntry("New Group"), "txtName");
         }
 
         private void btnGroupsAddFolder_Click(object sender, RoutedEventArgs e) {
@@ -1717,6 +1728,22 @@ namespace QTTabBarLib {
 
         private class FileTypeEntry : NotifyPropertyChanged {
             private string extension;
+
+            // It still seems to be not immediately being affected..
+            /*
+            private void SetExtension(string value) {
+                if(value.StartsWith(".")) {
+                    extension = value.Substring(1);
+                }
+                else {
+                    extension = value;
+                }
+                OnPropertyChanged("Extension");
+                OnPropertyChanged("DotExtension");
+                OnPropertyChanged("FriendlyName");
+                OnPropertyChanged("Icon");
+            }
+            */
 
             public string Extension {
                 get {
