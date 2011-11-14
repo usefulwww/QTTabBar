@@ -1509,7 +1509,6 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -1522,27 +1521,23 @@
                                 Height="16"
                                 IsChecked="{Binding Path=UseTabSkin}"
                                 Margin="0,0,5,0"/>
-                            <TextBox
+                            <qt:FileFolderEntryBox
+                                Folder="False"
                                 Grid.Column="1"
                                 Grid.ColumnSpan="3"
                                 Margin="5,1"/>
-                            <Button
-                                Content="..."
-                                Grid.Column="4"
-                                Margin="5,1"
-                                Width="26"/>
                             <Label
                                 Content="Sizing margins:"
                                 Grid.Row="1"
                                 Height="16"
                                 Margin="18,0,5,0"
                                 Padding="0"/>
-                            <ComboBox
+                            <qt:MarginCombo
                                 Grid.Column="1"
                                 Grid.Row="1"
                                 HorizontalAlignment="Left"
-                                IsEditable="True"
                                 Margin="5,1"
+                                Value="{Binding Path=TabSizeMargin}"
                                 Width="120"/>
                             <Label
                                 Content="Overlap area:"
@@ -1551,11 +1546,12 @@
                                 Height="16"
                                 Margin="18,0,5,0"
                                 Padding="0"/>
-                            <TextBox
+                            <qt:Spinner
                                 Grid.Column="3"
                                 Grid.Row="1"
                                 HorizontalAlignment="Left"
                                 Margin="5,1"
+                                Value="{Binding Path=OverlapPixels}"
                                 Width="80"/>
                             <Label
                                 Content="Content margins:"
@@ -1563,12 +1559,11 @@
                                 Height="16"
                                 Margin="18,0,5,0"
                                 Padding="0"/>
-                            <ComboBox
+                            <qt:MarginCombo
                                 Grid.Column="1"
                                 Grid.Row="2"
-                                HorizontalAlignment="Left"
-                                IsEditable="True"
                                 Margin="5,1"
+                                Value="{Binding Path=TabContentMargin}"
                                 Width="120"/>
                             <CheckBox x:Name="chkHitTestTransparent"
                                 Content="Hit test transparent areas"
@@ -1605,23 +1600,26 @@
                                 Orientation="Horizontal">
                                 <qt:Spinner 
                                     Min="0"
-                                    Max="100"/>
+                                    Max="100"
+                                    Value="{Binding Path=TabHeight}"/>
                                 <Label
                                     Content="Min Width:"
                                     Height="16"
                                     Margin="18,0,5,0"
                                     Padding="0"/>
                                 <qt:Spinner 
-                                    Min="0"
-                                    Max="100"/>
+                                    Min="10"
+                                    Max="200"
+                                    Value="{Binding Path=TabMinWidth}"/>
                                 <Label
                                     Content="Max Width:"
                                     Height="16"
                                     Margin="18,0,5,0"
                                     Padding="0"/>
                                 <qt:Spinner 
-                                    Min="0"
-                                    Max="100"/>
+                                    Min="10"
+                                    Max="200"
+                                    Value="{Binding Path=TabMaxWith}"/>
                             </StackPanel>
                             <Label
                                 Content="Sizing mode:"
@@ -1637,10 +1635,12 @@
                                 <qt:RadioButtonEx
                                     Content="Full width"
                                     Height="16"
+                                    IsChecked="{Binding Path=FixedWidthTabs, Converter={StaticResource BoolInverterConverter}}"
                                     Margin="0,0,20,0"/>
                                 <qt:RadioButtonEx
                                     Content="Same size"
                                     Height="16"
+                                    IsChecked="{Binding Path=FixedWidthTabs}"
                                     Margin="0,0,10,0"/>
                             </StackPanel>
                         </Grid>
@@ -1652,115 +1652,47 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <Label
-                                Content="Font:"
-                                Height="16"
-                                Margin="0,3,8,3"
-                                Padding="0"/>
-                            <Label
-                                Content="Text Color"
-                                Grid.Row="1"
-                                Height="16"
-                                Margin="0,3,8,3"
-                                Padding="0"/>
-                            <Label
-                                Content="Alignment:"
-                                Grid.Row="3"
-                                Height="23"
-                                Margin="0,3,8,3"
-                                Padding="0"
-                                VerticalAlignment="Center"
-                                VerticalContentAlignment="Center"/>
                             <Button
-                                Content="Active"
+                                Content="Choose Text Colors  &#9660;"
+                                Height="23"
+                                Margin="0, 0, 20, 10"
+                                Width="140"
+                                VerticalAlignment="Center"/>
+                            <Button
+                                Content="Choose Text Font..."
                                 Grid.Column="1"
-                                Grid.Row="1"
                                 Height="23"
-                                HorizontalAlignment="Left"
-                                Margin="3"
-                                VerticalAlignment="Bottom"
-                                Width="75"/>
-                            <Button
-                                Content="Mouseover"
-                                Grid.Column="3"
-                                Grid.Row="1"
-                                Height="23"
-                                HorizontalAlignment="Left"
-                                Margin="3"
-                                VerticalAlignment="Bottom"
-                                Width="75"/>
-                            <Button
-                                Content="Inactive"
-                                Grid.Column="2"
-                                Grid.Row="1"
-                                Height="23"
-                                HorizontalAlignment="Left"
-                                Margin="3"
-                                VerticalAlignment="Bottom"
-                                Width="75"/>
-                            <Button
-                                Content="Mouseover"
-                                Grid.Column="3"
-                                Grid.Row="2"
-                                Height="23"
-                                HorizontalAlignment="Left"
-                                Margin="3"
-                                VerticalAlignment="Bottom"
-                                Width="75"/>
-                            <Button
-                                Content="Inactive"
-                                Grid.Column="2"
-                                Grid.Row="2"
-                                Height="23"
-                                HorizontalAlignment="Left"
-                                Margin="3"
-                                VerticalAlignment="Bottom"
-                                Width="75"/>
-                            <Button
-                                Content="Active"
-                                Grid.Column="1"
-                                Grid.Row="2"
-                                Height="23"
-                                HorizontalAlignment="Left"
-                                Margin="3"
-                                VerticalAlignment="Bottom"
-                                Width="75"/>
-                            <Button
-                                Content="Microsoft Sans Serif, 8.25pt"
-                                Grid.Column="1"
-                                Grid.ColumnSpan="3"
-                                Height="23"
-                                HorizontalAlignment="Left"
-                                Margin="3"
-                                VerticalAlignment="Bottom"
-                                Width="237"/>
+                                Margin="0, 0, 20, 10"
+                                Width="140"
+                                VerticalAlignment="Center"/>
                             <qt:RadioButtonEx x:Name="radTabTextCenteredNo"
-                                Content="Left"
-                                Grid.Column="1"
-                                Grid.Row="3"
-                                Height="16"
-                                IsChecked="{Binding Path=TabTextCentered, Converter={StaticResource BoolInverterConverter}}"/>
-                            <qt:RadioButtonEx x:Name="radTabTextCenteredYes"
-                                Content="Center"
+                                Content="Left Aligned"
                                 Grid.Column="2"
-                                Grid.Row="3"
+                                Grid.Row="0"
                                 Height="16"
-                                IsChecked="{Binding Path=TabTextCentered}"/>
+                                IsChecked="{Binding Path=TabTextCentered, Converter={StaticResource BoolInverterConverter}}"
+                                VerticalAlignment="Center"/>
+                            <qt:RadioButtonEx x:Name="radTabTextCenteredYes"
+                                Content="Center Aligned"
+                                Grid.Column="2"
+                                Grid.Row="1"
+                                Height="16"
+                                IsChecked="{Binding Path=TabTextCentered}"
+                                VerticalAlignment="Center"/>
                             <CheckBox x:Name="chkTabTitleShadows"
-                                Content="Text Shadow:"
-                                Grid.Row="2"
+                                Content="Text Drop Shadow"
+                                Grid.Row="1"
+                                Grid.Column="1"
                                 Height="16"
+                                HorizontalAlignment="Left"
                                 IsChecked="{Binding Path=TabTitleShadows}"
-                                Margin="0,3,8,3"/>
+                                VerticalAlignment="Center"/>
                         </Grid>
                         <Label
                             Content="Toolbar Background"
@@ -1771,77 +1703,68 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="274*"/>
+                                <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <CheckBox x:Name="chkUseRebarBGColor"
-                                Content="Solid color"
-                                Height="16"
-                                IsChecked="{Binding Path=UseRebarBGColor}"
-                                Margin="0,0,10,0"/>
                             <CheckBox
                                 Content="Image"
+                                Height="16"
+                                Margin="0,0,15,0"
+                                IsChecked="{Binding Path=UseRebarImage}"/>
+                            <qt:FileFolderEntryBox
+                                Grid.Column="1"
+                                Grid.ColumnSpan="3"
+                                Margin="0,2"/>
+                            <CheckBox x:Name="chkUseRebarBGColor"
+                                Content="Solid color"
                                 Grid.Row="1"
                                 Height="16"
-                                Margin="0,0,10,0"/>
+                                IsChecked="{Binding Path=UseRebarBGColor}"
+                                Margin="0,0,15,0"/>
                             <Button
                                 Content="Choose"
                                 Grid.Column="1"
+                                Grid.Row="1"
                                 Height="23"
                                 HorizontalAlignment="Left"
-                                Margin="4,2,0,2"
+                                Margin="0,2"
                                 Width="75"/>
+                            <CheckBox
+                                Content="Image each bar seperately"
+                                Grid.Row="2"
+                                Grid.ColumnSpan="2"
+                                Height="16"
+                                IsChecked="{Binding Path=RebarImageSeperateBars}"
+                                Margin="0,0,15,0"/>
                             <Label
                                 Content="Stretch mode:"
-                                Grid.Row="2"
-                                Height="16"
-                                Margin="0,0,10,0"
-                                Padding="0"/>
-                            <Label
-                                Content="Sizing margins:"
-                                Grid.Row="3"
-                                Height="16"
-                                Margin="0,0,10,0"
-                                Padding="0"/>
-                            <StackPanel
-                                Grid.Column="1"
-                                Grid.ColumnSpan="2"
-                                Grid.Row="2"
-                                Height="27"
-                                HorizontalAlignment="Stretch"
-                                Margin="2,2,11,2"
-                                Orientation="Horizontal">
-                                <ComboBox
-                                    Height="23"
-                                    Width="150"/>
-                                <CheckBox
-                                    Content="Image each bar"
-                                    Height="16"
-                                    Margin="20,0,0,0"
-                                    Padding="4,0,0,0"/>
-                            </StackPanel>
-                            <ComboBox
-                                Grid.Column="1"
-                                Grid.Row="3"
-                                Height="23"
-                                HorizontalAlignment="Left"
-                                IsEditable="True"
-                                Margin="2,2,0,2"
-                                Width="150"/>
-                            <Button
-                                Content="..."
                                 Grid.Column="2"
                                 Grid.Row="1"
-                                Margin="8,2"
-                                Width="26"/>
-                            <TextBox
-                                Grid.Column="1"
+                                Height="16"
+                                Margin="0,0,15,0"
+                                Padding="0"/>
+                            <ComboBox
+                                Grid.Column="3"
                                 Grid.Row="1"
-                                Margin="2"/>
+                                Height="23"
+                                HorizontalAlignment="Stretch"/>
+                            <Label
+                                Content="Sizing margins:"
+                                Grid.Column="2"
+                                Grid.Row="2"
+                                Height="16"
+                                Margin="0,0,15,0"
+                                Padding="0"/>
+                            <qt:MarginCombo
+                                Grid.Column="3"
+                                Grid.Row="2"
+                                Height="23"
+                                HorizontalAlignment="Stretch"
+                                Value="{Binding Path=RebarSizeMargin}"/>
                         </Grid>
                     </StackPanel>
                 </ScrollViewer>

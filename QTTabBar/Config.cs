@@ -350,8 +350,8 @@ namespace QTTabBarLib {
         public class _Skin {
             public bool UseTabSkin               { get; set; }
             public string TabImageFile           { get; set; }
-            public Rectangle TabSizeMargin       { get; set; }
-            public Rectangle TabContentMargin    { get; set; }
+            public Margin TabSizeMargin          { get; set; }
+            public Margin TabContentMargin       { get; set; }
             public int OverlapPixels             { get; set; }
             public bool HitTestTransparent       { get; set; }
             public int TabHeight                 { get; set; }
@@ -373,14 +373,14 @@ namespace QTTabBarLib {
             public StretchMode RebarStretchMode  { get; set; }
             public string RebarImageFile         { get; set; }
             public bool RebarImageSeperateBars   { get; set; }
-            public Rectangle RebarSizeMargin     { get; set; }
+            public Margin RebarSizeMargin        { get; set; }
             public bool ActiveTabInBold          { get; set; }
 
             public _Skin() {
                 UseTabSkin = false;
                 TabImageFile = "";
-                TabSizeMargin = new Rectangle(0, 0, 0, 0);
-                TabContentMargin = new Rectangle(0, 0, 0, 0);
+                TabSizeMargin = new Margin();
+                TabContentMargin = new Margin();
                 OverlapPixels = 0;
                 HitTestTransparent = false;
                 TabHeight = 24;
@@ -401,7 +401,7 @@ namespace QTTabBarLib {
                 RebarStretchMode = StretchMode.Full;
                 RebarImageFile = "";
                 RebarImageSeperateBars = false;
-                RebarSizeMargin = new Rectangle(0, 0, 0, 0);
+                RebarSizeMargin = new Margin();
                 ActiveTabInBold = false;
             }
         }

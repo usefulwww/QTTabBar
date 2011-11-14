@@ -77,6 +77,7 @@
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="PresentationFramework.Aero" />
     <Reference Include="System" />
     <Reference Include="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -120,6 +121,9 @@
     <Compile Include="Interop\ShellConstants.cs" />
     <Compile Include="Interop\TBBUTTON.cs" />
     <Compile Include="Interop\TBBUTTONINFO.cs" />
+    <Compile Include="MarginCombo.xaml.cs">
+      <DependentUpon>MarginCombo.xaml</DependentUpon>
+    </Compile>
     <Compile Include="OptionsDialog.xaml.cs">
       <DependentUpon>OptionsDialog.xaml</DependentUpon>
     </Compile>
@@ -411,6 +415,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ApplicationsNode.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarginCombo.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

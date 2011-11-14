@@ -1,0 +1,62 @@
+﻿<UserControl x:Class="QTTabBarLib.MarginCombo"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
+             mc:Ignorable="d" 
+             x:Name="MarginComboControl"
+             Height="22">
+    <Grid 
+        Height="{Binding Path=Height, ElementName=MarginComboControl}" 
+        Width="{Binding Path=Width, ElementName=MarginComboControl}">
+        <TextBox x:Name="txtMargin" 
+            Padding="0, 0, 20, 0"
+            PreviewTextInput="txtMargin_PreviewTextInput"
+            TextChanged="txtMargin_TextChanged"/>
+        <ToggleButton 
+            Content="&#9660;"
+            HorizontalAlignment="Right"
+            IsChecked="{Binding ElementName=MyPopup, Path=IsOpen}"
+            Width="28">
+            <ToggleButton.Resources>
+                <ScaleTransform x:Key="FontStretchExpanded" ScaleX="0.8" ScaleY="0.55" />
+                <Style TargetType="theme:ButtonChrome">
+                    <Setter Property="RoundCorners" Value="False" />
+                </Style>
+                <Style TargetType="ToggleButton">
+                    <Style.Setters>
+                        <Setter Property="LayoutTransform" Value="{StaticResource FontStretchExpanded}" />
+                    </Style.Setters>
+                </Style>
+            </ToggleButton.Resources>
+        </ToggleButton>
+        <Popup x:Name="MyPopup" StaysOpen="False" >
+            <Border BorderThickness="1" Padding="5" Background="White">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Label Content="All"    Grid.Row="0" Padding="0" Margin="05,0,10,0"/>
+                    <Label Content="Left"   Grid.Row="1" Padding="0" Margin="15,0,10,0"/>
+                    <Label Content="Top"    Grid.Row="2" Padding="0" Margin="15,0,10,0"/>
+                    <Label Content="Right"  Grid.Row="3" Padding="0" Margin="15,0,10,0"/>
+                    <Label Content="Bottom" Grid.Row="4" Padding="0" Margin="15,0,10,0"/>
+                    <TextBox x:Name="txtAll"    Grid.Row="0" Grid.Column="1" Width="50" PreviewTextInput="txtLTRB_PreviewTextInput" TextChanged="txtLTRB_TextChanged"/>
+                    <TextBox x:Name="txtLeft"   Grid.Row="1" Grid.Column="1" Width="50" PreviewTextInput="txtLTRB_PreviewTextInput" TextChanged="txtLTRB_TextChanged" />
+                    <TextBox x:Name="txtTop"    Grid.Row="2" Grid.Column="1" Width="50" PreviewTextInput="txtLTRB_PreviewTextInput" TextChanged="txtLTRB_TextChanged" />
+                    <TextBox x:Name="txtRight"  Grid.Row="3" Grid.Column="1" Width="50" PreviewTextInput="txtLTRB_PreviewTextInput" TextChanged="txtLTRB_TextChanged" />
+                    <TextBox x:Name="txtBottom" Grid.Row="4" Grid.Column="1" Width="50" PreviewTextInput="txtLTRB_PreviewTextInput" TextChanged="txtLTRB_TextChanged" />
+                </Grid>
+            </Border>
+        </Popup>
+    </Grid>
+</UserControl>
