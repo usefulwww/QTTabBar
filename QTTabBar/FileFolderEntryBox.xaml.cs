@@ -1,4 +1,7 @@
-﻿using System.Windows.Controls;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Forms;
 using UserControl = System.Windows.Controls.UserControl;
@@ -10,30 +13,85 @@ namespace QTTabBarLib {
     /// Interaction logic for FileFolderEntryBox.xaml
     /// </summary>
     public partial class FileFolderEntryBox : UserControl {
-        private byte[] location = null;
         private bool file = true;
         private bool watermarkVisible = true;
         private string watermarkText = null;
         private bool showIcon = true;
         private bool updating = false;
+        private bool lockText = false;
+
+        public static readonly DependencyProperty SelectedPathProperty =
+                DependencyProperty.Register("SelectedPath", typeof(string), typeof(FileFolderEntryBox),
+                new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+                OnSelectedPathChanged));
+
+        // Apparently .NET 4 does support using an array type for a DependencyProperty,
+        // but using IEnumerable works just as well and allows us to stay on .NET 3.5.
+        // We can still bind this to a byte[], and that's what matters.
+        public static readonly DependencyProperty SelectedIDLProperty =
+                DependencyProperty.Register("SelectedIDL", typeof(IEnumerable<byte>), typeof(FileFolderEntryBox),
+                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+                OnSelectedIDLChanged));
 
         public string SelectedPath {
-            get {
-                return (string)GetValue(SelectedPathProperty);
-            }
+            get { return (string)GetValue(SelectedPathProperty); }
+            set { SetValue(SelectedPathProperty, value); }
+        }
+
+        public IEnumerable<byte> SelectedIDL {
+            get { return (IEnumerable<byte>)GetValue(SelectedIDLProperty); }
             set {
-                using(IDLWrapper wrapper = new IDLWrapper(value)) {
-                    SetLocation(wrapper);
-                }
+                SetValue(SelectedIDLProperty, value == null
+                  ? null
+                  : value as byte[] ?? value.ToArray());
             }
         }
-        public byte[] SelectedIDL {
-            get {
-                return location;
+
+        private static object OnCoerceSelectedIDL(DependencyObject d, object baseValue) {
+            var box = (FileFolderEntryBox)d;
+            using(IDLWrapper wrapper = new IDLWrapper(box.SelectedPath)) {
+                return wrapper.IDL;
             }
-            set {
-                location = value;
+        }
+
+        private static void OnSelectedIDLChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            FileFolderEntryBox box = (FileFolderEntryBox)d;
+            if(box.updating) return;
+            string newPath = "";
+            if(box.SelectedIDL != null) {
+                IEnumerable<byte> eidl = (IEnumerable<byte>)e.NewValue;
+                using(IDLWrapper wrapper = new IDLWrapper(eidl as byte[] ?? eidl.ToArray())) {
+                    newPath = wrapper.Path;
+                }
             }
+
+            box.updating = true;
+            box.SelectedPath = newPath;
+            box.updating = false;
+            box.Update();
+        }
+
+        private static void OnSelectedPathChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            FileFolderEntryBox box = (FileFolderEntryBox)d;
+            if(box.updating) return;
+            using(IDLWrapper newIDL = new IDLWrapper((string)e.NewValue)) {
+                IEnumerable<byte> eidl = box.SelectedIDL;
+                if(eidl == null) {
+                    box.updating = true;
+                }
+                else {
+                    using(IDLWrapper oldIDL = new IDLWrapper(eidl as byte[] ?? eidl.ToArray())) {
+                        // Don't change the IDL if current one has the same path.
+                        box.updating = (oldIDL.Path != newIDL.Path);
+                    }
+                }
+
+                if(box.updating) {
+                    box.SelectedIDL = newIDL.IDL;
+                    box.updating = false;
+                }
+            }
+            box.Update();
         }
 
         // PENDING: the "!File" expression does not explicitly mean using the folder chooser,
@@ -47,9 +105,10 @@ namespace QTTabBarLib {
                     return;
                 }
                 file = value;
-                ClearLocation();
+                Update();
             }
         }
+
         public bool Folder {
             get {
                 return !File;
@@ -80,39 +139,23 @@ namespace QTTabBarLib {
             set {
                 watermarkText = value;
                 if(watermarkVisible) {
-                    ClearLocation();
+                    Update();
                 }
             }
         }
 
-        public static readonly DependencyProperty SelectedPathProperty =
-                DependencyProperty.Register("SelectedPath", typeof(string), typeof(FileFolderEntryBox),
-                new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
-                OnSelectedPathChanged));
-
         public FileFolderEntryBox() {
             InitializeComponent();
-
-            ClearLocation();
-        }
-
-        private static void OnSelectedPathChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            FileFolderEntryBox this_ = (FileFolderEntryBox)d;
-            if(this_.updating) {
-                return;
-            }
-            using(IDLWrapper wrapper = new IDLWrapper((string)e.NewValue)) {
-                this_.SetLocation(wrapper);
-            }
+            ShowIcon = false;
+            Update();
         }
 
         // In any case, we must use this method instead of txtLocation.Text
-        private void SetSelectedPath(string path, string displayName) {
+        private void SetTextboxText(string text) {
             updating = true;
-
-            SetValue(SelectedPathProperty, path);
-            txtLocation.Text = displayName;
-
+            int pos = txtLocation.CaretIndex;
+            txtLocation.Text = text;
+            txtLocation.CaretIndex = pos;
             updating = false;
         }
 
@@ -145,60 +188,61 @@ namespace QTTabBarLib {
             string text;
             if(b) {
                 // TODO: Localize this
-                text = (WatermarkText != null)
-                    ? WatermarkText : string.Format("Choose your {0}", File ? "file" : "folder");
+                text = WatermarkText ?? string.Format("Choose your {0}", File ? "file" : "folder");
             }
             else {
                 text = string.Empty;
             }
-            SetSelectedPath(string.Empty, text);
+            SetTextboxText(text);
         }
 
-        private void ClearLocation() {
-            if(!txtLocation.IsFocused) {
-                ShowWatermark(true);
-            }
-            imgIcon.Source = null;
-            location = null;
-        }
-
-        private void SetLocation(IDLWrapper wrapper) {
-            if(string.IsNullOrEmpty(wrapper.Path)) {
-                ClearLocation();
+        private void Update() {
+            if(string.IsNullOrEmpty(SelectedPath)) {
+                if(!txtLocation.IsFocused) {
+                    ShowWatermark(true);
+                }
+                imgIcon.Source = null;
                 return;
             }
 
             ShowWatermark(false);
 
-            string text;
-            if(wrapper.IDL == null) {
-                text = wrapper.Path;
-            }
-            else if(File) {
-                text = wrapper.Path;
-            }
-            else {
-                bool b = File ? wrapper.IsFileSystemFile : wrapper.IsFileSystemFolder;
-                text = b ? wrapper.Path : wrapper.DisplayName;
-            }
-            SetSelectedPath(wrapper.Path, text);
+            IDLWrapper wrapper = SelectedIDL == null
+                    ? new IDLWrapper(SelectedPath)
+                    : new IDLWrapper(SelectedIDL as byte[] ?? SelectedIDL.ToArray());
 
-            Icon icon = QTUtility.GetIcon(wrapper.PIDL);
-            imgIcon.Source =
-                (ImageSource)new BitmapToImageSourceConverter().Convert(icon.ToBitmap(), null, null, null);
+            using(wrapper) {
+                if(!lockText) {
+                    string text;
+                    if(File || wrapper.IDL == null) {
+                        text = wrapper.Path;
+                    }
+                    else {
+                        bool b = File ? wrapper.IsFileSystemFile : wrapper.IsFileSystemFolder;
+                        text = b ? wrapper.Path : wrapper.DisplayName;
+                    }
+                    SetTextboxText(text);
+                }
 
-            location = wrapper.IDL;
+                Icon icon = QTUtility.GetIcon(wrapper.PIDL);
+                imgIcon.Source =
+                    (ImageSource)new BitmapToImageSourceConverter().Convert(icon.ToBitmap(), null, null, null);
+            }
         }
 
         private bool BrowseForFile() {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.FileName = SelectedPath;
-            if(System.Windows.Forms.DialogResult.OK != ofd.ShowDialog()) {
+            OpenFileDialog ofd = new OpenFileDialog { FileName = SelectedPath };
+            if(DialogResult.OK != ofd.ShowDialog()) {
                 return false;
             }
 
             using(IDLWrapper wrapper = new IDLWrapper(ofd.FileName)) {
-                SetLocation(wrapper);
+                if(wrapper.IDL != null) {
+                    SelectedIDL = wrapper.IDL;
+                }
+                else {
+                    SelectedPath = wrapper.Path;
+                }
             }
             return true;
         }
@@ -210,7 +254,12 @@ namespace QTTabBarLib {
             }
 
             using(IDLWrapper wrapper = new IDLWrapper(fbd.SelectedIDL)) {
-                SetLocation(wrapper);
+                if(wrapper.IDL != null) {
+                    SelectedIDL = wrapper.IDL;
+                }
+                else {
+                    SelectedPath = wrapper.Path;
+                }
             }
             return true;
         }
@@ -241,15 +290,21 @@ namespace QTTabBarLib {
             }
 
             string path = txtLocation.Text;
+            lockText = true;
             if((File && !System.IO.File.Exists(path)) || (Folder && !System.IO.Directory.Exists(path))) {
-                ClearLocation();
-                SetSelectedPath(path, path);
-                return;
+                SelectedPath = path;
             }
-
-            using(IDLWrapper wrapper = new IDLWrapper(path)) {
-                SetLocation(wrapper);
+            else {
+                using(IDLWrapper wrapper = new IDLWrapper(path)) {
+                    if(wrapper.IDL != null) {
+                        SelectedIDL = wrapper.IDL;
+                    }
+                    else {
+                        SelectedPath = wrapper.Path;
+                    }
+                }
             }
+            lockText = false;
         }
     }
 }

@@ -754,7 +754,11 @@
                     <StackPanel 
                         Margin="13,0"
                         Orientation="Horizontal">
-                        <qt:FileFolderEntryBox x:Name="entDefaultLocation" Folder="True" Width="400"/>
+                        <qt:FileFolderEntryBox x:Name="entDefaultLocation" 
+                            Folder="True"
+                            SelectedIDL="{Binding Path=DefaultLocation}"
+                            ShowIcon="True" 
+                            Width="400"/>
                     </StackPanel>
                     <Label x:Name="lblRestoreTabs"
                         Content="Session saving"
@@ -1525,7 +1529,8 @@
                                 Folder="False"
                                 Grid.Column="1"
                                 Grid.ColumnSpan="3"
-                                Margin="5,1"/>
+                                Margin="5,1"
+                                SelectedPath="{Binding Path=TabImageFile}"/>
                             <Label
                                 Content="Sizing margins:"
                                 Grid.Row="1"
@@ -1718,7 +1723,8 @@
                             <qt:FileFolderEntryBox
                                 Grid.Column="1"
                                 Grid.ColumnSpan="3"
-                                Margin="0,2"/>
+                                Margin="0,2"
+                                SelectedPath="{Binding Path=RebarImageFile}"/>
                             <CheckBox x:Name="chkUseRebarBGColor"
                                 Content="Solid color"
                                 Grid.Row="1"

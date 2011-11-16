@@ -11,12 +11,12 @@
         Width="{Binding Path=Width, ElementName=FileFolderEntryBoxControl}">
         <Button x:Name="btnBrowse"
             Content="..."
-            Margin="8,2"
+            Margin="8, 1, 0, 1"
             Width="26"
             DockPanel.Dock="Right" Click="btnBrowse_Click" />
         <Grid>
             <TextBox x:Name="txtLocation" x:FieldModifier="private"
-                Padding="22,2,0,0"
+                Padding="22,1,0,0"
                 VerticalContentAlignment="Center"
                 GotKeyboardFocus="txtLocation_GotKeyboardFocus"
                 LostKeyboardFocus="txtLocation_LostKeyboardFocus"
