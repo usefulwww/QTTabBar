@@ -1583,16 +1583,16 @@ namespace QTTabBarLib {
         }
 
         internal static Bitmap[] CreateTabImage() {
-            if(File.Exists(QTUtility.Path_TabImage)) {
+            if(File.Exists(Config.Skin.TabImageFile)) {
                 try {
                     Bitmap[] bitmapArray = new Bitmap[3];
-                    using(Bitmap bitmap = new Bitmap(QTUtility.Path_TabImage)) {
+                    using(Bitmap bitmap = new Bitmap(Config.Skin.TabImageFile)) {
                         int height = bitmap.Height / 3;
                         bitmapArray[0] = bitmap.Clone(new Rectangle(0, 0, bitmap.Width, height), PixelFormat.Format32bppArgb);
                         bitmapArray[1] = bitmap.Clone(new Rectangle(0, height, bitmap.Width, height), PixelFormat.Format32bppArgb);
                         bitmapArray[2] = bitmap.Clone(new Rectangle(0, height * 2, bitmap.Width, height), PixelFormat.Format32bppArgb);
                     }
-                    if(Path.GetExtension(QTUtility.Path_TabImage).PathEquals(".bmp")) {
+                    if(Path.GetExtension(Config.Skin.TabImageFile).PathEquals(".bmp")) {
                         bitmapArray[0].MakeTransparent(Color.Magenta);
                         bitmapArray[1].MakeTransparent(Color.Magenta);
                         bitmapArray[2].MakeTransparent(Color.Magenta);

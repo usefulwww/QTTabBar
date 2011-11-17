@@ -4105,7 +4105,7 @@ namespace QTTabBarLib {
                 chbUseTabSkin.Checked = btnHiliteClsc.Enabled = tbTabImagePath.Enabled = btnTabImage.Enabled = true;
                 chbUseTabSkin.Enabled = false;
             }
-            tbTabImagePath.Text = QTUtility.Path_TabImage;
+            //tbTabImagePath.Text = QTUtility.Path_TabImage;
             tabImageSetting.SizingMargin = QTUtility.TabImageSizingMargin;
             cmbWhlClick.SelectedIndex = ((QTUtility.ConfigValues[6] & 0x80) == 0x80) ? 1 : 0;
             cmbWhlClick.Enabled = chbWhlClick.Checked;
@@ -4190,7 +4190,7 @@ namespace QTTabBarLib {
             chbForceSysListView.Checked = Config.Tweaks.ForceSysListView;
             chbAlwaysShowHeader.Checked = Config.Tweaks.AlwaysShowHeaders;
             btnToolBarBGClr.Enabled = chbToolbarBGClr.Checked = (QTUtility.ConfigValues[7] & 4) == 4;
-            btnToolBarBGClr.BackColor = QTUtility.RebarBGColor;
+            //btnToolBarBGClr.BackColor = QTUtility.RebarBGColor;
             chbFolderIcon.Checked = (QTUtility.ConfigValues[7] & 2) == 2;
             chbGridLine.Checked = (QTUtility.ConfigValues[8] & 0x80) == 0x80;
             chbNoFulRowSelect.Checked = ((QTUtility.ConfigValues[8] & 0x40) == 0x40) ^ !QTUtility.IsXP;
@@ -4200,7 +4200,7 @@ namespace QTTabBarLib {
             btnAlternate_Default.Enabled = btnAlternateColor.Enabled = btnAlternateColor_Text.Enabled = chbAlternateColor.Checked;
             if(isSupported) {
                 chbRebarBGImage.Checked = (QTUtility.ConfigValues[11] & 0x80) == 0x80;
-                tbRebarImagePath.Text = QTUtility.Path_RebarImage;
+                //tbRebarImagePath.Text = QTUtility.Path_RebarImage;
                 if((QTUtility.ConfigValues[11] & 0x40) == 0x40) {
                     cmbRebarBGImageMode.SelectedIndex = 1;
                 }
@@ -4664,7 +4664,7 @@ namespace QTTabBarLib {
                     key.SetValue("HighlightColorClassic", QTUtility.TabHiliteColor.ToArgb());
                     key.SetValue("TitleColorShadowActive", QTUtility.TabTextColor_ActivShdw.ToArgb());
                     key.SetValue("TitleColorShadowInActv", QTUtility.TabTextColor_InAtvShdw.ToArgb());
-                    key.SetValue("ToolbarBGColor", QTUtility.RebarBGColor.ToArgb());
+                    //key.SetValue("ToolbarBGColor", QTUtility.RebarBGColor.ToArgb());
                     key.SetValue("AlternateColor_Bk", QTUtility.ShellViewRowCOLORREF_Background);
                     key.SetValue("AlternateColor_Text", QTUtility.ShellViewRowCOLORREF_Text);
                     key.SetValue("Max_Undo", QTUtility.MaxCount_History);
@@ -4682,7 +4682,7 @@ namespace QTTabBarLib {
                         key.DeleteValue("TabFontSize", false);
                         QTUtility.TabFont = null;
                     }
-                    key.SetValue("TabImage", QTUtility.Path_TabImage);
+                    //key.SetValue("TabImage", QTUtility.Path_TabImage);
                     byte[] buffer = new byte[] { (byte)QTUtility.TabImageSizingMargin.Left, (byte)QTUtility.TabImageSizingMargin.Top, (byte)QTUtility.TabImageSizingMargin.Right, (byte)QTUtility.TabImageSizingMargin.Bottom };
                     key.SetValue("TabImageSizingMargin", buffer);
                     QTUtility.PreviewExtsList_Txt.Clear();
@@ -4724,7 +4724,7 @@ namespace QTTabBarLib {
                             key2.SetValue("LanguageFile", QTUtility.Path_PluginLangFile);
                         }
                     }
-                    key.SetValue("ToolbarBGImage", QTUtility.Path_RebarImage);
+                    //key.SetValue("ToolbarBGImage", QTUtility.Path_RebarImage);
                     QTUtility2.WriteRegBinary(Config.Keys.Shortcuts, "ShortcutKeys", key);
                 }
             }

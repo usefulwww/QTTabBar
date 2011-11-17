@@ -1731,7 +1731,8 @@
                                 Height="16"
                                 IsChecked="{Binding Path=UseRebarBGColor}"
                                 Margin="0,0,15,0"/>
-                            <Button
+                            <Button x:Name="btnRebarBGColorChoose"
+                                Click="btnRebarBGColorChoose_Click"
                                 Content="Choose"
                                 Grid.Column="1"
                                 Grid.Row="1"
@@ -1753,11 +1754,14 @@
                                 Height="16"
                                 Margin="0,0,15,0"
                                 Padding="0"/>
-                            <ComboBox
+                            <ComboBox x:Name="cmbRebarStretchMode"
+                                DisplayMemberPath="Value"
                                 Grid.Column="3"
                                 Grid.Row="1"
                                 Height="23"
-                                HorizontalAlignment="Stretch"/>
+                                HorizontalAlignment="Stretch"
+                                SelectedValue="{Binding Path=RebarStretchMode}"
+                                SelectedValuePath="Key"/>
                             <Label
                                 Content="Sizing margins:"
                                 Grid.Column="2"
@@ -1765,12 +1769,26 @@
                                 Height="16"
                                 Margin="0,0,15,0"
                                 Padding="0"/>
-                            <qt:MarginCombo
+                            <qt:MarginCombo x:Name="mcbRebarMargin"
                                 Grid.Column="3"
                                 Grid.Row="2"
                                 Height="23"
                                 HorizontalAlignment="Stretch"
-                                Value="{Binding Path=RebarSizeMargin}"/>
+                                Value="{Binding Path=RebarSizeMargin}">
+                                <qt:MarginCombo.Style>
+                                    <Style TargetType="{x:Type qt:MarginCombo}">
+                                        <Setter Property="IsEnabled" Value="False" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=SelectedValue, ElementName=cmbRebarStretchMode}">
+                                                <DataTrigger.Value>
+                                                    <qt:StretchMode>Full</qt:StretchMode>
+                                                </DataTrigger.Value>
+                                                <Setter Property="IsEnabled" Value="True" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </qt:MarginCombo.Style>
+                            </qt:MarginCombo>
                         </Grid>
                     </StackPanel>
                 </ScrollViewer>

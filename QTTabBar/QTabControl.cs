@@ -1206,7 +1206,7 @@ namespace QTTabBarLib {
             fForceClassic = Config.Skin.UseTabSkin;
             SetFont(QTUtility.TabFont);
             sizingMargin = QTUtility.TabImageSizingMargin + new Padding(0, 0, 1, 1);
-            if(Config.Skin.UseTabSkin && (QTUtility.Path_TabImage.Length > 0)) {
+            if(Config.Skin.UseTabSkin && Config.Skin.TabImageFile.Length > 0) {
                 SetTabImages(QTTabBarClass.CreateTabImage());
             }
             else {

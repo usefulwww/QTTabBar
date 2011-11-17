@@ -79,9 +79,7 @@ namespace QTTabBarLib {
         internal static string Path_LanguageFile;
         internal static string PATH_MYNETWORK;
         internal static string Path_PluginLangFile;
-        internal static string Path_RebarImage;
         internal static string PATH_SEARCHFOLDER;
-        internal static string Path_TabImage;
         internal static string PathToSelectInCommandLineArg;
         internal static List<string> PreviewExtsList_Img = new List<string>();
         internal static List<string> PreviewExtsList_Txt = new List<string>();
@@ -89,7 +87,6 @@ namespace QTTabBarLib {
         internal static float PreviewFontSize;
         internal static int PreviewMaxHeight = 0x100;
         internal static int PreviewMaxWidth = 0x200;
-        internal static Color RebarBGColor;
         internal const string REGUSER = RegConst.Root;
         internal static string[] ResMain;
         internal static string[] ResMisc;
@@ -168,7 +165,6 @@ namespace QTTabBarLib {
                         TabHiliteColor = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "HighlightColorClassic", SystemColors.Highlight.ToArgb()));
                         TabTextColor_ActivShdw = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "TitleColorShadowActive", Color.Silver.ToArgb()));
                         TabTextColor_InAtvShdw = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "TitleColorShadowInActv", Color.White.ToArgb()));
-                        RebarBGColor = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "ToolbarBGColor", SystemColors.Control.ToArgb()));
                         ShellViewRowCOLORREF_Background = QTUtility2.GetRegistryValueSafe(key, "AlternateColor_Bk", 0xfaf5f1);
                         ShellViewRowCOLORREF_Text = QTUtility2.GetRegistryValueSafe(key, "AlternateColor_Text", QTUtility2.MakeCOLORREF(SystemColors.WindowText));
                         string familyName = (string)key.GetValue("TabFont", string.Empty);
@@ -201,7 +197,6 @@ namespace QTTabBarLib {
                             }
                         }
                         RefreshGroupShortcutKeyDic(key);
-                        Path_TabImage = (string)key.GetValue("TabImage", string.Empty);
                         byte[] buffer2 = (byte[])key.GetValue("TabImageSizingMargin", new byte[4]);
                         if(buffer2.Length != 4) {
                             TabImageSizingMargin = Padding.Empty;
@@ -209,10 +204,6 @@ namespace QTTabBarLib {
                         else {
                             TabImageSizingMargin = new Padding(buffer2[0], buffer2[1], buffer2[2], buffer2[3]);
                         }
-                        if((Path_TabImage.Length > 0) && !File.Exists(Path_TabImage)) {
-                            Path_TabImage = string.Empty;
-                        }
-                        Path_RebarImage = (string)key.GetValue("ToolbarBGImage", string.Empty);
                         RefreshLockedTabsList();
                         string str6 = (string)key.GetValue("StartUpGroups", string.Empty);
                         if(str6.Length > 0) {

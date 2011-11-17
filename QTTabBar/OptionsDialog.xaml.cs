@@ -85,6 +85,12 @@ namespace QTTabBarLib {
         // todo: localize all of these
         #region ToLocalize
 
+        private readonly static Dictionary<StretchMode, string> StretchModeItems
+                = new Dictionary<StretchMode, string> {
+            {StretchMode.Full,  "Stretch"},
+            {StretchMode.Real,  "True size"},
+            {StretchMode.Tile,  "Tile"},
+        };
         private readonly static Dictionary<TabPos, string> NewTabPosItems
                 = new Dictionary<TabPos, string> {
             {TabPos.Left,       "Left of the current tab"   },
@@ -365,6 +371,7 @@ namespace QTTabBarLib {
             InitializeComponent();
             cmbNewTabPos.ItemsSource = NewTabPosItems;
             cmbNextAfterClosed.ItemsSource = NextAfterCloseItems;
+            cmbRebarStretchMode.ItemsSource = StretchModeItems;
 
             InitializeTips();
             InitializeMouse();
@@ -459,17 +466,16 @@ namespace QTTabBarLib {
         #region ---------- Tweaks ----------
 
         private void btnBackgroundColor_Click(object sender, RoutedEventArgs e) {
-            ColorDialog cd = new ColorDialog();
+            ColorDialogEx cd = new ColorDialogEx();
             if(System.Windows.Forms.DialogResult.OK == cd.ShowDialog()) {
                 Config.Tweaks.BackgroundColor = cd.Color;
                 btnBackgroundColor.Background = new SolidColorBrush(Color.FromArgb(
                         cd.Color.A, cd.Color.R, cd.Color.G, cd.Color.B));
             }
-
         }
 
         private void btnTextColor_Click(object sender, RoutedEventArgs e) {
-            ColorDialog cd = new ColorDialog();
+            ColorDialogEx cd = new ColorDialogEx();
             if(System.Windows.Forms.DialogResult.OK == cd.ShowDialog()) {
                 Config.Tweaks.TextColor = cd.Color;
                 btnTextColor.Foreground = new SolidColorBrush(Color.FromArgb(
@@ -1903,6 +1909,21 @@ namespace QTTabBarLib {
             //# We shouldn't have to manually assign this to the config
             //# But, without this we must interact with the TextBox in some way before the OK button saves it.
             workingConfig.bbar.ImageStripPath = "";
+        }
+
+        private sealed class ColorDialogEx : ColorDialog {
+            protected override int Options {
+                get {
+                    return (base.Options | 2);
+                }
+            }
+        }
+
+        private void btnRebarBGColorChoose_Click(object sender, RoutedEventArgs e) {
+            ColorDialogEx cd = new ColorDialogEx {Color = workingConfig.skin.RebarColor};
+            if(System.Windows.Forms.DialogResult.OK == cd.ShowDialog()) {
+                workingConfig.skin.RebarColor = cd.Color;
+            }
         }
     }
     
