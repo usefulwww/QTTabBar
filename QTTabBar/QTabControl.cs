@@ -1187,13 +1187,13 @@ namespace QTTabBarLib {
             }
             else {
                 sizeMode = TabSizeMode.Normal;
-                fLimitSize = Config.LimitedWidthTabs;
+                fLimitSize = true; // Config.LimitedWidthTabs;
             }
             if((Config.Skin.TabMaxWidth >= Config.Skin.TabMinWidth) && (Config.Skin.TabMinWidth > 9)) {
                 maxAllowedTabWidth = Config.Skin.TabMaxWidth;
                 minAllowedTabWidth = Config.Skin.TabMinWidth;
             }
-            itemSize = new Size(minAllowedTabWidth, Config.Skin.TabHeight);
+            itemSize = new Size(maxAllowedTabWidth, Config.Skin.TabHeight);
             fActiveTxtBold = Config.Skin.ActiveTabInBold;
             fForceClassic = Config.Skin.UseTabSkin;
             SetFont(QTUtility.TabFont);
