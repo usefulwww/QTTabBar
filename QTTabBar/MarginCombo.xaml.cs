@@ -22,25 +22,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using Padding = System.Windows.Forms.Padding;
 
 namespace QTTabBarLib {
-
-    // It *really* pisses me off that I can't use the Thickness class instead.
-    // The WPF devs forgot to mark it as Serializable!
-    [Serializable]
-    public struct Margin {
-        public int Left     { get; set; }
-        public int Top      { get; set; }
-        public int Right    { get; set; }
-        public int Bottom   { get; set; }
-
-        public Margin(int left, int top, int right, int bottom) : this() {
-            Left    = left;
-            Top     = top;
-            Right   = right;
-            Bottom  = bottom;
-        }
-    }
 
     /// <summary>
     /// Interaction logic for MarginCombo.xaml
@@ -79,13 +63,15 @@ namespace QTTabBarLib {
             });
         }
 
+        // It *really* pisses me off that I can't use the Thickness class instead.
+        // The WPF devs forgot to mark it as Serializable!
         public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value",
-                typeof(Margin), typeof(MarginCombo), new FrameworkPropertyMetadata(new Margin(), 
+                typeof(Padding), typeof(MarginCombo), new FrameworkPropertyMetadata(System.Windows.Forms.Padding.Empty, 
                 FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
-        public Margin Value {
+        public Padding Value {
             get {
-                return (Margin)GetValue(ValueProperty);
+                return (Padding)GetValue(ValueProperty);
             }
             set {
                 SetValue(ValueProperty, value);
@@ -138,10 +124,10 @@ namespace QTTabBarLib {
 
         #region Converters
 
-        [ValueConversion(typeof(Margin), typeof(string))]
+        [ValueConversion(typeof(Padding), typeof(string))]
         private class JoinedTextConverter : IValueConverter {
             public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-                Margin t = (Margin)value;
+                Padding t = (Padding)value;
                 return t.Left + ", " + t.Top + ", " + t.Right + ", " + t.Bottom;
             }
 
@@ -150,11 +136,11 @@ namespace QTTabBarLib {
                 int[] v = value.ToString().Split(',').Select(
                         s => int.TryParse(s.Trim(), out i) ? Math.Min(Math.Max(i, 0), VAL_MAX) : 0).ToArray();
                 Array.Resize(ref v, 4);
-                return new Margin(v[0], v[1], v[2], v[3]);
+                return new Padding(v[0], v[1], v[2], v[3]);
             }
         }
 
-        [ValueConversion(typeof(Margin), typeof(string))]
+        [ValueConversion(typeof(Padding), typeof(string))]
         private class SingleTextConverter : IValueConverter {
             private int idx;
             private MarginCombo parent;
@@ -166,17 +152,17 @@ namespace QTTabBarLib {
 
             public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
                 switch(idx) {
-                    case 0:  return ((Margin)value).Left.ToString();
-                    case 1:  return ((Margin)value).Top.ToString();
-                    case 2:  return ((Margin)value).Right.ToString();
-                    default: return ((Margin)value).Bottom.ToString();
+                    case 0:  return ((Padding)value).Left.ToString();
+                    case 1:  return ((Padding)value).Top.ToString();
+                    case 2:  return ((Padding)value).Right.ToString();
+                    default: return ((Padding)value).Bottom.ToString();
                 }
             }
 
             public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
                 int i;
                 if(!int.TryParse(value.ToString().Trim(), out i) || i < 0 || i > VAL_MAX) return Binding.DoNothing;
-                Margin current = parent.Value;
+                Padding current = parent.Value;
                 switch(idx) {
                     case 0:  current.Left   = i; break;
                     case 1:  current.Top    = i; break;

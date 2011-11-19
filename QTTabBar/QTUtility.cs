@@ -66,8 +66,6 @@ namespace QTTabBarLib {
         internal const BindAction LAST_KEYBOARD_ACTION = BindAction.FocusTabBar;
         public static int MaxCount_Executed = 0x10;
         internal static int MaxCount_History = 0x10;
-        internal static int MaxTabWidth;
-        internal static int MinTabWidth;
         internal static List<string> NoCapturePathsList = new List<string>();
         internal static bool NowDebugging = 
 #if DEBUG
@@ -100,14 +98,11 @@ namespace QTTabBarLib {
         internal static string StartUpGroupNameNowOpening = string.Empty;
         internal static Font StartUpTabFont;
         internal static Font TabFont;
-        internal static int TabHeight;
         internal static Color TabHiliteColor;
-        internal static Padding TabImageSizingMargin;
         internal static Color TabTextColor_Active;
         internal static Color TabTextColor_ActivShdw;
         internal static Color TabTextColor_Inactv;
         internal static Color TabTextColor_InAtvShdw;
-        internal static int TabWidth;
         internal static Dictionary<string, string[]> TextResourcesDic;
         internal static List<byte[]> TMPIDLList = new List<byte[]>();
         internal static List<string> TMPPathList = new List<string>();
@@ -150,16 +145,6 @@ namespace QTTabBarLib {
                             Path_LanguageFile = string.Empty;
                         }
                         ValidateTextResources();
-                        TabWidth = QTUtility2.GetRegistryValueSafe(key, "TabWidth", 80);
-                        TabHeight = QTUtility2.GetRegistryValueSafe(key, "TabHeight", 0x18);
-                        MaxTabWidth = QTUtility2.GetRegistryValueSafe(key, "TabWidthMax", 150);
-                        MinTabWidth = QTUtility2.GetRegistryValueSafe(key, "TabWidthMin", 70);
-                        if(TabHeight > 50) {
-                            TabHeight = 50;
-                        }
-                        if(TabHeight < 10) {
-                            TabHeight = 10;
-                        }
                         TabTextColor_Active = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "TitleColorActive", SystemColors.ControlText.ToArgb()));
                         TabTextColor_Inactv = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "TitleColorInactive", SystemColors.ControlText.ToArgb()));
                         TabHiliteColor = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "HighlightColorClassic", SystemColors.Highlight.ToArgb()));
@@ -197,13 +182,6 @@ namespace QTTabBarLib {
                             }
                         }
                         RefreshGroupShortcutKeyDic(key);
-                        byte[] buffer2 = (byte[])key.GetValue("TabImageSizingMargin", new byte[4]);
-                        if(buffer2.Length != 4) {
-                            TabImageSizingMargin = Padding.Empty;
-                        }
-                        else {
-                            TabImageSizingMargin = new Padding(buffer2[0], buffer2[1], buffer2[2], buffer2[3]);
-                        }
                         RefreshLockedTabsList();
                         string str6 = (string)key.GetValue("StartUpGroups", string.Empty);
                         if(str6.Length > 0) {

@@ -269,13 +269,13 @@ namespace QTTabBarLib {
                                     default: // Full
                                         // todo: make this a function
                                         graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-                                        Margin margin = Config.Skin.RebarSizeMargin;
+                                        Padding margin = Config.Skin.RebarSizeMargin;
                                         int left = margin.Left;
                                         int top = margin.Top;
                                         int right = margin.Right;
                                         int bottom = margin.Bottom;
-                                        int vertical = margin.Top + margin.Bottom;
-                                        int horizontal = margin.Left + margin.Right;
+                                        int vertical = margin.Vertical;
+                                        int horizontal = margin.Horizontal;
                                         int width = bmpRebar.Width;
                                         int height = bmpRebar.Height;
                                         Rectangle[] dstRects = new Rectangle[] {

@@ -99,21 +99,13 @@ namespace QTTabBarLib {
         private VisualStyleRenderer vsr_RPressed;
 
         public event QTabCancelEventHandler CloseButtonClicked;
-
         public event QTabCancelEventHandler Deselecting;
-
         public event ItemDragEventHandler ItemDrag;
-
         public event QTabCancelEventHandler PointedTabChanged;
-
         public event QEventHandler RowCountChanged;
-
         public event EventHandler SelectedIndexChanged;
-
         public event QTabCancelEventHandler Selecting;
-
         public event QTabCancelEventHandler TabCountChanged;
-
         public event QTabCancelEventHandler TabIconMouseDown;
 
         public QTabControl() {
@@ -1197,22 +1189,22 @@ namespace QTTabBarLib {
                 sizeMode = TabSizeMode.Normal;
                 fLimitSize = Config.LimitedWidthTabs;
             }
-            itemSize = new Size(QTUtility.TabWidth, QTUtility.TabHeight);
-            if((QTUtility.MaxTabWidth >= QTUtility.MinTabWidth) && (QTUtility.MinTabWidth > 9)) {
-                maxAllowedTabWidth = QTUtility.MaxTabWidth;
-                minAllowedTabWidth = QTUtility.MinTabWidth;
+            if((Config.Skin.TabMaxWidth >= Config.Skin.TabMinWidth) && (Config.Skin.TabMinWidth > 9)) {
+                maxAllowedTabWidth = Config.Skin.TabMaxWidth;
+                minAllowedTabWidth = Config.Skin.TabMinWidth;
             }
+            itemSize = new Size(minAllowedTabWidth, Config.Skin.TabHeight);
             fActiveTxtBold = Config.Skin.ActiveTabInBold;
             fForceClassic = Config.Skin.UseTabSkin;
             SetFont(QTUtility.TabFont);
-            sizingMargin = QTUtility.TabImageSizingMargin + new Padding(0, 0, 1, 1);
+            sizingMargin = Config.Skin.TabSizeMargin + new Padding(0, 0, 1, 1);
             if(Config.Skin.UseTabSkin && Config.Skin.TabImageFile.Length > 0) {
                 SetTabImages(QTTabBarClass.CreateTabImage());
             }
             else {
                 SetTabImages(null);
             }
-            tabTextAlignment = Config.AlignTabTextCenter ? StringAlignment.Center : StringAlignment.Near;
+            tabTextAlignment = Config.Skin.TabTextCentered ? StringAlignment.Center : StringAlignment.Near;
             fAutoSubText = Config.Tabs.RenameAmbTabs;
             fDrawShadow = Config.Skin.TabTitleShadows;
             fDrawCloseButton = Config.Tabs.ShowCloseButtons && !Config.Tabs.CloseBtnsWithAlt;

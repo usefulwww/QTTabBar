@@ -190,7 +190,7 @@ namespace QTTabBarLib {
                 InitializeStaticFields();
             }
             QTUtility.InstancesCount++;
-            BandHeight = QTUtility.TabHeight + 2;
+            BandHeight = Config.Skin.TabHeight + 2;
             InitializeComponent();
             lstActivatedTabs.Add(CurrentTab);
         }
@@ -3415,8 +3415,8 @@ namespace QTTabBarLib {
             if(flag) {
                 Controls.Add(toolStrip);
             }
-            MinSize = new Size(150, QTUtility.TabHeight + 2);
-            Height = QTUtility.TabHeight + 2;
+            MinSize = new Size(150, Config.Skin.TabHeight + 2);
+            Height = Config.Skin.TabHeight + 2;
             ContextMenuStrip = contextMenuSys;
             MouseDoubleClick += QTTabBarClass_MouseDoubleClick;
             MouseUp += QTTabBarClass_MouseUp;
@@ -5039,7 +5039,7 @@ namespace QTTabBarLib {
         }
 
         private void SetBarRows(int count) {
-            BandHeight = (count * (QTUtility.TabHeight - 3)) + 5;
+            BandHeight = (count * (Config.Skin.TabHeight - 3)) + 5;
             rebarController.RefreshHeight();
         }
 
@@ -5676,7 +5676,7 @@ namespace QTTabBarLib {
                                     }
                                     if((flag && !flag2) && !Config.Tabs.MultipleTabRows) {
                                         Rectangle rectangle3 = tabControl1.GetTabRect(num, false);
-                                        Point p = new Point(rectangle3.X + (rectangle3.Width / 2), rectangle3.Y + (QTUtility.TabHeight / 2));
+                                        Point p = new Point(rectangle3.X + (rectangle3.Width / 2), rectangle3.Y + (Config.Skin.TabHeight / 2));
                                         Cursor.Position = tabControl1.PointToScreen(p);
                                     }
                                     SyncButtonBarCurrent(12);

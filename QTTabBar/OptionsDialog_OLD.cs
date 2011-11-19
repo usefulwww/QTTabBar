@@ -3691,9 +3691,9 @@ namespace QTTabBarLib {
                 QTUtility.SetConfigAt(Settings.LimitedWidthTabs, true);
             }
             QTUtility.TabWidth = (int)nudTabWidth.Value;
-            QTUtility.TabHeight = (int)nudTabHeight.Value;
-            QTUtility.MaxTabWidth = (int)nudTabWidthMax.Value;
-            QTUtility.MinTabWidth = (int)nudTabWidthMin.Value;
+            Config.Skin.TabHeight = (int)nudTabHeight.Value;
+            Config.Skin.TabMaxWidth = (int)nudTabWidthMax.Value;
+            Config.Skin.TabMinWidth = (int)nudTabWidthMin.Value;
             if(chbNavBtn.Checked) {
                 QTUtility.SetConfigAt(Settings.ShowNavButtons, true);
             }
@@ -3778,7 +3778,7 @@ namespace QTTabBarLib {
                 QTUtility.SetConfigAt(Settings.AlwaysShowHeaders, true);
             }
             QTUtility.Path_TabImage = tbTabImagePath.Text;
-            QTUtility.TabImageSizingMargin = tabImageSetting.SizingMargin;
+            Config.Skin.TabSizeMargin = tabImageSetting.SizingMargin;
             if(chbGridLine.Checked) {
                 QTUtility.SetConfigAt(Settings.DetailsGridLines, true);
             }
@@ -4084,7 +4084,7 @@ namespace QTTabBarLib {
             cmbTabDblClck.SelectedIndex = QTUtility.ConfigValues[3];
             cmbBGDblClick.SelectedIndex = QTUtility.ConfigValues[4];
             cmbTabWhlClck.SelectedIndex = QTUtility.ConfigValues[12];
-            cmbTabTextAlignment.SelectedIndex = Config.AlignTabTextCenter ? 1 : 0;
+            //cmbTabTextAlignment.SelectedIndex = Config.AlignTabTextCenter ? 1 : 0;
             chbNavBtn.Checked = (QTUtility.ConfigValues[5] & 0x80) == 0x80;
             if((QTUtility.ConfigValues[5] & 0x40) == 0x40) {
                 cmbNavBtn.SelectedIndex = 1;
@@ -4106,7 +4106,7 @@ namespace QTTabBarLib {
                 chbUseTabSkin.Enabled = false;
             }
             //tbTabImagePath.Text = QTUtility.Path_TabImage;
-            tabImageSetting.SizingMargin = QTUtility.TabImageSizingMargin;
+            //tabImageSetting.SizingMargin = Config.Skin.TabSizeMargin;
             cmbWhlClick.SelectedIndex = ((QTUtility.ConfigValues[6] & 0x80) == 0x80) ? 1 : 0;
             cmbWhlClick.Enabled = chbWhlClick.Checked;
             chbNCADblClck.Checked = (QTUtility.ConfigValues[6] & 0x40) == 0;
@@ -4148,9 +4148,10 @@ namespace QTTabBarLib {
                 cmbTabSizeMode.SelectedIndex = 0;
                 nudTabWidth.Enabled = nudTabWidthMax.Enabled = nudTabWidthMin.Enabled = false;
             }
-            nudTabWidthMax.Value = QTUtility.MaxTabWidth;
-            nudTabWidthMin.Value = QTUtility.MinTabWidth;
-            nudTabHeight.Value = QTUtility.TabHeight;
+            nudTabWidthMax.Value = Config.Skin.TabMaxWidth;
+            nudTabWidthMin.Value = Config.Skin.TabMinWidth;
+            /*
+            nudTabHeight.Value = Config.Skin.TabHeight;
             if(QTUtility.TabWidth > nudTabWidth.Maximum) {
                 nudTabWidth.Value = nudTabWidth.Maximum;
             }
@@ -4159,7 +4160,7 @@ namespace QTTabBarLib {
             }
             else {
                 nudTabWidth.Value = QTUtility.TabWidth;
-            }
+            }*/
             btnActTxtClr.ForeColor = QTUtility.TabTextColor_Active;
             btnInactTxtClr.ForeColor = QTUtility.TabTextColor_Inactv;
             btnHiliteClsc.ForeColor = QTUtility.TabHiliteColor;
@@ -4655,10 +4656,10 @@ namespace QTTabBarLib {
             using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                 if(key != null) {
                     key.SetValue("Config", QTUtility.ConfigValues);
-                    key.SetValue("TabWidth", QTUtility.TabWidth);
-                    key.SetValue("TabHeight", QTUtility.TabHeight);
-                    key.SetValue("TabWidthMax", QTUtility.MaxTabWidth);
-                    key.SetValue("TabWidthMin", QTUtility.MinTabWidth);
+                    //key.SetValue("TabWidth", QTUtility.TabWidth);
+                    //key.SetValue("TabHeight", Config.Skin.TabHeight);
+                    key.SetValue("TabWidthMax", Config.Skin.TabMaxWidth);
+                    key.SetValue("TabWidthMin", Config.Skin.TabMinWidth);
                     key.SetValue("TitleColorActive", QTUtility.TabTextColor_Active.ToArgb());
                     key.SetValue("TitleColorInactive", QTUtility.TabTextColor_Inactv.ToArgb());
                     key.SetValue("HighlightColorClassic", QTUtility.TabHiliteColor.ToArgb());
@@ -4683,7 +4684,7 @@ namespace QTTabBarLib {
                         QTUtility.TabFont = null;
                     }
                     //key.SetValue("TabImage", QTUtility.Path_TabImage);
-                    byte[] buffer = new byte[] { (byte)QTUtility.TabImageSizingMargin.Left, (byte)QTUtility.TabImageSizingMargin.Top, (byte)QTUtility.TabImageSizingMargin.Right, (byte)QTUtility.TabImageSizingMargin.Bottom };
+                    byte[] buffer = new byte[] { (byte)Config.Skin.TabSizeMargin.Left, (byte)Config.Skin.TabSizeMargin.Top, (byte)Config.Skin.TabSizeMargin.Right, (byte)Config.Skin.TabSizeMargin.Bottom };
                     key.SetValue("TabImageSizingMargin", buffer);
                     QTUtility.PreviewExtsList_Txt.Clear();
                     QTUtility.PreviewExtsList_Img.Clear();

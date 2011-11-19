@@ -24,6 +24,7 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Linq;
 using Microsoft.Win32;
+using Padding = System.Windows.Forms.Padding;
 
 namespace QTTabBarLib {
 
@@ -350,8 +351,8 @@ namespace QTTabBarLib {
         public class _Skin {
             public bool UseTabSkin               { get; set; }
             public string TabImageFile           { get; set; }
-            public Margin TabSizeMargin          { get; set; }
-            public Margin TabContentMargin       { get; set; }
+            public Padding TabSizeMargin         { get; set; }
+            public Padding TabContentMargin      { get; set; }
             public int OverlapPixels             { get; set; }
             public bool HitTestTransparent       { get; set; }
             public int TabHeight                 { get; set; }
@@ -373,14 +374,14 @@ namespace QTTabBarLib {
             public StretchMode RebarStretchMode  { get; set; }
             public string RebarImageFile         { get; set; }
             public bool RebarImageSeperateBars   { get; set; }
-            public Margin RebarSizeMargin        { get; set; }
+            public Padding RebarSizeMargin       { get; set; }
             public bool ActiveTabInBold          { get; set; }
 
             public _Skin() {
                 UseTabSkin = false;
                 TabImageFile = "";
-                TabSizeMargin = new Margin();
-                TabContentMargin = new Margin();
+                TabSizeMargin = Padding.Empty;
+                TabContentMargin = Padding.Empty;
                 OverlapPixels = 0;
                 HitTestTransparent = false;
                 TabHeight = 24;
@@ -401,7 +402,7 @@ namespace QTTabBarLib {
                 RebarStretchMode = StretchMode.Full;
                 RebarImageFile = "";
                 RebarImageSeperateBars = false;
-                RebarSizeMargin = new Margin();
+                RebarSizeMargin = Padding.Empty;
                 ActiveTabInBold = false;
             }
         }
@@ -518,7 +519,6 @@ namespace QTTabBarLib {
         // DEATH ROW
         public static bool DontCaptureNewWnds { get; set; }
         public static bool AllRecentFiles { get; set; } 
-        public static bool AlignTabTextCenter { get; set; }
         public static bool ShowTooltips        { get; set; }
         public static bool CloseWhenGroup      { get; set; }
         public static bool NoCaptureMidClick   { get; set; }        
@@ -585,6 +585,15 @@ namespace QTTabBarLib {
             }
 
             // TODO non-props   
+
+            // TODO: more validation
+            if(Config.Skin.TabHeight > 50) {
+                Config.Skin.TabHeight = 50;
+            }
+            if(Config.Skin.TabHeight < 10) {
+                Config.Skin.TabHeight = 10;
+            }
+
         }
         public static void WriteConfig() {
             const string RegPath = RegConst.Root + RegConst.Config;
