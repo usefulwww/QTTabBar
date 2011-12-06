@@ -97,7 +97,6 @@ namespace QTTabBarLib {
         internal static List<string> StartUpGroupList = new List<string>();
         internal static string StartUpGroupNameNowOpening = string.Empty;
         internal static Font StartUpTabFont;
-        internal static Font TabFont;
         internal static Color TabHiliteColor;
         internal static Color TabTextColor_Active;
         internal static Color TabTextColor_ActivShdw;
@@ -152,16 +151,6 @@ namespace QTTabBarLib {
                         TabTextColor_InAtvShdw = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "TitleColorShadowInActv", Color.White.ToArgb()));
                         ShellViewRowCOLORREF_Background = QTUtility2.GetRegistryValueSafe(key, "AlternateColor_Bk", 0xfaf5f1);
                         ShellViewRowCOLORREF_Text = QTUtility2.GetRegistryValueSafe(key, "AlternateColor_Text", QTUtility2.MakeCOLORREF(SystemColors.WindowText));
-                        string familyName = (string)key.GetValue("TabFont", string.Empty);
-                        string s = (string)key.GetValue("TabFontSize", "0");
-                        if(float.TryParse(s, out num) && (num != 0f)) {
-                            try {
-                                TabFont = new Font(familyName, num);
-                            }
-                            catch {
-                                TabFont = Control.DefaultFont;
-                            }
-                        }
                         Action_BarDblClick = (string)key.GetValue("Action_BarDblClick", string.Empty);
                         MaxCount_History = QTUtility2.GetRegistryValueSafe(key, "Max_Undo", 0x10);
                         using(RegistryKey key2 = key.CreateSubKey("RecentlyClosed")) {

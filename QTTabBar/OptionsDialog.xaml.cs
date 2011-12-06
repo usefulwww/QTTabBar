@@ -385,6 +385,9 @@ namespace QTTabBarLib {
                 CreatePluginEntry(assembly, false);
             }
             lstPluginView.ItemsSource = CurrentPlugins;
+
+            Font font = workingConfig.skin.TabTextFont;
+            btnTextFont.Content = string.Format("{0}, {1} pt", font.Name, font.SizeInPoints);
         }
 
         public void Dispose() {
@@ -1923,6 +1926,19 @@ namespace QTTabBarLib {
             ColorDialogEx cd = new ColorDialogEx {Color = workingConfig.skin.RebarColor};
             if(System.Windows.Forms.DialogResult.OK == cd.ShowDialog()) {
                 workingConfig.skin.RebarColor = cd.Color;
+            }
+        }
+
+        private void btnTextFont_Click(object sender, RoutedEventArgs e) {
+            using(FontDialog dialog = new FontDialog()) {
+                dialog.Font = workingConfig.skin.TabTextFont;
+                dialog.ShowEffects = false;
+                dialog.AllowVerticalFonts = false;
+                if(System.Windows.Forms.DialogResult.OK == dialog.ShowDialog()) {
+                    Font font = dialog.Font;
+                    workingConfig.skin.TabTextFont = font;
+                    btnTextFont.Content = string.Format("{0}, {1} pt", font.Name, Math.Round(font.SizeInPoints));
+                }
             }
         }
     }

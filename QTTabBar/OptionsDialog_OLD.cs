@@ -4173,7 +4173,7 @@ namespace QTTabBarLib {
             InitializeTreeView_Group();
             QTUtility.RefreshUserAppDic(false);
             InitializeTreeView_UserApps();
-            btnTabFont.Font = QTUtility.TabFont;
+            ///btnTabFont.Font = QTUtility.TabFont;
             if(Config.HideMenuBar) {
                 chbHideMenu.Checked = true;
             }
@@ -4676,12 +4676,12 @@ namespace QTTabBarLib {
                     if((tabFont != null) && !tabFont.Equals(DefaultFont)) {
                         key.SetValue("TabFont", tabFont.Name);
                         key.SetValue("TabFontSize", tabFont.SizeInPoints.ToString());
-                        QTUtility.TabFont = tabFont;
+                        //QTUtility.TabFont = tabFont;
                     }
                     else {
                         key.DeleteValue("TabFont", false);
                         key.DeleteValue("TabFontSize", false);
-                        QTUtility.TabFont = null;
+                        //QTUtility.TabFont = null;
                     }
                     //key.SetValue("TabImage", QTUtility.Path_TabImage);
                     byte[] buffer = new byte[] { (byte)Config.Skin.TabSizeMargin.Left, (byte)Config.Skin.TabSizeMargin.Top, (byte)Config.Skin.TabSizeMargin.Right, (byte)Config.Skin.TabSizeMargin.Bottom };

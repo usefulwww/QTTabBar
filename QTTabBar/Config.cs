@@ -23,10 +23,35 @@ using System.Reflection;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Linq;
+using System.Windows.Forms;
 using Microsoft.Win32;
 using Padding = System.Windows.Forms.Padding;
 
 namespace QTTabBarLib {
+
+     // Wrapper class to get around  Font serialization stupidity
+    [Serializable]
+    public class XmlSerializableFont {
+        public string FontName { get; set; }
+        public float FontSize { get; set; }
+        public FontStyle FontStyle { get; set; }
+
+        public static XmlSerializableFont FromFont(Font font) {
+            return font == null ? null : new XmlSerializableFont
+                    {FontName = font.Name, FontSize = font.Size, FontStyle = font.Style};
+        }
+
+        public Font ToFont() {
+            return ToFont(this);
+        }
+
+        public static Font ToFont(XmlSerializableFont xmlSerializableFont) {
+            return new Font(
+                    xmlSerializableFont.FontName,
+                    xmlSerializableFont.FontSize,
+                    xmlSerializableFont.FontStyle);
+        }
+    }
 
     public enum TabPos {
         Rightmost,
@@ -321,6 +346,7 @@ namespace QTTabBarLib {
                 ShowPreviewInfo = true;
                 PreviewMaxWidth = 512;
                 PreviewMaxHeight = 256;
+                PreviewFont = Control.DefaultFont;
             }
         }
 
@@ -388,6 +414,7 @@ namespace QTTabBarLib {
                 TabMinWidth = 70; // TODO
                 TabMaxWidth = 150; // TODO
                 FixedWidthTabs = false;
+                TabTextFont = Control.DefaultFont;
                 TabTextActiveColor = Color.Black;
                 TabTextInactiveColor = Color.Black;
                 TabTextHotColor = Color.Black;
@@ -572,9 +599,16 @@ namespace QTTabBarLib {
                                 prop.SetValue(val, Enum.Parse(t, obj.ToString()), null);
                             }
                             else {
-                                DataContractJsonSerializer ser = new DataContractJsonSerializer(t);
                                 using(MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(obj.ToString()))) {
-                                    prop.SetValue(val, ser.ReadObject(stream), null);
+                                    if(t == typeof(Font)) {
+                                        DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(XmlSerializableFont));
+                                        XmlSerializableFont xsf = ser.ReadObject(stream) as XmlSerializableFont;
+                                        prop.SetValue(val, xsf == null ? null : xsf.ToFont(), null);
+                                    }
+                                    else {
+                                        DataContractJsonSerializer ser = new DataContractJsonSerializer(t);
+                                        prop.SetValue(val, ser.ReadObject(stream), null);
+                                    }
                                 }
                             }
                         }
@@ -593,7 +627,8 @@ namespace QTTabBarLib {
             if(Config.Skin.TabHeight < 10) {
                 Config.Skin.TabHeight = 10;
             }
-
+            Config.Skin.TabTextFont = Config.Skin.TabTextFont ?? Control.DefaultFont;
+            Config.Tips.PreviewFont = Config.Tips.PreviewFont ?? Control.DefaultFont;
         }
         public static void WriteConfig() {
             const string RegPath = RegConst.Root + RegConst.Config;
@@ -612,9 +647,19 @@ namespace QTTabBarLib {
                             key.SetValue(prop.Name, prop.GetValue(val, null));
                         }
                         else {
+                            object obj = prop.GetValue(val, null);
+                            if(t == typeof(Font)) {
+                                obj = XmlSerializableFont.FromFont((Font)obj);
+                                t = typeof(XmlSerializableFont);
+                            }
                             DataContractJsonSerializer ser = new DataContractJsonSerializer(t);
                             using(MemoryStream stream = new MemoryStream()) {
-                                ser.WriteObject(stream, prop.GetValue(val, null));
+                                try {
+                                    ser.WriteObject(stream, obj);
+                                }
+                                catch(Exception e) {
+                                    QTUtility2.MakeErrorLog(e);
+                                }
                                 stream.Position = 0;
                                 StreamReader reader = new StreamReader(stream);
                                 key.SetValue(prop.Name, reader.ReadToEnd());                                

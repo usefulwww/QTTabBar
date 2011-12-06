@@ -1196,7 +1196,7 @@ namespace QTTabBarLib {
             itemSize = new Size(maxAllowedTabWidth, Config.Skin.TabHeight);
             fActiveTxtBold = Config.Skin.ActiveTabInBold;
             fForceClassic = Config.Skin.UseTabSkin;
-            SetFont(QTUtility.TabFont);
+            SetFont(Config.Skin.TabTextFont);
             sizingMargin = Config.Skin.TabSizeMargin + new Padding(0, 0, 1, 1);
             if(Config.Skin.UseTabSkin && Config.Skin.TabImageFile.Length > 0) {
                 SetTabImages(QTTabBarClass.CreateTabImage());
