@@ -19,37 +19,28 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
-using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 using QTPlugin;
 using QTTabBarLib.Interop;
-using Binding = System.Windows.Data.Binding;
-using Image = System.Drawing.Image;
-using RadioButton = System.Windows.Controls.RadioButton;
-using Size = System.Drawing.Size;
-using Brush = System.Windows.Media.Brushes;
-using Color = System.Windows.Media.Color;
-//using MessageBox = System.Windows.Forms.MessageBox;
-using MessageBox = System.Windows.MessageBox;
-using KeyEventArgs = System.Windows.Input.KeyEventArgs;
-using Orientation = System.Windows.Controls.Orientation;
-using TextBox = System.Windows.Controls.TextBox;
 using Microsoft.Win32;
+using Image = System.Drawing.Image;
+using Size = System.Drawing.Size;
+using Font = System.Drawing.Font;
+using Bitmap = System.Drawing.Bitmap;
 using OpenFileDialog = System.Windows.Forms.OpenFileDialog;
-using TreeView = System.Windows.Controls.TreeView;
-using System.Windows.Controls.Primitives;
+using Keys = System.Windows.Forms.Keys;
 
 namespace QTTabBarLib {
     /// <summary>
@@ -386,8 +377,10 @@ namespace QTTabBarLib {
             }
             lstPluginView.ItemsSource = CurrentPlugins;
 
-            Font font = workingConfig.skin.TabTextFont;
-            btnTextFont.Content = string.Format("{0}, {1} pt", font.Name, font.SizeInPoints);
+            // Took me forever to figure out that this was necessary.  Why isn't this the default?!!
+            // Bindings in context menus won't work without this.
+            NameScope.SetNameScope(ctxTabTextColor, NameScope.GetNameScope(this));
+            NameScope.SetNameScope(ctxShadowTextColor, NameScope.GetNameScope(this));
         }
 
         public void Dispose() {
@@ -468,6 +461,7 @@ namespace QTTabBarLib {
 
         #region ---------- Tweaks ----------
 
+        // TODO: rethink this
         private void btnBackgroundColor_Click(object sender, RoutedEventArgs e) {
             ColorDialogEx cd = new ColorDialogEx();
             if(System.Windows.Forms.DialogResult.OK == cd.ShowDialog()) {
@@ -1914,7 +1908,7 @@ namespace QTTabBarLib {
             workingConfig.bbar.ImageStripPath = "";
         }
 
-        private sealed class ColorDialogEx : ColorDialog {
+        private sealed class ColorDialogEx : System.Windows.Forms.ColorDialog {
             protected override int Options {
                 get {
                     return (base.Options | 2);
@@ -1930,15 +1924,51 @@ namespace QTTabBarLib {
         }
 
         private void btnTextFont_Click(object sender, RoutedEventArgs e) {
-            using(FontDialog dialog = new FontDialog()) {
+            using(var dialog = new System.Windows.Forms.FontDialog()) {
                 dialog.Font = workingConfig.skin.TabTextFont;
                 dialog.ShowEffects = false;
                 dialog.AllowVerticalFonts = false;
                 if(System.Windows.Forms.DialogResult.OK == dialog.ShowDialog()) {
                     Font font = dialog.Font;
                     workingConfig.skin.TabTextFont = font;
-                    btnTextFont.Content = string.Format("{0}, {1} pt", font.Name, Math.Round(font.SizeInPoints));
+                    btnTextFont.GetBindingExpression(ContentProperty).UpdateTarget();
                 }
+            }
+        }
+
+        // Draws a control to a bitmap
+        private static BitmapSource ConvertToBitmapSource(UIElement element) {
+            var target = new RenderTargetBitmap((int)(element.RenderSize.Width), (int)(element.RenderSize.Height), 96, 96, PixelFormats.Pbgra32);
+            var brush = new VisualBrush(element);
+            var visual = new DrawingVisual();
+            var drawingContext = visual.RenderOpen();
+
+            drawingContext.DrawRectangle(brush, null, new Rect(new Point(0, 0),
+                new Point(element.RenderSize.Width, element.RenderSize.Height)));
+            drawingContext.Close();
+            target.Render(visual);
+            return target;
+        }
+
+        private void btnShadTextColor_OnChecked(object sender, RoutedEventArgs e) {
+            var button = ((ToggleButton)sender);
+            ContextMenu menu = button.ContextMenu;
+            foreach(MenuItem mi in menu.Items) {
+                mi.Icon = new System.Windows.Controls.Image { Source = ConvertToBitmapSource((Rectangle)mi.Tag) };
+            }
+            // Yeah, this is necessary even with the IsChecked <=> IsOpen binding.
+            // Not sure why.
+            menu.PlacementTarget = button;
+            menu.Placement = PlacementMode.Bottom;
+            menu.IsOpen = true;
+        }
+
+        private void miColorMenuEntry_OnClick(object sender, RoutedEventArgs e) {
+            var mi = (MenuItem)sender;
+            var rect = (Rectangle)mi.Tag;
+            ColorDialogEx cd = new ColorDialogEx { Color = (System.Drawing.Color)rect.Tag };
+            if(System.Windows.Forms.DialogResult.OK == cd.ShowDialog()) {
+                rect.Tag = cd.Color;
             }
         }
     }
@@ -2004,6 +2034,30 @@ namespace QTTabBarLib {
             finally {
                 PInvoke.DeleteObject(hBitmap);
             }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+            throw new NotSupportedException();
+        }
+    }
+
+    [ValueConversion(typeof(System.Drawing.Color), typeof(Brush))]
+    public class ColorToBrushConverter : IValueConverter {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+            var c = (System.Drawing.Color)(value ?? System.Drawing.Color.Red);
+            return new SolidColorBrush(Color.FromArgb(c.A, c.R, c.G, c.B));
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+            throw new NotSupportedException();
+        }
+    }
+
+    [ValueConversion(typeof(Font), typeof(string))]
+    public class FontStringConverter : IValueConverter {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+            Font font = (Font)value;
+            return string.Format("{0}, {1} pt", font.Name, Math.Round(font.SizeInPoints));
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {

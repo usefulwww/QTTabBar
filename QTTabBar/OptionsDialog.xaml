@@ -36,6 +36,8 @@
         <BooleanToVisibilityConverter       x:Key="BooleanToVisibilityConverter"/>
         <qt:LevelToIndentConverter          x:Key="LevelIndentConverter"/>
         <qt:ObjectToClassNameConverter      x:Key="ObjectToClassNameConverter"/>
+        <qt:ColorToBrushConverter           x:Key="ColorToBrushConverter"/>
+        <qt:FontStringConverter             x:Key="FontStringConverter"/>
 
         <Style x:Key="SectionHeaderStyle" TargetType="Label">
             <Setter Property="Background"       Value="#FFF0F2F5"/>
@@ -1222,7 +1224,7 @@
                             Height="16"
                             Padding="0"/>
                         <Button
-                            Content="Microsoft Sans Serif, 8.25pt"
+                            Content="{Binding Path=PreviewFont, Converter={StaticResource FontStringConverter}}"
                             Height="23"
                             Margin="8,1"
                             Width="250"/>
@@ -1654,6 +1656,15 @@
                             Style="{StaticResource SectionHeaderStyle}"/>
                         <Grid
                             Margin="13,1,0,1">
+                            <Grid.Resources>
+                                <Style x:Key="ColorTileStyle" TargetType="Rectangle">
+                                    <Setter Property="Stroke"           Value="Black"/>
+                                    <Setter Property="StrokeThickness"  Value="1"/>
+                                    <Setter Property="Height"           Value="16"/>
+                                    <Setter Property="Width"            Value="16"/>
+                                    <Setter Property="Margin"           Value="4,0"/>
+                                </Style>
+                            </Grid.Resources>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
@@ -1681,23 +1692,115 @@
                                 Grid.Row="1"
                                 Height="16"
                                 Padding="0"/>
-                            <ToggleButton
-                                Content="&#9660;"
+                            <ToggleButton x:Name="btnTabTextColor"
+                                Checked="btnShadTextColor_OnChecked"
+                                ContextMenuService.Placement="Bottom"
                                 Grid.Column="2"
                                 Height="23"
                                 HorizontalAlignment="Left"
-                                Margin="10, 5"
-                                Width="140"
-                                VerticalAlignment="Center"/>
-                            <ToggleButton
-                                Content="&#9660;"
-                                Grid.Column="2"
+                                HorizontalContentAlignment="Stretch"
+                                IsChecked="{Binding ElementName=ctxTabTextColor, Path=IsOpen, Mode=TwoWay}"
+                                Margin="10, 5, 30, 5"
+                                Width="100"
+                                VerticalAlignment="Center">
+                                <DockPanel LastChildFill="True">
+                                    <TextBlock
+                                        DockPanel.Dock="Right"
+                                        HorizontalAlignment="Right"
+                                        Margin="4,0"
+                                        Text="&#9660;"/>
+                                    <StackPanel
+                                        HorizontalAlignment="Center"
+                                        Margin="0,1,0,0"
+                                        Orientation="Horizontal"
+                                        SnapsToDevicePixels="True">
+                                        <Rectangle x:Name="rectTabTextActiveColor"
+                                            Style="{StaticResource ColorTileStyle}"
+                                            Fill="{Binding Path=Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource ColorToBrushConverter}}"
+                                            Tag="{Binding Path=TabTextActiveColor, Mode=TwoWay}"/>
+                                        <Rectangle x:Name="rectTabTextInactiveColor"
+                                            Style="{StaticResource ColorTileStyle}"
+                                            Fill="{Binding Path=Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource ColorToBrushConverter}}"
+                                            Tag="{Binding Path=TabTextInactiveColor, Mode=TwoWay}"/>
+                                        <Rectangle x:Name="rectTabTextHotColor"
+                                            Style="{StaticResource ColorTileStyle}"
+                                            Fill="{Binding Path=Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource ColorToBrushConverter}}"
+                                            Tag="{Binding Path=TabTextHotColor, Mode=TwoWay}"/>
+                                    </StackPanel>
+                                </DockPanel>
+                                <ToggleButton.ContextMenu>
+                                    <ContextMenu x:Name="ctxTabTextColor" 
+                                        PlacementTarget="{Binding ElementName=btnTabTextColor}">
+                                        <MenuItem x:Name="miTabTextActiveColor"
+                                            Click="miColorMenuEntry_OnClick"
+                                            Header="Active Color"
+                                            Tag="{Binding ElementName=rectTabTextActiveColor}"/>
+                                        <MenuItem x:Name="miTabTextInactiveColor"
+                                            Click="miColorMenuEntry_OnClick"
+                                            Header="Inactive Color"
+                                            Tag="{Binding ElementName=rectTabTextInactiveColor}"/>
+                                        <MenuItem x:Name="miTabTextHotColor"
+                                            Click="miColorMenuEntry_OnClick"
+                                            Header="Mouseover Color"
+                                            Tag="{Binding ElementName=rectTabTextHotColor}"/>
+                                    </ContextMenu>
+                                </ToggleButton.ContextMenu>
+                            </ToggleButton>
+                            <ToggleButton x:Name="btnShadowColor"
+                                Checked="btnShadTextColor_OnChecked"
+                                ContextMenuService.Placement="Bottom"
                                 Grid.Row="1"
+                                Grid.Column="2"
                                 Height="23"
                                 HorizontalAlignment="Left"
-                                Margin="10, 5"
-                                Width="140"
-                                VerticalAlignment="Center"/>
+                                HorizontalContentAlignment="Stretch"
+                                IsChecked="{Binding ElementName=ctxShadowTextColor, Path=IsOpen, Mode=TwoWay}"
+                                Margin="10, 5, 30, 5"
+                                Width="100"
+                                VerticalAlignment="Center">
+                                <DockPanel LastChildFill="True">
+                                    <TextBlock
+                                        DockPanel.Dock="Right"
+                                        HorizontalAlignment="Right"
+                                        Margin="4,0"
+                                        Text="&#9660;"/>
+                                    <StackPanel
+                                        HorizontalAlignment="Center"
+                                        Margin="0,1,0,0"
+                                        Orientation="Horizontal"
+                                        SnapsToDevicePixels="True">
+                                        <Rectangle x:Name="rectTabShadActiveColor"
+                                            Style="{StaticResource ColorTileStyle}"
+                                            Fill="{Binding Path=Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource ColorToBrushConverter}}"
+                                            Tag="{Binding Path=TabShadActiveColor, Mode=TwoWay}"/>
+                                        <Rectangle x:Name="rectTabShadInactiveColor"
+                                            Style="{StaticResource ColorTileStyle}"
+                                            Fill="{Binding Path=Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource ColorToBrushConverter}}"
+                                            Tag="{Binding Path=TabShadInactiveColor, Mode=TwoWay}"/>
+                                        <Rectangle x:Name="rectTabShadMouseoverColor"
+                                            Style="{StaticResource ColorTileStyle}"
+                                            Fill="{Binding Path=Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource ColorToBrushConverter}}"
+                                            Tag="{Binding Path=TabShadHotColor, Mode=TwoWay}"/>
+                                    </StackPanel>
+                                </DockPanel>
+                                <ToggleButton.ContextMenu>
+                                    <ContextMenu x:Name="ctxShadowTextColor" 
+                                        PlacementTarget="{Binding ElementName=btnTabTextColor}">
+                                        <MenuItem x:Name="miTabShadActiveColor"
+                                            Click="miColorMenuEntry_OnClick"
+                                            Header="Active Color"
+                                            Tag="{Binding ElementName=rectTabShadActiveColor}"/>
+                                        <MenuItem x:Name="miTabShadInactiveColor"
+                                            Click="miColorMenuEntry_OnClick"
+                                            Header="Inactive Color"
+                                            Tag="{Binding ElementName=rectTabShadInactiveColor}"/>
+                                        <MenuItem x:Name="miTabShadMouseoverColor"
+                                            Click="miColorMenuEntry_OnClick"
+                                            Header="Mouseover Color"
+                                            Tag="{Binding ElementName=rectTabShadMouseoverColor}"/>
+                                    </ContextMenu>
+                                </ToggleButton.ContextMenu>
+                            </ToggleButton>
                             <Label
                                 Content="Text Font:"
                                 Grid.Column="3"
@@ -1711,7 +1814,7 @@
                                 Padding="0"/>
                             <Button x:Name="btnTextFont"
                                 Click="btnTextFont_Click" 
-                                Content="Trebuchet MS, 12 pt"                                
+                                Content="{Binding Path=TabTextFont, Converter={StaticResource FontStringConverter}}"
                                 Grid.Column="4"
                                 Grid.Row="0"
                                 Height="23"

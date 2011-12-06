@@ -97,11 +97,6 @@ namespace QTTabBarLib {
         internal static List<string> StartUpGroupList = new List<string>();
         internal static string StartUpGroupNameNowOpening = string.Empty;
         internal static Font StartUpTabFont;
-        internal static Color TabHiliteColor;
-        internal static Color TabTextColor_Active;
-        internal static Color TabTextColor_ActivShdw;
-        internal static Color TabTextColor_Inactv;
-        internal static Color TabTextColor_InAtvShdw;
         internal static Dictionary<string, string[]> TextResourcesDic;
         internal static List<byte[]> TMPIDLList = new List<byte[]>();
         internal static List<string> TMPPathList = new List<string>();
@@ -144,11 +139,6 @@ namespace QTTabBarLib {
                             Path_LanguageFile = string.Empty;
                         }
                         ValidateTextResources();
-                        TabTextColor_Active = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "TitleColorActive", SystemColors.ControlText.ToArgb()));
-                        TabTextColor_Inactv = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "TitleColorInactive", SystemColors.ControlText.ToArgb()));
-                        TabHiliteColor = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "HighlightColorClassic", SystemColors.Highlight.ToArgb()));
-                        TabTextColor_ActivShdw = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "TitleColorShadowActive", Color.Silver.ToArgb()));
-                        TabTextColor_InAtvShdw = Color.FromArgb(QTUtility2.GetRegistryValueSafe(key, "TitleColorShadowInActv", Color.White.ToArgb()));
                         ShellViewRowCOLORREF_Background = QTUtility2.GetRegistryValueSafe(key, "AlternateColor_Bk", 0xfaf5f1);
                         ShellViewRowCOLORREF_Text = QTUtility2.GetRegistryValueSafe(key, "AlternateColor_Text", QTUtility2.MakeCOLORREF(SystemColors.WindowText));
                         Action_BarDblClick = (string)key.GetValue("Action_BarDblClick", string.Empty);

@@ -4160,12 +4160,12 @@ namespace QTTabBarLib {
             }
             else {
                 nudTabWidth.Value = QTUtility.TabWidth;
-            }*/
+            }
             btnActTxtClr.ForeColor = QTUtility.TabTextColor_Active;
             btnInactTxtClr.ForeColor = QTUtility.TabTextColor_Inactv;
             btnHiliteClsc.ForeColor = QTUtility.TabHiliteColor;
             btnShadowAct.ForeColor = QTUtility.TabTextColor_ActivShdw;
-            btnShadowIna.ForeColor = QTUtility.TabTextColor_InAtvShdw;
+            btnShadowIna.ForeColor = QTUtility.TabTextColor_InAtvShdw;*/
             chbTabTitleShadow.Checked = Config.Skin.TabTitleShadows;
             btnShadowAct.Enabled = btnShadowIna.Enabled = chbTabTitleShadow.Checked;
             textBoxAction_BarDblClck.Text = QTUtility.Action_BarDblClick;
@@ -4660,11 +4660,11 @@ namespace QTTabBarLib {
                     //key.SetValue("TabHeight", Config.Skin.TabHeight);
                     key.SetValue("TabWidthMax", Config.Skin.TabMaxWidth);
                     key.SetValue("TabWidthMin", Config.Skin.TabMinWidth);
-                    key.SetValue("TitleColorActive", QTUtility.TabTextColor_Active.ToArgb());
-                    key.SetValue("TitleColorInactive", QTUtility.TabTextColor_Inactv.ToArgb());
-                    key.SetValue("HighlightColorClassic", QTUtility.TabHiliteColor.ToArgb());
-                    key.SetValue("TitleColorShadowActive", QTUtility.TabTextColor_ActivShdw.ToArgb());
-                    key.SetValue("TitleColorShadowInActv", QTUtility.TabTextColor_InAtvShdw.ToArgb());
+                    //key.SetValue("TitleColorActive", QTUtility.TabTextColor_Active.ToArgb());
+                    //key.SetValue("TitleColorInactive", QTUtility.TabTextColor_Inactv.ToArgb());
+                    //key.SetValue("HighlightColorClassic", QTUtility.TabHiliteColor.ToArgb());
+                    //key.SetValue("TitleColorShadowActive", QTUtility.TabTextColor_ActivShdw.ToArgb());
+                    //key.SetValue("TitleColorShadowInActv", QTUtility.TabTextColor_InAtvShdw.ToArgb());
                     //key.SetValue("ToolbarBGColor", QTUtility.RebarBGColor.ToArgb());
                     key.SetValue("AlternateColor_Bk", QTUtility.ShellViewRowCOLORREF_Background);
                     key.SetValue("AlternateColor_Text", QTUtility.ShellViewRowCOLORREF_Text);

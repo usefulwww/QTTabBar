@@ -116,7 +116,14 @@ namespace QTTabBarLib {
             sfTypoGraphic = StringFormat.GenericTypographic;
             sfTypoGraphic.FormatFlags |= StringFormatFlags.NoWrap;
             sfTypoGraphic.Trimming = StringTrimming.EllipsisCharacter;
-            colorSet = new Color[] { QTUtility.TabTextColor_Active, QTUtility.TabTextColor_Inactv, QTUtility.TabHiliteColor, QTUtility.TabTextColor_ActivShdw, QTUtility.TabTextColor_InAtvShdw };
+            colorSet = new Color[] {
+                Config.Skin.TabTextActiveColor,
+                Config.Skin.TabTextInactiveColor,
+                Config.Skin.TabTextHotColor,
+                Config.Skin.TabShadActiveColor,
+                Config.Skin.TabShadInactiveColor,
+                Config.Skin.TabShadHotColor
+            };
             brshActive = new SolidBrush(colorSet[0]);
             brshInactv = new SolidBrush(colorSet[1]);
             timerSuppressDoubleClick = new Timer(components);
@@ -509,7 +516,7 @@ namespace QTTabBarLib {
 
         private static void DrawDriveLetter(Graphics g, string str, Font fnt, Rectangle rctFldImg, bool fSelected) {
             Rectangle layoutRectangle = new Rectangle(rctFldImg.X + 7, rctFldImg.Y + 6, 0x10, 0x10);
-            using(SolidBrush brush = new SolidBrush(QTUtility2.MakeModColor(fSelected ? QTUtility.TabTextColor_ActivShdw : QTUtility.TabTextColor_InAtvShdw))) {
+            using(SolidBrush brush = new SolidBrush(QTUtility2.MakeModColor(fSelected ? Config.Skin.TabShadActiveColor : Config.Skin.TabShadInactiveColor))) {
                 Rectangle rectangle2 = layoutRectangle;
                 rectangle2.Offset(1, 0);
                 g.DrawString(str, fnt, brush, rectangle2);
@@ -527,7 +534,7 @@ namespace QTTabBarLib {
                 g.DrawString(str, fnt, brush, rectangle2);
                 rectangle2.Offset(0, 2);
                 g.DrawString(str, fnt, brush, rectangle2);
-                brush.Color = fSelected ? QTUtility.TabTextColor_Active : QTUtility.TabTextColor_Inactv;
+                brush.Color = fSelected ? Config.Skin.TabTextActiveColor : Config.Skin.TabTextInactiveColor;
                 g.DrawString(str, fnt, brush, layoutRectangle);
             }
         }
@@ -1176,7 +1183,14 @@ namespace QTTabBarLib {
                 fDrawFolderImg = Config.Tabs.ShowFolderIcon;
             }
             else {
-                colorSet = new Color[] { QTUtility.TabTextColor_Active, QTUtility.TabTextColor_Inactv, QTUtility.TabHiliteColor, QTUtility.TabTextColor_ActivShdw, QTUtility.TabTextColor_InAtvShdw };
+                colorSet = new Color[] {
+                    Config.Skin.TabTextActiveColor,
+                    Config.Skin.TabTextInactiveColor,
+                    Config.Skin.TabTextHotColor,
+                    Config.Skin.TabShadActiveColor,
+                    Config.Skin.TabShadInactiveColor,
+                    Config.Skin.TabShadHotColor
+                };
                 brshActive.Color = colorSet[0];
                 brshInactv.Color = colorSet[1];
             }
@@ -1267,24 +1281,44 @@ namespace QTTabBarLib {
             if(fntBold != null) {
                 fntBold.Dispose();
             }
-            fntBold = new Font(Font, FontStyle.Bold);
+            fntBold = Font;
+            try {
+                fntBold = new Font(Font, FontStyle.Bold);
+            }
+            catch {}
             if(fnt_Underline != null) {
                 fnt_Underline.Dispose();
             }
-            fnt_Underline = new Font(Font, FontStyle.Underline);
+            fnt_Underline = Font;
+            try {
+                fnt_Underline = new Font(Font, FontStyle.Underline);
+            }
+            catch {}
             if(fntBold_Underline != null) {
                 fntBold_Underline.Dispose();
             }
-            fntBold_Underline = new Font(Font, FontStyle.Underline | FontStyle.Bold);
+            fntBold_Underline = fntBold;
+            try {
+                fntBold_Underline = new Font(fntBold, FontStyle.Underline);    
+            }
+            catch {}
             if(fntSubText != null) {
                 fntSubText.Dispose();
             }
             float sizeInPoints = Font.SizeInPoints;
-            fntSubText = new Font(Font.FontFamily, (sizeInPoints > 8.25f) ? (sizeInPoints - 0.75f) : sizeInPoints);
+            fntSubText = Font;
+            try {
+                fntSubText = new Font(Font.FontFamily, (sizeInPoints > 8.25f) ? (sizeInPoints - 0.75f) : sizeInPoints);   
+            }
+            catch {}
             if(fntDriveLetter != null) {
                 fntDriveLetter.Dispose();
             }
-            fntDriveLetter = new Font(Font.FontFamily, 8.25f);
+            fntDriveLetter = Font;
+            try {
+                fntDriveLetter = new Font(Font.FontFamily, 8.25f);
+            }
+            catch {}
             QTabItemBase.TabFont = Font;
         }
 
