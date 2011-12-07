@@ -334,7 +334,9 @@ namespace QTTabBarLib {
             public int PreviewMaxWidth           { get; set; }
             public int PreviewMaxHeight          { get; set; }
             public Font PreviewFont              { get; set; }
-
+            public List<string> TextExt          { get; set; }
+            public List<string> ImageExt         { get; set; }
+            
             public _Tips() {
                 ShowSubDirTips = true;
                 SubDirTipsPreview = true;
@@ -346,6 +348,8 @@ namespace QTTabBarLib {
                 PreviewMaxWidth = 512;
                 PreviewMaxHeight = 256;
                 PreviewFont = Control.DefaultFont;
+                TextExt = new List<string> {".txt", ".ini", ".inf" ,".cs", ".log", ".js", ".vbs"};
+                ImageExt = ThumbnailTooltipForm.MakeDefaultImgExts();
             }
         }
 
@@ -443,12 +447,9 @@ namespace QTTabBarLib {
             public string ImageStripPath         { get; set; }
             
             public _BBar() {
-                // todo
-                // we can't check QTUtility.IsXP here, due to a circular reference between
-                // QTUtility's static constructor and ConfigManager's.
-                ButtonIndexes = //QTUtility.IsXP 
-                        //? new int[] {1, 2, 0, 3, 4, 5, 0, 6, 7, 0, 11, 13, 12, 14, 15, 0, 9, 20} 
-                        /*:*/ new int[] {3, 4, 5, 0, 6, 7, 0, 11, 13, 12, 14, 15, 0, 9, 20};
+                ButtonIndexes = QTUtility.IsXP 
+                        ? new int[] {1, 2, 0, 3, 4, 5, 0, 6, 7, 0, 11, 13, 12, 14, 15, 0, 9, 20} 
+                        : new int[] {3, 4, 5, 0, 6, 7, 0, 11, 13, 12, 14, 15, 0, 9, 20};
                 LockDropDownButtons = false;
                 LargeButtons = true;
                 LockSearchBarWidth = false;
@@ -570,7 +571,7 @@ namespace QTTabBarLib {
     public static class ConfigManager {
         public static Config LoadedConfig;
 
-        static ConfigManager() {
+        public static void Initialize() {
             LoadedConfig = new Config();
             ReadConfig();
         }
@@ -628,6 +629,8 @@ namespace QTTabBarLib {
             }
             Config.Skin.TabTextFont = Config.Skin.TabTextFont ?? Control.DefaultFont;
             Config.Tips.PreviewFont = Config.Tips.PreviewFont ?? Control.DefaultFont;
+            Config.Tips.PreviewMaxWidth = QTUtility.ValidateMaxMin(Config.Tips.PreviewMaxWidth, 1920, 128);
+            Config.Tips.PreviewMaxHeight = QTUtility.ValidateMaxMin(Config.Tips.PreviewMaxHeight, 1200, 96);
         }
         public static void WriteConfig() {
             const string RegPath = RegConst.Root + RegConst.Config;

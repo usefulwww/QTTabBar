@@ -32,7 +32,6 @@ using QTTabBarLib.Interop;
 
 namespace QTTabBarLib {
     internal static class QTUtility {
-        internal static string Action_BarDblClick;
         internal static Version BetaRevision = new Version(0, 3);
         internal static PathList ClosedTabHistoryList = new PathList(0x10);
         internal static byte[] ConfigValues;
@@ -59,13 +58,11 @@ namespace QTTabBarLib {
         internal const string IMAGEKEY_NOIMAGE = "noimage";
         internal static ImageList ImageListGlobal;
         internal static int InstancesCount;
-        internal static readonly bool IsRTL;
-        internal static readonly bool IsXP;
+        internal static readonly bool IsRTL = CultureInfo.CurrentCulture.TextInfo.IsRightToLeft;
+        internal static readonly bool IsXP = Environment.OSVersion.Version.Major <= 5;
         internal static Dictionary<string, byte[]> ITEMIDLIST_Dic_Session = new Dictionary<string, byte[]>();
         internal static List<string> LockedTabsToRestoreList = new List<string>();
         internal const BindAction LAST_KEYBOARD_ACTION = BindAction.FocusTabBar;
-        public static int MaxCount_Executed = 0x10;
-        internal static int MaxCount_History = 0x10;
         internal static List<string> NoCapturePathsList = new List<string>();
         internal static bool NowDebugging = 
 #if DEBUG
@@ -73,18 +70,11 @@ namespace QTTabBarLib {
 #else
             false;
 #endif
-        internal static int OptionsDialogTabIndex;
         internal static string Path_LanguageFile;
         internal static string PATH_MYNETWORK;
         internal static string Path_PluginLangFile;
         internal static string PATH_SEARCHFOLDER;
         internal static string PathToSelectInCommandLineArg;
-        internal static List<string> PreviewExtsList_Img = new List<string>();
-        internal static List<string> PreviewExtsList_Txt = new List<string>();
-        internal static string PreviewFontName;
-        internal static float PreviewFontSize;
-        internal static int PreviewMaxHeight = 0x100;
-        internal static int PreviewMaxWidth = 0x200;
         internal const string REGUSER = RegConst.Root;
         internal static string[] ResMain;
         internal static string[] ResMisc;
@@ -103,31 +93,26 @@ namespace QTTabBarLib {
         internal static byte WindowAlpha = 0xff;
 
         static QTUtility() {
-            String processName = Process.GetCurrentProcess().ProcessName.ToLower();
-            
             // I'm tempted to just return for everything except "explorer"
             // Maybe I should...
+            String processName = Process.GetCurrentProcess().ProcessName.ToLower();
             if(processName == "iexplore" || processName == "regasm" || processName == "gacutil") {
-                //MessageBox.Show("Blocked " + processName);
                 return;
             }
 
-            ImageListGlobal = new ImageList();
-            ImageListGlobal.ColorDepth = ColorDepth.Depth32Bit;
-            ImageListGlobal.Images.Add("folder", GetIcon(string.Empty, false));
             try {
-                IsXP = Environment.OSVersion.Version.Major <= 5;
-                // TODO: make this more comprehensible 
-                //ConfigValues = new byte[] { 200, 0, 4, 0, 4, 0x60, 0x10, 0x22, 2, 8, 0xe0, 8, 0, 0x20, 0, 0 };
-                //if(IsXP) {
-                    //ConfigValues[13] = 0x30;
-                //}
-                //SetConfigAt(Settings.AutoUpdate, true); // TODO
+                // Load the config
+                ConfigManager.Initialize();
+
+                // Create and enable the API hooks
+                HookLibManager.Initialize();
+
+                // Create the global imagelist
+                ImageListGlobal = new ImageList { ColorDepth = ColorDepth.Depth32Bit };
+                ImageListGlobal.Images.Add("folder", GetIcon(string.Empty, false));
+
                 using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                     if(key != null) {
-                        float num;
-                        byte[] inputValues = (byte[])key.GetValue("Config");
-                        //ConfigValues = GetSettingValue(inputValues, ConfigValues, false);
                         string path = (string)key.GetValue("LanguageFile", string.Empty);
                         if((path.Length > 0) && File.Exists(path)) {
                             Path_LanguageFile = path;
@@ -137,22 +122,20 @@ namespace QTTabBarLib {
                             Path_LanguageFile = string.Empty;
                         }
                         ValidateTextResources();
-                        Action_BarDblClick = (string)key.GetValue("Action_BarDblClick", string.Empty);
-                        MaxCount_History = QTUtility2.GetRegistryValueSafe(key, "Max_Undo", 0x10);
+
                         using(RegistryKey key2 = key.CreateSubKey("RecentlyClosed")) {
                             if(key2 != null) {
                                 List<string> collection = key2.GetValueNames()
                                         .Select(str4 => (string)key2.GetValue(str4)).ToList();
-                                ClosedTabHistoryList = new PathList(collection, MaxCount_History);
+                                ClosedTabHistoryList = new PathList(collection, Config.Misc.TabHistoryCount);
                             }
                         }
                         if(Config.AllRecentFiles) {
-                            MaxCount_Executed = QTUtility2.GetRegistryValueSafe(key, "Max_RecentFile", 0x10);
                             using(RegistryKey key3 = key.CreateSubKey("RecentFiles")) {
                                 if(key3 != null) {
                                     List<string> list2 = key3.GetValueNames().Select(str5 =>
                                             (string)key3.GetValue(str5)).ToList();
-                                    ExecutedPathsList = new PathList(list2, MaxCount_Executed);
+                                    ExecutedPathsList = new PathList(list2, Config.Misc.FileHistoryCount);
                                 }
                             }
                         }
@@ -169,14 +152,6 @@ namespace QTTabBarLib {
                         if(!byte.TryParse((string)key.GetValue("WindowAlpha", "255"), out WindowAlpha)) {
                             WindowAlpha = 0xff;
                         }
-                        RefreshPreviewExtensions();
-                        PreviewMaxWidth = ValidateMaxMin((int)key.GetValue("PreviewMaxWidth", 0x200), 0x780, 0x80);
-                        PreviewMaxHeight = ValidateMaxMin((int)key.GetValue("PreviewMaxHeight", 0x100), 0x4b0, 0x60);
-                        PreviewFontName = (string)key.GetValue("PreviewFont", null);
-                        string str8 = (string)key.GetValue("PreviewFontSize", null);
-                        if(!float.TryParse(str8, out PreviewFontSize)) {
-                            PreviewFontSize = 10.5f;
-                        }
                     }
                 }
                 RefreshGroupsDic();
@@ -190,13 +165,12 @@ namespace QTTabBarLib {
                     PATH_MYNETWORK = "::{208D2C60-3AEA-1069-A2D7-08002B30309D}";
                     GetShellClickMode();
                 }
-                PluginManager.Initialize();
-                IsRTL = CultureInfo.CurrentCulture.TextInfo.IsRightToLeft;
 
-                // Make sure the hooklib is initialized
-                RuntimeHelpers.RunClassConstructor(typeof(HookLibManager).TypeHandle);
+                // Initialize plugins
+                PluginManager.Initialize();
             }
             catch(Exception exception) {
+                // TODO: Any errors here would be very serious.  Alert the user as such.
                 QTUtility2.MakeErrorLog(exception);
             }
         }
@@ -607,39 +581,6 @@ namespace QTTabBarLib {
             }
         }
 
-        public static void RefreshPreviewExtensions() {
-            const string defaultValue = ".txt;.ini;.inf;.cs;.log;.js;.vbs";
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
-                string str2 = (string)key.GetValue("TextExtensions", defaultValue);
-                if(str2.Length > 0) {
-                    foreach(string str3 in str2.Split(SEPARATOR_CHAR)) {
-                        if(str3.Length > 0) {
-                            string item = str3;
-                            if(!str3.StartsWith(".")) {
-                                item = "." + str3;
-                            }
-                            PreviewExtsList_Txt.Add(item);
-                        }
-                    }
-                }
-                string str5 = (string)key.GetValue("ImageExtensions");
-                if(str5 == null) {
-                    PreviewExtsList_Img = ThumbnailTooltipForm.MakeDefaultImgExts();
-                }
-                else if(str5.Length > 0) {
-                    foreach(string str6 in str5.Split(SEPARATOR_CHAR)) {
-                        if(str6.Length > 0) {
-                            string str7 = str6;
-                            if(!str6.StartsWith(".")) {
-                                str7 = "." + str6;
-                            }
-                            PreviewExtsList_Img.Add(str7);
-                        }
-                    }
-                }
-            }
-        }
-
         public static void RefreshUserAppDic(bool fCheckShortcuts) {
             UserAppsDic.Clear();
             using(RegistryKey key = Registry.CurrentUser.OpenSubKey(RegConst.Root + @"UserApps", false)) {
@@ -859,7 +800,11 @@ namespace QTTabBarLib {
             // TODO
         }
 
-        private static int ValidateMaxMin(int value, int max, int min) {
+        public static void ValidateMaxMin(ref int value, int max, int min) {
+            value = ValidateMaxMin(value, min, max);
+        }
+
+        public static int ValidateMaxMin(int value, int max, int min) {
             int num = Math.Max(max, min);
             int num2 = Math.Min(max, min);
             if(value < num2) {

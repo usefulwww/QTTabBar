@@ -4756,8 +4756,8 @@ namespace QTTabBarLib {
             }
             RefreshTabBar();
             SyncTabBarBroadcast(Handle);
-            QTUtility.ClosedTabHistoryList.MaxCapacity = QTUtility.MaxCount_History;
-            QTUtility.ExecutedPathsList.MaxCapacity = QTUtility.MaxCount_Executed;
+            QTUtility.ClosedTabHistoryList.MaxCapacity = Config.Misc.TabHistoryCount;
+            QTUtility.ExecutedPathsList.MaxCapacity = Config.Misc.FileHistoryCount;
             SyncButtonBarBroadCast(0x100);
             SyncButtonBarCurrent(0x3f);
             SyncTaskBarMenu();

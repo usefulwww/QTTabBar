@@ -429,10 +429,10 @@ namespace QTTabBarLib {
             cmbTabSizeMode.Items.AddRange(new string[] { ResOpt_DropDown[0x17], ResOpt_DropDown[0x18], ResOpt_DropDown[0x19] });
             cmbTabTextAlignment.Items.AddRange(new string[] { ResOpt_DropDown[0x1d], ResOpt_DropDown[30] });
             cmbTextExts.Items.Add("(Text file)");
-            cmbTextExts.Items.AddRange(QTUtility.PreviewExtsList_Txt.ToArray());
+            //cmbTextExts.Items.AddRange(QTUtility.PreviewExtsList_Txt.ToArray());
             cmbTextExts.SelectedIndex = 0;
             cmbImgExts.Items.Add("(Image & movie file)");
-            cmbImgExts.Items.AddRange(QTUtility.PreviewExtsList_Img.ToArray());
+            //cmbImgExts.Items.AddRange(QTUtility.PreviewExtsList_Img.ToArray());
             cmbImgExts.SelectedIndex = 0;
             cmbRebarBGImageMode.Items.AddRange(new string[] { ResOpt_DropDown[0x1a], ResOpt_DropDown[0x1b], ResOpt_DropDown[0x1c], ResOpt_DropDown[0x21] });
             cmbMenuRenderer.Items.AddRange(new string[] { ResOpt[0x2a], ResOpt_DropDown[0x1f], ResOpt_DropDown[0x20] });
@@ -465,7 +465,7 @@ namespace QTTabBarLib {
                 }
             }
             SetValues();
-            tabControl1.SelectedIndex = QTUtility.OptionsDialogTabIndex;
+            //tabControl1.SelectedIndex = QTUtility.OptionsDialogTabIndex;
             ResumeLayout();
         }
 
@@ -4168,7 +4168,7 @@ namespace QTTabBarLib {
             btnShadowIna.ForeColor = QTUtility.TabTextColor_InAtvShdw;*/
             chbTabTitleShadow.Checked = Config.Skin.TabTitleShadows;
             btnShadowAct.Enabled = btnShadowIna.Enabled = chbTabTitleShadow.Checked;
-            textBoxAction_BarDblClck.Text = QTUtility.Action_BarDblClick;
+            //textBoxAction_BarDblClck.Text = QTUtility.Action_BarDblClick;
             QTUtility.RefreshGroupsDic();
             InitializeTreeView_Group();
             QTUtility.RefreshUserAppDic(false);
@@ -4224,15 +4224,15 @@ namespace QTTabBarLib {
             chbPreviewMode.Checked = Config.Tips.ShowPreviewsWithShift;
             chbPreviewInfo.Checked = !Config.Tips.ShowPreviewInfo;
             nudPreviewMaxWidth.Enabled = nudPreviewMaxHeight.Enabled = cmbTextExts.Enabled = btnAddTextExt.Enabled = btnDelTextExt.Enabled = btnDefaultTextExt.Enabled = cmbImgExts.Enabled = btnAddImgExt.Enabled = btnDelImgExt.Enabled = btnDefaultImgExt.Enabled = btnPreviewFont.Enabled = btnPreviewFontDefault.Enabled = chbPreviewInfo.Enabled = chbPreviewMode.Enabled = chbShowPreview.Checked;
-            nudPreviewMaxWidth.Value = QTUtility.PreviewMaxWidth;
-            nudPreviewMaxHeight.Value = QTUtility.PreviewMaxHeight;
-            if(QTUtility.PreviewFontName != null) {
-                try {
-                    btnPreviewFont.Font = new Font(QTUtility.PreviewFontName, QTUtility.PreviewFontSize);
-                }
-                catch {
-                }
-            }
+            //nudPreviewMaxWidth.Value = QTUtility.PreviewMaxWidth;
+            //nudPreviewMaxHeight.Value = QTUtility.PreviewMaxHeight;
+            //if(QTUtility.PreviewFontName != null) {
+            //    try {
+            //       btnPreviewFont.Font = new Font(QTUtility.PreviewFontName, QTUtility.PreviewFontSize);
+            //    }
+            //    catch {
+            //    }
+            //}
             chbSubDirTip.Checked = Config.Tips.ShowSubDirTips;
             chbSubDirTipMode.Checked = Config.Tips.SubDirTipsWithShift;
             chbSubDirTipModeHidden.Checked = Config.SubDirTipsHidden;
@@ -4240,8 +4240,8 @@ namespace QTTabBarLib {
             chbSubDirTipPreview.Checked = !Config.Tips.SubDirTipsPreview;
             chbSubDirTipMode.Enabled = chbSubDirTipModeHidden.Enabled = chbSubDirTipModeFile.Enabled = chbSubDirTipPreview.Enabled = chbSubDirTip.Checked;
             chbSubDirTipModeSystem.Checked = Config.SubDirTipsSystem;
-            nudMaxUndo.Value = QTUtility.MaxCount_History;
-            nudMaxRecentFile.Value = QTUtility.MaxCount_Executed;
+            //nudMaxUndo.Value = QTUtility.MaxCount_History;
+            //nudMaxRecentFile.Value = QTUtility.MaxCount_Executed;
             chbDD.Checked = Config.Tabs.DragOverTabOpensSDT;
             chbNoTabFromOuteside.Checked = Config.Window.CaptureNewWindows;
             chbHolizontalScroll.Checked = !Config.Tweaks.HorizontalScroll;
@@ -4281,7 +4281,7 @@ namespace QTTabBarLib {
         }
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e) {
-            QTUtility.OptionsDialogTabIndex = tabControl1.SelectedIndex;
+            //QTUtility.OptionsDialogTabIndex = tabControl1.SelectedIndex;
         }
 
         private void tbGroupKey_KeyPress(object sender, KeyPressEventArgs e) {
@@ -4668,11 +4668,11 @@ namespace QTTabBarLib {
                     //key.SetValue("ToolbarBGColor", QTUtility.RebarBGColor.ToArgb());
                     //key.SetValue("AlternateColor_Bk", QTUtility.ShellViewRowCOLORREF_Background);
                     //key.SetValue("AlternateColor_Text", QTUtility.ShellViewRowCOLORREF_Text);
-                    key.SetValue("Max_Undo", QTUtility.MaxCount_History);
-                    key.SetValue("Max_RecentFile", QTUtility.MaxCount_Executed);
-                    key.SetValue("PreviewMaxWidth", QTUtility.PreviewMaxWidth);
-                    key.SetValue("PreviewMaxHeight", QTUtility.PreviewMaxHeight);
-                    key.SetValue("Action_BarDblClick", QTUtility.Action_BarDblClick);
+                    //key.SetValue("Max_Undo", QTUtility.MaxCount_History);
+                    //key.SetValue("Max_RecentFile", QTUtility.MaxCount_Executed);
+                    //key.SetValue("PreviewMaxWidth", QTUtility.PreviewMaxWidth);
+                    //key.SetValue("PreviewMaxHeight", QTUtility.PreviewMaxHeight);
+                    //key.SetValue("Action_BarDblClick", QTUtility.Action_BarDblClick);
                     if((tabFont != null) && !tabFont.Equals(DefaultFont)) {
                         key.SetValue("TabFont", tabFont.Name);
                         key.SetValue("TabFontSize", tabFont.SizeInPoints.ToString());
@@ -4686,13 +4686,13 @@ namespace QTTabBarLib {
                     //key.SetValue("TabImage", QTUtility.Path_TabImage);
                     byte[] buffer = new byte[] { (byte)Config.Skin.TabSizeMargin.Left, (byte)Config.Skin.TabSizeMargin.Top, (byte)Config.Skin.TabSizeMargin.Right, (byte)Config.Skin.TabSizeMargin.Bottom };
                     key.SetValue("TabImageSizingMargin", buffer);
-                    QTUtility.PreviewExtsList_Txt.Clear();
-                    QTUtility.PreviewExtsList_Img.Clear();
+                    //QTUtility.PreviewExtsList_Txt.Clear();
+                    //QTUtility.PreviewExtsList_Img.Clear();
                     string str = string.Empty;
                     string str2 = string.Empty;
                     if(strsTextExts != null) {
                         foreach(string ext in strsTextExts) {
-                            QTUtility.PreviewExtsList_Txt.Add(ext);
+                            //QTUtility.PreviewExtsList_Txt.Add(ext);
                             str = str + ext + ";";
                         }
                         if(str.Length > 0) {
@@ -4701,7 +4701,7 @@ namespace QTTabBarLib {
                     }
                     if(strsImgExts != null) {
                         foreach(string ext in strsImgExts) {
-                            QTUtility.PreviewExtsList_Img.Add(ext);
+                            //QTUtility.PreviewExtsList_Img.Add(ext);
                             str2 = str2 + ext + ";";
                         }
                         if(str2.Length > 0) {
@@ -4710,14 +4710,14 @@ namespace QTTabBarLib {
                     }
                     key.SetValue("TextExtensions", str);
                     key.SetValue("ImageExtensions", str2);
-                    if(QTUtility.PreviewFontName != null) {
-                        key.SetValue("PreviewFont", QTUtility.PreviewFontName);
-                        key.SetValue("PreviewFontSize", QTUtility.PreviewFontSize.ToString());
-                    }
-                    else {
-                        key.DeleteValue("PreviewFont", false);
-                        key.DeleteValue("PreviewFontSize", false);
-                    }
+                    //if(QTUtility.PreviewFontName != null) {
+                    //    key.SetValue("PreviewFont", QTUtility.PreviewFontName);
+                    //    key.SetValue("PreviewFontSize", QTUtility.PreviewFontSize.ToString());
+                    //}
+                    //else {
+                    //    key.DeleteValue("PreviewFont", false);
+                    //    key.DeleteValue("PreviewFontSize", false);
+                    //}
                     key.SetValue("NetworkTimeout", IDLWrapper.iPingTimeOutMS);
                     key.SetValue("LanguageFile", QTUtility.Path_LanguageFile);
                     using(RegistryKey key2 = key.CreateSubKey("Plugins")) {

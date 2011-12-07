@@ -45,8 +45,8 @@ namespace QTTabBarLib {
         private const int MAX_TEXT_LENGTH = 0x400;
         public const int MAX_THUMBNAIL_HEIGHT = 0x4b0;
         public const int MAX_THUMBNAIL_WIDTH = 0x780;
-        private int maxHeight = QTUtility.PreviewMaxHeight;
-        private int maxWidth = QTUtility.PreviewMaxWidth;
+        private int maxHeight = Config.Tips.PreviewMaxHeight;
+        private int maxWidth = Config.Tips.PreviewMaxWidth;
         private PictureBox pictureBox1;
         private static string supportedImages;
         private static string supportedMovies = ".asf;.asx;.avi;.dvr-ms;.m1v;.wmv;.mpg;.mpeg;.mp2;.flv";
@@ -79,9 +79,9 @@ namespace QTTabBarLib {
                 Size sizeActual = Size.Empty;
                 lblInfo.Text = string.Empty;
                 string toolTipText = null;
-                if((maxWidth != QTUtility.PreviewMaxWidth) || (maxHeight != QTUtility.PreviewMaxHeight)) {
-                    maxWidth = QTUtility.PreviewMaxWidth;
-                    maxHeight = QTUtility.PreviewMaxHeight;
+                if((maxWidth != Config.Tips.PreviewMaxWidth) || (maxHeight != Config.Tips.PreviewMaxHeight)) {
+                    maxWidth = Config.Tips.PreviewMaxWidth;
+                    maxHeight = Config.Tips.PreviewMaxHeight;
                     pictureBox1.Image = null;
                     imageCacheStore.Clear();
                     lstPathFailedThumbnail.Clear();
@@ -207,23 +207,16 @@ namespace QTTabBarLib {
                             str4 = "  *empty file";
                         }
                         lblText.ForeColor = (ioException != null) ? Color.Red : (flag7 ? SystemColors.GrayText : SystemColors.InfoText);
-                        if(!string.IsNullOrEmpty(QTUtility.PreviewFontName)) {
-                            if((lblText.Font.Name != QTUtility.PreviewFontName) || (lblText.Font.Size != QTUtility.PreviewFontSize)) {
-                                fFontAsigned = true;
-                                try {
-                                    lblText.Font = new Font(QTUtility.PreviewFontName, QTUtility.PreviewFontSize);
-                                }
-                                catch {
-                                }
-                            }
+                        try {
+                            lblText.Font = Config.Tips.PreviewFont;
+                            fFontAsigned = true;
                         }
-                        else if(fFontAsigned) {
+                        catch {
                             fFontAsigned = false;
-                            lblText.Font = null;
                         }
                         int num2 = 0x100;
                         if(fFontAsigned) {
-                            num2 = Math.Max((int)(num2 * (QTUtility.PreviewFontSize / DefaultFont.Size)), 0x80);
+                            num2 = Math.Max((int)(num2 * (Config.Tips.PreviewFont.SizeInPoints / DefaultFont.Size)), 0x80);
                             formSize.Width = num2;
                         }
                         using(Graphics graphics2 = lblText.CreateGraphics()) {
@@ -261,7 +254,7 @@ namespace QTTabBarLib {
         }
 
         private static bool ExtIsImage(string ext) {
-            return (((ext.Length != 0) && QTUtility.PreviewExtsList_Img.Contains(ext.ToLower())) && (ext != ".ico"));
+            return (ext.Length != 0 && Config.Tips.ImageExt.Contains(ext.ToLower()) && ext != ".ico");
         }
 
         public static bool ExtIsSupported(string ext) {
@@ -272,7 +265,7 @@ namespace QTTabBarLib {
         }
 
         private static bool ExtIsText(string ext) {
-            return ((ext.Length != 0) && QTUtility.PreviewExtsList_Txt.Contains(ext.ToLower()));
+            return (ext.Length != 0 && Config.Tips.TextExt.Contains(ext.ToLower()));
         }
 
         private static string FormatSize(long size) {
@@ -360,18 +353,20 @@ namespace QTTabBarLib {
                     sizeRaw = bitmap.Size;
                     int width = sizeRaw.Width;
                     int height = sizeRaw.Height;
-                    if((height > QTUtility.PreviewMaxHeight) || (width > QTUtility.PreviewMaxWidth)) {
-                        if(height > QTUtility.PreviewMaxHeight) {
-                            width = (int)(((QTUtility.PreviewMaxHeight) / ((double)height)) * width);
-                            height = QTUtility.PreviewMaxHeight;
-                            if(width > QTUtility.PreviewMaxWidth) {
-                                height = (int)(((QTUtility.PreviewMaxWidth) / ((double)width)) * height);
-                                width = QTUtility.PreviewMaxWidth;
+                    int maxWidth = Config.Tips.PreviewMaxWidth;
+                    int maxHeight = Config.Tips.PreviewMaxHeight;
+                    if((height > maxHeight) || (width > maxWidth)) {
+                        if(height > maxHeight) {
+                            width = (int)((maxHeight / ((double)height)) * width);
+                            height = maxHeight;
+                            if(width > maxWidth) {
+                                height = (int)((maxWidth / ((double)width)) * height);
+                                width = maxWidth;
                             }
                         }
                         else {
-                            height = (int)(((QTUtility.PreviewMaxWidth) / ((double)width)) * height);
-                            width = QTUtility.PreviewMaxWidth;
+                            height = (int)((maxWidth / ((double)width)) * height);
+                            width = maxWidth;
                         }
                         sizeActual = new Size(width, height);
                         if(ImageAnimator.CanAnimate(bitmap)) {
@@ -447,7 +442,7 @@ namespace QTTabBarLib {
                     uint flags = 0;
                     uint pOutFlags = 0;
                     WTS_THUMBNAILID pThumbnailID = new WTS_THUMBNAILID();
-                    uint cxyRequestedThumbSize = (uint)Math.Min(0x400, Math.Min(QTUtility.PreviewMaxWidth, QTUtility.PreviewMaxHeight));
+                    uint cxyRequestedThumbSize = (uint)Math.Min(0x400, Math.Min(Config.Tips.PreviewMaxWidth, Config.Tips.PreviewMaxHeight));
                     if(cache2.GetThumbnail(ppsi, cxyRequestedThumbSize, flags, out ppvThumb, ref pOutFlags, ref pThumbnailID) == 0) {
                         IntPtr ptr2;
                         if((pOutFlags & 2) == 2) {
@@ -508,7 +503,7 @@ namespace QTTabBarLib {
                         IExtractImage image = (IExtractImage)obj2;
                         StringBuilder pszPathBuffer = new StringBuilder(260);
                         int pdwPriority = 0;
-                        Size prgSize = new Size(QTUtility.PreviewMaxWidth, QTUtility.PreviewMaxHeight);
+                        Size prgSize = new Size(Config.Tips.PreviewMaxWidth, Config.Tips.PreviewMaxHeight);
                         int pdwFlags = 0x60;
                         if(((image.GetLocation(pszPathBuffer, pszPathBuffer.Capacity, ref pdwPriority, ref prgSize, 0x18, ref pdwFlags) == 0) && (image.Extract(out ptr2) == 0)) && (ptr2 != IntPtr.Zero)) {
                             Bitmap bmp = Image.FromHbitmap(ptr2);

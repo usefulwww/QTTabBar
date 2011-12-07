@@ -20,7 +20,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using Microsoft.Win32;
 using QTTabBarLib.Interop;
 
 namespace QTTabBarLib {
@@ -61,7 +60,8 @@ namespace QTTabBarLib {
             UpdateWindowList,               // Compatibility with SHOpenFolderAndSelectItems
         }
 
-        static HookLibManager() {
+        public static void Initialize() {
+            if(hHookLib != IntPtr.Zero) return;
             string installPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "QTTabBar");
             string filename = IntPtr.Size == 8 ? "QTHookLib64.dll" : "QTHookLib32.dll";
             hHookLib = PInvoke.LoadLibrary(Path.Combine(installPath, filename));
