@@ -4832,7 +4832,7 @@ namespace QTTabBarLib {
             SetBarRows(tabControl1.SetTabRowType(iType));
             rebarController.RefreshBG();
             if(Config.Tweaks.AlternateRowColors) {
-                Color color = QTUtility2.MakeColor(QTUtility.ShellViewRowCOLORREF_Background);
+                Color color = Config.Tweaks.AltRowBackgroundColor;
                 if(QTUtility.sbAlternate == null) {
                     QTUtility.sbAlternate = new SolidBrush(color);
                 }

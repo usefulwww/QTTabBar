@@ -455,8 +455,8 @@ namespace QTTabBarLib {
 
                         if(!QTUtility.IsXP) {
                             int num4 = lstColumnFMT[structure.iSubItem];
-                            structure.clrTextBk = QTUtility.ShellViewRowCOLORREF_Background;
-                            structure.clrText = QTUtility.ShellViewRowCOLORREF_Text;
+                            structure.clrTextBk = QTUtility2.MakeCOLORREF(Config.Tweaks.AltRowBackgroundColor);
+                            structure.clrText = QTUtility2.MakeCOLORREF(Config.Tweaks.AltRowForegroundColor);
                             Marshal.StructureToPtr(structure, msg.LParam, false);
                             bool drawingHotItem = (dwItemSpec == GetHotItem());
                             bool fullRowSel = !Config.Tweaks.ToggleFullRowSelect;
@@ -475,7 +475,7 @@ namespace QTTabBarLib {
                                 if(!fullRowSel || (iListViewItemState & (LVIS.SELECTED | LVIS.DROPHILITED)) == 0) {
                                     using(Graphics graphics = Graphics.FromHdc(structure.nmcd.hdc)) {
                                         if(QTUtility.sbAlternate == null) {
-                                            QTUtility.sbAlternate = new SolidBrush(QTUtility2.MakeColor(QTUtility.ShellViewRowCOLORREF_Background));
+                                            QTUtility.sbAlternate = new SolidBrush(Config.Tweaks.AltRowBackgroundColor);
                                         }
                                         graphics.FillRectangle(QTUtility.sbAlternate, structure.nmcd.rc.ToRectangle());
                                     }
@@ -513,7 +513,7 @@ namespace QTTabBarLib {
                             Marshal.StructureToPtr(lvitem, ptr3, false);
                             PInvoke.SendMessage(ListViewController.Handle, LVM.GETITEM, IntPtr.Zero, ptr3);
                             if(QTUtility.sbAlternate == null) {
-                                QTUtility.sbAlternate = new SolidBrush(QTUtility2.MakeColor(QTUtility.ShellViewRowCOLORREF_Background));
+                                QTUtility.sbAlternate = new SolidBrush(Config.Tweaks.AltRowBackgroundColor);
                             }
                             using(Graphics graphics2 = Graphics.FromHdc(structure.nmcd.hdc)) {
                                 Rectangle rect = rc.ToRectangle();
@@ -601,7 +601,7 @@ namespace QTTabBarLib {
                                 PInvoke.SetTextColor(structure.nmcd.hdc, QTUtility2.MakeCOLORREF((fListViewHasFocus || flag4) ? SystemColors.HighlightText : SystemColors.WindowText));
                             }
                             else {
-                                PInvoke.SetTextColor(structure.nmcd.hdc, QTUtility.ShellViewRowCOLORREF_Text);
+                                PInvoke.SetTextColor(structure.nmcd.hdc, QTUtility2.MakeCOLORREF(Config.Tweaks.AltRowForegroundColor));
                             }
                             PInvoke.DrawTextExW(structure.nmcd.hdc, lvitem.pszText, -1, ref rc, dwDTFormat, IntPtr.Zero);
                             Marshal.FreeHGlobal(lvitem.pszText);

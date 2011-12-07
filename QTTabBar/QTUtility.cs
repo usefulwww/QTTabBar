@@ -92,8 +92,6 @@ namespace QTTabBarLib {
         internal static SolidBrush sbAlternate;
         internal static readonly char[] SEPARATOR_CHAR = new char[] { ';' };
         internal const string SEPARATOR_PATH_HASH_SESSION = "*?*?*";
-        internal static int ShellViewRowCOLORREF_Background;
-        internal static int ShellViewRowCOLORREF_Text;
         internal static List<string> StartUpGroupList = new List<string>();
         internal static string StartUpGroupNameNowOpening = string.Empty;
         internal static Font StartUpTabFont;
@@ -139,8 +137,6 @@ namespace QTTabBarLib {
                             Path_LanguageFile = string.Empty;
                         }
                         ValidateTextResources();
-                        ShellViewRowCOLORREF_Background = QTUtility2.GetRegistryValueSafe(key, "AlternateColor_Bk", 0xfaf5f1);
-                        ShellViewRowCOLORREF_Text = QTUtility2.GetRegistryValueSafe(key, "AlternateColor_Text", QTUtility2.MakeCOLORREF(SystemColors.WindowText));
                         Action_BarDblClick = (string)key.GetValue("Action_BarDblClick", string.Empty);
                         MaxCount_History = QTUtility2.GetRegistryValueSafe(key, "Max_Undo", 0x10);
                         using(RegistryKey key2 = key.CreateSubKey("RecentlyClosed")) {

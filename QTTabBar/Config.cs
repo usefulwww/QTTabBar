@@ -302,9 +302,8 @@ namespace QTTabBarLib {
             public bool ToggleFullRowSelect      { get; set; }
             public bool DetailsGridLines         { get; set; }
             public bool AlternateRowColors       { get; set; }
-            public Color BackgroundColor         { get; set; }
-            public Color TextColor               { get; set; }
-
+            public Color AltRowBackgroundColor   { get; set; }
+            public Color AltRowForegroundColor   { get; set; }
 
             public _Tweaks() {
                 AlwaysShowHeaders = false;
@@ -318,8 +317,8 @@ namespace QTTabBarLib {
                 ToggleFullRowSelect = false;
                 DetailsGridLines = false;
                 AlternateRowColors = false;
-                TextColor = new Color();
-                BackgroundColor = new Color();
+                AltRowForegroundColor = SystemColors.WindowText;
+                AltRowBackgroundColor = QTUtility2.MakeColor(0xfaf5f1);
             }
         }
 

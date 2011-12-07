@@ -1041,7 +1041,7 @@
             <TabItem x:Name="tabTweaks"
                 DataContext="{Binding Path=tweaks}"
                 Header="Tweaks"
-                Width="0" Loaded="tabTweaks_Loaded">
+                Width="0">
                 <StackPanel
                     Margin="14,5,10,0"
                     Orientation="Vertical">
@@ -1109,35 +1109,46 @@
                         IsChecked="{Binding Path=AlternateRowColors}"
                         IsEnabled="{Binding Path=IsChecked, ElementName=chkForceSysListView}"
                         Style="{StaticResource CheckStyle}"/>
-                    <StackPanel
-                        Orientation="Horizontal">
-                        <Button x:Name="btnBackgroundColor"
-                            Click="btnBackgroundColor_Click"
-                            Content="Background Color"
-                            Height="23"
-                            Margin="31,2,5,2"
-                            Width="120">
-                            <Button.IsEnabled>
-                                <MultiBinding Converter="{StaticResource LogicalAndMultiConverter}">
-                                    <Binding Path="IsChecked" ElementName="chkAlternateRowColors"/>
-                                    <Binding Path="IsEnabled" ElementName="chkAlternateRowColors"/>
-                                </MultiBinding>
-                            </Button.IsEnabled>
-                        </Button>
-                        <Button x:Name="btnTextColor"
-                            Click="btnTextColor_Click"
-                            Content="Text Color"
-                            Height="23"
-                            Margin="5,2"
-                            Width="120">
-                            <Button.IsEnabled>
-                                <MultiBinding Converter="{StaticResource LogicalAndMultiConverter}">
-                                    <Binding Path="IsChecked" ElementName="chkAlternateRowColors"/>
-                                    <Binding Path="IsEnabled" ElementName="chkAlternateRowColors"/>
-                                </MultiBinding>
-                            </Button.IsEnabled>
-                        </Button>
-                    </StackPanel>
+                    <Grid Margin="31,2,5,2">
+                        <Grid.IsEnabled>
+                            <MultiBinding Converter="{StaticResource LogicalAndMultiConverter}">
+                                <Binding Path="IsChecked" ElementName="chkAlternateRowColors"/>
+                                <Binding Path="IsEnabled" ElementName="chkAlternateRowColors"/>
+                            </MultiBinding>
+                        </Grid.IsEnabled>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Label
+                            Content="Foreground color: "
+                            Grid.Column="0"
+                            Grid.Row="0"/>
+                        <Label
+                            Content="Background color: "
+                            Grid.Column="0"
+                            Grid.Row="1"/>
+                        <Button x:Name="btnAltRowForeground"
+                            Background="{Binding Path=Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource ColorToBrushConverter}}"
+                            Click="btnAltRowColor_Click"
+                            Grid.Column="1"
+                            Grid.Row="0"
+                            Height="22"
+                            Tag="{Binding Path=AltRowForegroundColor, Mode=TwoWay}"
+                            Width="22"/>
+                        <Button x:Name="btnAltRowBackground"
+                            Background="{Binding Path=Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource ColorToBrushConverter}}"
+                            Click="btnAltRowColor_Click"
+                            Grid.Column="1"
+                            Grid.Row="1"
+                            Height="22"
+                            Tag="{Binding Path=AltRowBackgroundColor, Mode=TwoWay}"
+                            Width="22" />
+                    </Grid>
                 </StackPanel>
             </TabItem>
             <TabItem x:Name="tabTooltips"

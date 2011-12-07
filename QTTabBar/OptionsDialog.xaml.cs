@@ -461,32 +461,13 @@ namespace QTTabBarLib {
 
         #region ---------- Tweaks ----------
 
-        // TODO: rethink this
-        private void btnBackgroundColor_Click(object sender, RoutedEventArgs e) {
-            ColorDialogEx cd = new ColorDialogEx();
+        private void btnAltRowColor_Click(object sender, RoutedEventArgs e) {
+            // Works for both buttons.  Each button's Tag is bound to the corresponding property.
+            var button = (Button)sender;
+            ColorDialogEx cd = new ColorDialogEx { Color = (System.Drawing.Color)button.Tag };
             if(System.Windows.Forms.DialogResult.OK == cd.ShowDialog()) {
-                Config.Tweaks.BackgroundColor = cd.Color;
-                btnBackgroundColor.Background = new SolidColorBrush(Color.FromArgb(
-                        cd.Color.A, cd.Color.R, cd.Color.G, cd.Color.B));
+                button.Tag = cd.Color;
             }
-        }
-
-        private void btnTextColor_Click(object sender, RoutedEventArgs e) {
-            ColorDialogEx cd = new ColorDialogEx();
-            if(System.Windows.Forms.DialogResult.OK == cd.ShowDialog()) {
-                Config.Tweaks.TextColor = cd.Color;
-                btnTextColor.Foreground = new SolidColorBrush(Color.FromArgb(
-                        cd.Color.A, cd.Color.R, cd.Color.G, cd.Color.B));
-            }
-        }
-
-        private void tabTweaks_Loaded(object sender, RoutedEventArgs e) {
-            System.Drawing.Color bg = Config.Tweaks.BackgroundColor;
-            System.Drawing.Color txt = Config.Tweaks.TextColor;
-            btnTextColor.Foreground = new SolidColorBrush(Color.FromArgb(
-                        txt.A, txt.R, txt.G, txt.B));
-            btnBackgroundColor.Background = new SolidColorBrush(Color.FromArgb(
-                        bg.A, bg.R, bg.G, bg.B));
         }
 
         #endregion

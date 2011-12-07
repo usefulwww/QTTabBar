@@ -631,10 +631,10 @@ namespace QTTabBarLib {
 
         private void btnAlternateColor_Click(object sender, EventArgs e) {
             if(sender == btnAlternate_Default) {
-                QTUtility.ShellViewRowCOLORREF_Background = 0xfaf5f1;
+                //QTUtility.ShellViewRowCOLORREF_Background = 0xfaf5f1;
                 Color windowText = SystemColors.WindowText;
-                QTUtility.ShellViewRowCOLORREF_Text = QTUtility2.MakeCOLORREF(windowText);
-                btnAlternateColor.BackColor = QTUtility2.MakeColor(QTUtility.ShellViewRowCOLORREF_Background);
+                //QTUtility.ShellViewRowCOLORREF_Text = QTUtility2.MakeCOLORREF(windowText);
+                //btnAlternateColor.BackColor = QTUtility2.MakeColor(QTUtility.ShellViewRowCOLORREF_Background);
                 btnAlternateColor_Text.ForeColor = windowText;
             }
             else {
@@ -4196,8 +4196,8 @@ namespace QTTabBarLib {
             chbGridLine.Checked = (QTUtility.ConfigValues[8] & 0x80) == 0x80;
             chbNoFulRowSelect.Checked = ((QTUtility.ConfigValues[8] & 0x40) == 0x40) ^ !QTUtility.IsXP;
             chbAlternateColor.Checked = (QTUtility.ConfigValues[8] & 8) == 8;
-            btnAlternateColor.BackColor = QTUtility2.MakeColor(QTUtility.ShellViewRowCOLORREF_Background);
-            btnAlternateColor_Text.ForeColor = QTUtility2.MakeColor(QTUtility.ShellViewRowCOLORREF_Text);
+            //btnAlternateColor.BackColor = QTUtility2.MakeColor(QTUtility.ShellViewRowCOLORREF_Background);
+            //btnAlternateColor_Text.ForeColor = QTUtility2.MakeColor(QTUtility.ShellViewRowCOLORREF_Text);
             btnAlternate_Default.Enabled = btnAlternateColor.Enabled = btnAlternateColor_Text.Enabled = chbAlternateColor.Checked;
             if(isSupported) {
                 chbRebarBGImage.Checked = (QTUtility.ConfigValues[11] & 0x80) == 0x80;
@@ -4666,8 +4666,8 @@ namespace QTTabBarLib {
                     //key.SetValue("TitleColorShadowActive", QTUtility.TabTextColor_ActivShdw.ToArgb());
                     //key.SetValue("TitleColorShadowInActv", QTUtility.TabTextColor_InAtvShdw.ToArgb());
                     //key.SetValue("ToolbarBGColor", QTUtility.RebarBGColor.ToArgb());
-                    key.SetValue("AlternateColor_Bk", QTUtility.ShellViewRowCOLORREF_Background);
-                    key.SetValue("AlternateColor_Text", QTUtility.ShellViewRowCOLORREF_Text);
+                    //key.SetValue("AlternateColor_Bk", QTUtility.ShellViewRowCOLORREF_Background);
+                    //key.SetValue("AlternateColor_Text", QTUtility.ShellViewRowCOLORREF_Text);
                     key.SetValue("Max_Undo", QTUtility.MaxCount_History);
                     key.SetValue("Max_RecentFile", QTUtility.MaxCount_Executed);
                     key.SetValue("PreviewMaxWidth", QTUtility.PreviewMaxWidth);
