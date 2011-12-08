@@ -546,6 +546,32 @@ namespace QTTabBarLib {
 
         #endregion
 
+        #region ---------- Appearance ----------
+
+        private void btnShadTextColor_OnChecked(object sender, RoutedEventArgs e) {
+            var button = ((ToggleButton)sender);
+            ContextMenu menu = button.ContextMenu;
+            foreach(MenuItem mi in menu.Items) {
+                mi.Icon = new System.Windows.Controls.Image { Source = ConvertToBitmapSource((Rectangle)mi.Tag) };
+            }
+            // Yeah, this is necessary even with the IsChecked <=> IsOpen binding.
+            // Not sure why.
+            menu.PlacementTarget = button;
+            menu.Placement = PlacementMode.Bottom;
+            menu.IsOpen = true;
+        }
+
+        private void miColorMenuEntry_OnClick(object sender, RoutedEventArgs e) {
+            var mi = (MenuItem)sender;
+            var rect = (Rectangle)mi.Tag;
+            ColorDialogEx cd = new ColorDialogEx { Color = (System.Drawing.Color)rect.Tag };
+            if(System.Windows.Forms.DialogResult.OK == cd.ShowDialog()) {
+                rect.Tag = cd.Color;
+            }
+        }
+
+        #endregion
+
         #region ---------- Mouse ----------
 
         private void InitializeMouse() {
@@ -1869,24 +1895,20 @@ namespace QTTabBarLib {
 
         #endregion
 
-        private void btnCustomButtonImages_Click(object sender, RoutedEventArgs e) {
-            OpenFileDialog d = new OpenFileDialog();
-            d.Title = "Select custom button bar strip...";
-
-            if(d.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
-                txtCustomButtonImages.Text = d.FileName;
-                //# We shouldn't have to manually assign this to the config
-                //# But, without this we must interact with the TextBox in some way before the OK button saves it.
-                workingConfig.bbar.ImageStripPath = d.FileName;
+        // Common Font Chooser button click handler.
+        private void btnFontChoose_Click(object sender, RoutedEventArgs e) {
+            var button = (Button)sender;
+            try {
+                using(var dialog = new System.Windows.Forms.FontDialog()) {
+                    dialog.Font = (Font)button.Tag;
+                    dialog.ShowEffects = false;
+                    dialog.AllowVerticalFonts = false;
+                    if(System.Windows.Forms.DialogResult.OK == dialog.ShowDialog()) {
+                        button.Tag = dialog.Font;
+                    }
+                }
             }
-
-        }
-
-        private void btnCustomButtonImagesDefault_Click(object sender, RoutedEventArgs e) {
-            txtCustomButtonImages.Text = "";
-            //# We shouldn't have to manually assign this to the config
-            //# But, without this we must interact with the TextBox in some way before the OK button saves it.
-            workingConfig.bbar.ImageStripPath = "";
+            catch {}
         }
 
         private sealed class ColorDialogEx : System.Windows.Forms.ColorDialog {
@@ -1904,19 +1926,6 @@ namespace QTTabBarLib {
             }
         }
 
-        private void btnTextFont_Click(object sender, RoutedEventArgs e) {
-            using(var dialog = new System.Windows.Forms.FontDialog()) {
-                dialog.Font = workingConfig.skin.TabTextFont;
-                dialog.ShowEffects = false;
-                dialog.AllowVerticalFonts = false;
-                if(System.Windows.Forms.DialogResult.OK == dialog.ShowDialog()) {
-                    Font font = dialog.Font;
-                    workingConfig.skin.TabTextFont = font;
-                    btnTextFont.GetBindingExpression(ContentProperty).UpdateTarget();
-                }
-            }
-        }
-
         // Draws a control to a bitmap
         private static BitmapSource ConvertToBitmapSource(UIElement element) {
             var target = new RenderTargetBitmap((int)(element.RenderSize.Width), (int)(element.RenderSize.Height), 96, 96, PixelFormats.Pbgra32);
@@ -1931,26 +1940,16 @@ namespace QTTabBarLib {
             return target;
         }
 
-        private void btnShadTextColor_OnChecked(object sender, RoutedEventArgs e) {
-            var button = ((ToggleButton)sender);
-            ContextMenu menu = button.ContextMenu;
-            foreach(MenuItem mi in menu.Items) {
-                mi.Icon = new System.Windows.Controls.Image { Source = ConvertToBitmapSource((Rectangle)mi.Tag) };
-            }
-            // Yeah, this is necessary even with the IsChecked <=> IsOpen binding.
-            // Not sure why.
-            menu.PlacementTarget = button;
-            menu.Placement = PlacementMode.Bottom;
-            menu.IsOpen = true;
+        private void btnRecentFilesClear_Click(object sender, RoutedEventArgs e) {
+            // TODO
         }
 
-        private void miColorMenuEntry_OnClick(object sender, RoutedEventArgs e) {
-            var mi = (MenuItem)sender;
-            var rect = (Rectangle)mi.Tag;
-            ColorDialogEx cd = new ColorDialogEx { Color = (System.Drawing.Color)rect.Tag };
-            if(System.Windows.Forms.DialogResult.OK == cd.ShowDialog()) {
-                rect.Tag = cd.Color;
-            }
+        private void btnRecentTabsClear_Click(object sender, RoutedEventArgs e) {
+            // TODO
+        }
+
+        private void btnUpdateNow_Click(object sender, RoutedEventArgs e) {
+            // TODO
         }
     }
     
@@ -2037,6 +2036,7 @@ namespace QTTabBarLib {
     [ValueConversion(typeof(Font), typeof(string))]
     public class FontStringConverter : IValueConverter {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+            if(value == null) return "";
             Font font = (Font)value;
             return string.Format("{0}, {1} pt", font.Name, Math.Round(font.SizeInPoints));
         }

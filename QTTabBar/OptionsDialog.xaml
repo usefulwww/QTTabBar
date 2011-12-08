@@ -945,17 +945,19 @@
                         Content="Rename ambiguous tabs"
                         IsChecked="{Binding Path=RenameAmbTabs}"
                         Style="{StaticResource CheckStyle}"/>
-                    <Label
-                        Content="When drag-hovering over a tab,"
-                        Style="{StaticResource LabelStyle}"/>
-                    <qt:RadioButtonEx x:Name="radDragOverTabOpensSTD_No"
-                        Content="Switch to it"
-                        IsCheckedReal ="{Binding Path=DragOverTabOpensSDT, Converter={StaticResource BoolInverterConverter}}"
-                        Style="{StaticResource IndentedCheckStyle}"/>
-                    <qt:RadioButtonEx x:Name="radDragOverTabOpensSDT_Yes"
-                        Content="Show the Subfolder Tip menu"
-                        IsCheckedReal ="{Binding Path=DragOverTabOpensSDT}"
-                        Style="{StaticResource IndentedCheckStyle}"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Label
+                            Content="When drag-hovering over a tab,"
+                            Style="{StaticResource LabelStyle}"/>
+                        <qt:RadioButtonEx x:Name="radDragOverTabOpensSTD_No"
+                            Content="Switch to it"
+                            IsCheckedReal ="{Binding Path=DragOverTabOpensSDT, Converter={StaticResource BoolInverterConverter}}"
+                            Margin="0,1,10,1"/>
+                        <qt:RadioButtonEx x:Name="radDragOverTabOpensSDT_Yes"
+                            Content="Show the Subfolder Tip menu"
+                            IsCheckedReal ="{Binding Path=DragOverTabOpensSDT}"
+                            Margin="0,1,10,1"/>
+                    </StackPanel>
                     <Label
                         Content="Tab icons"
                         Style="{StaticResource SectionHeaderStyle}"/>
@@ -1179,14 +1181,17 @@
                     <CheckBox x:Name="chkSubDirTipsWithShift"
                         Content="Only with the Shift key is down"
                         IsChecked="{Binding Path=SubDirTipsWithShift}"
+                        IsEnabled="{Binding Path=IsChecked, ElementName=chkShowSubDirTips}"
                         Style="{StaticResource IndentedCheckStyle}"/>
                     <CheckBox x:Name="chkSubDirTipsFiles"
                         Content="Show files"
                         IsChecked="{Binding Path=SubDirTipsFiles}"
+                        IsEnabled="{Binding Path=IsChecked, ElementName=chkShowSubDirTips}"
                         Style="{StaticResource IndentedCheckStyle}"/>
                     <CheckBox x:Name="chkSubDirTipsPreview"
                         Content="Show preview tooltips when mousing over menu items"
                         IsChecked="{Binding Path=SubDirTipsPreview}"
+                        IsEnabled="{Binding Path=IsChecked, ElementName=chkShowSubDirTips}"
                         Style="{StaticResource IndentedCheckStyle}"/>
                     <Label
                         Content="Preview tooltips"
@@ -1198,12 +1203,15 @@
                     <CheckBox x:Name="chkShowPreviewsWithShift"
                         Content="Only with the Shift key is down"
                         IsChecked="{Binding Path=ShowPreviewsWithShift}"
+                        IsEnabled="{Binding Path=IsChecked, ElementName=chkShowTooltipPreviews}"
                         Style="{StaticResource IndentedCheckStyle}"/>
                     <CheckBox x:Name="chkShowPreviewInfo"
                         Content="Show file information below images"
                         IsChecked="{Binding Path=ShowPreviewInfo}"
+                        IsEnabled="{Binding Path=IsChecked, ElementName=chkShowTooltipPreviews}"
                         Style="{StaticResource IndentedCheckStyle}"/>
                     <StackPanel
+                        IsEnabled="{Binding Path=IsChecked, ElementName=chkShowTooltipPreviews}"
                         Margin="31,1,0,1"
                         Orientation="Horizontal">
                         <Label
@@ -1211,34 +1219,36 @@
                             Height="16"
                             Padding="0"/>
                         <qt:Spinner
-                            Width="100"
-                            Height="23"
-                            Min="0"
-                            Max="100"
-                            Margin="8,1"/>
+                            Min="128"
+                            Max="1920"
+                            Margin="8,1"
+                            Value="{Binding Path=PreviewMaxWidth}"/>
                         <Label
                             Content="x"
                             Height="16"
                             Margin="0"
                             Padding="0"/>
                         <qt:Spinner
-                            Width="100"
-                            Min="0"
-                            Max="100"
-                            Margin="8,1"/>
+                            Min="96"
+                            Max="1200"
+                            Margin="8,1"
+                            Value="{Binding Path=PreviewMaxHeight}"/>
                     </StackPanel>
                     <StackPanel
-                        Margin="13,1,0,1"
+                        IsEnabled="{Binding Path=IsChecked, ElementName=chkShowTooltipPreviews}"
+                        Margin="31,1,0,1"
                         Orientation="Horizontal">
                         <Label
                             Content="Font:"
                             Height="16"
                             Padding="0"/>
                         <Button
-                            Content="{Binding Path=PreviewFont, Converter={StaticResource FontStringConverter}}"
+                            Click="btnFontChoose_Click"
+                            Content="{Binding Path=Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource FontStringConverter}}"
                             Height="23"
                             Margin="8,1"
-                            Width="250"/>
+                            Tag="{Binding Path=PreviewFont, Mode=TwoWay}"
+                            Width="200"/>
                     </StackPanel>
                     <Grid Margin="13,15,0,1">
                         <Grid.ColumnDefinitions>
@@ -1400,24 +1410,26 @@
                                 IsChecked="{Binding Path=KeepRecentFiles}"
                                 Height="16"
                                 Margin="13,1,10,1"/>
-
                             <qt:Spinner
                                 Grid.Column="1"
                                 Min="0"
-                                Max="100"
-                                Value="{Binding Path=FileHistoryCount}" />
+                                Max="50"
+                                Value="{Binding Path=TabHistoryCount}"/>
                             <qt:Spinner 
                                 Grid.Column="1"
                                 Grid.Row="1"
-                                Min="0"
-                                Max="100"/>                            
-                            <Button
+                                Min="1"
+                                Max="50"
+                                Value="{Binding Path=FileHistoryCount}" />
+                            <Button x:Name="btnRecentTabsClear"
+                                Click="btnRecentTabsClear_Click"
                                 Content="Clear now"
                                 Grid.Column="2"
                                 Height="23"
                                 Margin="5,2"
                                 Width="75"/>
-                            <Button
+                            <Button x:Name="btnRecentFilesClear"
+                                Click="btnRecentFilesClear_Click"
                                 Content="Clear now"
                                 Grid.Column="2"
                                 Grid.Row="1"
@@ -1438,8 +1450,9 @@
                             <qt:Spinner
                                 Height="23"
                                 Min="0"
-                                Max="100"
-                                Margin="5,2"/>
+                                Max="120"
+                                Margin="5,2"
+                                Value="{Binding Path=NetworkTimeout}"/>
                         </StackPanel>
                         <StackPanel
                             Orientation="Horizontal">
@@ -1447,7 +1460,8 @@
                                 Content="Check for updates periodically"
                                 IsChecked="{Binding Path=AutoUpdate}"
                                 Style="{StaticResource CheckStyle}"/>
-                            <Button
+                            <Button x:Name="btnUpdateNow"
+                                Click="btnUpdateNow_Click"
                                 Content="Check now"
                                 Height="23"
                                 Margin="5,2"
@@ -1499,23 +1513,6 @@
                                 Content="Change the appearance of tabs or the tab bar"
                                 FontSize="13"
                                 VerticalAlignment="Bottom"/>
-                        </StackPanel>
-                        <Label
-                            Content="Skin file"
-                            Style="{StaticResource SectionHeaderStyle}"/>
-                        <StackPanel
-                            Margin="13,1,0,1"
-                            Orientation="Horizontal">
-                            <Button
-                                Content="Import Skin..."
-                                Height="23"
-                                Margin="0,0,10,0"
-                                Width="100"/>
-                            <Button
-                                Content="Export Skin..."
-                                Height="23"
-                                Margin="0,0,10,0"
-                                Width="100"/>
                         </StackPanel>
                         <Label
                             Content="Tab image"
@@ -1824,13 +1821,14 @@
                                 Height="16"
                                 Padding="0"/>
                             <Button x:Name="btnTextFont"
-                                Click="btnTextFont_Click" 
-                                Content="{Binding Path=TabTextFont, Converter={StaticResource FontStringConverter}}"
+                                Click="btnFontChoose_Click" 
+                                Content="{Binding Path=Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource FontStringConverter}}"
                                 Grid.Column="4"
                                 Grid.Row="0"
                                 Height="23"
                                 HorizontalAlignment="Stretch"
                                 Margin="10, 5"
+                                Tag="{Binding Path=TabTextFont, Mode=TwoWay}"
                                 VerticalAlignment="Center"/>
                             <StackPanel 
                                 Orientation="Horizontal"
@@ -1941,6 +1939,23 @@
                                 </qt:MarginCombo.Style>
                             </qt:MarginCombo>
                         </Grid>
+                        <Label
+                            Content="Skin file"
+                            Style="{StaticResource SectionHeaderStyle}"/>
+                        <StackPanel
+                            Margin="13,1,0,1"
+                            Orientation="Horizontal">
+                            <Button
+                                Content="Import Skin..."
+                                Height="23"
+                                Margin="0,0,10,0"
+                                Width="100"/>
+                            <Button
+                                Content="Export Skin..."
+                                Height="23"
+                                Margin="0,0,10,0"
+                                Width="100"/>
+                        </StackPanel>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
@@ -2445,20 +2460,8 @@
                     <Label
                             Content="Custom Button Images"
                             Style="{StaticResource SectionHeaderStyle}" />
-                    <StackPanel Orientation="Horizontal">
-                        <TextBox x:Name="txtCustomButtonImages" 
-                                 Text="{Binding Path=ImageStripPath, Mode=TwoWay}" 
-                                 Width="392" HorizontalAlignment="Left" />
-                        <Button x:Name="btnCustomButtonImages"
-                                Click="btnCustomButtonImages_Click"
-                                Content="..." 
-                                HorizontalAlignment="Left" 
-                                Width="64" />
-                        <Button x:Name="btnCustomButtonImagesDefault" 
-                                Click="btnCustomButtonImagesDefault_Click"
-                                Content="Default"                                  
-                                Width="64" />
-                    </StackPanel>
+                    <qt:FileFolderEntryBox 
+                        SelectedPath="{Binding Path=ImageStripPath}"/>
                 </StackPanel>                
             </TabItem>
             <TabItem x:Name="tabPlugins"

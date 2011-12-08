@@ -414,8 +414,8 @@ namespace QTTabBarLib {
                 OverlapPixels = 0;
                 HitTestTransparent = false;
                 TabHeight = 24;
-                TabMinWidth = 70; // TODO
-                TabMaxWidth = 150; // TODO
+                TabMinWidth = 50;
+                TabMaxWidth = 200;
                 FixedWidthTabs = false;
                 TabTextFont = Control.DefaultFont;
                 TabTextActiveColor = Color.Black;
