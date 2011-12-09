@@ -16,6 +16,7 @@
 //    along with QTTabBar.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -389,6 +390,7 @@ namespace QTTabBarLib {
 
         private void UpdateOptions() {
             List<PluginAssembly> assemblies;
+            CommitTips();
             CommitMouse();
             CommitPlugins(out assemblies);
             CommitButtonBar();
@@ -475,72 +477,64 @@ namespace QTTabBarLib {
         #region ---------- Tooltips ----------
 
         private void InitializeTips() {
-            TextFileTypes = new ObservableCollection<FileTypeEntry>();
-            MediaFileTypes = new ObservableCollection<FileTypeEntry>();
+            TextFileTypes = new ObservableCollection<FileTypeEntry>(
+                    workingConfig.tips.TextExt.Select(ext => new FileTypeEntry(ext)));
+            MediaFileTypes = new ObservableCollection<FileTypeEntry>(
+                    workingConfig.tips.ImageExt.Select(ext => new FileTypeEntry(ext)));
 
             lstTextFileTypes.ItemsSource = TextFileTypes;
             lstMediaFileTypes.ItemsSource = MediaFileTypes;
         }
 
-        // PENDING: Where is the method like this..?
-        private void AddRange<TInput, TOutput>(ICollection<TOutput> dest, IEnumerable<TInput> src) where TInput : class where TOutput : class {
-            foreach(TInput val in src) {
-                dest.Add(val as TOutput);
-            }
+        private void CommitTips() {
+            workingConfig.tips.TextExt = TextFileTypes.Select(entry => entry.Extension).ToList();
+            workingConfig.tips.ImageExt = MediaFileTypes.Select(entry => entry.Extension).ToList();
         }
 
-        private void AddNewFileType(System.Windows.Controls.ListBox control) {
+        private void AddNewFileType(ListBox control) {
             ICollection<FileTypeEntry> source = (ICollection<FileTypeEntry>)control.ItemsSource;
             FileTypeEntry item = new FileTypeEntry();
             source.Add(item);
             control.SelectedItem = item;
             control.ScrollIntoView(item);
             control.Focus();
-
-            EnsureGenerated(control,
-                () => EditLabel((ListBoxItem)FindItemContainer(control, item)));
-        }
-
-        private void FillFileTypes(ICollection<FileTypeEntry> fileTypes, string[] newValues) {
-            fileTypes.Clear();
-            AddRange(
-                fileTypes,
-                Array.ConvertAll(
-                    newValues,
-                    (ext) => new FileTypeEntry(ext)));
+            EnsureGenerated(control, () => {
+                ((ListBoxItem)FindItemContainer(control, item)).Loaded += delegate {
+                    item.IsEditing = true;
+                };
+            });
+            // TODO: leaving ext blank and deselecting should delete the item
         }
 
         private void btnAddTextFileTypes_Click(object sender, RoutedEventArgs e) {
             AddNewFileType(lstTextFileTypes);
         }
 
-        private void btnRemoveTextFileTypes_Click(object sender, RoutedEventArgs e) {
-            foreach(FileTypeEntry item in new System.Collections.ArrayList(lstTextFileTypes.SelectedItems)) {
-                TextFileTypes.Remove(item);
-            }
-        }
-
-        private void btnResetTextFileTypes_Click(object sender, RoutedEventArgs e) {
-            FillFileTypes(TextFileTypes,
-                new string[] { ".txt", ".ini", ".inf", ".cs", ".log", ".js", ".vbs" });
-
-            lstTextFileTypes.ScrollIntoView(TextFileTypes.First());
-        }
-
         private void btnAddMediaFileTypes_Click(object sender, RoutedEventArgs e) {
             AddNewFileType(lstMediaFileTypes);
         }
 
+        private void btnRemoveTextFileTypes_Click(object sender, RoutedEventArgs e) {
+            foreach(FileTypeEntry item in new ArrayList(lstTextFileTypes.SelectedItems)) {
+                TextFileTypes.Remove(item);
+            }
+        }
+
         private void btnRemoveMediaFileTypes_Click(object sender, RoutedEventArgs e) {
-            foreach(FileTypeEntry item in new System.Collections.ArrayList(lstMediaFileTypes.SelectedItems)) {
+            foreach(FileTypeEntry item in new ArrayList(lstMediaFileTypes.SelectedItems)) {
                 MediaFileTypes.Remove(item);
             }
         }
 
-        private void btnResetMediaFileTypes_Click(object sender, RoutedEventArgs e) {
-            FillFileTypes(MediaFileTypes,
-                ThumbnailTooltipForm.MakeDefaultImgExts().ToArray());
+        private void btnResetTextFileTypes_Click(object sender, RoutedEventArgs e) {
+            lstTextFileTypes.ItemsSource = TextFileTypes = new ObservableCollection<FileTypeEntry>(
+                    new Config._Tips().TextExt.Select(ext => new FileTypeEntry(ext)));
+            lstTextFileTypes.ScrollIntoView(TextFileTypes.First());
+        }
 
+        private void btnResetMediaFileTypes_Click(object sender, RoutedEventArgs e) {
+            lstMediaFileTypes.ItemsSource = MediaFileTypes = new ObservableCollection<FileTypeEntry>(
+                    new Config._Tips().ImageExt.Select(ext => new FileTypeEntry(ext)));
             lstMediaFileTypes.ScrollIntoView(MediaFileTypes.First());
         }
 
@@ -1128,8 +1122,7 @@ namespace QTTabBarLib {
                 return;
             }
             EventHandler handler = null;
-            handler = delegate
-            {
+            handler = delegate {
                 if(gen.Status != GeneratorStatus.ContainersGenerated) {
                     return;
                 }
@@ -1735,6 +1728,8 @@ namespace QTTabBarLib {
         private class FileTypeEntry : INotifyPropertyChanged {
             public event PropertyChangedEventHandler PropertyChanged;
 
+            public bool IsSelected { get; set; }
+            public bool IsEditing { get; set; }
             public string Extension { get; set; }
 
             public string DotExtension {

@@ -42,6 +42,11 @@ namespace QTTabBarLib
             set { SetValue(CancelIfEmptyProperty, value); }
         }
 
+        public bool IsEditing {
+            get { return (bool)GetValue(IsEditingProperty); }
+            set { SetValue(IsEditingProperty, value); }
+        }
+        
         public static readonly DependencyProperty TextProperty =
             DependencyProperty.Register("Text", typeof(string), typeof(EditableHeader),
             new FrameworkPropertyMetadata("New Header", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
@@ -58,6 +63,10 @@ namespace QTTabBarLib
             DependencyProperty.Register("CancelIfEmpty", typeof(bool), typeof(EditableHeader),
             new FrameworkPropertyMetadata(true));
 
+        public static readonly DependencyProperty IsEditingProperty =
+            DependencyProperty.Register("IsEditing", typeof(bool), typeof(EditableHeader),
+            new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, IsEditingChanged));
+        
         public EditableHeader(string initialName, TreeViewItem item = null) {
             InitializeComponent();
 
@@ -70,6 +79,16 @@ namespace QTTabBarLib
 
         public EditableHeader() : this(null) {
         }
+        
+        private static void IsEditingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            EditableHeader header = (EditableHeader)d;
+            if((bool)e.NewValue && header.txtHeaderEdit.Visibility == Visibility.Hidden) {
+                header.StartEdit();
+            }
+            else if(!(bool)e.NewValue && header.txtHeaderEdit.Visibility == Visibility.Visible) {
+                header.EndEdit();
+            }
+        }
 
         public void EndEdit() {
             txtHeaderEdit.Visibility = Visibility.Hidden;
@@ -80,6 +99,7 @@ namespace QTTabBarLib
             if(CancelIfEmpty && string.IsNullOrEmpty(Text)) {
                 Text = originalText;
             }
+            IsEditing = false;
         }
 
         public void StartEdit() {
@@ -88,6 +108,7 @@ namespace QTTabBarLib
             txtHeaderEdit.CaptureMouse();
             txtHeaderEdit.Focus();
             txtHeaderEdit.ReleaseMouseCapture();
+            IsEditing = true;
         }
 
         private void txtHeaderEdit_LostFocus(object sender, RoutedEventArgs e) {
@@ -105,9 +126,7 @@ namespace QTTabBarLib
                 // We can add a sound if you need to do so.
                 return;
             }
-            preparing = (Container != null)
-                ? Container.IsFocused
-                : true;
+            preparing = Container == null || Container.IsFocused;
         }
 
         private void txtHeader_MouseUp(object sender, MouseButtonEventArgs e) {
