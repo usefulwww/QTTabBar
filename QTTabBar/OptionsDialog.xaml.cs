@@ -646,7 +646,6 @@ namespace QTTabBarLib {
                     return;
                 }
                 entry.Action = action;
-                lvwMouseBindings.Items.Refresh();
             }
             else {
                 MouseBindings.Add(new MouseEntry(target, chord, action));    
@@ -911,14 +910,12 @@ namespace QTTabBarLib {
             if(key == Keys.Escape) {
                 entry.Key = Keys.None;
                 e.Handled = true;
-                lvwHotkeys.Items.Refresh();
             }
             else if(entry.Key != (key | modKeys) && !IsInvalidShortcutKey(key, modKeys) && CheckForKeyConflicts(key | modKeys)) {
                 bool enable = !entry.Assigned;
                 entry.Key = key | modKeys;
                 if(enable) entry.Enabled = true;
                 e.Handled = true;
-                lvwHotkeys.Items.Refresh();
             }
         }
 
@@ -1426,13 +1423,13 @@ namespace QTTabBarLib {
             if(lstPluginView.SelectedIndex == -1) return;
             PluginEntry entry = CurrentPlugins[lstPluginView.SelectedIndex];
             Plugin p;
-            if(pluginManager.TryGetPlugin(entry.PluginInfo.PluginID, out p) && p.Instance != null) {
+            if(pluginManager.TryGetPlugin(entry.PluginID, out p) && p.Instance != null) {
                 try {
                     p.Instance.OnOption();
                 }
                 catch(Exception ex) {
                     PluginManager.HandlePluginException(ex, new WindowInteropHelper(this).Handle,
-                            entry.PluginInfo.Name, "Open plugin option.");
+                            entry.Name, "Open plugin option.");
                 }
             }
         }
@@ -1446,13 +1443,12 @@ namespace QTTabBarLib {
             else if(entry.EnableOnClose) {
                 entry.EnableOnClose = false;
             }
-            else if(entry.PluginInfo.Enabled) {
+            else if(entry.Enabled) {
                 entry.DisableOnClose = true;
             }
             else {
                 entry.EnableOnClose = true;
             }
-            lstPluginView.Items.Refresh();
         }
 
         private void btnPluginRemove_Click(object sender, RoutedEventArgs e) {
@@ -1467,7 +1463,6 @@ namespace QTTabBarLib {
                     return;
                 }
             }
-            bool needsRefresh = false;
             for(int i = 0; i < CurrentPlugins.Count; i++) {
                 PluginEntry otherEntry = CurrentPlugins[i];
                 if(otherEntry.PluginAssembly == entry.PluginAssembly) {
@@ -1478,11 +1473,9 @@ namespace QTTabBarLib {
                     }
                     else {
                         otherEntry.UninstallOnClose = true;
-                        needsRefresh = true;
                     }
                 }
             }
-            if(needsRefresh) lstPluginView.Items.Refresh();
         }
 
         private void btnBrowsePlugin_Click(object sender, RoutedEventArgs e) {
@@ -1506,7 +1499,7 @@ namespace QTTabBarLib {
         }
 
         private void CreatePluginEntry(PluginAssembly pa, bool fAddedByUser) {
-            if(!pa.PluginInfosExist || CurrentPlugins.Any(pe => pe.PluginInfo.Path == pa.Path)) {
+            if(!pa.PluginInfosExist || CurrentPlugins.Any(pe => pe.Path == pa.Path)) {
                 return;
             }
             foreach(PluginInformation pi in pa.PluginInformations) {
@@ -1525,7 +1518,7 @@ namespace QTTabBarLib {
             // when the plugins are unloaded.
             for(int i = 0; i < CurrentPlugins.Count; ++i) {
                 if(CurrentPlugins[i].UninstallOnClose) {
-                    CurrentPlugins[i].PluginInfo.Enabled = false;
+                    CurrentPlugins[i].Enabled = false;
                     CurrentPlugins.RemoveAt(i--);
                 }
             }
@@ -1537,41 +1530,37 @@ namespace QTTabBarLib {
                     pa.Enabled = false;
                     assemblies.Add(pa);
                 }
-                PluginInformation pi = entry.PluginInfo;
                 if(entry.DisableOnClose) {
-                    pi.Enabled = false;
+                    entry.Enabled = false;
                 }
                 else if(entry.EnableOnClose || entry.InstallOnClose) {
-                    pi.Enabled = true;
+                    entry.Enabled = true;
                 }
                 entry.EnableOnClose = entry.DisableOnClose = entry.InstallOnClose = false;
 
-                if(pi.Enabled) {
+                if(entry.Enabled) {
                     pa.Enabled = true;
-                    enabled.Add(pi.PluginID);
+                    enabled.Add(entry.PluginID);
                 }
             }
             workingConfig.plugin.Enabled = enabled.ToArray();
-            lstPluginView.Items.Refresh();
         }
 
         #endregion
 
         #region ---------- Binding Classes ----------
+        #pragma warning disable 0067 // "The event 'PropertyChanged' is never used"
+        // ReSharper disable MemberCanBePrivate.Local
+        // ReSharper disable UnusedMember.Local
+        // ReSharper disable UnusedAutoPropertyAccessor.Local
+        
+        // Thanks to the damn-near LIFE-SAVING Notify Property Weaver,
+        // INotifyPropertyChanged is implemented for us.  All properties
+        // will automatically raise the PropertyChanged event when 
+        // modified.  Bind away!
 
-        private abstract class NotifyPropertyChanged : INotifyPropertyChanged {
+        private class ButtonEntry : INotifyPropertyChanged {
             public event PropertyChangedEventHandler PropertyChanged;
-
-            protected virtual void OnPropertyChanged(string name) {
-                if(PropertyChanged == null) {
-                    return;
-                }
-
-                PropertyChanged(this, new PropertyChangedEventArgs(name));
-            }
-        }
-
-        private class ButtonEntry {
             private OptionsDialog parent;
 
             public PluginInformation PluginInfo { get; private set; }
@@ -1638,38 +1627,43 @@ namespace QTTabBarLib {
             }
         }
 
-        private class PluginEntry {
+        private class PluginEntry : INotifyPropertyChanged {
+            public event PropertyChangedEventHandler PropertyChanged;
             private OptionsDialog parent;
-            public PluginInformation PluginInfo;
-            public PluginAssembly PluginAssembly;
+            private PluginInformation PluginInfo;
+            public PluginAssembly PluginAssembly { get; private set; }
 
             public Image Icon { get { return PluginInfo.ImageLarge ?? Resources_Image.imgPlugin24; } }
-            public string Title { get { return PluginInfo.Name + "  " + PluginInfo.Version; } }
+            public string Name { get { return PluginInfo.Name; } }
+            public string Title { get { return Name + "  " + PluginInfo.Version; } }
             public string Author { get { return "by " + PluginInfo.Author; } }
             public string Desc { get { return PluginInfo.Description; } }
             public bool IsSelected { get; set; }
-            public double Opacity { get { return PluginInfo.Enabled ? 1.0 : 0.5; } }
+            public double Opacity { get { return Enabled ? 1.0 : 0.5; } }
             public bool DisableOnClose { get; set; }
             public bool EnableOnClose { get; set; }
             public bool InstallOnClose { get; set; }
             public bool UninstallOnClose { get; set; }
+            public bool Enabled { get { return PluginInfo.Enabled; } set { PluginInfo.Enabled = value; }}
+            public string PluginID { get { return PluginInfo.PluginID; } }
+            public string Path { get {return PluginInfo.Path; } }
 
             private bool cachedHasOptions;
             private bool optionsQueried;
 
             public bool HasOptions {
                 get {
-                    if(!PluginInfo.Enabled) return false;
+                    if(!Enabled) return false;
                     if(optionsQueried) return cachedHasOptions;
                     Plugin p;
-                    if(parent.pluginManager.TryGetPlugin(PluginInfo.PluginID, out p)) {
+                    if(parent.pluginManager.TryGetPlugin(PluginID, out p)) {
                         try {
                             cachedHasOptions = p.Instance.HasOption;
                             optionsQueried = true;
                             return cachedHasOptions;
                         }
                         catch(Exception ex) {
-                            PluginManager.HandlePluginException(ex, new WindowInteropHelper(parent).Handle, PluginInfo.Name,
+                            PluginManager.HandlePluginException(ex, new WindowInteropHelper(parent).Handle, Name,
                                     "Checking if the plugin has options.");
                         }
                     }
@@ -1684,7 +1678,8 @@ namespace QTTabBarLib {
             }
         }
 
-        private class HotkeyEntry {
+        private class HotkeyEntry: INotifyPropertyChanged {
+            public event PropertyChangedEventHandler PropertyChanged;
             private int[] raws;
             public int RawKey {
                 get { return raws[Index]; }
@@ -1716,7 +1711,8 @@ namespace QTTabBarLib {
             }
         }
 
-        private class MouseEntry {
+        private class MouseEntry : INotifyPropertyChanged {
+            public event PropertyChangedEventHandler PropertyChanged;
             public string GestureText { get {
                 MouseChord modifier = Chord & (MouseChord.Alt | MouseChord.Ctrl | MouseChord.Shift);
                 MouseChord button = Chord & ~(MouseChord.Alt | MouseChord.Ctrl | MouseChord.Shift);
@@ -1736,35 +1732,11 @@ namespace QTTabBarLib {
             }
         }
 
-        private class FileTypeEntry : NotifyPropertyChanged {
-            private string extension;
+        private class FileTypeEntry : INotifyPropertyChanged {
+            public event PropertyChangedEventHandler PropertyChanged;
 
-            // It still seems to be not immediately being affected..
-            /*
-            private void SetExtension(string value) {
-                if(value.StartsWith(".")) {
-                    extension = value.Substring(1);
-                }
-                else {
-                    extension = value;
-                }
-                OnPropertyChanged("Extension");
-                OnPropertyChanged("DotExtension");
-                OnPropertyChanged("FriendlyName");
-                OnPropertyChanged("Icon");
-            }
-            */
+            public string Extension { get; set; }
 
-            public string Extension {
-                get {
-                    return extension;
-                }
-                set {
-                    extension = value;
-                    OnPropertyChanged("FriendlyName");
-                    OnPropertyChanged("Icon");
-                }
-            }
             public string DotExtension {
                 get {
                     return "." + Extension;
@@ -1809,22 +1781,13 @@ namespace QTTabBarLib {
         }
 
         private class SeparatorEntry {
-            public SeparatorEntry() {
-            }
         }
 
-        private class FolderEntry : NotifyPropertyChanged {
-            private string path;
+        private class FolderEntry : INotifyPropertyChanged {
+            public event PropertyChangedEventHandler PropertyChanged;
 
-            public string Path {
-                get {
-                    return path;
-                }
-                set {
-                    path = value;
-                    OnPropertyChanged("Icon");
-                }
-            }
+            public string Path { get; set; }
+
             public string DisplayText {
                 get {
                     return QTUtility2.MakePathDisplayText(Path, true);
@@ -1844,22 +1807,15 @@ namespace QTTabBarLib {
             public FolderEntry(string path) {
                 Path = path;
             }
+
             public FolderEntry() {
             }
         }
 
-        private class GroupEntry : NotifyPropertyChanged {
-            public string Name { get; set; }
-            public Image Icon {
-                get {
-                    if(Folders.Count == 0) {
-                        return Resources_Image.icoEmpty.ToBitmap();
-                    }
-                    else {
-                        return Folders.First().Icon;
-                    }
-                }
-            }
+        private class GroupEntry : INotifyPropertyChanged {
+            public event PropertyChangedEventHandler PropertyChanged;
+            public string Name { get; private set; }
+            public Image Icon { get; private set; }
             public ObservableCollection<FolderEntry> Folders { get; private set; }
             public bool Startup { get; set; }
             public int ShortcutKey { get; set; }
@@ -1867,32 +1823,41 @@ namespace QTTabBarLib {
             private void Folders_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
                 if(e.OldItems != null) {
                     foreach(FolderEntry child in e.OldItems) {
-                        child.PropertyChanged -= new PropertyChangedEventHandler(FolderEntry_PropertyChanged);
+                        child.PropertyChanged -= FolderEntry_PropertyChanged;
                     }
                 }
                 if(e.NewItems != null) {
                     foreach(FolderEntry child in e.NewItems) {
-                        child.PropertyChanged += new PropertyChangedEventHandler(FolderEntry_PropertyChanged);
+                        child.PropertyChanged += FolderEntry_PropertyChanged;
                     }
                 }
-                OnPropertyChanged("Icon");
+                RefreshIcon();
             }
 
             private void FolderEntry_PropertyChanged(object sender, PropertyChangedEventArgs e) {
                 if(Folders.Count > 0 && sender == Folders.First()) {
-                    OnPropertyChanged("Icon");
+                    RefreshIcon();
                 }
+            }
+
+            private void RefreshIcon() {
+                Icon = Folders.Count == 0 ? Resources_Image.icoEmpty.ToBitmap() : Folders.First().Icon;
             }
 
             public GroupEntry(string name) {
                 Name = name;
                 Folders = new ObservableCollection<FolderEntry>();
-                Folders.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(Folders_CollectionChanged);
+                Folders.CollectionChanged += Folders_CollectionChanged;
+                RefreshIcon();
             }
             public GroupEntry() : this(null) {
             }
         }
 
+        // ReSharper restore UnusedAutoPropertyAccessor.Local
+        // ReSharper restore UnusedMember.Local
+        // ReSharper restore MemberCanBePrivate.Local
+        #pragma warning restore 0067
         #endregion
 
         // Common Font Chooser button click handler.
