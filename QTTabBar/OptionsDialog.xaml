@@ -1296,7 +1296,8 @@
                             Grid.RowSpan="3"
                             Grid.Column="0"
                             Margin="2"
-                            SelectionMode="Extended">
+                            SelectionMode="Extended"
+                            KeyDown="LstTextFileTypes_OnKeyDown">
                             <ListBox.ItemContainerStyle>
                                 <Style TargetType="{x:Type ListBoxItem}">
                                     <Setter 
@@ -1314,7 +1315,8 @@
                             Grid.RowSpan="3"
                             Grid.Column="2"
                             Margin="2"
-                            SelectionMode="Extended">
+                            SelectionMode="Extended"
+                            KeyDown="LstMediaFileTypes_OnKeyDown">
                             <ListBox.ItemContainerStyle>
                                 <Style TargetType="{x:Type ListBoxItem}">
                                     <Setter 

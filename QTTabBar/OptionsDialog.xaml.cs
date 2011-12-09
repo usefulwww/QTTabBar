@@ -478,9 +478,9 @@ namespace QTTabBarLib {
 
         private void InitializeTips() {
             TextFileTypes = new ObservableCollection<FileTypeEntry>(
-                    workingConfig.tips.TextExt.Select(ext => new FileTypeEntry(ext)));
+                    workingConfig.tips.TextExt.Select(ext => new FileTypeEntry(this, ext)));
             MediaFileTypes = new ObservableCollection<FileTypeEntry>(
-                    workingConfig.tips.ImageExt.Select(ext => new FileTypeEntry(ext)));
+                    workingConfig.tips.ImageExt.Select(ext => new FileTypeEntry(this, ext)));
 
             lstTextFileTypes.ItemsSource = TextFileTypes;
             lstMediaFileTypes.ItemsSource = MediaFileTypes;
@@ -493,17 +493,27 @@ namespace QTTabBarLib {
 
         private void AddNewFileType(ListBox control) {
             ICollection<FileTypeEntry> source = (ICollection<FileTypeEntry>)control.ItemsSource;
-            FileTypeEntry item = new FileTypeEntry();
+            FileTypeEntry item = new FileTypeEntry(this, "");
             source.Add(item);
             control.SelectedItem = item;
             control.ScrollIntoView(item);
             control.Focus();
-            EnsureGenerated(control, () => {
-                ((ListBoxItem)FindItemContainer(control, item)).Loaded += delegate {
+            FindItemContainerAsync(control, item, container => {
+                ((ListBoxItem)container).Loaded += delegate {
                     item.IsEditing = true;
                 };
             });
-            // TODO: leaving ext blank and deselecting should delete the item
+        }
+
+        private void RemoveSelectedFileType(ListBox control) {
+            var list = (ObservableCollection<FileTypeEntry>)control.ItemsSource;
+            int idx = control.SelectedIndex;
+            if(idx == -1) return;
+            foreach(FileTypeEntry item in new ArrayList(control.SelectedItems)) {
+                list.Remove(item);
+            }
+            control.SelectedIndex = Math.Min(idx, list.Count-1);
+            FindItemContainerAsync(control, control.SelectedItem, container => container.Focus());
         }
 
         private void btnAddTextFileTypes_Click(object sender, RoutedEventArgs e) {
@@ -515,27 +525,31 @@ namespace QTTabBarLib {
         }
 
         private void btnRemoveTextFileTypes_Click(object sender, RoutedEventArgs e) {
-            foreach(FileTypeEntry item in new ArrayList(lstTextFileTypes.SelectedItems)) {
-                TextFileTypes.Remove(item);
-            }
+            RemoveSelectedFileType(lstTextFileTypes);
         }
 
         private void btnRemoveMediaFileTypes_Click(object sender, RoutedEventArgs e) {
-            foreach(FileTypeEntry item in new ArrayList(lstMediaFileTypes.SelectedItems)) {
-                MediaFileTypes.Remove(item);
-            }
+            RemoveSelectedFileType(lstMediaFileTypes);
         }
 
         private void btnResetTextFileTypes_Click(object sender, RoutedEventArgs e) {
             lstTextFileTypes.ItemsSource = TextFileTypes = new ObservableCollection<FileTypeEntry>(
-                    new Config._Tips().TextExt.Select(ext => new FileTypeEntry(ext)));
+                    new Config._Tips().TextExt.Select(ext => new FileTypeEntry(this, ext)));
             lstTextFileTypes.ScrollIntoView(TextFileTypes.First());
         }
 
         private void btnResetMediaFileTypes_Click(object sender, RoutedEventArgs e) {
             lstMediaFileTypes.ItemsSource = MediaFileTypes = new ObservableCollection<FileTypeEntry>(
-                    new Config._Tips().ImageExt.Select(ext => new FileTypeEntry(ext)));
+                    new Config._Tips().ImageExt.Select(ext => new FileTypeEntry(this, ext)));
             lstMediaFileTypes.ScrollIntoView(MediaFileTypes.First());
+        }
+
+        private void LstTextFileTypes_OnKeyDown(object sender, KeyEventArgs e) {
+            if(e.Key == Key.Delete) RemoveSelectedFileType(lstTextFileTypes);
+        }
+
+        private void LstMediaFileTypes_OnKeyDown(object sender, KeyEventArgs e) {
+            if(e.Key == Key.Delete) RemoveSelectedFileType(lstMediaFileTypes);
         }
 
         #endregion
@@ -561,6 +575,13 @@ namespace QTTabBarLib {
             ColorDialogEx cd = new ColorDialogEx { Color = (System.Drawing.Color)rect.Tag };
             if(System.Windows.Forms.DialogResult.OK == cd.ShowDialog()) {
                 rect.Tag = cd.Color;
+            }
+        }
+
+        private void btnRebarBGColorChoose_Click(object sender, RoutedEventArgs e) {
+            ColorDialogEx cd = new ColorDialogEx { Color = workingConfig.skin.RebarColor };
+            if(System.Windows.Forms.DialogResult.OK == cd.ShowDialog()) {
+                workingConfig.skin.RebarColor = cd.Color;
             }
         }
 
@@ -1022,26 +1043,6 @@ namespace QTTabBarLib {
             return null;
         }
 
-        private UIElement FindItemContainer(ItemsControl parent, object childItem) {
-            if(parent.ItemContainerGenerator.Status != GeneratorStatus.ContainersGenerated) {
-                return null;
-            }
-            UIElement container = (UIElement)parent.ItemContainerGenerator.ContainerFromItem(childItem);
-            if(container != null) {
-                return container;
-            }
-            foreach(object item in parent.Items) {
-                ItemsControl child = parent.ItemContainerGenerator.ContainerFromItem(item) as ItemsControl;
-                if(child != null && child.Items.Count > 0) {
-                    UIElement result = FindItemContainer(child, childItem);
-                    if(result != null) {
-                        return result;
-                    }
-                }
-            }
-            return null;
-        }
-
         private GroupEntry GetParentGroup(FolderEntry folder) {
             return (GroupEntry)CurrentGroups.FirstOrDefault((entry) =>
             {
@@ -1115,23 +1116,6 @@ namespace QTTabBarLib {
             }
         }
 
-        private void EnsureGenerated(ItemsControl control, Action pred) {
-            ItemContainerGenerator gen = control.ItemContainerGenerator;
-            if(gen.Status == GeneratorStatus.ContainersGenerated) {
-                pred();
-                return;
-            }
-            EventHandler handler = null;
-            handler = delegate {
-                if(gen.Status != GeneratorStatus.ContainersGenerated) {
-                    return;
-                }
-                pred();
-                gen.StatusChanged -= handler;
-            };
-            gen.StatusChanged += handler;
-        }
-
         private int GetPreferredInsertionIndex(TreeView tvw) {
             object val = tvw.SelectedItem;
             if(val == null) {
@@ -1151,9 +1135,8 @@ namespace QTTabBarLib {
                 GetPreferredInsertionIndex(tvw),
                 item);
 
-            EnsureGenerated(tvw, delegate
-            {
-                TreeViewItem container = (TreeViewItem)FindItemContainer(tvw, item);
+            FindItemContainerAsync(tvw, item, obj => {
+                TreeViewItem container = (TreeViewItem)obj;
                 container.IsSelected = true;
 
                 if(editName != null) {
@@ -1211,11 +1194,7 @@ namespace QTTabBarLib {
             TreeViewItem parent = (TreeViewItem)FindItemContainer(tvwGroups, group);
             parent.IsExpanded = true;
 
-            EnsureGenerated(parent, delegate
-            {
-                TreeViewItem container = (TreeViewItem)FindItemContainer(tvwGroups, folder);
-                container.IsSelected = true;
-            });
+            FindItemContainerAsync(parent, folder, cont => ((TreeViewItem)cont).IsSelected = true);
         }
 
         private void btnGroupsRemoveNode_Click(object sender, RoutedEventArgs e) {
@@ -1541,6 +1520,62 @@ namespace QTTabBarLib {
 
         #endregion
 
+        #region ---------- Common Utility Functions ----------
+
+        private UIElement FindItemContainer(ItemsControl parent, object childItem) {
+            if(parent.ItemContainerGenerator.Status != GeneratorStatus.ContainersGenerated) {
+                return null;
+            }
+            UIElement container = (UIElement)parent.ItemContainerGenerator.ContainerFromItem(childItem);
+            if(container != null) {
+                return container;
+            }
+            foreach(object item in parent.Items) {
+                ItemsControl child = parent.ItemContainerGenerator.ContainerFromItem(item) as ItemsControl;
+                if(child != null && child.Items.Count > 0) {
+                    UIElement result = FindItemContainer(child, childItem);
+                    if(result != null) {
+                        return result;
+                    }
+                }
+            }
+            return null;
+        }
+
+        private delegate void ItemContainerAction(UIElement container);
+        private void FindItemContainerAsync(ItemsControl parent, object childItem, ItemContainerAction pred) {
+            ItemContainerGenerator gen = parent.ItemContainerGenerator;
+            if(gen.Status == GeneratorStatus.ContainersGenerated) {
+                pred(FindItemContainer(parent, childItem));
+                return;
+            }
+            EventHandler handler = null;
+            handler = delegate {
+                if(gen.Status != GeneratorStatus.ContainersGenerated) {
+                    return;
+                }
+                pred(FindItemContainer(parent, childItem));
+                gen.StatusChanged -= handler;
+            };
+            gen.StatusChanged += handler;
+        }
+
+        // Draws a control to a bitmap
+        private static BitmapSource ConvertToBitmapSource(UIElement element) {
+            var target = new RenderTargetBitmap((int)(element.RenderSize.Width), (int)(element.RenderSize.Height), 96, 96, PixelFormats.Pbgra32);
+            var brush = new VisualBrush(element);
+            var visual = new DrawingVisual();
+            var drawingContext = visual.RenderOpen();
+
+            drawingContext.DrawRectangle(brush, null, new Rect(new Point(0, 0),
+                new Point(element.RenderSize.Width, element.RenderSize.Height)));
+            drawingContext.Close();
+            target.Render(visual);
+            return target;
+        }
+
+        #endregion
+
         #region ---------- Binding Classes ----------
         #pragma warning disable 0067 // "The event 'PropertyChanged' is never used"
         // ReSharper disable MemberCanBePrivate.Local
@@ -1727,9 +1762,21 @@ namespace QTTabBarLib {
 
         private class FileTypeEntry : INotifyPropertyChanged {
             public event PropertyChangedEventHandler PropertyChanged;
+            private OptionsDialog parent;
+
+            private bool _IsEditing;
+            public bool IsEditing { 
+                get { return _IsEditing; } 
+                set {
+                    _IsEditing = value;
+                    if(!_IsEditing && string.IsNullOrEmpty(Extension)) {
+                        parent.TextFileTypes.Remove(this);
+                        parent.MediaFileTypes.Remove(this);
+                    }
+                } 
+            }
 
             public bool IsSelected { get; set; }
-            public bool IsEditing { get; set; }
             public string Extension { get; set; }
 
             public string DotExtension {
@@ -1764,14 +1811,12 @@ namespace QTTabBarLib {
                     return QTUtility.GetIcon(DotExtension, true).ToBitmap();
                 }
             }
-            public FileTypeEntry(string extension) {
+            public FileTypeEntry(OptionsDialog parent, string extension) {
+                this.parent = parent;
                 if(!extension.StartsWith(".")) {
                     extension = "." + extension;
                 }
                 DotExtension = extension;
-            }
-            public FileTypeEntry() {
-                DotExtension = ".";
             }
         }
 
@@ -1809,7 +1854,7 @@ namespace QTTabBarLib {
 
         private class GroupEntry : INotifyPropertyChanged {
             public event PropertyChangedEventHandler PropertyChanged;
-            public string Name { get; private set; }
+            public string Name { get; set; }
             public Image Icon { get; private set; }
             public ObservableCollection<FolderEntry> Folders { get; private set; }
             public bool Startup { get; set; }
@@ -1877,27 +1922,6 @@ namespace QTTabBarLib {
                     return (base.Options | 2);
                 }
             }
-        }
-
-        private void btnRebarBGColorChoose_Click(object sender, RoutedEventArgs e) {
-            ColorDialogEx cd = new ColorDialogEx {Color = workingConfig.skin.RebarColor};
-            if(System.Windows.Forms.DialogResult.OK == cd.ShowDialog()) {
-                workingConfig.skin.RebarColor = cd.Color;
-            }
-        }
-
-        // Draws a control to a bitmap
-        private static BitmapSource ConvertToBitmapSource(UIElement element) {
-            var target = new RenderTargetBitmap((int)(element.RenderSize.Width), (int)(element.RenderSize.Height), 96, 96, PixelFormats.Pbgra32);
-            var brush = new VisualBrush(element);
-            var visual = new DrawingVisual();
-            var drawingContext = visual.RenderOpen();
-
-            drawingContext.DrawRectangle(brush, null, new Rect(new Point(0, 0),
-                new Point(element.RenderSize.Width, element.RenderSize.Height)));
-            drawingContext.Close();
-            target.Render(visual);
-            return target;
         }
 
         private void btnRecentFilesClear_Click(object sender, RoutedEventArgs e) {

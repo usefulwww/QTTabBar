@@ -90,13 +90,13 @@ namespace QTTabBarLib
             }
         }
 
-        public void EndEdit() {
+        public void EndEdit(bool cancel = false) {
             txtHeaderEdit.Visibility = Visibility.Hidden;
 
             BindingExpression expr = txtHeaderEdit.GetBindingExpression(TextBox.TextProperty);
             expr.UpdateSource();
 
-            if(CancelIfEmpty && string.IsNullOrEmpty(Text)) {
+            if(cancel || (CancelIfEmpty && string.IsNullOrEmpty(Text))) {
                 Text = originalText;
             }
             IsEditing = false;
@@ -118,6 +118,9 @@ namespace QTTabBarLib
         private void txtHeaderEdit_KeyDown(object sender, KeyEventArgs e) {
             if(e.Key == Key.Enter) {
                 EndEdit();
+            }
+            else if(e.Key == Key.Escape) {
+                EndEdit(true);
             }
         }
 
