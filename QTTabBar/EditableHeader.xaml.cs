@@ -104,6 +104,7 @@ namespace QTTabBarLib
 
         public void StartEdit() {
             originalText = Text;
+            txtHeaderEdit.SelectAll();
             txtHeaderEdit.Visibility = Visibility.Visible;
             txtHeaderEdit.CaptureMouse();
             txtHeaderEdit.Focus();
@@ -112,7 +113,7 @@ namespace QTTabBarLib
         }
 
         private void txtHeaderEdit_LostFocus(object sender, RoutedEventArgs e) {
-            EndEdit();
+            if(IsEditing) EndEdit();
         }
 
         private void txtHeaderEdit_KeyDown(object sender, KeyEventArgs e) {

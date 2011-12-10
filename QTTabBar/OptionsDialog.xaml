@@ -396,6 +396,7 @@
                         x:Name="txtName"
                         Text="{Binding Path=Name}"
                         Visibility="Collapsed"
+                        IsEditing="{Binding Path=IsEditing}"
                         Container="{Binding RelativeSource={RelativeSource AncestorType={x:Type TreeViewItem}}}"/>
                     <qt:EditableHeader
                         x:Name="txtPath"

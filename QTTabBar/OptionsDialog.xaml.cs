@@ -498,11 +498,8 @@ namespace QTTabBarLib {
             control.SelectedItem = item;
             control.ScrollIntoView(item);
             control.Focus();
-            FindItemContainerAsync(control, item, container => {
-                ((ListBoxItem)container).Loaded += delegate {
-                    item.IsEditing = true;
-                };
-            });
+            FindItemContainerAsync(control, item, container =>
+                    RunOnLoad((FrameworkElement)container, delegate { item.IsEditing = true; }));
         }
 
         private void RemoveSelectedFileType(ListBox control) {
@@ -1018,44 +1015,13 @@ namespace QTTabBarLib {
             }
         }
 
-        public static DependencyObject FindVisualChildByName(DependencyObject parent, string name) {
-            for(int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++) {
-                DependencyObject child = VisualTreeHelper.GetChild(parent, i);
-                string controlName = child.GetValue(System.Windows.Controls.Control.NameProperty) as string;
-                if(controlName == name) {
-                    return child;
-                }
-                // The following makes it possible to find x:Name attributes.
-                if(child is ContentPresenter) {
-                    ContentPresenter content = (ContentPresenter)child;
-                    DataTemplate template = content.ContentTemplate;
-                    if(template != null) {
-                        object obj = template.FindName(name, content);
-                        if(obj != null) {
-                            return obj as DependencyObject;
-                        }
-                    }
-                }
-                DependencyObject result = FindVisualChildByName(child, name);
-                if(result != null)
-                    return result;
-            }
-            return null;
-        }
-
         private GroupEntry GetParentGroup(FolderEntry folder) {
-            return (GroupEntry)CurrentGroups.FirstOrDefault((entry) =>
-            {
-                GroupEntry group = entry as GroupEntry;
-                if(group == null) {
-                    return false;
-                }
-                return group.Folders.Contains(folder);
-            });
+            return CurrentGroups.OfType<GroupEntry>().FirstOrDefault(
+                    entry => entry.Folders.Contains(folder));
         }
 
         private void UpDownOnTreeView(ItemsControl control, object val, bool up) {
-            System.Collections.IList col = (System.Collections.IList)control.ItemsSource;
+            IList col = (IList)control.ItemsSource;
             int index = col.IndexOf(val);
             if(index == -1) {
                 return;
@@ -1099,23 +1065,6 @@ namespace QTTabBarLib {
             }
         }
 
-        private void EditLabel(FrameworkElement container, string name = "EditableHeaderControl") {
-            Action pred = delegate
-            {
-                EditableHeader edit = FindVisualChildByName(container, name) as EditableHeader;
-                if(edit == null || edit.Visibility != Visibility.Visible) {
-                    return;
-                }
-                edit.StartEdit();
-            };
-            if(container.IsLoaded) {
-                pred();
-            }
-            else {
-                container.Loaded += delegate { pred(); };
-            }
-        }
-
         private int GetPreferredInsertionIndex(TreeView tvw) {
             object val = tvw.SelectedItem;
             if(val == null) {
@@ -1129,18 +1078,17 @@ namespace QTTabBarLib {
             return index + 1;
         }
 
-        private void AddNew(TreeView tvw, object item, string editName = null) {
-            System.Collections.IList col = (System.Collections.IList)tvw.ItemsSource;
-            col.Insert(
-                GetPreferredInsertionIndex(tvw),
-                item);
+        private void AddNewGroupItem(TreeView tvw, object item) {
+            IList col = (IList)tvw.ItemsSource;
+            col.Insert(GetPreferredInsertionIndex(tvw), item);
 
             FindItemContainerAsync(tvw, item, obj => {
                 TreeViewItem container = (TreeViewItem)obj;
                 container.IsSelected = true;
 
-                if(editName != null) {
-                    EditLabel(container, editName);
+                GroupEntry entry = item as GroupEntry;
+                if(entry != null) {
+                    RunOnLoad(container, delegate { entry.IsEditing = true; });
                 }
             });
         }
@@ -1154,11 +1102,11 @@ namespace QTTabBarLib {
         }
 
         private void btnGroupsAddSeparator_Click(object sender, RoutedEventArgs e) {
-            AddNew(tvwGroups, new SeparatorEntry());
+            AddNewGroupItem(tvwGroups, new SeparatorEntry());
         }
 
         private void btnGroupsAddGroup_Click(object sender, RoutedEventArgs e) {
-            AddNew(tvwGroups, new GroupEntry("New Group"), "txtName");
+            AddNewGroupItem(tvwGroups, new GroupEntry("New Group"));
         }
 
         private void btnGroupsAddFolder_Click(object sender, RoutedEventArgs e) {
@@ -1522,7 +1470,16 @@ namespace QTTabBarLib {
 
         #region ---------- Common Utility Functions ----------
 
-        private UIElement FindItemContainer(ItemsControl parent, object childItem) {
+        private static void RunOnLoad(FrameworkElement element, Action pred) {
+            RoutedEventHandler del = null;
+            del = delegate {
+                pred();
+                element.Loaded -= del;
+            };
+            element.Loaded += del;
+        }
+
+        private static UIElement FindItemContainer(ItemsControl parent, object childItem) {
             if(parent.ItemContainerGenerator.Status != GeneratorStatus.ContainersGenerated) {
                 return null;
             }
@@ -1543,7 +1500,7 @@ namespace QTTabBarLib {
         }
 
         private delegate void ItemContainerAction(UIElement container);
-        private void FindItemContainerAsync(ItemsControl parent, object childItem, ItemContainerAction pred) {
+        private static void FindItemContainerAsync(ItemsControl parent, object childItem, ItemContainerAction pred) {
             ItemContainerGenerator gen = parent.ItemContainerGenerator;
             if(gen.Status == GeneratorStatus.ContainersGenerated) {
                 pred(FindItemContainer(parent, childItem));
@@ -1859,6 +1816,7 @@ namespace QTTabBarLib {
             public ObservableCollection<FolderEntry> Folders { get; private set; }
             public bool Startup { get; set; }
             public int ShortcutKey { get; set; }
+            public bool IsEditing { get; set; }
 
             private void Folders_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
                 if(e.OldItems != null) {
@@ -1881,7 +1839,7 @@ namespace QTTabBarLib {
             }
 
             private void RefreshIcon() {
-                Icon = Folders.Count == 0 ? Resources_Image.icoEmpty.ToBitmap() : Folders.First().Icon;
+                Icon = Folders.Count == 0 ? QTUtility.ImageListGlobal.Images["folder"] : Folders.First().Icon;
             }
 
             public GroupEntry(string name) {

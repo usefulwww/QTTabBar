@@ -25,6 +25,7 @@
                  VerticalContentAlignment="Center"
                  MinWidth="10"
                  LostFocus="txtHeaderEdit_LostFocus"
+                 LostKeyboardFocus="txtHeaderEdit_LostFocus"
                  KeyDown="txtHeaderEdit_KeyDown"
                  Visibility="Hidden" />
     </Grid>
