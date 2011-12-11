@@ -52,7 +52,7 @@ namespace QTTabBarLib {
         private static OptionsDialog instance;
         private static Thread instanceThread;
         public Config workingConfig { get; set; }
-
+        
         // Button bar stuff
         private ImageStrip imageStripLarge;
         private ImageStrip imageStripSmall;
@@ -204,6 +204,8 @@ namespace QTTabBarLib {
         };
         #endregion
 
+        #region Mouse Action dictionaries
+
         // Which actions are valid for which targets?
         private readonly static Dictionary<MouseTarget, Dictionary<BindAction, string>> MouseTargetActions
                 = new Dictionary<MouseTarget, Dictionary<BindAction, string>> {
@@ -304,6 +306,8 @@ namespace QTTabBarLib {
             }.ToDictionary(k => k, k => MouseButtonItems[k])},
         };
 
+        #endregion
+
         #region ---------- Static Methods ----------
 
         public static void Open() {
@@ -352,6 +356,8 @@ namespace QTTabBarLib {
         }
 
         #endregion
+
+        #region ---------- Dialog-wide Stuff ----------
 
         private OptionsDialog() {
             QTTabBarClass tabBar = InstanceManager.CurrentTabBar;
@@ -457,6 +463,8 @@ namespace QTTabBarLib {
             InitializeKeys();
         }
 
+        #endregion
+
         #region ---------- Window ----------
 
         #endregion
@@ -509,7 +517,7 @@ namespace QTTabBarLib {
             foreach(FileTypeEntry item in new ArrayList(control.SelectedItems)) {
                 list.Remove(item);
             }
-            control.SelectedIndex = Math.Min(idx, list.Count-1);
+            control.SelectedIndex = Math.Min(idx, list.Count - 1);
             FindItemContainerAsync(control, control.SelectedItem, container => container.Focus());
         }
 
@@ -660,7 +668,7 @@ namespace QTTabBarLib {
                 entry.Action = action;
             }
             else {
-                MouseBindings.Add(new MouseEntry(target, chord, action));    
+                MouseBindings.Add(new MouseEntry(target, chord, action));
             }
         }
 
@@ -669,7 +677,7 @@ namespace QTTabBarLib {
         #region ---------- Applications ----------
 
         private void btnAppsAddFolder_Click(object sender, RoutedEventArgs e) {
-            appsDrawNode( "New Folder", "dir" );
+            appsDrawNode("New Folder", "dir");
         }
 
         private void btnAppsAddNode_Click(object sender, RoutedEventArgs e) {
@@ -685,8 +693,9 @@ namespace QTTabBarLib {
 
             try {
                 //MessageBox.Show(item.Parent.GetType() + item.Uid);
-                ((TreeViewItem)item.Parent).Items.Remove( item );
-            }catch(Exception ex) {
+                ((TreeViewItem)item.Parent).Items.Remove(item);
+            }
+            catch(Exception ex) {
                 //MessageBox.Show("Exception: "+ex.ToString());
             }
         }
@@ -713,7 +722,6 @@ namespace QTTabBarLib {
                 return;
             }
 
-            
             if((selected == null) || (selected == treeAppsRoot)) {
                 treeAppsRoot.Items.Add(item);
             }
@@ -729,13 +737,13 @@ namespace QTTabBarLib {
             //# Stored value for the tag.
             string[] args = new string[5];
             args[0] = type;
-            
+
             item.Tag = args;
 
             //# Add the appnode to child.
             if(type == "app") {
                 ApplicationsNode node = new ApplicationsNode();
-                item.Items.Add( node );
+                item.Items.Add(node);
 
                 //# Tag arguments -- could be used for binding.
                 args[1] = "No Path Selected";
@@ -753,7 +761,8 @@ namespace QTTabBarLib {
                 item.IsSelected = true;
                 item.IsExpanded = true;
                 item.Header = new EditableHeader(name, item);
-            }else {
+            }
+            else {
                 //# No soup for sep
                 item.Header = name;
             }
@@ -771,11 +780,12 @@ namespace QTTabBarLib {
                 //# We need to tag the main TreeView so we can easily access information about the selected TreeViewItem with it.
                 //# We are unable to accurately handle the treeAps.SelectedItem property, unless we have this 'backup'
                 treeApps.Tag = item;
-            }catch(Exception ex) {
+            }
+            catch(Exception ex) {
                 //# This is only caught when the user clicks on a label from an appnode. We try to handle
                 //# the ugly blue background as best we can.
-                ( (TreeViewItem) e.OriginalSource ).Focusable = false;
-                ( (TreeViewItem) e.OriginalSource ).IsSelected = true;
+                ((TreeViewItem)e.OriginalSource).Focusable = false;
+                ((TreeViewItem)e.OriginalSource).IsSelected = true;
                 return;
             }
         }
@@ -793,7 +803,7 @@ namespace QTTabBarLib {
             for(int i = 0; i <= (int)QTUtility.LAST_KEYBOARD_ACTION; ++i) {
                 list.Add(new HotkeyEntry(keys, i, arrActions[i], arrGrps[0]));
             }
-            
+
             foreach(string pluginID in QTUtility.dicPluginShortcutKeys.Keys) {
                 Plugin p;
                 keys = QTUtility.dicPluginShortcutKeys[pluginID];
@@ -943,10 +953,6 @@ namespace QTTabBarLib {
             CurrentGroups = new ObservableCollection<object>();
 
             foreach(KeyValuePair<string, string> pair in QTUtility.GroupPathsDic) {
-                if(string.IsNullOrEmpty(pair.Value)) {
-                    CurrentGroups.Add(new SeparatorEntry());
-                    continue;
-                }
                 GroupEntry group = new GroupEntry(pair.Key);
                 group.Startup = QTUtility.StartUpGroupList.Contains(group.Name);
                 if(QTUtility.dicGroupNamesAndKeys.ContainsKey(group.Name)) {
@@ -970,10 +976,6 @@ namespace QTTabBarLib {
             List<PluginKey> list = new List<PluginKey>();
             int num = 1;
             foreach(object entry in CurrentGroups) {
-                if(entry is SeparatorEntry) {
-                    QTUtility.GroupPathsDic["Separator" + num++] = string.Empty;
-                    continue;
-                }
                 GroupEntry group = (GroupEntry)entry;
                 if(group.Folders.Count > 0) {
                     string text = group.Name;
@@ -1101,10 +1103,6 @@ namespace QTTabBarLib {
             UpDownOnTreeView(tvwGroups, false);
         }
 
-        private void btnGroupsAddSeparator_Click(object sender, RoutedEventArgs e) {
-            AddNewGroupItem(tvwGroups, new SeparatorEntry());
-        }
-
         private void btnGroupsAddGroup_Click(object sender, RoutedEventArgs e) {
             AddNewGroupItem(tvwGroups, new GroupEntry("New Group"));
         }
@@ -1114,9 +1112,6 @@ namespace QTTabBarLib {
 
             object val = tvwGroups.SelectedItem;
             if(val == null) {
-                return;
-            }
-            if(val is SeparatorEntry) {
                 return;
             }
 
@@ -1538,7 +1533,7 @@ namespace QTTabBarLib {
         // ReSharper disable MemberCanBePrivate.Local
         // ReSharper disable UnusedMember.Local
         // ReSharper disable UnusedAutoPropertyAccessor.Local
-        
+
         // Thanks to the damn-near LIFE-SAVING Notify Property Weaver,
         // INotifyPropertyChanged is implemented for us.  All properties
         // will automatically raise the PropertyChanged event when 
@@ -1629,9 +1624,9 @@ namespace QTTabBarLib {
             public bool EnableOnClose { get; set; }
             public bool InstallOnClose { get; set; }
             public bool UninstallOnClose { get; set; }
-            public bool Enabled { get { return PluginInfo.Enabled; } set { PluginInfo.Enabled = value; }}
+            public bool Enabled { get { return PluginInfo.Enabled; } set { PluginInfo.Enabled = value; } }
             public string PluginID { get { return PluginInfo.PluginID; } }
-            public string Path { get {return PluginInfo.Path; } }
+            public string Path { get { return PluginInfo.Path; } }
 
             private bool cachedHasOptions;
             private bool optionsQueried;
@@ -1663,7 +1658,7 @@ namespace QTTabBarLib {
             }
         }
 
-        private class HotkeyEntry: INotifyPropertyChanged {
+        private class HotkeyEntry : INotifyPropertyChanged {
             public event PropertyChangedEventHandler PropertyChanged;
             private int[] raws;
             public int RawKey {
@@ -1698,12 +1693,14 @@ namespace QTTabBarLib {
 
         private class MouseEntry : INotifyPropertyChanged {
             public event PropertyChangedEventHandler PropertyChanged;
-            public string GestureText { get {
-                MouseChord modifier = Chord & (MouseChord.Alt | MouseChord.Ctrl | MouseChord.Shift);
-                MouseChord button = Chord & ~(MouseChord.Alt | MouseChord.Ctrl | MouseChord.Shift);
-                return (modifier != MouseChord.None ? MouseModifierItems[modifier] + " + " : "")
-                        + MouseButtonItems[button];
-            } }
+            public string GestureText {
+                get {
+                    MouseChord modifier = Chord & (MouseChord.Alt | MouseChord.Ctrl | MouseChord.Shift);
+                    MouseChord button = Chord & ~(MouseChord.Alt | MouseChord.Ctrl | MouseChord.Shift);
+                    return (modifier != MouseChord.None ? MouseModifierItems[modifier] + " + " : "")
+                            + MouseButtonItems[button];
+                }
+            }
             public string TargetText { get { return MouseTargetItems[Target]; } }
             public string ActionText { get { return MouseActionItems[Action]; } }
             public MouseTarget Target { get; private set; }
@@ -1722,15 +1719,15 @@ namespace QTTabBarLib {
             private OptionsDialog parent;
 
             private bool _IsEditing;
-            public bool IsEditing { 
-                get { return _IsEditing; } 
+            public bool IsEditing {
+                get { return _IsEditing; }
                 set {
                     _IsEditing = value;
                     if(!_IsEditing && string.IsNullOrEmpty(Extension)) {
                         parent.TextFileTypes.Remove(this);
                         parent.MediaFileTypes.Remove(this);
                     }
-                } 
+                }
             }
 
             public bool IsSelected { get; set; }
@@ -1777,9 +1774,6 @@ namespace QTTabBarLib {
             }
         }
 
-        private class SeparatorEntry {
-        }
-
         private class FolderEntry : INotifyPropertyChanged {
             public event PropertyChangedEventHandler PropertyChanged;
 
@@ -1816,6 +1810,10 @@ namespace QTTabBarLib {
             public ObservableCollection<FolderEntry> Folders { get; private set; }
             public bool Startup { get; set; }
             public int ShortcutKey { get; set; }
+            public string HotkeyString { get {
+                // todo
+                return "Ctrl + A";
+            }}
             public bool IsEditing { get; set; }
 
             private void Folders_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
@@ -1848,7 +1846,8 @@ namespace QTTabBarLib {
                 Folders.CollectionChanged += Folders_CollectionChanged;
                 RefreshIcon();
             }
-            public GroupEntry() : this(null) {
+            public GroupEntry()
+                : this(null) {
             }
         }
 
@@ -1871,7 +1870,7 @@ namespace QTTabBarLib {
                     }
                 }
             }
-            catch {}
+            catch { }
         }
 
         private sealed class ColorDialogEx : System.Windows.Forms.ColorDialog {
@@ -1894,7 +1893,7 @@ namespace QTTabBarLib {
             // TODO
         }
     }
-    
+
     #region ---------- Converters ----------
 
     // Inverts the value of a boolean
@@ -2063,49 +2062,4 @@ namespace QTTabBarLib {
             rbx.bIsChanging = false;
         }
     }
-
-    #region ---------- TreeListView ----------
-
-    public class TreeListView : TreeView {
-        protected override DependencyObject
-                           GetContainerForItemOverride() {
-            return new TreeListViewItem();
-        }
-
-        protected override bool
-                           IsItemItsOwnContainerOverride(object item) {
-            return item is TreeListViewItem;
-        }
-    }
-
-    public class TreeListViewItem : TreeViewItem {
-        /// <summary>
-        /// Item's hierarchy in the tree
-        /// </summary>
-        public int Level {
-            get {
-                if(_level == -1) {
-                    TreeListViewItem parent =
-                        ItemsControl.ItemsControlFromItemContainer(this)
-                            as TreeListViewItem;
-                    _level = (parent != null) ? parent.Level + 1 : 0;
-                }
-                return _level;
-            }
-        }
-
-
-        protected override DependencyObject
-                           GetContainerForItemOverride() {
-            return new TreeListViewItem();
-        }
-
-        protected override bool IsItemItsOwnContainerOverride(object item) {
-            return item is TreeListViewItem;
-        }
-
-        private int _level = -1;
-    }
-
-    #endregion
 }

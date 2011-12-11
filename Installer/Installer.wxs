@@ -69,6 +69,11 @@
                             <netfx:NativeImage Id="ngen_QTPluginLib.dll" Priority="0" Platform="all" />
                         </File>
                     </Component>
+                    <Component Id="TreeView" Guid="27af1a85-9a08-4c79-bdeb-d73fd4bd9574"  Win64="yes" DisableRegistryReflection="yes">
+                        <File Id="f8" Assembly=".net" KeyPath="yes" Name="Ricciolo.Controls.TreeListView.dll" Source="..\QTTabBar\Ricciolo.Controls.TreeListView.dll">
+                            <netfx:NativeImage Id="ngen_Ricciolo.Controls.TreeListView.dll" Priority="0" Platform="all" />
+                        </File>
+                    </Component>
                     <Component Id="QTTabBar" Guid="27af1a85-9a04-4c79-bdeb-d73fd4bd9574"  Win64="yes" DisableRegistryReflection="yes">
                         <File Id="f4" Assembly=".net" KeyPath="yes" Name="QTTabBar.dll" Source="..\QTTabBar\bin\Release\QTTabBar.dll">
                             <netfx:NativeImage Id="ngen_QTTabBar.dll" Priority="0" Platform="all" />
@@ -182,6 +187,7 @@
             <ComponentRef Id="ShellLibrary" />
             <ComponentRef Id="BandObjectLib" />
             <ComponentRef Id="QTPluginLib" />
+            <ComponentRef Id="TreeView" />
             <ComponentRef Id="QTTabBar" />
             <ComponentRef Id="HookLibrary32" />
             <ComponentRef Id="HookLibrary64" />

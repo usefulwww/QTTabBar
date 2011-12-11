@@ -22,6 +22,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:qt="clr-namespace:QTTabBarLib"
+    xmlns:r="clr-namespace:Ricciolo.Controls;assembly=Ricciolo.Controls.TreeListView"
     x:Class="QTTabBarLib.OptionsDialog"
     Background="{StaticResource {x:Static SystemColors.ControlBrushKey}}"
     Height="647"
@@ -39,6 +40,7 @@
         <qt:ColorToBrushConverter           x:Key="ColorToBrushConverter"/>
         <qt:FontStringConverter             x:Key="FontStringConverter"/>
 
+        <!-- Label Style for Section Headers -->
         <Style x:Key="SectionHeaderStyle" TargetType="Label">
             <Setter Property="Background"       Value="#FFF0F2F5"/>
             <Setter Property="BorderBrush"      Value="#FFE2E4E7"/>
@@ -69,12 +71,16 @@
             </Style.Resources>
         </Style>
         -->
+
+        <!-- Label Style for Page Headers -->
         <Style x:Key="PageHeaderImageStyle" TargetType="Image">
             <Setter Property="Height"           Value="32"/>
             <Setter Property="Margin"           Value="8,0,0,0"/>
             <Setter Property="RenderOptions.BitmapScalingMode" Value="NearestNeighbor"/>
             <Setter Property="Stretch"          Value="None"/>
         </Style>
+
+        <!-- Style for various controls to keep a proper margin -->
         <Style x:Key="CheckStyle" TargetType="Control">
             <Setter Property="Height"           Value="16"/>
             <Setter Property="Margin"           Value="13,1,0,1"/>
@@ -86,6 +92,9 @@
             <Setter Property="Margin"           Value="13,1,10,1"/>
             <Setter Property="Padding"          Value="0"/>
         </Style>
+
+        <!-- DataTemplates for the Category list box -->
+        <!-- TODO: there's go to be a way to collapse this into only one -->
         <DataTemplate x:Key="CategoryItemTemplate">
             <Grid
                 Background="White"
@@ -94,7 +103,7 @@
                 Width="128">
                 <TextBlock
                     Margin="10,1"
-                    Text="{Binding Header}" 
+                    Text="{Binding Path=Header}" 
                     VerticalAlignment="Center"/>
             </Grid>
         </DataTemplate>
@@ -183,6 +192,8 @@
                 </MultiTrigger>
             </Style.Triggers>
         </Style>
+
+        <!-- DataTemplate for the Button Bar editing list boxes -->
         <DataTemplate x:Key="ButtonBarItemTemplate">
             <StackPanel Orientation="Horizontal">
                 <Image
@@ -212,6 +223,8 @@
                     VerticalAlignment="Center"/>
             </StackPanel>
         </DataTemplate>
+
+        <!-- DataTemplate for the Plugin listview -->
         <DataTemplate x:Key="PluginItemTemplate">
             <DockPanel>
                 <TextBlock 
@@ -281,6 +294,8 @@
                 </StackPanel>
             </DockPanel>
         </DataTemplate>
+
+        <!-- DataTemplate that reproduces the WinForms-style group headers -->
         <DataTemplate x:Key="WinFormsGroupStyle">
             <DockPanel LastChildFill="True">
                 <TextBlock 
@@ -296,6 +311,8 @@
                     SnapsToDevicePixels="True"/>
             </DockPanel>
         </DataTemplate>
+
+        <!-- DataTemplate for the file extension listboxes on the Tooltips tab -->
         <DataTemplate x:Key="FileTypeItemTemplate">
             <StackPanel Orientation="Horizontal">
                 <Image
@@ -326,318 +343,10 @@
                 </TextBlock>
             </StackPanel>
         </DataTemplate>
-        <HierarchicalDataTemplate x:Key="GroupItemTemplate" ItemsSource="{Binding Path=Folders}">
-        </HierarchicalDataTemplate>
-        
-        <!-- TreeListView stuff -->
-        <Style x:Key="ExpandCollapseToggleStyle"
-            TargetType="{x:Type ToggleButton}">
-            <Setter Property="Focusable"
-              Value="False"/>
-            <Setter Property="Width"
-              Value="19"/>
-            <Setter Property="Height"
-              Value="13"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ToggleButton}">
-                        <Border Width="19"
-                            Height="13"
-                            Background="Transparent">
-                            <Border Width="9"
-                                Height="9"
-                                BorderThickness="1"
-                                BorderBrush="#FF7898B5"
-                                CornerRadius="1"
-                                SnapsToDevicePixels="true">
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0"
-                                        EndPoint="1,1">
-                                        <LinearGradientBrush.GradientStops>
-                                            <GradientStop Color="White"
-                                                Offset=".2"/>
-                                            <GradientStop Color="#FFC0B7A6"
-                                                Offset="1"/>
-                                        </LinearGradientBrush.GradientStops>
-                                    </LinearGradientBrush>
-                                </Border.Background>
-                                <Path x:Name="ExpandPath"
-                                    Margin="1,1,1,1"
-                                    Fill="Black"
-                                    Data="M 0 2 L 0 3 L 2 3 L 2 5 L 3 5 L 3 3 
-                                        L 5 3 L 5 2 L 3 2 L 3 0 L 2 0 L 2 2 Z"/>
-                            </Border>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsChecked"
-                                Value="True">
-                                <Setter Property="Data"
-                                    TargetName="ExpandPath"
-                                    Value="M 0 2 L 0 3 L 5 3 L 5 2 Z"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <DataTemplate x:Key="GroupFolderCellTemplate">
-            <Grid>
-                <StackPanel
-                    x:Name="panelBody"
-                    Orientation="Horizontal"
-                    Margin="0,2">
-                    <Image
-                        Source="{Binding Path=Icon, Converter={StaticResource BitmapToImageSourceConverter}}"
-                        Width="16"
-                        Height="16"
-                        Stretch="Fill"
-                        Margin="0,0,2,0"/>
-                    <qt:EditableHeader
-                        x:Name="txtName"
-                        Text="{Binding Path=Name}"
-                        Visibility="Collapsed"
-                        IsEditing="{Binding Path=IsEditing}"
-                        Container="{Binding RelativeSource={RelativeSource AncestorType={x:Type TreeViewItem}}}"/>
-                    <qt:EditableHeader
-                        x:Name="txtPath"
-                        Text="{Binding Path=Path}"
-                        Visibility="Collapsed"
-                        Container="{Binding RelativeSource={RelativeSource AncestorType={x:Type TreeViewItem}}}"/>
-                    <qt:EditableHeader
-                        x:Name="txtDisplayText"
-                        Text="{Binding Path=DisplayText, Mode=OneWay}"
-                        ReadOnly="True"
-                        Visibility="Collapsed"/>
-                </StackPanel>
-                <Separator
-                    x:Name="separator"
-                    Height="5"
-                    Width="{TemplateBinding ActualWidth}"
-                    Visibility="Collapsed"/>
-            </Grid>
-            <DataTemplate.Triggers>
-                <DataTrigger
-                    Binding="{Binding Converter={StaticResource ObjectToClassNameConverter}}" 
-                    Value="SeparatorEntry">
-                    <Setter
-                        TargetName="panelBody"
-                        Property="Visibility"
-                        Value="Collapsed"/>
-                    <Setter
-                        TargetName="separator"
-                        Property="Visibility"
-                        Value="Visible"/>
-                </DataTrigger>
-                <DataTrigger
-                    Binding="{Binding Converter={StaticResource ObjectToClassNameConverter}}" 
-                    Value="GroupEntry">
-                    <Setter
-                        TargetName="txtName"
-                        Property="Visibility"
-                        Value="Visible"/>
-                </DataTrigger>
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition
-                            Binding="{Binding Converter={StaticResource ObjectToClassNameConverter}}"
-                            Value="FolderEntry"/>
-                        <Condition
-                            Binding="{Binding Path=IsVirtualFolder}"
-                            Value="False"/>
-                    </MultiDataTrigger.Conditions>
-                    <Setter
-                        TargetName="txtPath"
-                        Property="Visibility"
-                        Value="Visible"/>
-                </MultiDataTrigger>
-                <DataTrigger
-                    Binding="{Binding Path=IsVirtualFolder}" 
-                    Value="True">
-                    <Setter
-                        TargetName="txtDisplayText"
-                        Property="Visibility"
-                        Value="Visible"/>
-                </DataTrigger>
-            </DataTemplate.Triggers>
-        </DataTemplate>
-        <DataTemplate x:Key="PrimaryCellTemplate">
-            <DockPanel>
-                <ToggleButton x:Name="Expander" 
-                      Style="{StaticResource ExpandCollapseToggleStyle}" 
-                      Margin="{Binding Level,
-                             Converter={StaticResource 
-                                        LevelIndentConverter},
-                             RelativeSource={RelativeSource 
-                                             AncestorType=
-                                             {x:Type qt:TreeListViewItem}}}"
-                      IsChecked="{Binding Path=IsExpanded,
-                                 RelativeSource={RelativeSource 
-                                                 AncestorType=
-                                                  {x:Type qt:TreeListViewItem}}}"
-                      ClickMode="Press"/>
-                <ContentPresenter
-                    Content="{Binding}"
-                    ContentTemplate="{StaticResource GroupFolderCellTemplate}"/>
-            </DockPanel>
-            <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding Path=HasItems,
-                               RelativeSource={RelativeSource 
-                               AncestorType={x:Type qt:TreeListViewItem}}}" 
-                    Value="False">
-                    <Setter TargetName="Expander"
-                        Property="Visibility"
-                        Value="Hidden"/>
-                </DataTrigger>
-            </DataTemplate.Triggers>
-        </DataTemplate>
-        <GridViewColumnCollection x:Key="gvcc">
-            <GridViewColumn Header="Folder"
-                CellTemplate="{StaticResource PrimaryCellTemplate}"
-                Width="300"/>
-            <GridViewColumn Header="Startup" Width="60">
-                <GridViewColumn.CellTemplate>
-                    <DataTemplate>
-                        <CheckBox x:Name="chkStartup"
-                            IsChecked="{Binding Path=Startup}"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Visibility="Collapsed"/>
-                        <DataTemplate.Triggers>
-                            <DataTrigger
-                                Binding="{Binding Converter={StaticResource ObjectToClassNameConverter}}" 
-                                Value="GroupEntry">
-                                <Setter
-                                    TargetName="chkStartup"
-                                    Property="Visibility"
-                                    Value="Visible"/>
-                            </DataTrigger>
-                        </DataTemplate.Triggers>
-                    </DataTemplate>
-                </GridViewColumn.CellTemplate>
-            </GridViewColumn>
-            <GridViewColumn Header="Shortcut key">
-                <GridViewColumn.CellTemplate>
-                    <DataTemplate>
-                        <TextBlock x:Name="txtShortcutKey"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Visibility="Collapsed">Ctrl + A</TextBlock>
-                        <DataTemplate.Triggers>
-                            <DataTrigger
-                                Binding="{Binding Converter={StaticResource ObjectToClassNameConverter}}"
-                                Value="GroupEntry">
-                                <Setter
-                                    TargetName="txtShortcutKey"
-                                    Property="Visibility"
-                                    Value="Visible"/>
-                            </DataTrigger>
-                        </DataTemplate.Triggers>
-                    </DataTemplate>
-                </GridViewColumn.CellTemplate>
-            </GridViewColumn>
-        </GridViewColumnCollection>
-        <Style TargetType="{x:Type qt:TreeListViewItem}">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type qt:TreeListViewItem}">
-                        <StackPanel>
-                            <Border Name="Bd"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                Padding="{TemplateBinding Padding}">
-                                <GridViewRowPresenter x:Name="PART_Header" 
-                                      Content="{TemplateBinding Header}" 
-                                      Columns="{StaticResource gvcc}" />
-                            </Border>
-                            <ItemsPresenter x:Name="ItemsHost" />
-                        </StackPanel>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsExpanded"
-                                Value="false">
-                                <Setter TargetName="ItemsHost"
-                                    Property="Visibility"
-                                    Value="Collapsed"/>
-                            </Trigger>
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="HasHeader"
-                                        Value="false"/>
-                                    <Condition Property="Width"
-                                        Value="Auto"/>
-                                </MultiTrigger.Conditions>
-                                <Setter TargetName="PART_Header"
-                                    Property="MinWidth"
-                                    Value="75"/>
-                            </MultiTrigger>
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="HasHeader"
-                             Value="false"/>
-                                    <Condition Property="Height"
-                             Value="Auto"/>
-                                </MultiTrigger.Conditions>
-                                <Setter TargetName="PART_Header"
-                                    Property="MinHeight"
-                                    Value="19"/>
-                            </MultiTrigger>
-                            <Trigger Property="IsSelected"
-                                Value="true">
-                                <Setter TargetName="Bd"
-                                    Property="Background"
-                                    Value="{DynamicResource 
-                                        {x:Static SystemColors.HighlightBrushKey}}"/>
-                                <Setter Property="Foreground"
-                                    Value="{DynamicResource 
-                                        {x:Static SystemColors.HighlightTextBrushKey}}"/>
-                            </Trigger>
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="IsSelected"
-                                        Value="true"/>
-                                    <Condition Property="IsSelectionActive"
-                                        Value="false"/>
-                                </MultiTrigger.Conditions>
-                                <Setter TargetName="Bd"
-                                    Property="Background"
-                                    Value="{DynamicResource 
-                          {x:Static SystemColors.ControlBrushKey}}"/>
-                                <Setter Property="Foreground"
-                        Value="{DynamicResource 
-                          {x:Static SystemColors.ControlTextBrushKey}}"/>
-                            </MultiTrigger>
-                            <Trigger Property="IsEnabled"
-                                Value="false">
-                                <Setter Property="Foreground"
-                                    Value="{DynamicResource 
-                                        {x:Static SystemColors.GrayTextBrushKey}}"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style TargetType="{x:Type qt:TreeListView}">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type qt:TreeListView}">
-                        <Border BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}">
-                            <DockPanel>
-                                <GridViewHeaderRowPresenter Columns="{StaticResource gvcc}"
-                                            DockPanel.Dock="Top"/>
-                                <ItemsPresenter/>
-                            </DockPanel>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
     </Window.Resources>
-    
-    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-    
+
     <DockPanel>
+        <!-- The OK/Cancel/etc buttons -->
         <StackPanel
             DockPanel.Dock="Bottom"
             HorizontalAlignment="Right"
@@ -679,6 +388,8 @@
                 Padding="0"
                 Width="75"/>
         </StackPanel>
+
+        <!-- The category listview -->
         <ListView x:Name="lstCategories"
             DockPanel.Dock="Left"
             ItemsSource="{Binding Items, ElementName=tabbedPanel}"
@@ -698,6 +409,8 @@
                     Color="White"/>
             </ListBox.Resources>
         </ListView>
+
+        <!-- The main TabControl -->
     	<TabControl x:Name="tabbedPanel"
             Background="{StaticResource {x:Static SystemColors.ControlLightLightBrushKey}}"
             DataContext="{Binding workingConfig, ElementName=wndOptionsDialog}"
@@ -705,6 +418,8 @@
             Padding="0"
             SelectedItem="{Binding SelectedItem, ElementName=lstCategories}"
             TabStripPlacement="Left">
+
+            <!-- =============   WINDOW   ============= -->
             <TabItem x:Name="tabWindow"
                 DataContext="{Binding Path=window}"
                 Header="Window"
@@ -890,6 +605,8 @@
                         Style="{StaticResource CheckStyle}"/>
                 </StackPanel>
             </TabItem>
+
+            <!-- =============    TABS    ============= -->
             <TabItem x:Name="tabTabs"
                 DataContext="{Binding Path=tabs}"
                 Header="Tabs"
@@ -1052,6 +769,8 @@
                         Style="{StaticResource IndentedCheckStyle}"/>
                 </StackPanel>
             </TabItem>
+
+            <!-- =============   TWEAKS   ============= -->
             <TabItem x:Name="tabTweaks"
                 DataContext="{Binding Path=tweaks}"
                 Header="Tweaks"
@@ -1165,6 +884,8 @@
                     </Grid>
                 </StackPanel>
             </TabItem>
+
+            <!-- =============  TOOLTIPS  ============= -->
             <TabItem x:Name="tabTooltips"
                 DataContext="{Binding Path=tips}"
                 Header="Tooltips"
@@ -1394,6 +1115,8 @@
                     </Grid>
                 </StackPanel>
             </TabItem>
+
+            <!-- =============  GENERAL   ============= -->
             <TabItem x:Name="tabGeneral"
                 DataContext="{Binding Path=misc}"
                 Header="General"
@@ -1530,6 +1253,8 @@
                     </StackPanel>
                 </Grid>
             </TabItem>
+
+            <!-- ============= APPEARANCE ============= -->
             <TabItem x:Name="tabAppearance"
                 DataContext="{Binding Path=skin}"
                 Header="Appearance"
@@ -1995,6 +1720,8 @@
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
+
+            <!-- =============   MOUSE    ============= -->
             <TabItem x:Name="tabMouse"
                 DataContext="{Binding Path=mouse}"
                 Header="Mouse"
@@ -2119,6 +1846,8 @@
                         Margin="13,0,1,0"/>
                 </StackPanel>
             </TabItem>
+
+            <!-- =============    KEYS    ============= -->
             <TabItem x:Name="tabKeys"
                 Header="Keys"
                 Width="0">
@@ -2208,6 +1937,8 @@
                     </ListView>
                 </DockPanel>
             </TabItem>
+
+            <!-- =============   GROUPS   ============= -->
             <TabItem x:Name="tabGroups"
                 Header="Groups"
                 Width="0">
@@ -2252,15 +1983,6 @@
                             VerticalAlignment="Top"
                             Width="28"
                             Click="btnGroupsMoveNodeDown_Click" />
-                        <Button x:Name="btnGroupsAddSeparator"
-                            Content="---"
-                            Grid.Column="2"
-                            Height="23"
-                            HorizontalAlignment="Right"
-                            Margin="4"
-                            VerticalAlignment="Top"
-                            Width="28"
-                            Click="btnGroupsAddSeparator_Click" />
                         <Button x:Name="btnGroupsAddGroup" Content="G"
                             Grid.Column="3"
                             Height="23"
@@ -2288,10 +2010,97 @@
                             Width="28"
                             Click="btnGroupsRemoveNode_Click" />
                     </Grid>
-                    <qt:TreeListView
-                        x:Name="tvwGroups"
-                        ItemTemplate="{StaticResource GroupItemTemplate}"
-                        Height="338"/>
+                    <r:TreeListView x:Name="tvwGroups"
+                        Height="338">
+                        <TreeView.ItemTemplate>
+                            <HierarchicalDataTemplate ItemsSource="{Binding Path=Folders}"/>
+                        </TreeView.ItemTemplate>
+                        <r:TreeListView.Columns>
+                            <GridViewColumn Header="Folder" Width="300">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel
+                                            Orientation="Horizontal"
+                                            VerticalAlignment="Center">
+                                            <Image
+                                                Source="{Binding Path=Icon, Converter={StaticResource BitmapToImageSourceConverter}}"
+                                                Width="16"
+                                                Height="16"
+                                                Stretch="Fill"
+                                                Margin="0,0,2,0"/>
+                                            <qt:EditableHeader x:Name="ehrName"
+                                                Container="{Binding RelativeSource={RelativeSource AncestorType={x:Type r:TreeListViewItem}}}"
+                                                IsEditing="{Binding Path=IsEditing}"
+                                                Text="{Binding Path=Name}"
+                                                Margin="0"
+                                                Visibility="Collapsed"/>
+                                            <qt:EditableHeader x:Name="ehrPath"
+                                                Container="{Binding RelativeSource={RelativeSource AncestorType={x:Type r:TreeListViewItem}}}"
+                                                Text="{Binding Path=Path}"
+                                                Margin="0"
+                                                Visibility="Collapsed"/>
+                                            <qt:EditableHeader x:Name="txtDisplayText"
+                                                Text="{Binding Path=DisplayText, Mode=OneWay}"
+                                                ReadOnly="True"
+                                                Margin="0"
+                                                Visibility="Collapsed"/>
+                                        </StackPanel>
+                                        <DataTemplate.Triggers>
+                                            <DataTrigger Binding="{Binding Converter={StaticResource ObjectToClassNameConverter}}" Value="GroupEntry">
+                                                <Setter TargetName="ehrName" Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding Converter={StaticResource ObjectToClassNameConverter}}" Value="FolderEntry"/>
+                                                    <Condition Binding="{Binding Path=IsVirtualFolder}" Value="False"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter TargetName="ehrPath" Property="Visibility" Value="Visible"/>
+                                            </MultiDataTrigger>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding Converter={StaticResource ObjectToClassNameConverter}}" Value="FolderEntry"/>
+                                                    <Condition Binding="{Binding Path=IsVirtualFolder}" Value="True"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter TargetName="txtDisplayText" Property="Visibility" Value="Visible"/>
+                                            </MultiDataTrigger>
+                                        </DataTemplate.Triggers>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Startup" Width="60">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox x:Name="chkStartup"
+                                            IsChecked="{Binding Path=Startup}"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Visibility="Collapsed" />
+                                        <DataTemplate.Triggers>
+                                            <DataTrigger Binding="{Binding Converter={StaticResource ObjectToClassNameConverter}}" Value="GroupEntry">
+                                                <Setter TargetName="chkStartup" Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </DataTemplate.Triggers>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Shortcut Key" Width="100">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock x:Name="txtHotkey"
+                                            Text="{Binding Path=HotkeyString}"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Visibility="Collapsed" />
+                                        <DataTemplate.Triggers>
+                                            <DataTrigger Binding="{Binding Converter={StaticResource ObjectToClassNameConverter}}" Value="GroupEntry">
+                                                <Setter TargetName="txtHotkey" Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </DataTemplate.Triggers>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </r:TreeListView.Columns>
+                    </r:TreeListView>
                     <DockPanel
                         Margin="0,10,0,0">
                         <Label
@@ -2305,6 +2114,8 @@
                     </DockPanel>
                 </StackPanel>
             </TabItem>
+
+            <!-- ============= APPS ============= -->
             <TabItem x:Name="tabApps"
                 Header="Applications"
                 Width="0">
@@ -2396,6 +2207,8 @@
                     </TreeView>
                 </StackPanel>
             </TabItem>
+
+            <!-- ============= BUTTON BAR ============= -->
             <TabItem x:Name="tabButtonBar"
                 DataContext="{Binding Path=bbar}"
                 Header="Button Bar"
@@ -2500,6 +2313,8 @@
                         SelectedPath="{Binding Path=ImageStripPath}"/>
                 </StackPanel>                
             </TabItem>
+
+            <!-- ============= PLUGINS ============= -->
             <TabItem x:Name="tabPlugins"
                 Header="Plugins"
                 Width="0">
@@ -2538,6 +2353,8 @@
                     </ListBox>
                 </DockPanel>
             </TabItem>
+
+            <!-- ============= LANGUAGE ============= -->
             <TabItem x:Name="tabLanguage"
                 DataContext="{Binding Path=lang}"
                 Header="Language"
@@ -2628,6 +2445,8 @@
                     </StackPanel>
                 </StackPanel>
             </TabItem>
+
+            <!-- ============= HELP ============= -->
             <TabItem x:Name="tabHelp"
                 Header="About"
                 Width="0">

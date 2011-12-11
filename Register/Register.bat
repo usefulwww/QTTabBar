@@ -9,8 +9,12 @@ IF EXIST QTTabBar.dll (
         call %FrameworkDir64%\%FrameworkVersion64%\regasm.exe QTTabBar.dll
     )
 )
+cd ..\..\
+IF EXIST Ricciolo.Controls.TreeListView.dll (
+    gacutil /if Ricciolo.Controls.TreeListView.dll
+)
 
-cd ..\..\..\QTPluginLib\bin\%1
+cd ..\QTPluginLib\bin\%1
 IF EXIST QTPluginLib.dll (
     gacutil /if QTPluginLib.dll
 )
