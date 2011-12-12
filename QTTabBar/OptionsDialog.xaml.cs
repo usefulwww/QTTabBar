@@ -72,7 +72,9 @@ namespace QTTabBarLib {
         private ObservableCollection<FileTypeEntry> MediaFileTypes;
 
         // Groups stuff
-        private ObservableCollection<object> CurrentGroups;
+        private ObservableCollection<GroupEntry> CurrentGroups;
+
+        private List<HotkeyEntry> HotkeyEntries;
 
         // todo: localize all of these
         #region ToLocalize
@@ -617,8 +619,7 @@ namespace QTTabBarLib {
             ICollectionView view = CollectionViewSource.GetDefaultView(MouseBindings);
             PropertyGroupDescription groupDescription = new PropertyGroupDescription("TargetText");
             view.GroupDescriptions.Add(groupDescription);
-            lvwHotkeys.ItemsSource = view;
-            lvwMouseBindings.ItemsSource = MouseBindings;
+            lvwMouseBindings.ItemsSource = view;
 
             cmbMouseModifiers.ItemsSource = MouseModifierItems;
             cmbMouseTarget.ItemsSource = MouseTargetItems;
@@ -798,10 +799,10 @@ namespace QTTabBarLib {
             string[] arrActions = QTUtility.TextResourcesDic["ShortcutKeys_ActionNames"];
             string[] arrGrps = QTUtility.TextResourcesDic["ShortcutKeys_Groups"];
             int[] keys = workingConfig.keys.Shortcuts;
-            List<HotkeyEntry> list = new List<HotkeyEntry>();
+            HotkeyEntries = new List<HotkeyEntry>();
             // todo: validate arrActions length
             for(int i = 0; i <= (int)QTUtility.LAST_KEYBOARD_ACTION; ++i) {
-                list.Add(new HotkeyEntry(keys, i, arrActions[i], arrGrps[0]));
+                HotkeyEntries.Add(new HotkeyEntry(keys, i, arrActions[i], arrGrps[0]));
             }
 
             foreach(string pluginID in QTUtility.dicPluginShortcutKeys.Keys) {
@@ -816,9 +817,9 @@ namespace QTTabBarLib {
                     // Hmm, I don't like this...
                     QTUtility.dicPluginShortcutKeys[pluginID] = keys;
                 }
-                list.AddRange(pi.ShortcutKeyActions.Select((act, i) => new HotkeyEntry(keys, i, act, group)));
+                HotkeyEntries.AddRange(pi.ShortcutKeyActions.Select((act, i) => new HotkeyEntry(keys, i, act, group)));
             }
-            ICollectionView view = CollectionViewSource.GetDefaultView(list);
+            ICollectionView view = CollectionViewSource.GetDefaultView(HotkeyEntries);
             PropertyGroupDescription groupDescription = new PropertyGroupDescription("Group");
             view.GroupDescriptions.Add(groupDescription);
             lvwHotkeys.ItemsSource = view;
@@ -826,22 +827,33 @@ namespace QTTabBarLib {
 
         private bool CheckForKeyConflicts(Keys key) {
             const string Conflict = "This key is already assigned to:\n{0}\n\nReassign?";
-            //const string GroupPrefix = "Open group \"{0}\"";
+            const string GroupPrefix = "Open group \"{0}\"";
             //const string AppPrefix = "Launch application \"{0}\"";
             const string MsgTitle = "Keystroke conflict";
-            foreach(HotkeyEntry entry in lvwHotkeys.Items) {
-                if(entry.Key == key) {
-                    if(MessageBox.Show(string.Format(Conflict, entry.Action), MsgTitle, MessageBoxButton.OKCancel, MessageBoxImage.Warning) == MessageBoxResult.OK) {
-                        entry.Key = Keys.None;
-                        // todo: refresh?
-                    }
-                    else {
-                        return false;
-                    }
+
+            HotkeyEntry hotkey = HotkeyEntries.FirstOrDefault(e => e.Key == key);
+            if(hotkey != null) {
+                if(MessageBox.Show(string.Format(Conflict, hotkey.Action), MsgTitle, MessageBoxButton.OKCancel, MessageBoxImage.Warning) == MessageBoxResult.OK) {
+                    hotkey.Key = Keys.None;
+                    return true;
+                }
+                else {
+                    return false;
                 }
             }
 
-            // todo gropus and apps
+            GroupEntry group = CurrentGroups.FirstOrDefault(e => e.ShortcutKey == key);
+            if(group != null) {
+                if(MessageBox.Show(string.Format(Conflict, string.Format(GroupPrefix, group.Name)), MsgTitle, MessageBoxButton.OKCancel, MessageBoxImage.Warning) == MessageBoxResult.OK) {
+                    group.ShortcutKey = Keys.None;
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+
+            // todo: apps
             return true;
         }
 
@@ -910,35 +922,13 @@ namespace QTTabBarLib {
 
         private void lvwHotkeys_PreviewKeyDown(object sender, KeyEventArgs e) {
             if(lvwHotkeys.SelectedItems.Count != 1) return;
-            Key wpfKey = (e.Key == Key.System ? e.SystemKey : e.Key);
-            ModifierKeys wpfModKeys = Keyboard.Modifiers;
-
-            // Ignore modifier keys.
-            if(wpfKey == Key.LeftShift || wpfKey == Key.RightShift
-                    || wpfKey == Key.LeftCtrl || wpfKey == Key.RightCtrl
-                    || wpfKey == Key.LeftAlt || wpfKey == Key.RightAlt
-                    || wpfKey == Key.LWin || wpfKey == Key.RWin) {
-                return;
-            }
-
-            // Urgh, so many conversions between WPF and WinForms...
-            Keys key = (Keys)KeyInterop.VirtualKeyFromKey(wpfKey);
-            Keys modKeys = Keys.None;
-            if((wpfModKeys & ModifierKeys.Alt) != 0) modKeys |= Keys.Alt;
-            if((wpfModKeys & ModifierKeys.Control) != 0) modKeys |= Keys.Control;
-            if((wpfModKeys & ModifierKeys.Shift) != 0) modKeys |= Keys.Shift;
-
             HotkeyEntry entry = (HotkeyEntry)lvwHotkeys.SelectedItem;
-            if(key == Keys.Escape) {
-                entry.Key = Keys.None;
-                e.Handled = true;
-            }
-            else if(entry.Key != (key | modKeys) && !IsInvalidShortcutKey(key, modKeys) && CheckForKeyConflicts(key | modKeys)) {
-                bool enable = !entry.Assigned;
-                entry.Key = key | modKeys;
-                if(enable) entry.Enabled = true;
-                e.Handled = true;
-            }
+            Keys newKey;
+            if(!ProcessNewHotkey(e, entry.Key, out newKey)) return;
+            bool wasNotAssigned = !entry.Assigned;
+            entry.Key = newKey;
+            if(wasNotAssigned && entry.Assigned) entry.Enabled = true;
+            e.Handled = true;
         }
 
         private void lvwHotkeys_TextInput(object sender, TextCompositionEventArgs e) {
@@ -950,13 +940,13 @@ namespace QTTabBarLib {
         #region ---------- Groups ----------
 
         private void InitializeGroups() {
-            CurrentGroups = new ObservableCollection<object>();
+            CurrentGroups = new ObservableCollection<GroupEntry>();
 
             foreach(KeyValuePair<string, string> pair in QTUtility.GroupPathsDic) {
                 GroupEntry group = new GroupEntry(pair.Key);
                 group.Startup = QTUtility.StartUpGroupList.Contains(group.Name);
                 if(QTUtility.dicGroupNamesAndKeys.ContainsKey(group.Name)) {
-                    group.ShortcutKey = QTUtility.dicGroupNamesAndKeys[group.Name];
+                    //group.ShortcutKey = QTUtility.dicGroupNamesAndKeys[group.Name];
                 }
                 foreach(string path in pair.Value.Split(QTUtility.SEPARATOR_CHAR)) {
                     FolderEntry folder = new FolderEntry(path);
@@ -975,8 +965,7 @@ namespace QTTabBarLib {
             QTUtility.dicGroupNamesAndKeys.Clear();
             List<PluginKey> list = new List<PluginKey>();
             int num = 1;
-            foreach(object entry in CurrentGroups) {
-                GroupEntry group = (GroupEntry)entry;
+            foreach(GroupEntry group in CurrentGroups) {
                 if(group.Folders.Count > 0) {
                     string text = group.Name;
                     if(text.Length > 0) {
@@ -991,11 +980,12 @@ namespace QTTabBarLib {
                                 QTUtility.StartUpGroupList.Add(item);
                             }
                             if(group.ShortcutKey != 0) {
+                                /*
                                 if(group.ShortcutKey > 0x100000) {
                                     QTUtility.dicGroupShortcutKeys[group.ShortcutKey] = item;
                                 }
                                 QTUtility.dicGroupNamesAndKeys[item] = group.ShortcutKey;
-                                list.Add(new PluginKey(item, new int[] { group.ShortcutKey }));
+                                list.Add(new PluginKey(item, new int[] { group.ShortcutKey }));*/
                             }
                         }
                     }
@@ -1068,16 +1058,10 @@ namespace QTTabBarLib {
         }
 
         private int GetPreferredInsertionIndex(TreeView tvw) {
-            object val = tvw.SelectedItem;
-            if(val == null) {
-                return tvw.Items.Count;
-            }
-            if(val is FolderEntry) {
-                // Goes up one level when a child is selected.
-                val = GetParentGroup((FolderEntry)val);
-            }
-            int index = CurrentGroups.IndexOf(val);
-            return index + 1;
+            object sel = tvw.SelectedItem;
+            return sel == null
+                    ? tvw.Items.Count
+                    : CurrentGroups.IndexOf(sel as GroupEntry ?? GetParentGroup((FolderEntry)sel)) + 1;
         }
 
         private void AddNewGroupItem(TreeView tvw, object item) {
@@ -1110,27 +1094,23 @@ namespace QTTabBarLib {
         private void btnGroupsAddFolder_Click(object sender, RoutedEventArgs e) {
             // TODO: Generates new group if the view is empty.
 
-            object val = tvwGroups.SelectedItem;
-            if(val == null) {
-                return;
-            }
+            object sel = tvwGroups.SelectedItem;
+            if(sel == null) return;
 
             GroupEntry group;
             int index;
-            if(val is FolderEntry) {
-                FolderEntry entry = (FolderEntry)val;
+            if(sel is FolderEntry) {
+                FolderEntry entry = (FolderEntry)sel;
                 group = GetParentGroup(entry);
                 index = group.Folders.IndexOf(entry) + 1;
             }
             else {
-                group = (GroupEntry)val;
+                group = (GroupEntry)sel;
                 index = group.Folders.Count;
             }
 
             FolderBrowserDialogEx dlg = new FolderBrowserDialogEx();
-            if(dlg.ShowDialog() != System.Windows.Forms.DialogResult.OK) {
-                return;
-            }
+            if(dlg.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
             FolderEntry folder = new FolderEntry(dlg.SelectedPath);
             group.Folders.Insert(index, folder);
 
@@ -1141,26 +1121,34 @@ namespace QTTabBarLib {
         }
 
         private void btnGroupsRemoveNode_Click(object sender, RoutedEventArgs e) {
-            object val = tvwGroups.SelectedItem;
-            if(val == null) {
-                return;
-            }
+            object sel = tvwGroups.SelectedItem;
+            if(sel == null) return;
 
-            System.Collections.IList col;
-            if(val is FolderEntry) {
-                GroupEntry group = GetParentGroup((FolderEntry)val);
-                col = group.Folders;
-            }
-            else {
-                col = CurrentGroups;
-            }
-            int index = col.IndexOf(val);
+            IList col = sel is GroupEntry
+                    ? (IList)CurrentGroups
+                    : GetParentGroup((FolderEntry)sel).Folders;
+
+            int index = col.IndexOf(sel);
             col.RemoveAt(index);
 
-            if(index < col.Count) {
-                object next = col[index];
-                TreeViewItem container = (TreeViewItem)FindItemContainer(tvwGroups, next);
-                container.IsSelected = true;
+            if(index >= col.Count) return;
+            object next = col[index];
+            TreeViewItem container = (TreeViewItem)FindItemContainer(tvwGroups, next);
+            container.IsSelected = true;
+        }
+
+        private void tvwGroups_MouseDown(object sender, MouseButtonEventArgs e) {
+            GroupEntry entry = tvwGroups.SelectedItem as GroupEntry;
+            if(entry != null) entry.IsEditing = false;
+        }
+
+        private void txtGroupHotkey_OnPreviewKeyDown(object sender, KeyEventArgs e) {
+            e.Handled = true;
+            if(!(tvwGroups.SelectedItem is GroupEntry)) return;
+            GroupEntry entry = (GroupEntry)tvwGroups.SelectedItem;
+            Keys newKey;
+            if(ProcessNewHotkey(e, entry.ShortcutKey, out newKey)) {
+                entry.ShortcutKey = newKey;
             }
         }
 
@@ -1464,6 +1452,41 @@ namespace QTTabBarLib {
         #endregion
 
         #region ---------- Common Utility Functions ----------
+
+        private bool ProcessNewHotkey(KeyEventArgs e, Keys current, out Keys hotkey) {
+            Key wpfKey = (e.Key == Key.System ? e.SystemKey : e.Key);
+            ModifierKeys wpfModKeys = Keyboard.Modifiers;
+
+            // Ignore modifier keys.
+            if(wpfKey == Key.LeftShift || wpfKey == Key.RightShift
+                    || wpfKey == Key.LeftCtrl || wpfKey == Key.RightCtrl
+                    || wpfKey == Key.LeftAlt || wpfKey == Key.RightAlt
+                    || wpfKey == Key.LWin || wpfKey == Key.RWin) {
+                hotkey = Keys.None;
+                return false;
+            }
+
+            // Urgh, so many conversions between WPF and WinForms...
+            hotkey = (Keys)KeyInterop.VirtualKeyFromKey(wpfKey);
+            Keys modKeys = Keys.None;
+            if((wpfModKeys & ModifierKeys.Alt) != 0) modKeys |= Keys.Alt;
+            if((wpfModKeys & ModifierKeys.Control) != 0) modKeys |= Keys.Control;
+            if((wpfModKeys & ModifierKeys.Shift) != 0) modKeys |= Keys.Shift;
+
+
+            if(hotkey == Keys.Escape) {
+                hotkey = Keys.None;
+                return true;
+            }
+            else if(current != (hotkey | modKeys) && !IsInvalidShortcutKey(hotkey, modKeys) && CheckForKeyConflicts(hotkey | modKeys)) {
+                hotkey |= modKeys;
+                return true;
+            }
+            else {
+                hotkey = Keys.None;
+                return false;
+            }
+        }
 
         private static void RunOnLoad(FrameworkElement element, Action pred) {
             RoutedEventHandler del = null;
@@ -1809,11 +1832,10 @@ namespace QTTabBarLib {
             public Image Icon { get; private set; }
             public ObservableCollection<FolderEntry> Folders { get; private set; }
             public bool Startup { get; set; }
-            public int ShortcutKey { get; set; }
-            public string HotkeyString { get {
-                // todo
-                return "Ctrl + A";
-            }}
+            public Keys ShortcutKey { get; set; }
+            public string HotkeyString {
+                get { return QTUtility2.MakeKeyString(ShortcutKey); }
+            }
             public bool IsEditing { get; set; }
 
             private void Folders_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
