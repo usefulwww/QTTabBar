@@ -940,71 +940,15 @@ namespace QTTabBarLib {
         #region ---------- Groups ----------
 
         private void InitializeGroups() {
-            CurrentGroups = new ObservableCollection<GroupEntry>();
-
-            foreach(KeyValuePair<string, string> pair in QTUtility.GroupPathsDic) {
-                GroupEntry group = new GroupEntry(pair.Key);
-                group.Startup = QTUtility.StartUpGroupList.Contains(group.Name);
-                if(QTUtility.dicGroupNamesAndKeys.ContainsKey(group.Name)) {
-                    //group.ShortcutKey = QTUtility.dicGroupNamesAndKeys[group.Name];
-                }
-                foreach(string path in pair.Value.Split(QTUtility.SEPARATOR_CHAR)) {
-                    FolderEntry folder = new FolderEntry(path);
-                    group.Folders.Add(folder);
-                }
-                CurrentGroups.Add(group);
-
-            }
-            tvwGroups.ItemsSource = CurrentGroups;
+            tvwGroups.ItemsSource = CurrentGroups = new ObservableCollection<GroupEntry>(
+                    GroupsManager.Groups.Select(g => new GroupEntry(
+                    g.Name, g.ShortcutKey, g.Startup, g.Paths.Select(p => new FolderEntry(p)))));
         }
-
+        
         private void CommitGroups() {
-            QTUtility.GroupPathsDic.Clear();
-            QTUtility.StartUpGroupList.Clear();
-            QTUtility.dicGroupShortcutKeys.Clear();
-            QTUtility.dicGroupNamesAndKeys.Clear();
-            List<PluginKey> list = new List<PluginKey>();
-            int num = 1;
-            foreach(GroupEntry group in CurrentGroups) {
-                if(group.Folders.Count > 0) {
-                    string text = group.Name;
-                    if(text.Length > 0) {
-                        string str2 = group.Folders
-                                .Select(folder => folder.Path)
-                                .Where(path => path.Length > 0)
-                                .StringJoin(";");
-                        if(str2.Length > 0) {
-                            string item = text.Replace(";", "_");
-                            QTUtility.GroupPathsDic[item] = str2;
-                            if(group.Startup) {
-                                QTUtility.StartUpGroupList.Add(item);
-                            }
-                            if(group.ShortcutKey != 0) {
-                                /*
-                                if(group.ShortcutKey > 0x100000) {
-                                    QTUtility.dicGroupShortcutKeys[group.ShortcutKey] = item;
-                                }
-                                QTUtility.dicGroupNamesAndKeys[item] = group.ShortcutKey;
-                                list.Add(new PluginKey(item, new int[] { group.ShortcutKey }));*/
-                            }
-                        }
-                    }
-                }
-            }
-            using(RegistryKey rkUser = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
-                rkUser.DeleteSubKey("Groups", false);
-                using(RegistryKey key = rkUser.CreateSubKey("Groups")) {
-                    if(key != null) {
-                        foreach(string str4 in QTUtility.GroupPathsDic.Keys) {
-                            key.SetValue(str4, QTUtility.GroupPathsDic[str4]);
-                        }
-                    }
-                }
-                rkUser.DeleteValue("ShortcutKeys_Group", false);
-                if(list.Count > 0) {
-                    QTUtility2.WriteRegBinary(list.ToArray(), "ShortcutKeys_Group", rkUser);
-                }
-            }
+            GroupsManager.Groups = new List<Group>(
+                    CurrentGroups.Select(g => new Group(
+                    g.Name, g.ShortcutKey, g.Startup, g.Folders.Select(f => f.Path).ToList())));
         }
 
         private GroupEntry GetParentGroup(FolderEntry folder) {
@@ -1862,14 +1806,25 @@ namespace QTTabBarLib {
                 Icon = Folders.Count == 0 ? QTUtility.ImageListGlobal.Images["folder"] : Folders.First().Icon;
             }
 
+            public GroupEntry(string name, Keys shortcutKey, bool startup, IEnumerable<FolderEntry> folders) {
+                Name = name;
+                Startup = startup;
+                ShortcutKey = shortcutKey;
+                Folders = new ObservableCollection<FolderEntry>(folders);
+                Folders.CollectionChanged += Folders_CollectionChanged;
+                RefreshIcon();
+            }
+
             public GroupEntry(string name) {
                 Name = name;
                 Folders = new ObservableCollection<FolderEntry>();
                 Folders.CollectionChanged += Folders_CollectionChanged;
                 RefreshIcon();
             }
-            public GroupEntry()
-                : this(null) {
+
+            public GroupEntry() {
+                Folders.CollectionChanged += Folders_CollectionChanged;
+                RefreshIcon();
             }
         }
 

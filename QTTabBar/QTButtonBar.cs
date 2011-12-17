@@ -327,7 +327,7 @@ namespace QTTabBarLib {
                         ddmrGroupButton.Closed += dropDownButtons_DropDown_Closed;
                     }
                     button.DropDown = ddmrGroupButton;
-                    button.Enabled = QTUtility.GroupPathsDic.Count > 0;
+                    button.Enabled = GroupsManager.GroupCount > 0;
                     break;
 
                 case 4:
@@ -665,13 +665,12 @@ namespace QTTabBarLib {
                             ddmrGroupButton.Close();
                             if(ModifierKeys != (Keys.Control | Keys.Shift)) {
                                 QTUtility2.SendCOPYDATASTRUCT(tabBarHandle, wParam, e.ClickedItem.Text, IntPtr.Zero);
-                                return;
                             }
-                            if(!QTUtility.StartUpGroupList.Contains(e.ClickedItem.Text)) {
-                                QTUtility.StartUpGroupList.Add(e.ClickedItem.Text);
-                                return;
+                            else {
+                                Group g = GroupsManager.GetGroup(e.ClickedItem.Text);
+                                g.Startup = !g.Startup;
+                                GroupsManager.SaveGroups();
                             }
-                            QTUtility.StartUpGroupList.Remove(e.ClickedItem.Text);
                         }
                         return;
 
@@ -695,7 +694,7 @@ namespace QTTabBarLib {
             DropDownMenuReorderable reorderable = (DropDownMenuReorderable)sender;
             switch(((int)reorderable.OwnerItem.Tag)) {
                 case 3:
-                    QTUtility.RefreshGroupMenuesOnReorderFinished(reorderable.Items);
+                    GroupsManager.RefreshGroupMenuesOnReorderFinished(reorderable.Items);
                     break;
 
                 case 5:

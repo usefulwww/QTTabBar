@@ -38,10 +38,6 @@ namespace QTTabBarLib {
         internal static string CreateWindowTMPGroup = string.Empty;
         internal static string CreateWindowTMPPath = string.Empty;
         internal static Version CurrentVersion = new Version(1, 5, 0, 0);
-        internal static Dictionary<string, int> dicGroupNamesAndKeys = new Dictionary<string, int>();
-        internal static Dictionary<int, string> dicGroupShortcutKeys = new Dictionary<int, string>();
-        internal static Dictionary<string, int[]> dicPluginShortcutKeys = new Dictionary<string, int[]>();
-        internal static Dictionary<int, MenuItemArguments> dicUserAppShortcutKeys = new Dictionary<int, MenuItemArguments>();
         internal static Dictionary<string, string> DisplayNameCacheDic = new Dictionary<string, string>();
         internal static PathList ExecutedPathsList = new PathList(0x10);
         internal static bool fExplorerPrevented;
@@ -50,7 +46,6 @@ namespace QTTabBarLib {
         internal static bool fRequiredRefresh_App;
         internal static bool fRestoreFolderTree;
         internal static bool fSingleClick;
-        internal static Dictionary<string, string> GroupPathsDic = new Dictionary<string, string>();
         internal static int iIconUnderLineVal;
         internal const string IMAGEKEY_FOLDER = "folder";
         internal const string IMAGEKEY_MYNETWORK = "mynetwork";
@@ -82,8 +77,8 @@ namespace QTTabBarLib {
         internal static SolidBrush sbAlternate;
         internal static readonly char[] SEPARATOR_CHAR = new char[] { ';' };
         internal const string SEPARATOR_PATH_HASH_SESSION = "*?*?*";
-        internal static List<string> StartUpGroupList = new List<string>();
-        internal static string StartUpGroupNameNowOpening = string.Empty;
+        internal static Dictionary<string, int[]> dicPluginShortcutKeys = new Dictionary<string, int[]>();
+        internal static Dictionary<int, MenuItemArguments> dicUserAppShortcutKeys = new Dictionary<int, MenuItemArguments>();
         internal static Font StartUpTabFont;
         internal static Dictionary<string, string[]> TextResourcesDic;
         internal static List<byte[]> TMPIDLList = new List<byte[]>();
@@ -110,6 +105,9 @@ namespace QTTabBarLib {
                 // Create the global imagelist
                 ImageListGlobal = new ImageList { ColorDepth = ColorDepth.Depth32Bit };
                 ImageListGlobal.Images.Add("folder", GetIcon(string.Empty, false));
+
+                // Load groups
+                GroupsManager.LoadGroups();
 
                 using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                     if(key != null) {
@@ -139,12 +137,7 @@ namespace QTTabBarLib {
                                 }
                             }
                         }
-                        RefreshGroupShortcutKeyDic(key);
                         RefreshLockedTabsList();
-                        string str6 = (string)key.GetValue("StartUpGroups", string.Empty);
-                        if(str6.Length > 0) {
-                            StartUpGroupList = new List<string>(str6.Split(SEPARATOR_CHAR));
-                        }
                         string str7 = (string)key.GetValue("NoCaptureAt", string.Empty);
                         if(str7.Length > 0) {
                             NoCapturePathsList = new List<string>(str7.Split(SEPARATOR_CHAR));
@@ -154,7 +147,6 @@ namespace QTTabBarLib {
                         }
                     }
                 }
-                RefreshGroupsDic();
                 RefreshUserAppDic(true);
                 if(!IsXP) {
                     PATH_SEARCHFOLDER = "::{9343812E-1C37-4A49-A12E-4B2D810D956B}";
@@ -523,50 +515,6 @@ namespace QTTabBarLib {
             //return dictionary;
         }
 
-        public static void RefreshGroupMenuesOnReorderFinished(ToolStripItemCollection itemsList) {
-            Registry.CurrentUser.CreateSubKey(RegConst.Root).DeleteSubKey("Groups", false);
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root + @"Groups")) {
-                int num = 1;
-                foreach(ToolStripItem item in itemsList) {
-                    if(item.Text.Length == 0) {
-                        key.SetValue("Separator" + num++, string.Empty);
-                    }
-                    else {
-                        key.SetValue(item.Text, GroupPathsDic[item.Text]);
-                    }
-                }
-            }
-        }
-
-        public static void RefreshGroupsDic() {
-            GroupPathsDic.Clear();
-            using(RegistryKey key = Registry.CurrentUser.OpenSubKey(RegConst.Root + @"Groups", false)) {
-                if(key != null) {
-                    foreach(string str in key.GetValueNames()) {
-                        string str2 = (string)key.GetValue(str);
-                        if(str2 != null) {
-                            GroupPathsDic.Add(str, str2);
-                        }
-                    }
-                }
-            }
-        }
-
-        private static void RefreshGroupShortcutKeyDic(RegistryKey rkUser) {
-            PluginKey[] keyArray = QTUtility2.ReadRegBinary<PluginKey>("ShortcutKeys_Group", rkUser);
-            if(keyArray != null) {
-                foreach(PluginKey key in keyArray) {
-                    int[] keys = key.Keys;
-                    if((keys != null) && (keys.Length == 1)) {
-                        if((keys[0] & -1048577) != 0) {
-                            dicGroupShortcutKeys[keys[0]] = key.PluginID;
-                        }
-                        dicGroupNamesAndKeys[key.PluginID] = keys[0];
-                    }
-                }
-            }
-        }
-
         public static void RefreshLockedTabsList() {
             using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                 if(key != null) {
@@ -743,19 +691,6 @@ namespace QTTabBarLib {
             using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                 if(key != null) {
                     key.SetValue("TabsOnLastClosedWindow", closingPaths.StringJoin(";"));
-                }
-            }
-        }
-
-        public static void SaveGroupsReg() {
-            using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root + @"Groups")) {
-                if(key != null) {
-                    foreach(string str in key.GetValueNames()) {
-                        key.DeleteValue(str, false);
-                    }
-                    foreach(string str2 in GroupPathsDic.Keys) {
-                        key.SetValue(str2, GroupPathsDic[str2]);
-                    }
                 }
             }
         }

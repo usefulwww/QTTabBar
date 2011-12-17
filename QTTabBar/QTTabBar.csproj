@@ -119,6 +119,7 @@
     <Compile Include="FolderBrowserDialogEx.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="GroupsManager.cs" />
     <Compile Include="HookLibManager.cs" />
     <Compile Include="Interop\BROWSEINFO.cs" />
     <Compile Include="Interop\ShellConstants.cs" />

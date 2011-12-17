@@ -403,6 +403,8 @@ namespace QTTabBarLib {
         }
 
         private void contextMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e) {
+            // todo
+#if false
             TitleMenuItem clickedItem = e.ClickedItem as TitleMenuItem;
             if(clickedItem != null) {
                 if(clickedItem.IsOpened) {
@@ -465,9 +467,11 @@ namespace QTTabBarLib {
                     }
                 }
             }
+#endif
         }
 
         private void contextMenu_ReorderFinished(object sender, ToolStripItemClickedEventArgs e) {
+#if false
             QMenuItem clickedItem = e.ClickedItem as QMenuItem;
             if(clickedItem != null) {
                 if(clickedItem.Genre == MenuGenre.Group) {
@@ -514,6 +518,7 @@ namespace QTTabBarLib {
                     QTUtility.fRequiredRefresh_App = true;
                 }
             }
+#endif
         }
 
         private void contextMenuForSetting_ItemClicked(object sender, ToolStripItemClickedEventArgs e) {
@@ -747,7 +752,7 @@ namespace QTTabBarLib {
         }
 
         private void groupsMenuItem_ReorderFinished(object sender, ToolStripItemClickedEventArgs e) {
-            QTUtility.RefreshGroupMenuesOnReorderFinished(groupsMenuItem.DropDownItems);
+            GroupsManager.RefreshGroupMenuesOnReorderFinished(groupsMenuItem.DropDownItems);
         }
 
         private bool HandleKEYDOWN(IntPtr wParam, bool fRepeat) {
@@ -825,6 +830,7 @@ namespace QTTabBarLib {
                         mia.RestoreOriginalArgs();
                     }
                 }
+#if false // todo
                 if(!fRepeat && QTUtility.dicGroupShortcutKeys.ContainsKey(key)) {
                     Thread thread = new Thread(OpenGroup);
                     thread.SetApartmentState(ApartmentState.STA);
@@ -832,6 +838,7 @@ namespace QTTabBarLib {
                     thread.Start(new object[] { QTUtility.dicGroupShortcutKeys[key], Keys.None });
                     return true;
                 }
+#endif
             }
         Label_02D8:
             return false;
@@ -1153,6 +1160,7 @@ namespace QTTabBarLib {
                 userAppsMenuItem.Text = labelUserAppTitle.Text = strArray[2];
                 recentFileMenuItem.Text = labelRecentFileTitle.Text = strArray[3];
                 if((ConfigValues[2] & 0x80) == 0) {
+#if false
                     QTUtility.RefreshGroupsDic();
                     foreach(string str in QTUtility.GroupPathsDic.Keys) {
                         string str2 = QTUtility.GroupPathsDic[str];
@@ -1173,6 +1181,7 @@ namespace QTTabBarLib {
                         }
                         GroupItemsList.Add(item);
                     }
+#endif
                 }
                 if((ConfigValues[2] & 0x20) == 0) {
                     UserappItemsList = MenuUtility.CreateAppLauncherItems(Handle, (ConfigValues[1] & 2) == 0, dropDownMenues_ItemRightClicked, subMenuItems_DoubleClick, true);
@@ -1439,35 +1448,36 @@ namespace QTTabBarLib {
             }
         }
 
-        private void OpenGroup(object obj) {
-            string str2;
-            object[] objArray = (object[])obj;
-            string key = (string)objArray[0];
-            Keys keys = (Keys)objArray[1];
-            bool flag = keys == Keys.Control;
-            if(QTUtility.GroupPathsDic.TryGetValue(key, out str2) && (str2.Length > 0)) {
-                if(QTUtility.StartUpGroupList.Contains(key)) {
-                    QTUtility.StartUpGroupNameNowOpening = key;
-                }
-                string path = str2.Split(QTUtility.SEPARATOR_CHAR)[0];
-                using(IDLWrapper wrapper = new IDLWrapper(path, true)) {
-                    IntPtr ptr;
-                    bool flag2;
-                    if(GetTargetWindow(wrapper, true, out ptr, out flag2)) {
-                        if(flag2) {
-                            QTUtility2.SendCOPYDATASTRUCT(ptr, (IntPtr)2, key, IntPtr.Zero);
-                        }
-                        else {
-                            IntPtr wParam = flag ? ((IntPtr)3) : IntPtr.Zero;
-                            if((wParam == IntPtr.Zero) && QTUtility2.TargetIsInNoCapture(IntPtr.Zero, path)) {
-                                wParam = (IntPtr)3;
-                            }
-                            QTUtility2.SendCOPYDATASTRUCT(ptr, wParam, key, IntPtr.Zero);
-                        }
-                    }
-                }
-            }
-        }
+        // TODO...
+        //private void OpenGroup(object obj) {
+        //    string str2;
+        //    object[] objArray = (object[])obj;
+        //    string key = (string)objArray[0];
+        //    Keys keys = (Keys)objArray[1];
+        //    bool flag = keys == Keys.Control;
+        //    if(QTUtility.GroupPathsDic.TryGetValue(key, out str2) && (str2.Length > 0)) {
+        //        if(QTUtility.StartUpGroupList.Contains(key)) {
+        //            QTUtility.StartUpGroupNameNowOpening = key;
+        //        }
+        //        string path = str2.Split(QTUtility.SEPARATOR_CHAR)[0];
+        //        using(IDLWrapper wrapper = new IDLWrapper(path, true)) {
+        //            IntPtr ptr;
+        //            bool flag2;
+        //            if(GetTargetWindow(wrapper, true, out ptr, out flag2)) {
+        //                if(flag2) {
+        //                    QTUtility2.SendCOPYDATASTRUCT(ptr, (IntPtr)2, key, IntPtr.Zero);
+        //                }
+        //                else {
+        //                    IntPtr wParam = flag ? ((IntPtr)3) : IntPtr.Zero;
+        //                    if((wParam == IntPtr.Zero) && QTUtility2.TargetIsInNoCapture(IntPtr.Zero, path)) {
+        //                        wParam = (IntPtr)3;
+        //                    }
+        //                    QTUtility2.SendCOPYDATASTRUCT(ptr, wParam, key, IntPtr.Zero);
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
         private void OpenTab(object obj) {
             IDLWrapper wrapper;

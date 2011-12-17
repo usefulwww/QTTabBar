@@ -221,37 +221,23 @@ namespace QTTabBarLib {
 
         private void AddStartUpTabs(string openingGRP, string openingPath) {
             if(ModifierKeys == Keys.Shift || QTUtility.InstancesCount != 1) return;
-            if(QTUtility.StartUpGroupList.Count > 0) {
-                bool flag = Config.Tabs.NeverOpenSame;
-                foreach(string str in QTUtility.StartUpGroupList) {
-                    string str2;
-                    if((openingGRP != str) && QTUtility.GroupPathsDic.TryGetValue(str, out str2)) {
-                        if(QTUtility.StartUpGroupNameNowOpening == str) {
-                            QTUtility.StartUpGroupNameNowOpening = string.Empty;
-                        }
-                        else {
-                            foreach(string str3 in str2.Split(QTUtility.SEPARATOR_CHAR)) {
-                                if(flag) {
-                                    if(str3.PathEquals(openingPath)) {
-                                        tabControl1.TabPages.Relocate(0, tabControl1.TabCount - 1);
-                                        continue;
-                                    }
-                                    if(tabControl1.TabPages.Cast<QTabItem>().Any(item => str3.PathEquals(item.CurrentPath))) {
-                                        continue;
-                                    }
-                                }
-                                using(IDLWrapper wrapper = new IDLWrapper(str3)) {
-                                    if(wrapper.Available) {
-                                        QTabItem tabPage = new QTabItem(QTUtility2.MakePathDisplayText(str3, false), str3, tabControl1);
-                                        tabPage.NavigatedTo(str3, wrapper.IDL, -1, false);
-                                        tabPage.ToolTipText = QTUtility2.MakePathDisplayText(str3, true);
-                                        tabPage.UnderLine = true;
-                                        tabControl1.TabPages.Add(tabPage);
-                                    }
-                                }
-                            }
-                        }
+            foreach(string path in GroupsManager.Groups.Where(g => g.Startup && openingGRP != g.Name).SelectMany(g => g.Paths)) {
+                if(Config.Tabs.NeverOpenSame) {
+                    if(path.PathEquals(openingPath)) {
+                        tabControl1.TabPages.Relocate(0, tabControl1.TabCount - 1);
+                        continue;
                     }
+                    if(tabControl1.TabPages.Cast<QTabItem>().Any(item => path.PathEquals(item.CurrentPath))) {
+                        continue;
+                    }
+                }
+                using(IDLWrapper wrapper = new IDLWrapper(path)) {
+                    if(!wrapper.Available) continue;
+                    QTabItem tabPage = new QTabItem(QTUtility2.MakePathDisplayText(path, false), path, tabControl1);
+                    tabPage.NavigatedTo(path, wrapper.IDL, -1, false);
+                    tabPage.ToolTipText = QTUtility2.MakePathDisplayText(path, true);
+                    tabPage.UnderLine = true;
+                    tabControl1.TabPages.Add(tabPage);
                 }
             }
             if(Config.Window.RestoreOnlyLocked) {
@@ -882,6 +868,8 @@ namespace QTTabBarLib {
                             }
                         }
                     }
+                    
+                    // TODO: check this
                     using(RegistryKey key = Registry.CurrentUser.CreateSubKey(RegConst.Root)) {
                         if(Config.Misc.KeepHistory) {
                             foreach(QTabItem item in tabControl1.TabPages) {
@@ -896,7 +884,6 @@ namespace QTTabBarLib {
                                 where item2.TabLocked
                                 select item2.CurrentPath).ToArray();
                         QTUtility2.WriteRegBinary(list, "TabsLocked", key);
-                        key.SetValue("StartUpGroups", QTUtility.StartUpGroupList.StringJoin(";"));
                         if(InstanceManager.RemoveInstance(ExplorerHandle, this)) {
                             InstanceManager.NextInstanceExists();
                             QTUtility2.WriteRegHandle("Handle", key, InstanceManager.CurrentHandle);
@@ -1331,20 +1318,16 @@ namespace QTTabBarLib {
                 }
                 tsmiClose.Enabled = !ContextMenuedTab.TabLocked;
                 tsmiLockThis.Text = ContextMenuedTab.TabLocked ? QTUtility.ResMain[20] : QTUtility.ResMain[6];
-                QTUtility.RefreshGroupsDic();
-                if(QTUtility.GroupPathsDic.Count > 0) {
+                if(GroupsManager.GroupCount > 0) {
                     tsmiAddToGroup.DropDown.SuspendLayout();
                     tsmiAddToGroup.Enabled = true;
                     while(tsmiAddToGroup.DropDownItems.Count > 0) {
                         tsmiAddToGroup.DropDownItems[0].Dispose();
                     }
-                    foreach(string str in QTUtility.GroupPathsDic.Keys) {
-                        string str2 = QTUtility.GroupPathsDic[str];
-                        if(!string.IsNullOrEmpty(str2)) {
-                            ToolStripMenuItem item = new ToolStripMenuItem(str);
-                            item.ImageKey = QTUtility.GetImageKey(str2.Split(QTUtility.SEPARATOR_CHAR)[0], null);
-                            tsmiAddToGroup.DropDownItems.Add(item);
-                        }
+                    foreach(Group g in GroupsManager.Groups.Where(g => g.Paths.Count > 0)) {
+                        tsmiAddToGroup.DropDownItems.Add(new ToolStripMenuItem(g.Name) {
+                            ImageKey = QTUtility.GetImageKey(g.Paths[0], null)
+                        });
                     }
                     tsmiAddToGroup.DropDown.ResumeLayout();
                 }
@@ -1526,13 +1509,12 @@ namespace QTTabBarLib {
 
         private void CreateGroup(QTabItem contextMenuedTab) {
             NowModalDialogShown = true;
-            QTUtility.RefreshGroupsDic();
             using(CreateNewGroupForm form = new CreateNewGroupForm(contextMenuedTab.CurrentPath, tabControl1.TabPages)) {
                 if(NowTopMost) {
                     form.TopMost = true;
                 }
                 if(DialogResult.OK == form.ShowDialog()) {
-                    QTUtility.SaveGroupsReg();
+                    // TODO: should not be necessary
                     SyncButtonBarBroadCast(1);
                     SyncTaskBarMenu();
                 }
@@ -3089,9 +3071,11 @@ namespace QTTabBarLib {
             }
 
             // Check for group hotkey
-            if(!fRepeat && QTUtility.dicGroupShortcutKeys.ContainsKey(imkey)) {
-                OpenGroup(QTUtility.dicGroupShortcutKeys[imkey], false);
-                return true;
+            if(!fRepeat) {
+                foreach(Group g in GroupsManager.Groups.Where(g => g.ShortcutKey == mkey)) {
+                    OpenGroup(g.Name, false);
+                    return true;
+                }    
             }
 
             // This is important I guess?  Not sure
@@ -3805,22 +3789,15 @@ namespace QTTabBarLib {
         }
 
         private void menuitemAddToGroup_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e) {
-            string str3;
-            string text = e.ClickedItem.Text;
+            // TODO we should be using tags I think
+            string groupName = e.ClickedItem.Text;
             string currentPath = ContextMenuedTab.CurrentPath;
-            bool flag = ModifierKeys == Keys.Control;
-            if(QTUtility.GroupPathsDic.TryGetValue(text, out str3)) {
-                if(str3 == null) {
-                    str3 = string.Empty;
-                }
-                if(!flag) {
-                    if(str3.Split(QTUtility.SEPARATOR_CHAR).Any(str4 =>
-                            string.Equals(str4, currentPath, StringComparison.CurrentCultureIgnoreCase))) {
-                        return;
-                    }
-                }
-                QTUtility.GroupPathsDic[text] = ((str3.Length == 0) ? string.Empty : (str3 + ";")) + currentPath;
-                QTUtility.SaveGroupsReg();
+            bool addSame = ModifierKeys == Keys.Control;
+            Group g = GroupsManager.GetGroup(groupName);
+            if(g == null) return;
+            if(addSame || !g.Paths.Any(p => p.PathEquals(currentPath))) {
+                g.Paths.Add(currentPath);
+                GroupsManager.SaveGroups();
             }
         }
 
@@ -3851,22 +3828,19 @@ namespace QTTabBarLib {
 
         private void menuitemGroups_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e) {
             Keys modifierKeys = ModifierKeys;
-            string text = e.ClickedItem.Text;
+            string groupName = e.ClickedItem.Text;
             if(modifierKeys == (Keys.Control | Keys.Shift)) {
-                if(QTUtility.StartUpGroupList.Contains(text)) {
-                    QTUtility.StartUpGroupList.Remove(text);
-                }
-                else {
-                    QTUtility.StartUpGroupList.Add(text);
-                }
+                Group g = GroupsManager.GetGroup(groupName);
+                g.Startup = !g.Startup;
+                GroupsManager.SaveGroups();
             }
             else {
-                OpenGroup(text, modifierKeys == Keys.Control);
+                OpenGroup(groupName, modifierKeys == Keys.Control);
             }
         }
 
         private void menuitemGroups_ReorderFinished(object sender, ToolStripItemClickedEventArgs e) {
-            QTUtility.RefreshGroupMenuesOnReorderFinished(tsmiGroups.DropDownItems);
+            GroupsManager.RefreshGroupMenuesOnReorderFinished(tsmiGroups.DropDownItems);
             SyncTaskBarMenu();
         }
 
@@ -4433,6 +4407,7 @@ namespace QTTabBarLib {
         }
 
         private void OpenGroup(string groupName, bool fForceNewWindow) {
+            // todo clean
             if(!fForceNewWindow) {
                 string str3;
                 NowTabsAddingRemoving = true;
@@ -4449,19 +4424,18 @@ namespace QTTabBarLib {
                     flag3 = true;
                     NowOpenedByGroupOpener = false;
                 }
-                QTUtility.RefreshGroupsDic();
-                if(QTUtility.GroupPathsDic.TryGetValue(groupName, out str3)) {
-                    string[] strArray = str3.Split(QTUtility.SEPARATOR_CHAR);
+                Group g = GroupsManager.GetGroup(groupName);
+                if(g != null) {
                     List<string> list = new List<string>();
                     List<QTabItem> list2 = new List<QTabItem>();
                     foreach(QTabItem item2 in tabControl1.TabPages) {
                         list.Add(item2.CurrentPath.ToLower());
                         list2.Add(item2);
                     }
-                    if(strArray.Length != 0) {
+                    if(g.Paths.Count != 0) {
                         try {
                             tabControl1.SetRedraw(false);
-                            foreach(string gpath in strArray.Where(gpath => 
+                            foreach(string gpath in g.Paths.Where(gpath => 
                                     QTUtility2.PathExists(gpath) || gpath.Contains("???"))) {
                                 if(str4 == null) {
                                     str4 = gpath;
@@ -4516,8 +4490,9 @@ namespace QTTabBarLib {
             }
             else {
                 string str;
-                if(QTUtility.GroupPathsDic.TryGetValue(groupName, out str) && (str.Length > 0)) {
-                    string path = str.Split(QTUtility.SEPARATOR_CHAR)[0];
+                Group g = GroupsManager.GetGroup(groupName);
+                if(g != null && g.Paths.Count > 0) {
+                    string path = g.Paths[0];
                     QTUtility.CreateWindowTMPGroup = groupName;
                     using(IDLWrapper wrapper = new IDLWrapper(path)) {
                         if(wrapper.Available) {
@@ -5433,7 +5408,7 @@ namespace QTTabBarLib {
 
         private static void SyncButtonBarBroadCast(int mask) {
             int num = mask << 0x10;
-            if(((mask & 1) == 1) && (QTUtility.GroupPathsDic.Count > 0)) {
+            if(((mask & 1) == 1) && (GroupsManager.GroupCount > 0)) {
                 num++;
             }
             if(((mask & 2) == 2) && (QTUtility.ClosedTabHistoryList.Count > 0)) {
@@ -6667,19 +6642,9 @@ namespace QTTabBarLib {
             }
 
             public bool AddGroup(string groupName, string[] paths) {
-                if((paths != null) && (paths.Length > 0)) {
-                    string str = paths.StringJoin(";");
-                    if(str.Length > 0) {
-                        string str2;
-                        if(QTUtility.GroupPathsDic.TryGetValue(groupName, out str2)) {
-                            str = ((str2.Length == 0) ? string.Empty : (str2 + ";")) + str;
-                        }
-                        QTUtility.GroupPathsDic[groupName] = str;
-                        QTUtility.SaveGroupsReg();
-                        return true;
-                    }
-                }
-                return false;
+                if(paths == null || paths.Length == 0) return false;
+                GroupsManager.AddGroup(groupName, paths);
+                return true;
             }
 
             internal void ClearEvents() {
@@ -6885,11 +6850,8 @@ namespace QTTabBarLib {
             }
 
             public string[] GetGroupPaths(string groupName) {
-                string str;
-                if(QTUtility.GroupPathsDic.TryGetValue(groupName, out str)) {
-                    return str.Split(QTUtility.SEPARATOR_CHAR);
-                }
-                return null;
+                Group g = GroupsManager.GetGroup(groupName);
+                return g == null ? null : g.Paths.ToArray();
             }
 
             public ToolStripRenderer GetMenuRenderer() {
@@ -7072,11 +7034,7 @@ namespace QTTabBarLib {
             }
 
             public bool RemoveGroup(string groupName) {
-                bool flag = QTUtility.GroupPathsDic.Remove(groupName);
-                if(flag) {
-                    QTUtility.SaveGroupsReg();
-                }
-                return flag;
+                return GroupsManager.RemoveGroup(groupName);
             }
 
             public bool TryGetLocalizedStrings(IPluginClient pluginClient, int count, out string[] arrStrings) {
@@ -7120,9 +7078,7 @@ namespace QTTabBarLib {
 
             public string[] Groups {
                 get {
-                    string[] array = new string[QTUtility.GroupPathsDic.Keys.Count];
-                    QTUtility.GroupPathsDic.Keys.CopyTo(array, 0);
-                    return array;
+                    return GroupsManager.Groups.Select(g => g.Name).ToArray();
                 }
             }
 

@@ -23,5 +23,6 @@ namespace QTTabBarLib {
     static class RegConst {
         public const string Root = @"Software\QTTabBar\";
         public const string Config = @"Config\";
+        public const string Groups = @"Groups\";
     }
 }

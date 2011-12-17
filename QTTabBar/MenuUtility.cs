@@ -105,37 +105,27 @@ namespace QTTabBarLib {
         }
 
         public static void CreateGroupItems(ToolStripDropDownItem dropDownItem) {
-            QTUtility.RefreshGroupsDic();
-            if(QTUtility.GroupPathsDic.Count > 0) {
-                dropDownItem.Enabled = true;
-                DropDownMenuReorderable dropDown = (DropDownMenuReorderable)dropDownItem.DropDown;
-                while(dropDown.Items.Count > 0) {
-                    dropDown.Items[0].Dispose();
-                }
-                dropDown.ItemsClear();
-                string key = "groups";
-                foreach(string str2 in QTUtility.GroupPathsDic.Keys) {
-                    string str3 = QTUtility.GroupPathsDic[str2];
-                    string path = str3.Split(QTUtility.SEPARATOR_CHAR)[0];
-                    if(str3.Length == 0) {
-                        dropDown.AddItem(new ToolStripSeparator(), key);
-                    }
-                    else if(QTUtility2.PathExists(path)) {
-                        QMenuItem item = new QMenuItem(str2, MenuGenre.Group);
-                        item.SetImageReservationKey(path, null);
-                        dropDown.AddItem(item, key);
-                        if(QTUtility.StartUpGroupList.Contains(str2)) {
-                            if(QTUtility.StartUpTabFont == null) {
-                                QTUtility.StartUpTabFont = new Font(item.Font, FontStyle.Underline);
-                            }
-                            item.Font = QTUtility.StartUpTabFont;
+            DropDownMenuReorderable dropDown = (DropDownMenuReorderable)dropDownItem.DropDown;
+            while(dropDown.Items.Count > 0) {
+                dropDown.Items[0].Dispose();
+            }
+            dropDown.ItemsClear();
+            const string key = "groups";
+            foreach(Group group in GroupsManager.Groups) {
+                if(group.Paths.Count != 0 && QTUtility2.PathExists(group.Paths[0])) {
+                    QMenuItem item = new QMenuItem(group.Name, MenuGenre.Group);
+                    item.SetImageReservationKey(group.Paths[0], null);
+                    dropDown.AddItem(item, key);
+                    if(group.Startup) {
+                        if(QTUtility.StartUpTabFont == null) {
+                            // todo, I don't like this here.
+                            QTUtility.StartUpTabFont = new Font(item.Font, FontStyle.Underline);
                         }
+                        item.Font = QTUtility.StartUpTabFont;
                     }
                 }
             }
-            else {
-                dropDownItem.Enabled = false;
-            }
+            dropDownItem.Enabled = dropDown.Items.Count > 0;
         }
 
         public static QMenuItem CreateMenuItem(MenuItemArguments mia) {
@@ -370,16 +360,14 @@ namespace QTTabBarLib {
             }
         }
 
+        // TODO: what does this do?!
         public static string TrackGroupContextMenu(string groupName, Point pnt, IntPtr pDropDownHandle) {
-            string str;
             string name = string.Empty;
-            if(!QTUtility.GroupPathsDic.TryGetValue(groupName, out str)) {
-                return name;
-            }
-            string[] strArray = str.Split(QTUtility.SEPARATOR_CHAR);
+            Group g = GroupsManager.GetGroup(groupName);
+            if(g == null) return name;
             ContextMenu menu = new ContextMenu();
             if(!QTUtility.IsXP) {
-                foreach(string str2 in strArray) {
+                foreach(string str2 in g.Paths) {
                     string text;
                     if(str2.StartsWith(@"\\")) {
                         text = str2;
@@ -393,7 +381,7 @@ namespace QTTabBarLib {
                 }
             }
             else {
-                foreach(string path in strArray) {
+                foreach(string path in g.Paths) {
                     string displayName;
                     if(path.StartsWith(@"\\")) {
                         displayName = path;
@@ -409,8 +397,8 @@ namespace QTTabBarLib {
             }
             List<IntPtr> list = new List<IntPtr>();
             if(!QTUtility.IsXP) {
-                for(int k = 0; k < strArray.Length; k++) {
-                    string imageKey = QTUtility.GetImageKey(strArray[k], null);
+                for(int k = 0; k < g.Paths.Count; k++) {
+                    string imageKey = QTUtility.GetImageKey(g.Paths[k], null);
                     IntPtr hbitmap = ((Bitmap)QTUtility.ImageListGlobal.Images[imageKey]).GetHbitmap(Color.Black);
                     if(hbitmap != IntPtr.Zero) {
                         list.Add(hbitmap);

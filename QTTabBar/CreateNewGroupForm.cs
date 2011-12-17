@@ -24,7 +24,7 @@ namespace QTTabBarLib {
     internal sealed class CreateNewGroupForm : Form {
         private Button buttonCancel;
         private Button buttonOK;
-        private CheckBox checkBox1;
+        private CheckBox chkAllTabs;
         private Label label1;
         private string newPath;
         private QTabControl.QTabCollection Tabs;
@@ -38,25 +38,21 @@ namespace QTTabBarLib {
             string[] strArray = QTUtility.TextResourcesDic["TabBar_NewGroup"];
             Text = strArray[0];
             label1.Text = strArray[1];
-            checkBox1.Text = strArray[2];
+            chkAllTabs.Text = strArray[2];
             ActiveControl = textBox1;
         }
 
         private void buttonOK_Click(object sender, EventArgs e) {
-            string key = textBox1.Text.Replace(";", "_");
+            string key = textBox1.Text;
             int num = 0;
-            string str2 = key;
-            while(QTUtility.GroupPathsDic.ContainsKey(str2)) {
-                str2 = key + "_" + ++num;
+            string tempKey = key;
+            while(GroupsManager.GetGroup(tempKey) != null) {
+                tempKey = key + " (" + ++num + ")";
             }
-            key = str2;
-            if(!checkBox1.Checked) {
-                QTUtility.GroupPathsDic.Add(key, newPath);
-            }
-            else {
-                QTUtility.GroupPathsDic.Add(key, Tabs.Cast<QTabItem>()
-                        .Select(item => item.CurrentPath).StringJoin(";"));
-            }
+            key = tempKey;
+            GroupsManager.AddGroup(key, chkAllTabs.Checked 
+                    ? Tabs.Cast<QTabItem>().Select(item => item.CurrentPath) 
+                    : new string[] { newPath });
         }
 
         private void InitializeComponent() {
@@ -64,7 +60,7 @@ namespace QTTabBarLib {
             buttonCancel = new Button();
             label1 = new Label();
             textBox1 = new TextBox();
-            checkBox1 = new CheckBox();
+            chkAllTabs = new CheckBox();
             SuspendLayout();
             buttonOK.DialogResult = DialogResult.OK;
             buttonOK.Enabled = false;
@@ -85,16 +81,16 @@ namespace QTTabBarLib {
             textBox1.Size = new Size(170, 20);
             textBox1.TabIndex = 2;
             textBox1.TextChanged += textBox1_TextChanged;
-            checkBox1.AutoSize = true;
-            checkBox1.Location = new Point(12, 70);
-            checkBox1.Size = new Size(90, 0x1c);
-            checkBox1.TabIndex = 3;
+            chkAllTabs.AutoSize = true;
+            chkAllTabs.Location = new Point(12, 70);
+            chkAllTabs.Size = new Size(90, 0x1c);
+            chkAllTabs.TabIndex = 3;
             AcceptButton = buttonOK;
             AutoScaleDimensions = new SizeF(6f, 13f);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = buttonCancel;
             ClientSize = new Size(0x133, 0x73);
-            Controls.Add(checkBox1);
+            Controls.Add(chkAllTabs);
             Controls.Add(textBox1);
             Controls.Add(label1);
             Controls.Add(buttonCancel);

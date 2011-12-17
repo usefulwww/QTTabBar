@@ -2132,7 +2132,7 @@
                 </DockPanel>
             </TabItem>
 
-            <!-- ============= APPS ============= -->
+            <!-- =============    APPS    ============= -->
             <TabItem x:Name="tabApps"
                 Header="Applications"
                 Width="0">
@@ -2331,7 +2331,7 @@
                 </StackPanel>                
             </TabItem>
 
-            <!-- ============= PLUGINS ============= -->
+            <!-- =============  PLUGINS   ============= -->
             <TabItem x:Name="tabPlugins"
                 Header="Plugins"
                 Width="0">
@@ -2371,7 +2371,7 @@
                 </DockPanel>
             </TabItem>
 
-            <!-- ============= LANGUAGE ============= -->
+            <!-- =============  LANGUAGE  ============= -->
             <TabItem x:Name="tabLanguage"
                 DataContext="{Binding Path=lang}"
                 Header="Language"
@@ -2463,7 +2463,7 @@
                 </StackPanel>
             </TabItem>
 
-            <!-- ============= HELP ============= -->
+            <!-- =============    HELP    ============= -->
             <TabItem x:Name="tabHelp"
                 Header="About"
                 Width="0">

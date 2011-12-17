@@ -3088,6 +3088,7 @@ namespace QTTabBarLib {
         }
 
         private void InitializeTreeView_Group() {
+            /*
             tnGroupsRoot = new TreeNode(ResOpt_Genre[4]);
             tnGroupsRoot.ImageKey = tnGroupsRoot.SelectedImageKey = "groupRoot";
             treeViewGroup.BeginUpdate();
@@ -3130,7 +3131,7 @@ namespace QTTabBarLib {
             treeViewGroup.Nodes.Add(tnGroupsRoot);
             treeViewGroup.SelectedNode = tnGroupsRoot;
             tnGroupsRoot.Expand();
-            treeViewGroup.EndUpdate();
+            treeViewGroup.EndUpdate();*/
         }
 
         private void InitializeTreeView_UserApps() {
@@ -3525,55 +3526,55 @@ namespace QTTabBarLib {
             }
         }
 
-        private void SaveGroupTreeView(RegistryKey rkUser) {
-            QTUtility.GroupPathsDic.Clear();
-            QTUtility.StartUpGroupList.Clear();
-            QTUtility.dicGroupShortcutKeys.Clear();
-            QTUtility.dicGroupNamesAndKeys.Clear();
-            List<PluginKey> list = new List<PluginKey>();
-            int num = 1;
-            foreach(TreeNode node in tnGroupsRoot.Nodes) {
-                MenuItemArguments tag = (MenuItemArguments)node.Tag;
-                if(tag == MIA_GROUPSEP) {
-                    QTUtility.GroupPathsDic["Separator" + num++] = string.Empty;
-                }
-                else if(node.Nodes.Count > 0) {
-                    string text = node.Text;
-                    if(text.Length > 0) {
-                        string str2 = node.Nodes.Cast<TreeNode>()
-                                .Select(node2 => node2.Name)
-                                .Where(name => name.Length > 0)
-                                .StringJoin(";");
-                        if(str2.Length > 0) {
-                            string item = text.Replace(";", "_");
-                            QTUtility.GroupPathsDic[item] = str2;
-                            if(node.NodeFont == fntStartUpGroup) {
-                                QTUtility.StartUpGroupList.Add(item);
-                            }
-                            if(tag.KeyShortcut != 0) {
-                                if(tag.KeyShortcut > 0x100000) {
-                                    QTUtility.dicGroupShortcutKeys[tag.KeyShortcut] = item;
-                                }
-                                QTUtility.dicGroupNamesAndKeys[item] = tag.KeyShortcut;
-                                list.Add(new PluginKey(item, new int[] { tag.KeyShortcut }));
-                            }
-                        }
-                    }
-                }
-            }
-            rkUser.DeleteSubKey("Groups", false);
-            using(RegistryKey key = rkUser.CreateSubKey("Groups")) {
-                if(key != null) {
-                    foreach(string str4 in QTUtility.GroupPathsDic.Keys) {
-                        key.SetValue(str4, QTUtility.GroupPathsDic[str4]);
-                    }
-                }
-            }
-            rkUser.DeleteValue("ShortcutKeys_Group", false);
-            if(list.Count > 0) {
-                QTUtility2.WriteRegBinary(list.ToArray(), "ShortcutKeys_Group", rkUser);
-            }
-        }
+        //private void SaveGroupTreeView(RegistryKey rkUser) {
+        //    QTUtility.GroupPathsDic.Clear();
+        //    QTUtility.StartUpGroupList.Clear();
+        //    QTUtility.dicGroupShortcutKeys.Clear();
+        //    QTUtility.dicGroupNamesAndKeys.Clear();
+        //    List<PluginKey> list = new List<PluginKey>();
+        //    int num = 1;
+        //    foreach(TreeNode node in tnGroupsRoot.Nodes) {
+        //        MenuItemArguments tag = (MenuItemArguments)node.Tag;
+        //        if(tag == MIA_GROUPSEP) {
+        //            QTUtility.GroupPathsDic["Separator" + num++] = string.Empty;
+        //        }
+        //        else if(node.Nodes.Count > 0) {
+        //            string text = node.Text;
+        //            if(text.Length > 0) {
+        //                string str2 = node.Nodes.Cast<TreeNode>()
+        //                        .Select(node2 => node2.Name)
+        //                        .Where(name => name.Length > 0)
+        //                        .StringJoin(";");
+        //                if(str2.Length > 0) {
+        //                    string item = text.Replace(";", "_");
+        //                    QTUtility.GroupPathsDic[item] = str2;
+        //                    if(node.NodeFont == fntStartUpGroup) {
+        //                        QTUtility.StartUpGroupList.Add(item);
+        //                    }
+        //                    if(tag.KeyShortcut != 0) {
+        //                        if(tag.KeyShortcut > 0x100000) {
+        //                            QTUtility.dicGroupShortcutKeys[tag.KeyShortcut] = item;
+        //                        }
+        //                        QTUtility.dicGroupNamesAndKeys[item] = tag.KeyShortcut;
+        //                        list.Add(new PluginKey(item, new int[] { tag.KeyShortcut }));
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //    rkUser.DeleteSubKey("Groups", false);
+        //    using(RegistryKey key = rkUser.CreateSubKey("Groups")) {
+        //        if(key != null) {
+        //            foreach(string str4 in QTUtility.GroupPathsDic.Keys) {
+        //                key.SetValue(str4, QTUtility.GroupPathsDic[str4]);
+        //            }
+        //        }
+        //    }
+        //    rkUser.DeleteValue("ShortcutKeys_Group", false);
+        //    if(list.Count > 0) {
+        //        QTUtility2.WriteRegBinary(list.ToArray(), "ShortcutKeys_Group", rkUser);
+        //    }
+        //}
 
         private void SaveNoCapturePaths(RegistryKey rkUser) {
             string str = string.Empty;
@@ -4169,7 +4170,7 @@ namespace QTTabBarLib {
             chbTabTitleShadow.Checked = Config.Skin.TabTitleShadows;
             btnShadowAct.Enabled = btnShadowIna.Enabled = chbTabTitleShadow.Checked;
             //textBoxAction_BarDblClck.Text = QTUtility.Action_BarDblClick;
-            QTUtility.RefreshGroupsDic();
+            //QTUtility.RefreshGroupsDic();
             InitializeTreeView_Group();
             QTUtility.RefreshUserAppDic(false);
             InitializeTreeView_UserApps();
