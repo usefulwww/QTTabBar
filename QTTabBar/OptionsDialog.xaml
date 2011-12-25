@@ -1009,8 +1009,7 @@
                             Margin="2,0"
                             FontWeight="Bold"
                             Grid.Column="2"/>
-                        <ListBox 
-                            x:Name="lstTextFileTypes"
+                        <ListBox x:Name="lstTextFileTypes"
                             ItemTemplate="{StaticResource FileTypeItemTemplate}"
                             Width="175"
                             Height="200"
@@ -1019,17 +1018,16 @@
                             Grid.Column="0"
                             Margin="2"
                             SelectionMode="Extended"
-                            KeyDown="LstTextFileTypes_OnKeyDown">
+                            KeyDown="lstTextFileTypes_OnKeyDown">
                             <ListBox.ItemContainerStyle>
                                 <Style TargetType="{x:Type ListBoxItem}">
-                                    <Setter 
-                                        Property="IsSelected"
-                                        Value="{Binding Path=IsSelected, Mode=TwoWay}" />
+                                    <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
+                                    <Setter Property="Tag" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" />
+                                    <EventSetter Event="Selected" Handler="ListViewItem_Selected" />
                                 </Style>
                             </ListBox.ItemContainerStyle>
                         </ListBox>
-                        <ListBox
-                            x:Name="lstMediaFileTypes"
+                        <ListBox x:Name="lstMediaFileTypes"
                             ItemTemplate="{StaticResource FileTypeItemTemplate}"
                             Width="175"
                             Height="200"
@@ -1038,12 +1036,12 @@
                             Grid.Column="2"
                             Margin="2"
                             SelectionMode="Extended"
-                            KeyDown="LstMediaFileTypes_OnKeyDown">
+                            KeyDown="lstMediaFileTypes_OnKeyDown">
                             <ListBox.ItemContainerStyle>
                                 <Style TargetType="{x:Type ListBoxItem}">
-                                    <Setter 
-                                        Property="IsSelected"
-                                        Value="{Binding Path=IsSelected, Mode=TwoWay}" />
+                                    <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
+                                    <Setter Property="Tag" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" />
+                                    <EventSetter Event="Selected" Handler="ListViewItem_Selected" />
                                 </Style>
                             </ListBox.ItemContainerStyle>
                         </ListBox>
@@ -1970,44 +1968,34 @@
                         <Button x:Name="btnGroupsMoveNodeUp"
                             Content="^"
                             Height="23"
-                            HorizontalAlignment="Right"
                             Margin="4"
-                            VerticalAlignment="Top"
                             Width="28"
                             Click="btnGroupsMoveNodeUp_Click" />
                         <Button x:Name="btnGroupsMoveNodeDown"
                             Content="v"
                             Grid.Column="1"
                             Height="23"
-                            HorizontalAlignment="Right"
                             Margin="4"
-                            VerticalAlignment="Top"
                             Width="28"
                             Click="btnGroupsMoveNodeDown_Click" />
                         <Button x:Name="btnGroupsAddGroup" Content="G"
                             Grid.Column="3"
                             Height="23"
-                            HorizontalAlignment="Right"
                             Margin="4"
-                            VerticalAlignment="Top"
                             Width="28"
                             Click="btnGroupsAddGroup_Click" />
                         <Button x:Name="btnGroupsAddFolder"
                             Content="+"
                             Grid.Column="4"
                             Height="23"
-                            HorizontalAlignment="Right"
                             Margin="4"
-                            VerticalAlignment="Top"
                             Width="28"
                             Click="btnGroupsAddFolder_Click" />
                         <Button x:Name="btnGroupsRemoveNode"
                             Content="-"
                             Grid.Column="5"
                             Height="23"
-                            HorizontalAlignment="Right"
                             Margin="4"
-                            VerticalAlignment="Top"
                             Width="28"
                             Click="btnGroupsRemoveNode_Click" />
                     </Grid>
@@ -2039,7 +2027,13 @@
                             Text="{Binding Path=HotkeyString, Mode=OneWay}"/>
                     </DockPanel>
                     <r:TreeListView x:Name="tvwGroups"
-                        MouseDown="tvwGroups_MouseDown">
+                        MouseDown="tvwGroupsApps_MouseDown">
+                        <TreeView.ItemContainerStyle>
+                            <Style TargetType="{x:Type TreeViewItem}">
+                                <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
+                                <Setter Property="IsExpanded" Value="{Binding Path=IsExpanded, Mode=TwoWay}" />
+                            </Style>
+                        </TreeView.ItemContainerStyle>
                         <TreeView.ItemTemplate>
                             <HierarchicalDataTemplate ItemsSource="{Binding Path=Folders}"/>
                         </TreeView.ItemTemplate>
@@ -2059,37 +2053,25 @@
                                             <qt:EditableHeader x:Name="ehrName"
                                                 Container="{Binding RelativeSource={RelativeSource AncestorType={x:Type r:TreeListViewItem}}}"
                                                 IsEditing="{Binding Path=IsEditing}"
-                                                Text="{Binding Path=Name}"
-                                                Margin="0"
-                                                Visibility="Collapsed"/>
-                                            <qt:EditableHeader x:Name="ehrPath"
-                                                Container="{Binding RelativeSource={RelativeSource AncestorType={x:Type r:TreeListViewItem}}}"
-                                                Text="{Binding Path=Path}"
-                                                Margin="0"
-                                                Visibility="Collapsed"/>
-                                            <qt:EditableHeader x:Name="txtDisplayText"
-                                                Text="{Binding Path=DisplayText, Mode=OneWay}"
-                                                ReadOnly="True"
-                                                Margin="0"
-                                                Visibility="Collapsed"/>
+                                                Margin="0"/>
                                         </StackPanel>
                                         <DataTemplate.Triggers>
                                             <DataTrigger Binding="{Binding Converter={StaticResource ObjectToClassNameConverter}}" Value="GroupEntry">
-                                                <Setter TargetName="ehrName" Property="Visibility" Value="Visible"/>
+                                                <Setter TargetName="ehrName" Property="Text" Value="{Binding Path=Name}"/>
                                             </DataTrigger>
                                             <MultiDataTrigger>
                                                 <MultiDataTrigger.Conditions>
                                                     <Condition Binding="{Binding Converter={StaticResource ObjectToClassNameConverter}}" Value="FolderEntry"/>
                                                     <Condition Binding="{Binding Path=IsVirtualFolder}" Value="False"/>
                                                 </MultiDataTrigger.Conditions>
-                                                <Setter TargetName="ehrPath" Property="Visibility" Value="Visible"/>
-                                            </MultiDataTrigger>
+                                                <Setter TargetName="ehrName" Property="Text" Value="{Binding Path=Path}"/>                                            </MultiDataTrigger>
                                             <MultiDataTrigger>
                                                 <MultiDataTrigger.Conditions>
                                                     <Condition Binding="{Binding Converter={StaticResource ObjectToClassNameConverter}}" Value="FolderEntry"/>
                                                     <Condition Binding="{Binding Path=IsVirtualFolder}" Value="True"/>
                                                 </MultiDataTrigger.Conditions>
-                                                <Setter TargetName="txtDisplayText" Property="Visibility" Value="Visible"/>
+                                                <Setter TargetName="ehrName" Property="Text" Value="{Binding Path=DisplayText, Mode=OneWay}"/>
+                                                <Setter TargetName="ehrName" Property="ReadOnly" Value="True"/>
                                             </MultiDataTrigger>
                                         </DataTemplate.Triggers>
                                     </DataTemplate>
@@ -2136,10 +2118,10 @@
             <TabItem x:Name="tabApps"
                 Header="Applications"
                 Width="0">
-                <StackPanel
-                    Margin="14,5,10,0"
-                    Orientation="Vertical">
+                <DockPanel
+                    Margin="14,5,10,0">
                     <StackPanel
+                        DockPanel.Dock="Top"
                         Margin="0,0,0,4"
                         Orientation="Horizontal">
                         <Image
@@ -2151,11 +2133,11 @@
                             VerticalAlignment="Bottom"/>
                     </StackPanel>
                     <Grid
+                        DockPanel.Dock="Top"
                         Margin="0,10,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="20"/>
-                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
@@ -2165,64 +2147,101 @@
                             Click="btnAppsMoveNodeUp_Click"    
                             Content="^"
                             Height="23"
-                            HorizontalAlignment="Right"
                             Margin="4"
-                            VerticalAlignment="Top"
                             Width="28"/>
                         <Button x:Name="btnAppsMoveNodeDown"
                             Click="btnAppsMoveNodeDown_Click" 
                             Content="v"
                             Grid.Column="1"
                             Height="23"
-                            HorizontalAlignment="Right"
-                            Margin="0,4,4,0"
-                            VerticalAlignment="Top"
-                            Width="28" Grid.ColumnSpan="2" />
-                        <Button x:Name="btnAppsAddSeparator"
-                            Click="btnAppsAddSeparator_Click"
-                            Content="---"
-                            Grid.Column="3"
-                            Height="23"
-                            HorizontalAlignment="Right"
                             Margin="4"
-                            VerticalAlignment="Top"
                             Width="28"/>
                         <Button x:Name="btnAppsAddFolder"
-                            Click="btnAppsAddFolder_Click"
                             Content="F"
-                            Grid.Column="4"
+                            Grid.Column="3"
                             Height="23"
-                            HorizontalAlignment="Right"
                             Margin="4"
-                            VerticalAlignment="Top"
                             Width="28"/>
                         <Button x:Name="btnAppsAddNode"
-                            Click="btnAppsAddNode_Click"
                             Content="+"
-                            Grid.Column="5"
+                            Grid.Column="4"
                             Height="23"
-                            HorizontalAlignment="Right"
                             Margin="4"
-                            VerticalAlignment="Top"
                             Width="28"/>
                         <Button x:Name="btnAppsRemoveNode"
-                            Click="btnAppsRemoveNode_Click"
                             Content="-"
-                            Grid.Column="6"
+                            Grid.Column="5"
                             Height="23"
-                            HorizontalAlignment="Right"
                             Margin="4"
-                            VerticalAlignment="Top"
                             Width="28"/>
                     </Grid>
-                    <TreeView x:Name="treeApps"
-                              Height="489">                        
-                        <TreeViewItem x:Name="treeAppsRoot" 
-                                      Header="Applications"
-                                      IsExpanded="True" 
-                                      IsSelected="True"/>
-                    </TreeView>
-                </StackPanel>
+                    <DockPanel
+                        DockPanel.Dock="Bottom"
+                        Margin="0,10,0,20">
+                        <Label
+                            Content="Path:"
+                            DockPanel.Dock="Left"
+                            Height="23"
+                            Margin="0,0,10,0"
+                            Padding="0"
+                            VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="txtAppHotkey"
+                            Height="23"
+                            IsReadOnly="True"
+                            Text="{Binding Path=HotkeyString, Mode=OneWay}"/>
+                    </DockPanel>
+                    <r:TreeListView x:Name="tvwApps"
+                        MouseDown="tvwGroupsApps_MouseDown">
+                        <TreeView.ItemContainerStyle>
+                            <Style TargetType="{x:Type TreeViewItem}">
+                                <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
+                                <Setter Property="IsExpanded" Value="{Binding Path=IsExpanded, Mode=TwoWay}" />
+                            </Style>
+                        </TreeView.ItemContainerStyle>
+                        <TreeView.ItemTemplate>
+                            <HierarchicalDataTemplate ItemsSource="{Binding Path=Folders}"/>
+                        </TreeView.ItemTemplate>
+                        <r:TreeListView.Columns>
+                            <GridViewColumn Header="Application" Width="300">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel
+                                            Orientation="Horizontal"
+                                            VerticalAlignment="Center">
+                                            <Image
+                                                Source="{Binding Path=Icon, Converter={StaticResource BitmapToImageSourceConverter}}"
+                                                Width="16"
+                                                Height="16"
+                                                Stretch="Fill"
+                                                Margin="0,0,2,0"/>
+                                            <qt:EditableHeader x:Name="ehrName"
+                                                Container="{Binding RelativeSource={RelativeSource AncestorType={x:Type r:TreeListViewItem}}}"
+                                                IsEditing="{Binding Path=IsEditing}"
+                                                Text="{Binding Path=Name}"
+                                                Margin="0"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Shortcut Key" Width="100">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock x:Name="txtHotkey"
+                                            Text="{Binding Path=HotkeyString}"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Visibility="Collapsed" />
+                                        <DataTemplate.Triggers>
+                                            <DataTrigger Binding="{Binding Converter={StaticResource ObjectToClassNameConverter}}" Value="GroupEntry">
+                                                <Setter TargetName="txtHotkey" Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </DataTemplate.Triggers>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </r:TreeListView.Columns>
+                    </r:TreeListView>
+                </DockPanel>
             </TabItem>
 
             <!-- ============= BUTTON BAR ============= -->

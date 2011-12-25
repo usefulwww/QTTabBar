@@ -19,6 +19,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
@@ -35,7 +36,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using QTPlugin;
 using QTTabBarLib.Interop;
-using Microsoft.Win32;
 using Image = System.Drawing.Image;
 using Size = System.Drawing.Size;
 using Font = System.Drawing.Font;
@@ -52,7 +52,7 @@ namespace QTTabBarLib {
         private static OptionsDialog instance;
         private static Thread instanceThread;
         public Config workingConfig { get; set; }
-        
+
         // Button bar stuff
         private ImageStrip imageStripLarge;
         private ImageStrip imageStripSmall;
@@ -71,8 +71,9 @@ namespace QTTabBarLib {
         private ObservableCollection<FileTypeEntry> TextFileTypes;
         private ObservableCollection<FileTypeEntry> MediaFileTypes;
 
-        // Groups stuff
-        private ObservableCollection<GroupEntry> CurrentGroups;
+        // Groups/Apps stuff
+        private ParentedCollection<GroupEntry> CurrentGroups;
+        private ParentedCollection<AppEntry> CurrentApps;
 
         private List<HotkeyEntry> HotkeyEntries;
 
@@ -508,19 +509,18 @@ namespace QTTabBarLib {
             control.SelectedItem = item;
             control.ScrollIntoView(item);
             control.Focus();
-            FindItemContainerAsync(control, item, container =>
-                    RunOnLoad((FrameworkElement)container, delegate { item.IsEditing = true; }));
+            item.IsEditing = true;
         }
 
-        private void RemoveSelectedFileType(ListBox control) {
+        private static void RemoveSelectedFileType(ListBox control) {
             var list = (ObservableCollection<FileTypeEntry>)control.ItemsSource;
             int idx = control.SelectedIndex;
             if(idx == -1) return;
             foreach(FileTypeEntry item in new ArrayList(control.SelectedItems)) {
                 list.Remove(item);
             }
+            control.Focus();
             control.SelectedIndex = Math.Min(idx, list.Count - 1);
-            FindItemContainerAsync(control, control.SelectedItem, container => container.Focus());
         }
 
         private void btnAddTextFileTypes_Click(object sender, RoutedEventArgs e) {
@@ -551,12 +551,18 @@ namespace QTTabBarLib {
             lstMediaFileTypes.ScrollIntoView(MediaFileTypes.First());
         }
 
-        private void LstTextFileTypes_OnKeyDown(object sender, KeyEventArgs e) {
+        private void lstTextFileTypes_OnKeyDown(object sender, KeyEventArgs e) {
             if(e.Key == Key.Delete) RemoveSelectedFileType(lstTextFileTypes);
         }
 
-        private void LstMediaFileTypes_OnKeyDown(object sender, KeyEventArgs e) {
+        private void lstMediaFileTypes_OnKeyDown(object sender, KeyEventArgs e) {
             if(e.Key == Key.Delete) RemoveSelectedFileType(lstMediaFileTypes);
+        }
+
+        private void ListViewItem_Selected(object sender, RoutedEventArgs e) {
+            FrameworkElement item = (FrameworkElement)sender;
+            FrameworkElement parent = (FrameworkElement)item.Tag;
+            if(parent.IsFocused) item.Focus();
         }
 
         #endregion
@@ -670,124 +676,6 @@ namespace QTTabBarLib {
             }
             else {
                 MouseBindings.Add(new MouseEntry(target, chord, action));
-            }
-        }
-
-        #endregion
-
-        #region ---------- Applications ----------
-
-        private void btnAppsAddFolder_Click(object sender, RoutedEventArgs e) {
-            appsDrawNode("New Folder", "dir");
-        }
-
-        private void btnAppsAddNode_Click(object sender, RoutedEventArgs e) {
-            appsDrawNode("New App", "app");
-        }
-
-        private void btnAppsAddSeparator_Click(object sender, RoutedEventArgs e) {
-            appsDrawNode("-------- SEPARATOR --------", "sep");
-        }
-
-        private void btnAppsRemoveNode_Click(object sender, RoutedEventArgs e) {
-            TreeViewItem item = treeApps.Tag as TreeViewItem;
-
-            try {
-                //MessageBox.Show(item.Parent.GetType() + item.Uid);
-                ((TreeViewItem)item.Parent).Items.Remove(item);
-            }
-            catch(Exception ex) {
-                //MessageBox.Show("Exception: "+ex.ToString());
-            }
-        }
-
-        private void btnAppsMoveNodeDown_Click(object sender, RoutedEventArgs e) {
-
-        }
-
-        private void btnAppsMoveNodeUp_Click(object sender, RoutedEventArgs e) {
-
-        }
-
-        private void appsDrawNode(string name, String type, String icon = "none") {
-            TreeViewItem selected = null;
-            TreeViewItem item = appsGenerateNode(name, type, icon);
-
-            string[] args = new string[5];
-
-            try {
-                selected = (TreeViewItem)treeApps.SelectedItem;
-                args = selected.Tag as string[];
-            }
-            catch(Exception ex) {
-                return;
-            }
-
-            if((selected == null) || (selected == treeAppsRoot)) {
-                treeAppsRoot.Items.Add(item);
-            }
-            else if(args[0] == "dir") {
-                selected.Items.Add(item);
-            }
-        }
-
-        private TreeViewItem appsGenerateNode(string name = "New Application", String type = "app", String icon = "none") {
-            //# Core item
-            TreeViewItem item = new TreeViewItem();
-
-            //# Stored value for the tag.
-            string[] args = new string[5];
-            args[0] = type;
-
-            item.Tag = args;
-
-            //# Add the appnode to child.
-            if(type == "app") {
-                ApplicationsNode node = new ApplicationsNode();
-                item.Items.Add(node);
-
-                //# Tag arguments -- could be used for binding.
-                args[1] = "No Path Selected";
-                args[2] = "None";
-                args[3] = "Working Dir";
-                args[4] = "Shortcut";
-            }
-
-            //# Must add this here before the expand, and select code.
-            item.Selected += new RoutedEventHandler(appsOnNodeSelected);
-
-            //# Automatically expand / select new folders and app nodes.
-            //# We leave separators alone
-            if(type != "sep") {
-                item.IsSelected = true;
-                item.IsExpanded = true;
-                item.Header = new EditableHeader(name, item);
-            }
-            else {
-                //# No soup for sep
-                item.Header = name;
-            }
-
-            return item;
-        }
-
-        private void appsOnNodeSelected(object sender, RoutedEventArgs e) {
-            try {
-                TreeViewItem item = e.OriginalSource as TreeViewItem;
-                string[] args = item.Tag as string[];
-
-                //# Handle any args we want to use for binding here?
-
-                //# We need to tag the main TreeView so we can easily access information about the selected TreeViewItem with it.
-                //# We are unable to accurately handle the treeAps.SelectedItem property, unless we have this 'backup'
-                treeApps.Tag = item;
-            }
-            catch(Exception ex) {
-                //# This is only caught when the user clicks on a label from an appnode. We try to handle
-                //# the ugly blue background as best we can.
-                ((TreeViewItem)e.OriginalSource).Focusable = false;
-                ((TreeViewItem)e.OriginalSource).IsSelected = true;
-                return;
             }
         }
 
@@ -940,11 +828,11 @@ namespace QTTabBarLib {
         #region ---------- Groups ----------
 
         private void InitializeGroups() {
-            tvwGroups.ItemsSource = CurrentGroups = new ObservableCollection<GroupEntry>(
+            tvwGroups.ItemsSource = CurrentGroups = new ParentedCollection<GroupEntry>(
                     GroupsManager.Groups.Select(g => new GroupEntry(
                     g.Name, g.ShortcutKey, g.Startup, g.Paths.Select(p => new FolderEntry(p)))));
         }
-        
+
         private void CommitGroups() {
             GroupsManager.Groups = new List<Group>(
                     CurrentGroups.Select(g => new Group(
@@ -952,13 +840,14 @@ namespace QTTabBarLib {
         }
 
         private GroupEntry GetParentGroup(FolderEntry folder) {
-            return CurrentGroups.OfType<GroupEntry>().FirstOrDefault(
-                    entry => entry.Folders.Contains(folder));
+            return CurrentGroups.FirstOrDefault(entry => entry.Folders.Contains(folder));
         }
 
-        private void UpDownOnTreeView(ItemsControl control, object val, bool up) {
-            IList col = (IList)control.ItemsSource;
-            int index = col.IndexOf(val);
+        private static void UpDownOnTreeView(TreeView tvw, bool up) {
+            ITreeViewItem val = tvw.SelectedItem as ITreeViewItem;
+            if(val == null) return;
+            IList list = val.ParentList;
+            int index = list.IndexOf(val);
             if(index == -1) {
                 return;
             }
@@ -968,59 +857,29 @@ namespace QTTabBarLib {
                 }
             }
             else {
-                if(index == col.Count - 1) {
+                if(index == list.Count - 1) {
                     return;
                 }
             }
 
-            TreeViewItem container = (TreeViewItem)FindItemContainer(control, val);
-            bool expanded = container.IsExpanded;
-
-            col.Remove(val);
-            col.Insert(index + (up ? -1 : 1), val);
-
-            container = (TreeViewItem)FindItemContainer(control, val);
-            container.IsExpanded = expanded;
-            container.IsSelected = true;
+            bool expanded = val.IsExpanded;
+            list.RemoveAt(index);
+            list.Insert(index + (up ? -1 : 1), val);
+            val.IsExpanded = expanded;
+            val.IsSelected = true;
         }
 
-        private void UpDownOnTreeView(TreeView tvw, bool up) {
-            object val = tvw.SelectedItem;
-            if(val == null) {
-                return;
-            }
-
-            // TODO: Needs to generalize this for the other TreeView more.
-            if(val is FolderEntry) {
-                object parent = GetParentGroup((FolderEntry)val);
-                TreeViewItem container = (TreeViewItem)FindItemContainer(tvw, parent);
-                UpDownOnTreeView(container, val, up);
-            }
-            else {
-                UpDownOnTreeView(tvw, val, up);
-            }
-        }
-
-        private int GetPreferredInsertionIndex(TreeView tvw) {
-            object sel = tvw.SelectedItem;
-            return sel == null
-                    ? tvw.Items.Count
+        private void btnGroupsAddGroup_Click(object sender, RoutedEventArgs e) {
+            GroupEntry item = new GroupEntry("New Group");
+            tvwGroups.Focus();
+            IList col = (IList)tvwGroups.ItemsSource;
+            object sel = tvwGroups.SelectedItem;
+            int idx = sel == null
+                    ? tvwGroups.Items.Count
                     : CurrentGroups.IndexOf(sel as GroupEntry ?? GetParentGroup((FolderEntry)sel)) + 1;
-        }
-
-        private void AddNewGroupItem(TreeView tvw, object item) {
-            IList col = (IList)tvw.ItemsSource;
-            col.Insert(GetPreferredInsertionIndex(tvw), item);
-
-            FindItemContainerAsync(tvw, item, obj => {
-                TreeViewItem container = (TreeViewItem)obj;
-                container.IsSelected = true;
-
-                GroupEntry entry = item as GroupEntry;
-                if(entry != null) {
-                    RunOnLoad(container, delegate { entry.IsEditing = true; });
-                }
-            });
+            col.Insert(idx, item);
+            item.IsSelected = true;
+            item.IsEditing = true;
         }
 
         private void btnGroupsMoveNodeUp_Click(object sender, RoutedEventArgs e) {
@@ -1029,10 +888,6 @@ namespace QTTabBarLib {
 
         private void btnGroupsMoveNodeDown_Click(object sender, RoutedEventArgs e) {
             UpDownOnTreeView(tvwGroups, false);
-        }
-
-        private void btnGroupsAddGroup_Click(object sender, RoutedEventArgs e) {
-            AddNewGroupItem(tvwGroups, new GroupEntry("New Group"));
         }
 
         private void btnGroupsAddFolder_Click(object sender, RoutedEventArgs e) {
@@ -1057,44 +912,67 @@ namespace QTTabBarLib {
             if(dlg.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
             FolderEntry folder = new FolderEntry(dlg.SelectedPath);
             group.Folders.Insert(index, folder);
-
-            TreeViewItem parent = (TreeViewItem)FindItemContainer(tvwGroups, group);
-            parent.IsExpanded = true;
-
-            FindItemContainerAsync(parent, folder, cont => ((TreeViewItem)cont).IsSelected = true);
+            group.IsExpanded = true;
+            folder.IsSelected = true;
         }
 
         private void btnGroupsRemoveNode_Click(object sender, RoutedEventArgs e) {
-            object sel = tvwGroups.SelectedItem;
+            ITreeViewItem sel = tvwGroups.SelectedItem as ITreeViewItem;
             if(sel == null) return;
-
-            IList col = sel is GroupEntry
-                    ? (IList)CurrentGroups
-                    : GetParentGroup((FolderEntry)sel).Folders;
-
+            IList col = sel.ParentList;
             int index = col.IndexOf(sel);
             col.RemoveAt(index);
-
-            if(index >= col.Count) return;
-            object next = col[index];
-            TreeViewItem container = (TreeViewItem)FindItemContainer(tvwGroups, next);
-            container.IsSelected = true;
+            if(col.Count == 0) return;
+            if(index == col.Count) --index;
+            ((ITreeViewItem)col[index]).IsSelected = true;
         }
 
-        private void tvwGroups_MouseDown(object sender, MouseButtonEventArgs e) {
-            GroupEntry entry = tvwGroups.SelectedItem as GroupEntry;
+        private void tvwGroupsApps_MouseDown(object sender, MouseButtonEventArgs e) {
+            IEditableEntry entry = ((TreeView)sender).SelectedItem as IEditableEntry;
             if(entry != null) entry.IsEditing = false;
         }
 
         private void txtGroupHotkey_OnPreviewKeyDown(object sender, KeyEventArgs e) {
             e.Handled = true;
-            if(!(tvwGroups.SelectedItem is GroupEntry)) return;
-            GroupEntry entry = (GroupEntry)tvwGroups.SelectedItem;
+            GroupEntry entry = tvwGroups.SelectedItem as GroupEntry;
+            if(entry == null) return;
             Keys newKey;
             if(ProcessNewHotkey(e, entry.ShortcutKey, out newKey)) {
                 entry.ShortcutKey = newKey;
             }
         }
+
+        #endregion
+
+        #region ---------- Applications ----------
+
+        private void InitializeApps() {
+            tvwApps.ItemsSource = CurrentApps = new ParentedCollection<AppEntry>();
+        }
+
+        private void CommitApps() {
+            // todo
+        }
+
+        private void btnAddApp_Click(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void btnAddAppFolder_Click(object sender, RoutedEventArgs e) {
+        }
+
+        private void btnRemoveApp_Click(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void btnAppsMoveNodeUp_Click(object sender, RoutedEventArgs e) {
+            UpDownOnTreeView(tvwApps, true);
+        }
+
+        private void btnAppsMoveNodeDown_Click(object sender, RoutedEventArgs e) {
+            UpDownOnTreeView(tvwApps, false);
+        }
+
 
         #endregion
 
@@ -1432,15 +1310,6 @@ namespace QTTabBarLib {
             }
         }
 
-        private static void RunOnLoad(FrameworkElement element, Action pred) {
-            RoutedEventHandler del = null;
-            del = delegate {
-                pred();
-                element.Loaded -= del;
-            };
-            element.Loaded += del;
-        }
-
         private static UIElement FindItemContainer(ItemsControl parent, object childItem) {
             if(parent.ItemContainerGenerator.Status != GeneratorStatus.ContainersGenerated) {
                 return null;
@@ -1461,24 +1330,6 @@ namespace QTTabBarLib {
             return null;
         }
 
-        private delegate void ItemContainerAction(UIElement container);
-        private static void FindItemContainerAsync(ItemsControl parent, object childItem, ItemContainerAction pred) {
-            ItemContainerGenerator gen = parent.ItemContainerGenerator;
-            if(gen.Status == GeneratorStatus.ContainersGenerated) {
-                pred(FindItemContainer(parent, childItem));
-                return;
-            }
-            EventHandler handler = null;
-            handler = delegate {
-                if(gen.Status != GeneratorStatus.ContainersGenerated) {
-                    return;
-                }
-                pred(FindItemContainer(parent, childItem));
-                gen.StatusChanged -= handler;
-            };
-            gen.StatusChanged += handler;
-        }
-
         // Draws a control to a bitmap
         private static BitmapSource ConvertToBitmapSource(UIElement element) {
             var target = new RenderTargetBitmap((int)(element.RenderSize.Width), (int)(element.RenderSize.Height), 96, 96, PixelFormats.Pbgra32);
@@ -1491,6 +1342,49 @@ namespace QTTabBarLib {
             drawingContext.Close();
             target.Render(visual);
             return target;
+        }
+
+        #endregion
+
+        #region ---------- Interfaces / Helper Classes ----------
+
+        private interface IEditableEntry {
+            bool IsEditing { get; set; }
+        }
+
+        private interface IChildItem {
+            IList ParentList { get; set; }
+        }
+
+        private interface ITreeViewItem : IChildItem {
+            bool IsSelected { get; set; }
+            bool IsExpanded { get; set; }
+        }
+
+        private sealed class ParentedCollection<TChild> : ObservableCollection<TChild> 
+            where TChild : class, IChildItem {
+            public ParentedCollection(IEnumerable<TChild> collection = null) {
+                if(collection != null) {
+                    foreach(TChild child in collection) {
+                        child.ParentList = this;
+                        Add(child);
+                    }
+                }
+                CollectionChanged += ParentedCollection_CollectionChanged;
+            }
+
+            private void ParentedCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+                if(e.NewItems != null) {
+                    foreach(TChild newItem in e.NewItems) {
+                        newItem.ParentList = this;
+                    }
+                }
+                if(e.OldItems != null) {
+                    foreach(TChild oldItem in e.OldItems) {
+                        oldItem.ParentList = null;
+                    }
+                }
+            }
         }
 
         #endregion
@@ -1681,7 +1575,7 @@ namespace QTTabBarLib {
             }
         }
 
-        private class FileTypeEntry : INotifyPropertyChanged {
+        private class FileTypeEntry : INotifyPropertyChanged, IEditableEntry {
             public event PropertyChangedEventHandler PropertyChanged;
             private OptionsDialog parent;
 
@@ -1741,10 +1635,13 @@ namespace QTTabBarLib {
             }
         }
 
-        private class FolderEntry : INotifyPropertyChanged {
+        private class FolderEntry : INotifyPropertyChanged, IEditableEntry, ITreeViewItem {
             public event PropertyChangedEventHandler PropertyChanged;
-
+            public IList ParentList { get; set; }
             public string Path { get; set; }
+            public bool IsEditing { get; set; }
+            public bool IsSelected { get; set; }
+            public bool IsExpanded { get; set; }
 
             public string DisplayText {
                 get {
@@ -1770,19 +1667,22 @@ namespace QTTabBarLib {
             }
         }
 
-        private class GroupEntry : INotifyPropertyChanged {
+        private class GroupEntry : INotifyPropertyChanged, IEditableEntry, ITreeViewItem {
             public event PropertyChangedEventHandler PropertyChanged;
+            public IList ParentList { get; set; }
             public string Name { get; set; }
             public Image Icon { get; private set; }
-            public ObservableCollection<FolderEntry> Folders { get; private set; }
+            public ParentedCollection<FolderEntry> Folders { get; private set; }
             public bool Startup { get; set; }
             public Keys ShortcutKey { get; set; }
             public string HotkeyString {
                 get { return QTUtility2.MakeKeyString(ShortcutKey); }
             }
             public bool IsEditing { get; set; }
-
-            private void Folders_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
+            public bool IsSelected { get; set; }
+            public bool IsExpanded { get; set; }
+            
+            private void Folders_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
                 if(e.OldItems != null) {
                     foreach(FolderEntry child in e.OldItems) {
                         child.PropertyChanged -= FolderEntry_PropertyChanged;
@@ -1810,14 +1710,14 @@ namespace QTTabBarLib {
                 Name = name;
                 Startup = startup;
                 ShortcutKey = shortcutKey;
-                Folders = new ObservableCollection<FolderEntry>(folders);
+                Folders = new ParentedCollection<FolderEntry>(folders);
                 Folders.CollectionChanged += Folders_CollectionChanged;
                 RefreshIcon();
             }
 
             public GroupEntry(string name) {
                 Name = name;
-                Folders = new ObservableCollection<FolderEntry>();
+                Folders = new ParentedCollection<FolderEntry>();
                 Folders.CollectionChanged += Folders_CollectionChanged;
                 RefreshIcon();
             }
@@ -1825,6 +1725,33 @@ namespace QTTabBarLib {
             public GroupEntry() {
                 Folders.CollectionChanged += Folders_CollectionChanged;
                 RefreshIcon();
+            }
+        }
+
+        private class AppEntry : INotifyPropertyChanged, IEditableEntry, ITreeViewItem {
+            public event PropertyChangedEventHandler PropertyChanged;
+            public IList ParentList { get; set; }
+            public ParentedCollection<AppEntry> Folders { get; set; }
+            public bool IsFolder { get { return Folders != null; } }
+            public bool IsEditing { get; set; }
+            public bool IsSelected { get; set; }
+            public bool IsExpanded { get; set; }
+            public string Name { get; set; }
+            public string Path { get; set; }
+            public string Args { get; set; }
+            public string Working { get; set; }
+
+            public Image Icon {
+                get {
+                    return IsFolder
+                      ? QTUtility.ImageListGlobal.Images["folder"]
+                      : QTUtility.GetIcon(Path, false).ToBitmap();
+                }
+            }
+
+            public AppEntry(bool folder, string name) {
+                Name = name;
+                if(folder) Folders = new ParentedCollection<AppEntry>();
             }
         }
 

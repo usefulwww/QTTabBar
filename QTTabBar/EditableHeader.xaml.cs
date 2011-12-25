@@ -12,8 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace QTTabBarLib
-{
+namespace QTTabBarLib {
     /// <summary>
     /// Interaction logic for EditableHeader.xaml
     /// </summary>
@@ -21,6 +20,7 @@ namespace QTTabBarLib
 
         private bool preparing = false;
         private string originalText;
+        private bool editOnLoad = false;
 
         public string Text {
             get { return (string)GetValue(TextProperty); }
@@ -46,7 +46,7 @@ namespace QTTabBarLib
             get { return (bool)GetValue(IsEditingProperty); }
             set { SetValue(IsEditingProperty, value); }
         }
-        
+
         public static readonly DependencyProperty TextProperty =
             DependencyProperty.Register("Text", typeof(string), typeof(EditableHeader),
             new FrameworkPropertyMetadata("New Header", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
@@ -66,31 +66,43 @@ namespace QTTabBarLib
         public static readonly DependencyProperty IsEditingProperty =
             DependencyProperty.Register("IsEditing", typeof(bool), typeof(EditableHeader),
             new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, IsEditingChanged));
-        
-        public EditableHeader(string initialName, TreeViewItem item = null) {
+
+        public EditableHeader(string initialName) {
             InitializeComponent();
 
             if(initialName != null) {
                 Text = initialName;
             }
 
-            //# TODO Find a way to set the mouse focus on instantiation...
+            Loaded += delegate {
+                if(editOnLoad) StartEdit();
+                editOnLoad = false;
+            };
         }
 
-        public EditableHeader() : this(null) {
+
+        public EditableHeader()
+            : this(null) {
         }
-        
+
         private static void IsEditingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             EditableHeader header = (EditableHeader)d;
-            if((bool)e.NewValue && header.txtHeaderEdit.Visibility == Visibility.Hidden) {
+            if((bool)e.NewValue) {
                 header.StartEdit();
             }
-            else if(!(bool)e.NewValue && header.txtHeaderEdit.Visibility == Visibility.Visible) {
+            else {
                 header.EndEdit();
             }
         }
 
-        public void EndEdit(bool cancel = false) {
+        private void EndEdit(bool cancel = false) {
+            if(!IsLoaded) {
+                editOnLoad = false;
+                return;
+            }
+            else if(txtHeaderEdit.Visibility == Visibility.Hidden) {
+                return;
+            }
             txtHeaderEdit.Visibility = Visibility.Hidden;
 
             BindingExpression expr = txtHeaderEdit.GetBindingExpression(TextBox.TextProperty);
@@ -102,7 +114,14 @@ namespace QTTabBarLib
             IsEditing = false;
         }
 
-        public void StartEdit() {
+        private void StartEdit() {
+            if(!IsLoaded) {
+                editOnLoad = true;
+                return;
+            }
+            else if(txtHeaderEdit.Visibility == Visibility.Visible) {
+                return;
+            }
             originalText = Text;
             txtHeaderEdit.SelectAll();
             txtHeaderEdit.Visibility = Visibility.Visible;
