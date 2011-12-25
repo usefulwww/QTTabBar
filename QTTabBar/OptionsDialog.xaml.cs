@@ -51,6 +51,7 @@ namespace QTTabBarLib {
 
         private static OptionsDialog instance;
         private static Thread instanceThread;
+        private static Thread launchingThread = null;
         public Config workingConfig { get; set; }
 
         // Button bar stuff
@@ -316,24 +317,33 @@ namespace QTTabBarLib {
         public static void Open() {
             // TODO: Primary process only
             lock(typeof(OptionsDialog)) {
-                if(instance == null) {
-                    instanceThread = new Thread(ThreadEntry);
-                    instanceThread.SetApartmentState(ApartmentState.STA);
-                    lock(instanceThread) {
-                        instanceThread.Start();
-                        // Don't return until we know that instance is set.
-                        Monitor.Wait(instanceThread);
+                // Prevent reentrant calls that might happen during the Wait call below.
+                if(launchingThread == Thread.CurrentThread) return;
+                try {
+                    launchingThread = Thread.CurrentThread;
+
+                    if(instance == null) {
+                        instanceThread = new Thread(ThreadEntry);
+                        instanceThread.SetApartmentState(ApartmentState.STA);
+                        lock(instanceThread) {
+                            instanceThread.Start();
+                            // Don't return until we know that instance is set.
+                            Monitor.Wait(instanceThread);
+                        }
+                    }
+                    else {
+                        instance.Dispatcher.Invoke(new Action(() => {
+                            if(instance.WindowState == WindowState.Minimized) {
+                                instance.WindowState = WindowState.Normal;
+                            }
+                            else {
+                                instance.Activate();
+                            }
+                        }));
                     }
                 }
-                else {
-                    instance.Dispatcher.Invoke(new Action(() => {
-                        if(instance.WindowState == WindowState.Minimized) {
-                            instance.WindowState = WindowState.Normal;
-                        }
-                        else {
-                            instance.Activate();
-                        }
-                    }));
+                finally {
+                    launchingThread = null;
                 }
             }
         }
@@ -378,6 +388,7 @@ namespace QTTabBarLib {
             InitializeMouse();
             InitializeKeys();
             InitializeGroups();
+            InitializeApps();
             InitializeButtonBar();
 
             // Initialize the plugin tab
@@ -955,10 +966,19 @@ namespace QTTabBarLib {
         }
 
         private void btnAddApp_Click(object sender, RoutedEventArgs e) {
-
+            AppEntry entry = tvwApps.SelectedItem as AppEntry;
+            IList list = entry == null ? CurrentApps : entry.IsFolder ? entry.Children : entry.ParentList;
+            int idx = entry == null ? 0 : list.IndexOf(entry) + 1;
+            list.Insert(idx, new AppEntry(false, "New App"));
+            if(entry != null && entry.IsFolder) entry.IsExpanded = true;
         }
 
         private void btnAddAppFolder_Click(object sender, RoutedEventArgs e) {
+            AppEntry entry = tvwApps.SelectedItem as AppEntry;
+            IList list = entry == null ? CurrentApps : entry.IsFolder ? entry.Children : entry.ParentList;
+            int idx = entry == null ? 0 : list.IndexOf(entry) + 1;
+            list.Insert(idx, new AppEntry(true, "Folder"));
+            if(entry != null && entry.IsFolder) entry.IsExpanded = true;
         }
 
         private void btnRemoveApp_Click(object sender, RoutedEventArgs e) {
@@ -1731,8 +1751,8 @@ namespace QTTabBarLib {
         private class AppEntry : INotifyPropertyChanged, IEditableEntry, ITreeViewItem {
             public event PropertyChangedEventHandler PropertyChanged;
             public IList ParentList { get; set; }
-            public ParentedCollection<AppEntry> Folders { get; set; }
-            public bool IsFolder { get { return Folders != null; } }
+            public ParentedCollection<AppEntry> Children { get; set; }
+            public bool IsFolder { get { return Children != null; } }
             public bool IsEditing { get; set; }
             public bool IsSelected { get; set; }
             public bool IsExpanded { get; set; }
@@ -1751,7 +1771,7 @@ namespace QTTabBarLib {
 
             public AppEntry(bool folder, string name) {
                 Name = name;
-                if(folder) Folders = new ParentedCollection<AppEntry>();
+                if(folder) Children = new ParentedCollection<AppEntry>();
             }
         }
 

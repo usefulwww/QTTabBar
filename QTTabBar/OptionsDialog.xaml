@@ -2157,18 +2157,21 @@
                             Margin="4"
                             Width="28"/>
                         <Button x:Name="btnAppsAddFolder"
+                            Click="btnAddAppFolder_Click"
                             Content="F"
                             Grid.Column="3"
                             Height="23"
                             Margin="4"
                             Width="28"/>
                         <Button x:Name="btnAppsAddNode"
+                            Click="btnAddApp_Click"
                             Content="+"
                             Grid.Column="4"
                             Height="23"
                             Margin="4"
                             Width="28"/>
                         <Button x:Name="btnAppsRemoveNode"
+                            Click="btnRemoveApp_Click"
                             Content="-"
                             Grid.Column="5"
                             Height="23"
@@ -2199,7 +2202,7 @@
                             </Style>
                         </TreeView.ItemContainerStyle>
                         <TreeView.ItemTemplate>
-                            <HierarchicalDataTemplate ItemsSource="{Binding Path=Folders}"/>
+                            <HierarchicalDataTemplate ItemsSource="{Binding Path=Children}"/>
                         </TreeView.ItemTemplate>
                         <r:TreeListView.Columns>
                             <GridViewColumn Header="Application" Width="300">
