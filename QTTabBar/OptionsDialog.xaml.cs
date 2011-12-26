@@ -727,7 +727,7 @@ namespace QTTabBarLib {
         private bool CheckForKeyConflicts(Keys key) {
             const string Conflict = "This key is already assigned to:\n{0}\n\nReassign?";
             const string GroupPrefix = "Open group \"{0}\"";
-            //const string AppPrefix = "Launch application \"{0}\"";
+            const string AppPrefix = "Launch application \"{0}\"";
             const string MsgTitle = "Keystroke conflict";
 
             HotkeyEntry hotkey = HotkeyEntries.FirstOrDefault(e => e.Key == key);
@@ -752,7 +752,17 @@ namespace QTTabBarLib {
                 }
             }
 
-            // todo: apps
+            AppEntry app = FlattenAppList(CurrentApps).FirstOrDefault(e => e.ShortcutKey == key);
+            if(app != null) {
+                if(MessageBox.Show(string.Format(Conflict, string.Format(AppPrefix, app.Name)), MsgTitle, MessageBoxButton.OKCancel, MessageBoxImage.Warning) == MessageBoxResult.OK) {
+                    app.ShortcutKey = Keys.None;
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+
             return true;
         }
 
@@ -943,14 +953,13 @@ namespace QTTabBarLib {
             if(entry != null) entry.IsEditing = false;
         }
 
-        private void txtGroupHotkey_OnPreviewKeyDown(object sender, KeyEventArgs e) {
-            e.Handled = true;
+        private void tvwGroups_PreviewKeyDown(object sender, KeyEventArgs e) {
             GroupEntry entry = tvwGroups.SelectedItem as GroupEntry;
             if(entry == null) return;
             Keys newKey;
-            if(ProcessNewHotkey(e, entry.ShortcutKey, out newKey)) {
-                entry.ShortcutKey = newKey;
-            }
+            if(!ProcessNewHotkey(e, entry.ShortcutKey, out newKey)) return;
+            entry.ShortcutKey = newKey;
+            e.Handled = true;
         }
 
         #endregion
@@ -965,6 +974,19 @@ namespace QTTabBarLib {
             // todo
         }
 
+        private static IEnumerable<AppEntry> FlattenAppList(IEnumerable<AppEntry> AppRoot) {
+            foreach(AppEntry app in AppRoot) {
+                if(app.IsFolder) {
+                    foreach(AppEntry child in FlattenAppList(app.Children)) {
+                        yield return child;
+                    }
+                }
+                else {
+                    yield return app;
+                }
+            }
+        }
+
         private void btnAddApp_Click(object sender, RoutedEventArgs e) {
             string path;
             using(OpenFileDialog ofd = new OpenFileDialog()) {
@@ -976,18 +998,21 @@ namespace QTTabBarLib {
             int idx = sel == null ? 0 : list.IndexOf(sel) + 1;
             AppEntry entry = new AppEntry(false, path);
             list.Insert(idx, entry);
-            entry.IsSelected = true;
             if(sel != null && sel.IsFolder) sel.IsExpanded = true;
+            tvwApps.Focus();
+            entry.IsSelected = true;
         }
 
         private void btnAddAppFolder_Click(object sender, RoutedEventArgs e) {
             AppEntry sel = tvwApps.SelectedItem as AppEntry;
             IList list = sel == null ? CurrentApps : sel.IsFolder ? sel.Children : sel.ParentList;
             int idx = sel == null ? 0 : list.IndexOf(sel) + 1;
-            AppEntry entry = new AppEntry(true, "Folder");
+            AppEntry entry = new AppEntry(true, "New Folder");
             list.Insert(idx, entry);
-            entry.IsSelected = true;
             if(sel != null && sel.IsFolder) sel.IsExpanded = true;
+            tvwApps.Focus();
+            entry.IsSelected = true;
+            entry.IsEditing = true;
         }
 
         private void btnRemoveApp_Click(object sender, RoutedEventArgs e) {
@@ -1010,6 +1035,15 @@ namespace QTTabBarLib {
 
         private void btnAppsMoveNodeDown_Click(object sender, RoutedEventArgs e) {
             UpDownOnTreeView(tvwApps, false);
+        }
+
+        private void tvwApps_PreviewKeyDown(object sender, KeyEventArgs e) {
+            AppEntry entry = tvwApps.SelectedItem as AppEntry;
+            if(entry == null || entry.IsFolder) return;
+            Keys newKey;
+            if(!ProcessNewHotkey(e, entry.ShortcutKey, out newKey)) return;
+            entry.ShortcutKey = newKey;
+            e.Handled = true;
         }
 
         private void btnVars_Click(object sender, RoutedEventArgs e) {
@@ -1780,6 +1814,10 @@ namespace QTTabBarLib {
             public string Path { get; set; }
             public string Args { get; set; }
             public string WorkingDir { get; set; }
+            public Keys ShortcutKey { get; set; }
+            public string HotkeyString {
+                get { return QTUtility2.MakeKeyString(ShortcutKey); }
+            }
 
             public Image Icon {
                 get {

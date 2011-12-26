@@ -1850,7 +1850,7 @@
                 Header="Keys"
                 Width="0">
                 <DockPanel
-                    Margin="14,5,10,0">
+                    Margin="14,5,10,16">
                     <StackPanel
                         DockPanel.Dock="Top"
                         Margin="0,0,0,4"
@@ -1871,8 +1871,8 @@
                     <ListView x:Name="lvwHotkeys"
                         PreviewKeyDown="lvwHotkeys_PreviewKeyDown"
                         TextInput="lvwHotkeys_TextInput"
-                        BorderThickness="1.000001"
-                        Margin="0,10">
+                        SelectionMode="Single"
+                        BorderThickness="1.000001">
                         <ListView.GroupStyle>
                             <GroupStyle HeaderTemplate="{StaticResource WinFormsGroupStyle}"/>
                         </ListView.GroupStyle>
@@ -1941,7 +1941,7 @@
                 Header="Groups"
                 Width="0">
                 <DockPanel
-                    Margin="14,5,10,0">
+                    Margin="14,5,10,16">
                     <StackPanel
                         DockPanel.Dock="Top"
                         Margin="0,0,0,4"
@@ -1954,9 +1954,14 @@
                             FontSize="13"
                             VerticalAlignment="Bottom"/>
                     </StackPanel>
+                    <TextBlock 
+                        Text="To assign a Shortcut Key to a group, select it and press the appropriate key gesture.&#x0a;Press Escape to clear the binding." 
+                        TextWrapping="Wrap"
+                        DockPanel.Dock="Top"
+                        Margin="5,10,5,5"/>
                     <Grid
                         DockPanel.Dock="Top"
-                        Margin="0,10,0,0">
+                        Margin="0,5,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
@@ -1999,35 +2004,9 @@
                             Width="28"
                             Click="btnGroupsRemoveNode_Click" />
                     </Grid>
-                    <DockPanel
-                        DataContext="{Binding ElementName=tvwGroups, Path=SelectedItem}"
-                        DockPanel.Dock="Bottom"
-                        Margin="0,10,0,20">
-                        <DockPanel.Style>
-                            <Style TargetType="{x:Type DockPanel}">
-                                <Setter Property="IsEnabled" Value="False"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Converter={StaticResource ObjectToClassNameConverter}}" Value="GroupEntry">
-                                        <Setter Property="IsEnabled" Value="True"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </DockPanel.Style>
-                        <Label
-                            Content="Shortcut Key:"
-                            DockPanel.Dock="Left"
-                            Height="23"
-                            Margin="0,0,10,0"
-                            Padding="0"
-                            VerticalContentAlignment="Center"/>
-                        <TextBox x:Name="txtGroupHotkey"
-                            Height="23"
-                            IsReadOnly="True"
-                            PreviewKeyDown="txtGroupHotkey_OnPreviewKeyDown"
-                            Text="{Binding Path=HotkeyString, Mode=OneWay}"/>
-                    </DockPanel>
                     <r:TreeListView x:Name="tvwGroups"
-                        MouseDown="tvwGroupsApps_MouseDown">
+                        MouseDown="tvwGroupsApps_MouseDown"
+                        PreviewKeyDown="tvwGroups_PreviewKeyDown">
                         <TreeView.ItemContainerStyle>
                             <Style TargetType="{x:Type TreeViewItem}">
                                 <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
@@ -2119,7 +2098,7 @@
                 Header="Applications"
                 Width="0">
                 <DockPanel
-                    Margin="14,5,10,0">
+                    Margin="14,5,10,16">
                     <StackPanel
                         DockPanel.Dock="Top"
                         Margin="0,0,0,4"
@@ -2132,9 +2111,14 @@
                             FontSize="13"
                             VerticalAlignment="Bottom"/>
                     </StackPanel>
+                    <TextBlock 
+                        Text="To assign a Shortcut Key to an application, select it and press the appropriate key gesture.&#x0a;Press Escape to clear the binding." 
+                        TextWrapping="Wrap"
+                        DockPanel.Dock="Top"
+                        Margin="5,10,5,5"/>
                     <Grid
                         DockPanel.Dock="Top"
-                        Margin="0,10,0,0">
+                        Margin="0,5,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
@@ -2181,7 +2165,7 @@
                     <Grid x:Name="grdAppProps"
                         DataContext="{Binding ElementName=tvwApps, Path=SelectedItem}"
                         DockPanel.Dock="Bottom"
-                        Margin="0,10,0,20">
+                        Margin="0,10,0,0">
                         <Grid.Style>
                             <Style TargetType="{x:Type Grid}">
                                 <Setter Property="IsEnabled" Value="False"/>
@@ -2231,7 +2215,7 @@
                             Grid.Row="1"
                             Height="23"
                             Margin="0,3"
-                            Text="{Binding Path=Args}"/>
+                            Text="{Binding Path=Args, UpdateSourceTrigger=PropertyChanged}"/>
                         <Button x:Name="btnArgVars"
                             Click="btnVars_Click"
                             Content="%"
@@ -2282,7 +2266,7 @@
                             Grid.Row="2"
                             Height="23"
                             Margin="0,3"
-                            Text="{Binding Path=WorkingDir}"/>
+                            Text="{Binding Path=WorkingDir, UpdateSourceTrigger=PropertyChanged}"/>
                         <Button x:Name="btnWorkingVars"
                             Click="btnVars_Click"
                             Content="%"
@@ -2306,7 +2290,8 @@
                         </Button>
                     </Grid>
                     <r:TreeListView x:Name="tvwApps"
-                        MouseDown="tvwGroupsApps_MouseDown">
+                        MouseDown="tvwGroupsApps_MouseDown"
+                        PreviewKeyDown="tvwApps_PreviewKeyDown">
                         <TreeView.ItemContainerStyle>
                             <Style TargetType="{x:Type TreeViewItem}">
                                 <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
@@ -2345,9 +2330,9 @@
                                             Text="{Binding Path=HotkeyString}"
                                             HorizontalAlignment="Center"
                                             VerticalAlignment="Center"
-                                            Visibility="Collapsed" />
+                                            Visibility="Collapsed"/>
                                         <DataTemplate.Triggers>
-                                            <DataTrigger Binding="{Binding Converter={StaticResource ObjectToClassNameConverter}}" Value="GroupEntry">
+                                            <DataTrigger Binding="{Binding Path=IsFolder}" Value="False">
                                                 <Setter TargetName="txtHotkey" Property="Visibility" Value="Visible"/>
                                             </DataTrigger>
                                         </DataTemplate.Triggers>
@@ -2364,10 +2349,11 @@
                 DataContext="{Binding Path=bbar}"
                 Header="Button Bar"
                 Width="0">
-                <StackPanel
-                    Margin="14,5,10,0"
-                    Orientation="Vertical">
+                <DockPanel
+                    LastChildFill="True"
+                    Margin="14,5,10,16">
                     <StackPanel
+                        DockPanel.Dock="Top"
                         Margin="0,0,0,4"
                         Orientation="Horizontal">
                         <Image
@@ -2380,9 +2366,46 @@
                     </StackPanel>
                     <Label
                         Content="Buttons"
+                        DockPanel.Dock="Top"
                         Style="{StaticResource SectionHeaderStyle}"/>
+                    <StackPanel 
+                        DockPanel.Dock="Bottom"
+                        Orientation="Vertical">
+                        <Label
+                            Content="Button Bar Options"
+                            Style="{StaticResource SectionHeaderStyle}"/>
+                        <CheckBox x:Name="chkLargeButtons"
+                            Content="Large icons"
+                            Height="16"
+                            HorizontalAlignment="Left"
+                            IsChecked="{Binding Path=LargeButtons}"
+                            Margin="13,1,0,1"/>
+                        <CheckBox x:Name="chkShowButtonLabels"
+                            Content="Show labels on buttons"
+                            Height="16"
+                            HorizontalAlignment="Left"
+                            IsChecked="{Binding Path=ShowButtonLabels}"
+                            Margin="13,1,0,1"/>
+                        <CheckBox x:Name="chkLockDropDownButtons"
+                            Content="Lock the order of dropdown button menus"
+                            Height="16"
+                            HorizontalAlignment="Left"
+                            IsChecked="{Binding Path=LockDropDownButtons}"
+                            Margin="13,1,0,1"/>
+                        <CheckBox x:Name="chkLockSearchBarWidth"
+                            Content="Lock the size of the search box"
+                            Height="16"
+                            HorizontalAlignment="Left"
+                            IsChecked="{Binding Path=LockSearchBarWidth}"
+                            Margin="13,1,0,1"/>
+                        <Label
+                            Content="Custom Button Images"
+                            Style="{StaticResource SectionHeaderStyle}" />
+                        <qt:FileFolderEntryBox
+                            Margin="13,1,0,1"
+                            SelectedPath="{Binding Path=ImageStripPath}"/>
+                    </StackPanel>
                     <Grid
-                        Height="199"
                         Margin="8">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
@@ -2430,39 +2453,7 @@
                             VerticalAlignment="Top"
                             Width="30"/>
                     </Grid>
-                    <Label
-                        Content="Button Bar Options"
-                        Style="{StaticResource SectionHeaderStyle}"/>
-                    <CheckBox x:Name="chkLargeButtons"
-                        Content="Large icons"
-                        Height="16"
-                        HorizontalAlignment="Left"
-                        IsChecked="{Binding Path=LargeButtons}"
-                        Margin="13,1,0,1"/>
-                    <CheckBox x:Name="chkShowButtonLabels"
-                        Content="Show labels on buttons"
-                        Height="16"
-                        HorizontalAlignment="Left"
-                        IsChecked="{Binding Path=ShowButtonLabels}"
-                        Margin="13,1,0,1"/>
-                    <CheckBox x:Name="chkLockDropDownButtons"
-                        Content="Lock the order of dropdown button menus"
-                        Height="16"
-                        HorizontalAlignment="Left"
-                        IsChecked="{Binding Path=LockDropDownButtons}"
-                        Margin="13,1,0,1"/>
-                    <CheckBox x:Name="chkLockSearchBarWidth"
-                        Content="Lock the size of the search box"
-                        Height="16"
-                        HorizontalAlignment="Left"
-                        IsChecked="{Binding Path=LockSearchBarWidth}"
-                        Margin="13,1,0,1"/>
-                    <Label
-                            Content="Custom Button Images"
-                            Style="{StaticResource SectionHeaderStyle}" />
-                    <qt:FileFolderEntryBox 
-                        SelectedPath="{Binding Path=ImageStripPath}"/>
-                </StackPanel>                
+                </DockPanel>
             </TabItem>
 
             <!-- =============  PLUGINS   ============= -->
@@ -2470,7 +2461,7 @@
                 Header="Plugins"
                 Width="0">
                 <DockPanel
-                    Margin="14,5,10,0">
+                    Margin="14,5,10,16">
                     <StackPanel
                         DockPanel.Dock="Top"
                         Margin="0,0,0,4"
@@ -2492,7 +2483,6 @@
                     <ListBox x:Name="lstPluginView"
                         HorizontalContentAlignment="Stretch"
                         ItemTemplate="{StaticResource PluginItemTemplate}"
-                        Margin="0,10"
                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="{x:Type ListBoxItem}">
