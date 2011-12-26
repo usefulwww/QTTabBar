@@ -2178,21 +2178,133 @@
                             Margin="4"
                             Width="28"/>
                     </Grid>
-                    <DockPanel
+                    <Grid x:Name="grdAppProps"
+                        DataContext="{Binding ElementName=tvwApps, Path=SelectedItem}"
                         DockPanel.Dock="Bottom"
                         Margin="0,10,0,20">
+                        <Grid.Style>
+                            <Style TargetType="{x:Type Grid}">
+                                <Setter Property="IsEnabled" Value="False"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=IsFolder}" Value="False">
+                                        <Setter Property="IsEnabled" Value="True"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
                         <Label
                             Content="Path:"
-                            DockPanel.Dock="Left"
+                            Grid.Column="0"
+                            Grid.Row="0"
                             Height="23"
                             Margin="0,0,10,0"
                             Padding="0"
                             VerticalContentAlignment="Center"/>
-                        <TextBox x:Name="txtAppHotkey"
+                        <qt:FileFolderEntryBox x:Name="txtAppPath"
+                            Folder="False"
+                            Grid.Column="1"
+                            Grid.ColumnSpan="2"
+                            Grid.Row="0"
                             Height="23"
-                            IsReadOnly="True"
-                            Text="{Binding Path=HotkeyString, Mode=OneWay}"/>
-                    </DockPanel>
+                            Margin="0,3"
+                            SelectedPath="{Binding Path=Path}"/>
+                        <Label
+                            Content="Arguments:"
+                            Grid.Column="0"
+                            Grid.Row="1"
+                            Height="23"
+                            Margin="0,0,10,0"
+                            Padding="0"
+                            VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="txtAppArgs"
+                            Grid.Column="1"
+                            Grid.Row="1"
+                            Height="23"
+                            Margin="0,3"
+                            Text="{Binding Path=Args}"/>
+                        <Button x:Name="btnArgVars"
+                            Click="btnVars_Click"
+                            Content="%"
+                            Grid.Column="2"
+                            Grid.Row="1"
+                            Height="23"
+                            Margin="8, 1, 0, 1"
+                            Width="26">
+                            <Button.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem
+                                        Header="The following keywords are replaced with double-quoted path strings at runtime."
+                                        IsEnabled="False"/> 
+                                    <Separator/>
+                                    <MenuItem
+                                        Click="miArgVars_Click"
+                                        Header="%f% - Selected files."
+                                        Tag="%f%"/>
+                                    <MenuItem
+                                        Click="miArgVars_Click"
+                                        Header="%d% - Selected folders."
+                                        Tag="%d%"/>
+                                    <MenuItem
+                                        Click="miArgVars_Click"
+                                        Header="%s% - Selected files and folders."
+                                        Tag="%s%"/>
+                                    <MenuItem
+                                        Click="miArgVars_Click"
+                                        Header="%c% - Current folder."
+                                        Tag="%c%"/>
+                                    <MenuItem
+                                        Click="miArgVars_Click"
+                                        Header="%cd% - Current folder if no selection, otherwise selected folder."
+                                        Tag="%cd%"/>
+                                </ContextMenu>
+                            </Button.ContextMenu>
+                        </Button>
+                        <Label
+                            Content="Working Directory:"
+                            Grid.Column="0"
+                            Grid.Row="2"
+                            Height="23"
+                            Margin="0,0,10,0"
+                            Padding="0"
+                            VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="txtAppDir"
+                            Grid.Column="1"
+                            Grid.Row="2"
+                            Height="23"
+                            Margin="0,3"
+                            Text="{Binding Path=WorkingDir}"/>
+                        <Button x:Name="btnWorkingVars"
+                            Click="btnVars_Click"
+                            Content="%"
+                            Grid.Column="2"
+                            Grid.Row="2"
+                            Height="23"
+                            Margin="8, 1, 0, 1"
+                            Width="26">
+                            <Button.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem
+                                        Header="The following keywords are replaced with double-quoted path strings at runtime."
+                                        IsEnabled="False"/>
+                                    <Separator/>
+                                    <MenuItem
+                                        Click="miWorkingVars_Click"
+                                        Header="%cd% - Current folder if no selection, otherwise selected folder."
+                                        Tag="%cd%"/>
+                                </ContextMenu>
+                            </Button.ContextMenu>
+                        </Button>
+                    </Grid>
                     <r:TreeListView x:Name="tvwApps"
                         MouseDown="tvwGroupsApps_MouseDown">
                         <TreeView.ItemContainerStyle>

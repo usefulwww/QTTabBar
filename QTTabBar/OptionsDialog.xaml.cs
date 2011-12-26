@@ -966,23 +966,42 @@ namespace QTTabBarLib {
         }
 
         private void btnAddApp_Click(object sender, RoutedEventArgs e) {
-            AppEntry entry = tvwApps.SelectedItem as AppEntry;
-            IList list = entry == null ? CurrentApps : entry.IsFolder ? entry.Children : entry.ParentList;
-            int idx = entry == null ? 0 : list.IndexOf(entry) + 1;
-            list.Insert(idx, new AppEntry(false, "New App"));
-            if(entry != null && entry.IsFolder) entry.IsExpanded = true;
+            string path;
+            using(OpenFileDialog ofd = new OpenFileDialog()) {
+                if(System.Windows.Forms.DialogResult.OK != ofd.ShowDialog()) return;
+                path = ofd.FileName;
+            }
+            AppEntry sel = tvwApps.SelectedItem as AppEntry;
+            IList list = sel == null ? CurrentApps : sel.IsFolder ? sel.Children : sel.ParentList;
+            int idx = sel == null ? 0 : list.IndexOf(sel) + 1;
+            AppEntry entry = new AppEntry(false, path);
+            list.Insert(idx, entry);
+            entry.IsSelected = true;
+            if(sel != null && sel.IsFolder) sel.IsExpanded = true;
         }
 
         private void btnAddAppFolder_Click(object sender, RoutedEventArgs e) {
-            AppEntry entry = tvwApps.SelectedItem as AppEntry;
-            IList list = entry == null ? CurrentApps : entry.IsFolder ? entry.Children : entry.ParentList;
-            int idx = entry == null ? 0 : list.IndexOf(entry) + 1;
-            list.Insert(idx, new AppEntry(true, "Folder"));
-            if(entry != null && entry.IsFolder) entry.IsExpanded = true;
+            AppEntry sel = tvwApps.SelectedItem as AppEntry;
+            IList list = sel == null ? CurrentApps : sel.IsFolder ? sel.Children : sel.ParentList;
+            int idx = sel == null ? 0 : list.IndexOf(sel) + 1;
+            AppEntry entry = new AppEntry(true, "Folder");
+            list.Insert(idx, entry);
+            entry.IsSelected = true;
+            if(sel != null && sel.IsFolder) sel.IsExpanded = true;
         }
 
         private void btnRemoveApp_Click(object sender, RoutedEventArgs e) {
-
+            AppEntry sel = tvwApps.SelectedItem as AppEntry;
+            if(sel == null) return;
+            if(sel.IsFolder && sel.Children.Count > 0) {
+                // todo: confirm
+            }
+            IList list = sel.ParentList;
+            int index = list.IndexOf(sel);
+            list.RemoveAt(index);
+            if(list.Count == 0) return;
+            if(index == list.Count) --index;
+            ((ITreeViewItem)list[index]).IsSelected = true;
         }
 
         private void btnAppsMoveNodeUp_Click(object sender, RoutedEventArgs e) {
@@ -993,6 +1012,27 @@ namespace QTTabBarLib {
             UpDownOnTreeView(tvwApps, false);
         }
 
+        private void btnVars_Click(object sender, RoutedEventArgs e) {
+            var button = ((Button)sender);
+            ContextMenu menu = button.ContextMenu;
+            menu.PlacementTarget = button;
+            menu.Placement = PlacementMode.Bottom;
+            menu.IsOpen = true;
+        }
+
+        private void miArgVars_Click(object sender, RoutedEventArgs e) {
+            InsertVar(txtAppArgs, (string)((MenuItem)sender).Tag);
+        }
+
+        private void miWorkingVars_Click(object sender, RoutedEventArgs e) {
+            InsertVar(txtAppDir, (string)((MenuItem)sender).Tag);
+        }
+
+        private static void InsertVar(TextBox textbox, string var) {
+            int caret = textbox.CaretIndex;
+            textbox.Text = textbox.Text.Insert(caret, var);
+            textbox.CaretIndex = caret + var.Length;
+        }
 
         #endregion
 
@@ -1328,26 +1368,6 @@ namespace QTTabBarLib {
                 hotkey = Keys.None;
                 return false;
             }
-        }
-
-        private static UIElement FindItemContainer(ItemsControl parent, object childItem) {
-            if(parent.ItemContainerGenerator.Status != GeneratorStatus.ContainersGenerated) {
-                return null;
-            }
-            UIElement container = (UIElement)parent.ItemContainerGenerator.ContainerFromItem(childItem);
-            if(container != null) {
-                return container;
-            }
-            foreach(object item in parent.Items) {
-                ItemsControl child = parent.ItemContainerGenerator.ContainerFromItem(item) as ItemsControl;
-                if(child != null && child.Items.Count > 0) {
-                    UIElement result = FindItemContainer(child, childItem);
-                    if(result != null) {
-                        return result;
-                    }
-                }
-            }
-            return null;
         }
 
         // Draws a control to a bitmap
@@ -1759,7 +1779,7 @@ namespace QTTabBarLib {
             public string Name { get; set; }
             public string Path { get; set; }
             public string Args { get; set; }
-            public string Working { get; set; }
+            public string WorkingDir { get; set; }
 
             public Image Icon {
                 get {
@@ -1769,9 +1789,15 @@ namespace QTTabBarLib {
                 }
             }
 
-            public AppEntry(bool folder, string name) {
-                Name = name;
-                if(folder) Children = new ParentedCollection<AppEntry>();
+            public AppEntry(bool folder, string nameOrPath) {
+                if(folder) {
+                    Name = nameOrPath;
+                    Children = new ParentedCollection<AppEntry>();    
+                }
+                else {
+                    Path = nameOrPath;
+                    Name = System.IO.Path.GetFileNameWithoutExtension(Path);
+                }
             }
         }
 

@@ -10,10 +10,11 @@
         Height="{Binding Path=Height, ElementName=FileFolderEntryBoxControl}"
         Width="{Binding Path=Width, ElementName=FileFolderEntryBoxControl}">
         <Button x:Name="btnBrowse"
+            Click="btnBrowse_Click"
             Content="..."
             Margin="8, 1, 0, 1"
             Width="26"
-            DockPanel.Dock="Right" Click="btnBrowse_Click" />
+            DockPanel.Dock="Right"/>
         <Grid>
             <TextBox x:Name="txtLocation" x:FieldModifier="private"
                 Padding="22,1,0,0"
